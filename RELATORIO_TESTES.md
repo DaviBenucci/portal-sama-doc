@@ -1,5 +1,66 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-22 16:38
+
+### Contexto
+
+- Correcao do deploy da API no EasyPanel apos erro Prisma `P3005` em banco existente.
+- Objetivo: impedir que migration automatica derrube o container e validar o novo baseline controlado.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco: nao acessado diretamente.
+- Observacoes: `.env` real local nao foi exibido; nao houve conexao com MySQL do EasyPanel.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd run prisma:generate
+npm.cmd run prisma:validate
+npm.cmd run build
+npm.cmd run lint
+node --check scripts/prisma-baseline-existing-database.js
+npm.cmd run prisma:migrate:baseline-existing
+docker build --pull=false -t portal-sama-api:prisma-p3005-fix .
+docker run --rm portal-sama-api:prisma-p3005-fix
+docker run -d --name portal-sama-api-start-test ... portal-sama-api:prisma-p3005-fix
+git diff --check
+```
+
+Em `portal-sama-docs`:
+
+```bash
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para novo build/deploy da API.
+- Prisma Client foi gerado com sucesso.
+- Prisma validate passou.
+- Build NestJS passou.
+- Lint da API passou.
+- `node --check` do script de baseline passou.
+- O script `prisma:migrate:baseline-existing` sem `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true` falhou como esperado, bloqueando baseline acidental.
+- Docker build passou com `.env` ignorado no contexto.
+- Docker run sem `DATABASE_URL` encerrou com exit code 1 e mensagem esperada de configuracao.
+- Smoke Docker com env minima e `PRISMA_CONNECT_ON_BOOT=false` iniciou a API, pulou migrations no start e registrou `Nest application successfully started`.
+- `git diff --check` passou nos repos de API e docs, mantendo apenas avisos LF/CRLF esperados no Windows.
+
+### Pendencias
+
+- Rebuild/redeploy real no EasyPanel.
+- Backup/snapshot do banco `banco-sama`.
+- Execucao unica do baseline controlado no console/one-off command da API.
+- Rodar seed, bootstrap admin, health, csrf e login real no ambiente.
+
+### Observacao anti-alucinacao
+
+Nao foram executados baseline real, migration real, seed, bootstrap, smoke publico, Playwright nem conexao com MySQL do EasyPanel nesta rodada.
+
 ## Execucao 2026-05-22 16:08
 
 ### Contexto

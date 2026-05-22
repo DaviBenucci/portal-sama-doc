@@ -291,6 +291,7 @@ FRONTEND_URL=https://portal.samacontabil.com.br
 CORS_ORIGIN=https://portal.samacontabil.com.br
 DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama_database:3306/banco-sama
 PRISMA_CONNECT_ON_BOOT=true
+PRISMA_MIGRATE_ON_START=false
 
 JWT_ACCESS_SECRET=gerar_chave_forte
 JWT_REFRESH_SECRET=gerar_outra_chave_forte
@@ -315,7 +316,9 @@ WEB_PUSH_PRIVATE_KEY=
 WEB_PUSH_SUBJECT=mailto:suporte@samacontabil.com.br
 ```
 
-Observacao 2026-05-22 16:08 -03:00: o erro Prisma `P1012` com `Environment variable not found: DATABASE_URL` indica que a variavel nao chegou ao build/runtime da API. O Dockerfile de `portal-sama-api` agora usa uma URL dummy somente para `prisma generate` no build; a `DATABASE_URL` real continua obrigatoria nas variaveis do servico `portal-sama-api` no EasyPanel antes de `prisma migrate deploy` e `node dist/main.js`.
+Observacao 2026-05-22 16:08 -03:00: o erro Prisma `P1012` com `Environment variable not found: DATABASE_URL` indica que a variavel nao chegou ao build/runtime da API. O Dockerfile de `portal-sama-api` agora usa uma URL dummy somente para `prisma generate` no build; a `DATABASE_URL` real continua obrigatoria nas variaveis do servico `portal-sama-api` no EasyPanel antes de `prisma migrate deploy` e start da API.
+
+Observacao 2026-05-22 16:38 -03:00: o erro Prisma `P3005` com `The database schema is not empty` indica banco existente sem historico `_prisma_migrations`. O start da API nao roda mais migrations por padrao (`PRISMA_MIGRATE_ON_START=false`), para o container ficar online. A preparacao do banco existente deve ser feita uma unica vez com backup e `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing`.
 
 ### Usuario MySQL da aplicacao
 
@@ -331,7 +334,7 @@ FLUSH PRIVILEGES;
 
 ### Comandos iniciais no container da API
 
-Depois de publicar a API e configurar o `DATABASE_URL` real:
+Depois de publicar a API e configurar o `DATABASE_URL` real em banco limpo:
 
 ```bash
 npx prisma migrate deploy
@@ -341,6 +344,12 @@ SAMA_BOOTSTRAP_ADMIN_PASSWORD='senha_forte_temporaria' \
 SAMA_BOOTSTRAP_ADMIN_NAME='Administrador Portal Sama' \
 SAMA_BOOTSTRAP_ADMIN_ROLE=DEV \
 npm run prisma:bootstrap-admin
+```
+
+Se o banco existente retornar `P3005`, usar o baseline controlado antes do seed/bootstrap:
+
+```bash
+SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing
 ```
 
 Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
@@ -360,7 +369,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 11. Configurar `DATABASE_URL` para `banco-sama`.
 12. Criar usuario MySQL nao-root.
 13. Fazer backup/snapshot do banco antes de migrations.
-14. Rodar `npx prisma migrate deploy`.
+14. Rodar `npx prisma migrate deploy` em banco limpo ou `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing` em banco existente com `P3005`.
 15. Rodar `npm run prisma:seed`.
 16. Rodar `npm run prisma:bootstrap-admin`.
 17. Validar `GET /api-v2/health`.
@@ -407,7 +416,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 - [ ] Criar usuario MySQL nao-root.
 - [ ] Configurar e validar `DATABASE_URL` real no servico `portal-sama-api` do EasyPanel.
-- [ ] Rodar `prisma migrate deploy` no MySQL 9.6.0.
+- [ ] Rodar `prisma migrate deploy` em banco limpo ou baseline controlado para `P3005` no MySQL 9.6.0.
 - [ ] Rodar seed RBAC.
 - [ ] Rodar bootstrap admin.
 - [ ] Comparar schema Prisma com schema legado.

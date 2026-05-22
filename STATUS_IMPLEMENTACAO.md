@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-22 16:38 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o novo erro de deploy Prisma `P3005` em banco EasyPanel existente sem historico `_prisma_migrations`.
+- **Backend/deploy:** `portal-sama-api/Dockerfile` nao executa mais `prisma migrate deploy` automaticamente no start; `PRISMA_MIGRATE_ON_START=false` e o container deve ficar online para abrir console/one-off command. O entrypoint tambem foi alinhado ao build real em `dist/src/main.js`.
+- **Banco/Prisma:** Adicionada migration vazia `20260501000000_baseline_existing_database` e script `npm run prisma:migrate:baseline-existing`, protegido por `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true`, para marcar baseline e aplicar migrations reais em banco existente apos backup.
+- **Documentacao:** Atualizados os procedimentos de EasyPanel, banco e painel de deploy para diferenciar banco limpo (`prisma migrate deploy`) de banco existente com `P3005` (baseline controlado).
+- **Validacao:** `npm.cmd run prisma:generate`, `npm.cmd run prisma:validate`, `npm.cmd run build`, `npm.cmd run lint`, `node --check scripts/prisma-baseline-existing-database.js`, `npm.cmd run prisma:migrate:baseline-existing` sem confirmacao (falha esperada), `docker build --pull=false -t portal-sama-api:prisma-p3005-fix .`, `docker run --rm portal-sama-api:prisma-p3005-fix` sem env (falha esperada), smoke Docker com env minima e `PRISMA_CONNECT_ON_BOOT=false` e `git diff --check` passaram/produziram os resultados esperados.
+- **Pendente:** Rebuild/redeploy real no EasyPanel, backup do `banco-sama`, execucao unica do baseline controlado no console da API, seed, bootstrap admin, health, csrf e login real.
+
 ## Atualizacao complementar 2026-05-22 16:08 -03:00
 
 - **Responsavel/IA:** Codex

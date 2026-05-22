@@ -1,5 +1,60 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-22 16:38
+
+### Arquivos alterados
+
+- `portal-sama-api/Dockerfile`
+- `portal-sama-api/.env.example`
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/prisma-baseline-existing-database.js`
+- `portal-sama-api/prisma/migrations/20260501000000_baseline_existing_database/migration.sql`
+- `EASYPANEL_DEPLOY.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `BANCO_DADOS_MYSQL_PRISMA.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+
+### O que mudou
+
+- O start Docker da API deixou de executar `prisma migrate deploy` por padrao.
+- Adicionada variavel operacional `PRISMA_MIGRATE_ON_START=false` para evitar que `P3005` derrube o container antes de abrir console no EasyPanel.
+- Corrigido o entrypoint de producao para `node dist/src/main.js`, caminho real gerado pelo build Nest atual.
+- Adicionada migration vazia `20260501000000_baseline_existing_database` para representar o baseline de bancos legados existentes.
+- Criado `npm run prisma:migrate:baseline-existing`, protegido por confirmacao via `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true`, para marcar a baseline e entao rodar `prisma migrate deploy`.
+- Documentado o fluxo separado para banco limpo e banco existente com `P3005`.
+
+### Motivo da alteracao
+
+O EasyPanel mostrou `P3005` porque `banco-sama` nao esta vazio e ainda nao possui historico Prisma. Rodar migrations no start impedia abrir o console do container para executar baseline com backup.
+
+### Impacto esperado
+
+- O servico `portal-sama-api` passa a subir sem tentar migration automatica.
+- A equipe consegue abrir console/one-off command e preparar o banco existente de forma controlada.
+- Bancos limpos continuam podendo usar `npx prisma migrate deploy` diretamente.
+
+### Testes executados
+
+- `npm.cmd run prisma:generate` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `node --check scripts/prisma-baseline-existing-database.js`: passou.
+- `npm.cmd run prisma:migrate:baseline-existing` sem confirmacao: falhou como esperado.
+- `docker build --pull=false -t portal-sama-api:prisma-p3005-fix .` em `portal-sama-api`: passou.
+- `docker run --rm portal-sama-api:prisma-p3005-fix` sem `DATABASE_URL`: falhou como esperado com mensagem explicita.
+- Smoke Docker com variaveis minimas e `PRISMA_CONNECT_ON_BOOT=false`: API iniciou e registrou `Nest application successfully started`.
+- `git diff --check` em `portal-sama-api` e `portal-sama-docs`: passou com avisos LF/CRLF esperados no Windows.
+
+### Riscos ou pendencias
+
+- Ainda falta executar backup/snapshot real do `banco-sama`.
+- O baseline controlado ainda precisa ser executado uma unica vez no EasyPanel.
+- Se o banco ja tiver tabelas Prisma parcialmente criadas por tentativa anterior, parar e revisar antes de forcar novos `migrate resolve`.
+
 ## 2026-05-22 16:08
 
 ### Arquivos alterados

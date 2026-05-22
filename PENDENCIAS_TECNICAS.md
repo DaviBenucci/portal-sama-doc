@@ -1,9 +1,18 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-22 16:38 -03:00
+
+- Corrigido o fluxo que derrubava o container da API com Prisma `P3005`: migrations nao rodam mais no start por padrao.
+- Corrigido o entrypoint de producao para `dist/src/main.js`, caminho real do build atual.
+- Adicionada migration vazia `20260501000000_baseline_existing_database` para baseline de banco EasyPanel existente sem `_prisma_migrations`.
+- Criado `npm run prisma:migrate:baseline-existing`, protegido por `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true`, para marcar baseline e aplicar migrations reais apos backup.
+- Passaram `npm.cmd run prisma:generate`, `npm.cmd run prisma:validate`, `npm.cmd run build`, `npm.cmd run lint`, `node --check` do script de baseline, Docker build e `git diff --check`; o script de baseline sem confirmacao e o Docker run sem `DATABASE_URL` falharam como esperado.
+- Permanece pendente executar backup/snapshot do `banco-sama`, rodar baseline controlado uma unica vez no EasyPanel, seed, bootstrap admin e validacoes health/csrf/login.
+
 ## Atualizacao 2026-05-22 16:08 -03:00
 
 - Corrigido `portal-sama-api/Dockerfile` para o build nao depender da `DATABASE_URL` real durante `prisma generate`.
-- O runtime da API continua exigindo `DATABASE_URL` real antes de `prisma migrate deploy` e `node dist/main.js`.
+- O runtime da API continua exigindo `DATABASE_URL` real antes de migrations opcionais e start da API.
 - Documentado o diagnostico do erro Prisma `P1012` no EasyPanel: configurar a variavel no servico `portal-sama-api`, apontando para `portal-sama_database:3306/banco-sama`.
 - Passaram `npm.cmd run prisma:generate`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `docker build --pull=false -t portal-sama-api:prisma-env-fix .` em `portal-sama-api`; `docker run --rm portal-sama-api:prisma-env-fix` sem env falhou como esperado com mensagem explicita; `git diff --check` passou nos docs e apontou apenas avisos LF/CRLF no repo da API.
 - Permanece pendente fazer rebuild/redeploy real no EasyPanel, rodar migrations/seed/bootstrap admin e validar health/csrf/login.

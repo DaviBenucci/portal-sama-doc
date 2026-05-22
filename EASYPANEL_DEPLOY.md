@@ -57,6 +57,7 @@ PORT=3000
 API_PREFIX=api-v2
 
 DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama-mysql:3306/portal_sama
+PRISMA_MIGRATE_ON_START=false
 
 JWT_ACCESS_SECRET=gerar_chave_forte_com_mais_de_32_caracteres
 JWT_REFRESH_SECRET=gerar_outra_chave_forte_com_mais_de_32_caracteres
@@ -113,16 +114,20 @@ RUN npm run build
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PRISMA_MIGRATE_ON_START=false
 COPY package*.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3000
-CMD ["sh", "-c", "if [ -z \"$DATABASE_URL\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "if [ -z \"${DATABASE_URL:-}\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; if [ \"${PRISMA_MIGRATE_ON_START:-false}\" = \"true\" ]; then npx prisma migrate deploy; else echo \"Skipping Prisma migrations on startup. Run migrations from an EasyPanel one-off command after backup/baseline.\"; fi; exec node dist/src/main.js"]
 ```
 
 > Atualizacao 2026-05-22 16:08 -03:00: o build da API usa `PRISMA_GENERATE_DATABASE_URL` apenas como URL dummy para `prisma generate`, porque o Prisma valida `env("DATABASE_URL")` mesmo sem conectar no banco durante a geracao do client. A `DATABASE_URL` real continua obrigatoria no ambiente runtime do servico `portal-sama-api` no EasyPanel.
+>
+> Atualizacao 2026-05-22 16:38 -03:00: migrations nao rodam mais no start por padrao. Em banco existente sem `_prisma_migrations`, `prisma migrate deploy` retorna `P3005`; portanto o container deve subir primeiro e a migration deve ser rodada por comando unico apos backup/baseline.
 
 > Observação: no início, rodar `prisma migrate deploy` no start pode simplificar. Em uma operação mais madura, execute migrations em uma etapa separada de CI/CD.
 
@@ -304,6 +309,7 @@ Logo, a API deve apontar para o banco real, com usuario proprio da aplicacao e s
 
 ```env
 DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama_database:3306/banco-sama
+PRISMA_MIGRATE_ON_START=false
 ```
 
 Se o log do deploy mostrar `Error code: P1012` e `Environment variable not found: DATABASE_URL`, a correcao operacional e:
@@ -312,6 +318,21 @@ Se o log do deploy mostrar `Error code: P1012` e `Environment variable not found
 2. confirmar que o host interno e o banco batem com o phpMyAdmin (`portal-sama_database:3306/banco-sama`, conforme o caso real acima);
 3. fazer novo build/deploy da API usando o Dockerfile atualizado, que nao exige a URL real durante `prisma generate`;
 4. depois que o container subir, rodar/validar `npx prisma migrate deploy`, `npm run prisma:seed` e `npm run prisma:bootstrap-admin`.
+
+Se o log mostrar `Error: P3005` e `The database schema is not empty`, a API esta conectando no banco, mas o banco existente ainda nao tem historico Prisma. Para homologacao no EasyPanel:
+
+1. manter `PRISMA_MIGRATE_ON_START=false` no servico `portal-sama-api`;
+2. fazer rebuild/redeploy para o container permanecer online;
+3. fazer backup/snapshot do banco `banco-sama`;
+4. abrir console/one-off command do servico API;
+5. confirmar que o host/banco estao corretos no `DATABASE_URL`;
+6. rodar o baseline controlado apenas uma vez:
+
+```bash
+SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing
+```
+
+Esse comando marca a migration vazia `20260501000000_baseline_existing_database` como aplicada e depois executa `prisma migrate deploy` para as migrations reais. Se o banco ja tiver tabelas Prisma parcialmente criadas por tentativa anterior, parar e revisar antes de forcar qualquer resolve adicional.
 
 Se o usuario ainda nao existir, criar pelo phpMyAdmin/SQL do EasyPanel:
 
@@ -331,6 +352,18 @@ Primeira preparacao da API em um banco limpo:
 
 ```bash
 npx prisma migrate deploy
+npm run prisma:seed
+SAMA_BOOTSTRAP_ADMIN_USERNAME=admin \
+SAMA_BOOTSTRAP_ADMIN_PASSWORD='trocar_por_senha_forte' \
+SAMA_BOOTSTRAP_ADMIN_NAME='Administrador Portal Sama' \
+SAMA_BOOTSTRAP_ADMIN_ROLE=DEV \
+npm run prisma:bootstrap-admin
+```
+
+Primeira preparacao da API em um banco existente sem `_prisma_migrations`:
+
+```bash
+SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing
 npm run prisma:seed
 SAMA_BOOTSTRAP_ADMIN_USERNAME=admin \
 SAMA_BOOTSTRAP_ADMIN_PASSWORD='trocar_por_senha_forte' \

@@ -119,6 +119,8 @@ document_access_logs
 
 Status em 2026-05-12 17:27: os modelos Prisma `Document`, `DocumentRequirement`, `DocumentStatusHistory` e `PublicToken` estão em `portal-sama-api/prisma/schema.prisma`. `Document` cobre metadados, hash, status, departamento, origem, `storageKey` único e vínculo com cliente/usuário; a revisão de status grava `DocumentStatusHistory` e mantém `Document.metadata.review` por compatibilidade. O upload seguro registra `Document.metadata.scanner`, e o upload público por token usa `PublicToken.tokenHash`, expiração, revogação, escopo e rastreio de último uso. A migration formal inicial `20260512172700_init_current_schema` foi criada e validada com `prisma migrate deploy` em banco descartável; versionamento/acessos detalhados, backfills e baseline de bancos já sincronizados por `db push` ainda precisam de validação real.
 
+Status em 2026-05-22 16:38: para bancos existentes do EasyPanel que ja possuem tabelas legadas e ainda nao possuem `_prisma_migrations`, foi adicionada a migration vazia `20260501000000_baseline_existing_database`. Ela deve ser marcada como aplicada somente apos backup/snapshot usando `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing`; em seguida o script executa `prisma migrate deploy` para aplicar as migrations reais.
+
 ### Onboarding
 
 ```txt
