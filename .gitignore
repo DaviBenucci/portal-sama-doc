@@ -1,0 +1,22 @@
+# Local AI/test artifacts
+.ai-tests/
+.ai-runs/
+
+# Environment and secrets
+.env
+.env.*
+
+# Runtime/private artifacts
+logs/
+*.log
+data/
+secure/
+audits/
+node_modules/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

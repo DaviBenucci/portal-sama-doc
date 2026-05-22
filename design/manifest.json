@@ -1,0 +1,501 @@
+{
+  "name": "portal-sama-intro-assets",
+  "version": "1.0.1",
+  "status": "approved-direction-with-codex-handoff",
+  "generatedAt": "2026-05-21",
+  "baseResolution": {
+    "width": 1920,
+    "height": 1080,
+    "ratio": "16:9"
+  },
+  "logoCanvas": {
+    "width": 1024,
+    "height": 1024
+  },
+  "formatPolicy": {
+    "complexRaster": "webp/png",
+    "simpleStrokes": "svg",
+    "text": "HTML/CSS in runtime; embedded only in static fallbacks"
+  },
+  "palette": {
+    "navy_bg": "#020817",
+    "navy_mid": "#031B46",
+    "blue_deep": "#062E82",
+    "blue_electric": "#006CFF",
+    "blue_live": "#0078FF",
+    "cyan": "#00CFFF",
+    "cyan_light": "#52EDFF",
+    "cyan_white": "#9AFFFF",
+    "orange_dark": "#B84A00",
+    "orange_base": "#FF7800",
+    "orange_live": "#FF8A00",
+    "orange_light": "#FF9A00",
+    "gold": "#FFB000",
+    "gold_light": "#FFD45A",
+    "warm_glow": "#FFF0A5",
+    "white_text": "#F4F7FF",
+    "soft_gray": "#DDE6FF"
+  },
+  "sourceReferences": {
+    "loading": "Logo-Sama.png",
+    "welcome": "Boas-vindas.png",
+    "documentation": "documentacao_assets_visuais_intro_portal_sama.md"
+  },
+  "assets": {
+    "shared/background-deep-navy.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": false,
+      "purpose": "Fundo navy principal das duas cenas."
+    },
+    "shared/background-vignette.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Escurecimento de bordas para foco central."
+    },
+    "shared/center-blue-glow.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Glow radial azul atrás da logo."
+    },
+    "shared/particles-soft.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Partículas gerais discretas."
+    },
+    "shared/noise-overlay.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Textura sutil opcional."
+    },
+    "logo/logo-core.webp": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "required": true,
+      "purpose": "Logo Sama isolada, sem texto, sem fundo e sem halo separado."
+    },
+    "logo/logo-core@2x.webp": {
+      "size": [
+        2048,
+        2048
+      ],
+      "alpha": true,
+      "purpose": "Versão retina/source web."
+    },
+    "logo/logo-core.png": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Fonte transparente/fallback."
+    },
+    "logo/logo-shadow.webp": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Sombra/brilho inferior separado."
+    },
+    "logo/logo-halo-blue.webp": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Halo azul separado para pulso."
+    },
+    "logo/logo-glow-orange.webp": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Glow quente separado para lado laranja."
+    },
+    "logo/logo-glow-blue.webp": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Glow frio separado para lado azul/ciano."
+    },
+    "logo/logo-orbit-back.svg": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Orbital traseiro simples."
+    },
+    "logo/logo-orbit-front.svg": {
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha": true,
+      "purpose": "Orbital frontal simples."
+    },
+    "loading/light-streak.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Linha luminosa inferior da cena loading."
+    },
+    "loading/static-loading.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": false,
+      "purpose": "Fallback estático com texto CARREGANDO."
+    },
+    "welcome/orange-wave-left.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Ondas laranja do lado esquerdo/inferior."
+    },
+    "welcome/blue-wave-right.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Ondas azuis do lado direito/inferior."
+    },
+    "welcome/orange-particles.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Partículas quentes laterais."
+    },
+    "welcome/blue-particles.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": true,
+      "purpose": "Partículas frias laterais."
+    },
+    "welcome/static-welcome.webp": {
+      "size": [
+        1920,
+        1080
+      ],
+      "alpha": false,
+      "purpose": "Fallback estático com texto Seja bem-vindo ao Portal Sama."
+    }
+  },
+  "scenes": {
+    "loading": [
+      {
+        "path": "shared/background-deep-navy.webp",
+        "zIndex": 1,
+        "fit": "cover",
+        "opacity": 1,
+        "blendMode": "normal",
+        "required": true,
+        "animationGroup": "background"
+      },
+      {
+        "path": "shared/background-vignette.webp",
+        "zIndex": 2,
+        "fit": "cover",
+        "opacity": 1,
+        "blendMode": "normal",
+        "required": false,
+        "animationGroup": "background"
+      },
+      {
+        "path": "shared/center-blue-glow.webp",
+        "zIndex": 3,
+        "fit": "cover",
+        "opacity": 0.75,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "ambientPulse"
+      },
+      {
+        "path": "shared/particles-soft.webp",
+        "zIndex": 4,
+        "fit": "cover",
+        "opacity": 0.7,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "particlesDrift"
+      },
+      {
+        "path": "logo/logo-halo-blue.webp",
+        "zIndex": 5,
+        "fit": "contain",
+        "opacity": 0.8,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-shadow.webp",
+        "zIndex": 6,
+        "fit": "contain",
+        "opacity": 0.75,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoFloat"
+      },
+      {
+        "path": "logo/logo-orbit-back.svg",
+        "zIndex": 7,
+        "fit": "contain",
+        "opacity": 0.55,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "orbitSlow"
+      },
+      {
+        "path": "logo/logo-glow-orange.webp",
+        "zIndex": 8,
+        "fit": "contain",
+        "opacity": 0.58,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-glow-blue.webp",
+        "zIndex": 9,
+        "fit": "contain",
+        "opacity": 0.55,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-core.webp",
+        "zIndex": 10,
+        "fit": "contain",
+        "opacity": 1,
+        "blendMode": "normal",
+        "required": true,
+        "animationGroup": "logoFloat"
+      },
+      {
+        "path": "logo/logo-orbit-front.svg",
+        "zIndex": 11,
+        "fit": "contain",
+        "opacity": 0.7,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "orbitReverse"
+      },
+      {
+        "path": "loading/light-streak.webp",
+        "zIndex": 12,
+        "fit": "cover",
+        "opacity": 0.85,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "loadingStreak"
+      },
+      {
+        "type": "html-text",
+        "zIndex": 13,
+        "content": "CARREGANDO",
+        "required": true,
+        "animationGroup": "loadingText"
+      }
+    ],
+    "welcome": [
+      {
+        "path": "shared/background-deep-navy.webp",
+        "zIndex": 1,
+        "fit": "cover",
+        "opacity": 1,
+        "blendMode": "normal",
+        "required": true,
+        "animationGroup": "background"
+      },
+      {
+        "path": "shared/background-vignette.webp",
+        "zIndex": 2,
+        "fit": "cover",
+        "opacity": 0.82,
+        "blendMode": "normal",
+        "required": false,
+        "animationGroup": "background"
+      },
+      {
+        "path": "shared/center-blue-glow.webp",
+        "zIndex": 3,
+        "fit": "cover",
+        "opacity": 0.8,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "ambientPulse"
+      },
+      {
+        "path": "welcome/orange-wave-left.webp",
+        "zIndex": 4,
+        "fit": "cover",
+        "opacity": 0.82,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "waveInLeft"
+      },
+      {
+        "path": "welcome/blue-wave-right.webp",
+        "zIndex": 5,
+        "fit": "cover",
+        "opacity": 0.82,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "waveInRight"
+      },
+      {
+        "path": "welcome/orange-particles.webp",
+        "zIndex": 6,
+        "fit": "cover",
+        "opacity": 0.7,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "particlesDrift"
+      },
+      {
+        "path": "welcome/blue-particles.webp",
+        "zIndex": 7,
+        "fit": "cover",
+        "opacity": 0.7,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "particlesDrift"
+      },
+      {
+        "path": "logo/logo-halo-blue.webp",
+        "zIndex": 8,
+        "fit": "contain",
+        "opacity": 0.78,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-shadow.webp",
+        "zIndex": 9,
+        "fit": "contain",
+        "opacity": 0.72,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoFloat"
+      },
+      {
+        "path": "logo/logo-orbit-back.svg",
+        "zIndex": 10,
+        "fit": "contain",
+        "opacity": 0.48,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "orbitSlow"
+      },
+      {
+        "path": "logo/logo-glow-orange.webp",
+        "zIndex": 11,
+        "fit": "contain",
+        "opacity": 0.55,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-glow-blue.webp",
+        "zIndex": 12,
+        "fit": "contain",
+        "opacity": 0.55,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "logoPulse"
+      },
+      {
+        "path": "logo/logo-core.webp",
+        "zIndex": 13,
+        "fit": "contain",
+        "opacity": 1,
+        "blendMode": "normal",
+        "required": true,
+        "animationGroup": "logoFloat"
+      },
+      {
+        "path": "logo/logo-orbit-front.svg",
+        "zIndex": 14,
+        "fit": "contain",
+        "opacity": 0.62,
+        "blendMode": "screen",
+        "required": false,
+        "animationGroup": "orbitReverse"
+      },
+      {
+        "type": "html-text",
+        "zIndex": 15,
+        "content": "Seja bem-vindo ao Portal Sama",
+        "required": true,
+        "animationGroup": "welcomeText"
+      }
+    ]
+  },
+  "alignment": {
+    "loadingLogoCenter": {
+      "x": "50%",
+      "y": "44%"
+    },
+    "welcomeLogoCenter": {
+      "x": "50%",
+      "y": "38%"
+    },
+    "logoLayerAnchor": "center center",
+    "fullscreenLayerAnchor": "center center"
+  },
+  "fallbacks": {
+    "loading": "loading/static-loading.webp",
+    "welcome": "welcome/static-welcome.webp"
+  },
+  "docs": {
+    "productionDocumentation": "docs/documentacao_assets_visuais_intro_portal_sama_atualizada.md",
+    "codexHandoff": "docs/codex-handoff.md",
+    "assetNotes": "asset-notes.md"
+  },
+  "implementationTarget": {
+    "publicBasePath": "/brand/sama/intro/assets/",
+    "componentSuggestion": "PortalSamaIntro",
+    "modes": [
+      "loading",
+      "welcome",
+      "auto",
+      "static"
+    ],
+    "fallbackStrategy": "Use static fallbacks on reduced motion, required asset failure, forced static mode, or weak device support."
+  }
+}

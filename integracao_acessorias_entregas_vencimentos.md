@@ -1,0 +1,1653 @@
+# Integração Acessórias — Entregas, Planilha Fiscal, Vencimentos e Notificações
+
+## 1. Visão geral
+
+Esta documentação descreve a funcionalidade futura de integração entre o **Portal Sama** e o módulo de **entregas/obrigações do Acessórias**, com foco inicial no **departamento Fiscal**.
+
+A funcionalidade tem como objetivo transformar o Portal Sama em uma camada operacional inteligente sobre as obrigações do Acessórias, permitindo:
+
+- gerar automaticamente a planilha padrão do departamento Fiscal por competência;
+- criar linhas por empresa e colunas por obrigação;
+- sincronizar automaticamente baixas realizadas no Acessórias;
+- atualizar a célula correta da planilha para o status visual **Acessórias**;
+- substituir gradualmente a página atual de vencimentos por uma **Central de Vencimentos** baseada nas entregas do Acessórias;
+- notificar colaboradores a partir de 7 dias antes do vencimento;
+- alertar gestores quando houver divergência entre o Portal Sama e o Acessórias;
+- manter funcionamento local mesmo se o Acessórias estiver indisponível;
+- aprender recorrências de obrigações para prever vencimentos futuros.
+
+Esta funcionalidade **não deve ser implementada agora**. Ela deve ser planejada como uma fase futura, para ser executada somente após a conclusão do grande plano principal de migração, refatoração, segurança e estruturação do Portal Sama.
+
+---
+
+## 2. Decisão de implementação
+
+### 2.1 Decisão principal
+
+A integração de entregas do Acessórias, geração automática da planilha Fiscal, Central de Vencimentos e notificações por vencimento será planejada como uma funcionalidade futura, a ser implementada somente após a conclusão do grande plano principal de migração e refatoração do Portal Sama.
+
+### 2.2 Status da funcionalidade
+
+```txt
+Status: Planejada para fase futura
+Prioridade: Alta após conclusão do plano principal
+Momento de implementação: Pós-migração base TypeScript/NestJS/React
+Departamento inicial: Fiscal
+```
+
+### 2.3 Motivo para não implementar agora
+
+Esta integração depende de bases estruturais que ainda precisam ser finalizadas no plano principal:
+
+- backend NestJS estruturado;
+- frontend React estruturado;
+- autenticação segura;
+- RBAC e permissões;
+- auditoria;
+- módulo de notificações;
+- módulo de planilhas departamentais;
+- módulo base de integrações;
+- Prisma/MySQL configurado;
+- testes mínimos funcionando;
+- configuração segura de variáveis de ambiente;
+- logs estruturados;
+- tratamento global de erros.
+
+Implementar esta integração antes dessas bases aumentaria o risco de:
+
+- exposição do token do Acessórias;
+- sincronização incorreta de obrigações;
+- atualização indevida de planilhas;
+- ausência de auditoria;
+- ausência de controle de permissões;
+- dificuldade de teste;
+- acoplamento com código legado;
+- retrabalho após a migração principal.
+
+---
+
+## 3. Posicionamento no roadmap
+
+Esta funcionalidade deve entrar como uma etapa posterior ao plano principal.
+
+Ordem recomendada:
+
+```txt
+1. Migração base para NestJS + TypeScript
+2. Migração base para React + TypeScript
+3. Autenticação segura
+4. RBAC/permissões
+5. Auditoria
+6. Banco MySQL + Prisma
+7. Estrutura de documentos/storage seguro
+8. Estrutura base de notificações
+9. Estrutura base de planilhas/departamentos
+10. Módulo base de integrações
+11. Integração Acessórias — Entregas e Vencimentos
+```
+
+### 3.1 Etapa futura sugerida no roadmap
+
+Adicionar ao `docs/ROADMAP_REFATORACAO.md` uma etapa futura:
+
+```md
+## Etapa 7 — Integrações operacionais e automações
+
+### Integração Acessórias — Entregas
+
+- Consultar entregas do Acessórias automaticamente.
+- Gerar planilha Fiscal por competência.
+- Criar colunas com base nas obrigações sincronizadas.
+- Atualizar status `Acessórias` quando houver baixa externa.
+- Refatorar página de vencimentos para Central de Vencimentos.
+- Notificar colaboradores em D-7, D-3, D-1, D0 e D+1.
+- Detectar recorrências de obrigações.
+- Criar vencimentos previstos quando o Acessórias estiver indisponível.
+- Registrar auditoria de sincronização e alterações.
+```
+
+---
+
+## 4. Dependências obrigatórias antes da implementação
+
+Antes de iniciar esta funcionalidade, deve-se validar se já existem:
+
+```txt
+AuthModule
+PermissionsModule / RBAC
+AuditModule
+NotificationsModule
+DepartmentSheetModule
+IntegrationsModule
+Configuração segura de .env
+Banco modelado com Prisma
+Frontend React base
+Layout administrativo
+Controle de perfis
+Logs estruturados
+Tratamento global de erros
+Testes mínimos de backend
+Testes mínimos de frontend
+```
+
+### 4.1 Regra para IA ou desenvolvedor
+
+A funcionalidade de **Integração Acessórias — Entregas e Vencimentos** não deve ser implementada antes da conclusão das etapas principais de migração e segurança.
+
+Antes de iniciar essa funcionalidade, validar se já existem:
+
+- backend NestJS estruturado;
+- frontend React estruturado;
+- autenticação segura;
+- RBAC;
+- auditoria;
+- módulo de notificações;
+- módulo de planilhas departamentais;
+- módulo base de integrações;
+- Prisma/MySQL configurado;
+- testes mínimos funcionando.
+
+Se qualquer uma dessas dependências não existir, a IA ou desenvolvedor deve registrar a funcionalidade como pendente e continuar o plano principal.
+
+---
+
+## 5. Escopo aprovado
+
+O escopo aprovado para esta fase futura é utilizar **somente o recurso de entregas do Acessórias**.
+
+Não faz parte deste primeiro escopo:
+
+- sincronizar cadastro completo de clientes;
+- alterar status de clientes no Acessórias;
+- alterar responsáveis por departamento no Acessórias;
+- sincronizar colaboradores internos com o Acessórias;
+- integrar com Domínio;
+- integrar com Active Directory;
+- alterar dados no Acessórias a partir do Portal Sama.
+
+Esses pontos podem permanecer documentados como possibilidades futuras, mas o MVP deve focar na integração de entregas.
+
+---
+
+## 6. Departamento inicial
+
+O primeiro departamento de validação será o **Fiscal**.
+
+Motivos:
+
+- possui obrigações recorrentes;
+- depende fortemente de prazos;
+- a baixa no Acessórias tem impacto direto na operação;
+- permite validar o modelo de planilha por competência;
+- permite validar alertas para colaboradores e gestores;
+- reduz retrabalho operacional;
+- serve como prova de conceito antes de expandir para outros departamentos.
+
+---
+
+## 7. Fonte principal de vencimentos
+
+A partir desta funcionalidade, para o departamento Fiscal:
+
+```txt
+Acessórias = fonte principal dos vencimentos oficiais das obrigações.
+Portal Sama = camada de operação, visualização, histórico, alerta, previsão e continuidade.
+```
+
+A página atual de vencimentos deve ser reaproveitada como **Central de Vencimentos**, e não simplesmente removida.
+
+---
+
+## 8. Conceito principal da solução
+
+O Acessórias possui entregas/obrigações com empresa, competência, vencimento e status. O Portal Sama deve consumir essas informações, salvar localmente e transformar esses dados em uma planilha operacional por departamento.
+
+A estrutura conceitual é:
+
+```txt
+Departamento + Competência
+        ↓
+Planilha padrão
+        ↓
+Linha = empresa
+Coluna = obrigação
+Célula = status da obrigação naquela competência
+```
+
+Exemplo:
+
+```txt
+Departamento: Fiscal
+Competência: 2026-04
+```
+
+Visual esperado:
+
+| Empresa | DAS | DCTFWeb | EFD Contribuições | EFD ICMS/IPI | Status geral |
+|---|---|---|---|---|---|
+| Empresa A | Pendente | Acessórias | OK | Pendente | Parcial |
+| Empresa B | Acessórias | Acessórias | Pendente | OK | Parcial |
+| Empresa C | Pendente | Pendente | Pendente | Pendente | Pendente |
+
+---
+
+## 9. Fluxo geral de funcionamento
+
+```txt
+Job automático agenda sincronização
+        ↓
+Backend NestJS consulta entregas no Acessórias
+        ↓
+Dados retornados são normalizados
+        ↓
+Portal Sama salva entregas localmente
+        ↓
+Portal Sama identifica competência, empresa e obrigação
+        ↓
+Portal Sama gera ou atualiza a planilha Fiscal
+        ↓
+Portal Sama cria ou atualiza células por empresa + obrigação + competência
+        ↓
+Se entrega estiver baixada no Acessórias, célula recebe status Acessórias
+        ↓
+Portal Sama agenda notificações de vencimento
+        ↓
+Portal Sama gera alertas de divergência quando necessário
+        ↓
+Auditoria registra todo o processo
+```
+
+---
+
+## 10. Sincronização automática
+
+### 10.1 Regra principal
+
+A sincronização com o Acessórias deve ocorrer automaticamente.
+
+Motivo:
+
+- colaboradores podem esquecer de sincronizar manualmente;
+- a finalidade da integração é reduzir dependência de ações manuais;
+- vencimentos e baixas precisam estar sempre atualizados;
+- gestores precisam ser alertados sem depender de clique manual.
+
+### 10.2 Frequência recomendada
+
+Para o MVP Fiscal:
+
+```txt
+Horário comercial:
+- sincronização incremental a cada 15 minutos
+
+Fora do horário comercial:
+- sincronização reduzida a cada 1 hora
+
+Madrugada:
+- sincronização completa diária
+```
+
+Exemplo:
+
+```txt
+08:00 às 18:30 → sincronizar a cada 15 minutos
+18:30 às 22:00 → sincronizar a cada 1 hora
+02:00 → sincronização completa
+```
+
+### 10.3 Sincronização manual
+
+Pode existir botão manual apenas para:
+
+- administrador;
+- gestor autorizado;
+- suporte técnico;
+- reprocessamento emergencial.
+
+Permissão sugerida:
+
+```txt
+integrations.acessorias.deliveries.sync_manual
+```
+
+O botão manual não deve ser parte do fluxo operacional comum.
+
+---
+
+## 11. Identificação da linha e da coluna
+
+### 11.1 Linha da planilha
+
+A linha representa a empresa/cliente.
+
+A identificação deve seguir esta ordem de prioridade:
+
+```txt
+1. ID externo do Acessórias vinculado ao cliente local
+2. CNPJ/CPF
+3. ID interno do cliente no Portal Sama
+4. Nome da empresa apenas como fallback
+```
+
+O ideal é manter uma tabela de mapeamento entre o cliente local e a empresa no Acessórias.
+
+### 11.2 Coluna da planilha
+
+A coluna representa a obrigação.
+
+A coluna não deve ser identificada apenas pelo texto visual. O sistema deve utilizar um identificador técnico.
+
+Exemplo:
+
+```txt
+Nome exibido: DCTFWeb
+Chave técnica: DCTFWEB
+Aliases: DCTF WEB, DCTF-Web, DCTFWeb Mensal, Declaração DCTFWeb
+```
+
+### 11.3 Célula exata
+
+A célula correta deve ser identificada por:
+
+```txt
+client_id + department_id + sheet_column_id + competence
+```
+
+Essa combinação deve ser única no banco.
+
+Regra de unicidade recomendada:
+
+```txt
+UNIQUE(client_id, department_id, sheet_column_id, competence)
+```
+
+---
+
+## 12. Mapeamento entre entregas do Acessórias e colunas
+
+### 12.1 Necessidade do mapeamento
+
+O sistema não deve tentar adivinhar a coluna de forma insegura.
+
+Deve existir uma camada de mapeamento entre:
+
+```txt
+Entrega do Acessórias
+        ↓
+Coluna técnica da planilha padrão
+```
+
+### 12.2 Tipos de mapeamento
+
+```txt
+MANUAL
+AUTO_CONFIRMED
+AUTO_SUGGESTED
+IGNORED
+```
+
+### 12.3 Regra de segurança
+
+Somente mapeamentos confirmados devem atualizar automaticamente a planilha.
+
+Se o sistema não conseguir identificar a coluna com segurança:
+
+```txt
+Não atualizar automaticamente.
+Criar divergência para revisão do gestor.
+```
+
+### 12.4 Fluxo de configuração das colunas
+
+Tela sugerida:
+
+```txt
+Configurações → Integrações → Acessórias → Mapeamento de Entregas
+```
+
+Exemplo:
+
+| Entrega Acessórias | Departamento Acessórias | Coluna Portal Sama | Status |
+|---|---|---|---|
+| DCTF WEB | Fiscal | DCTFWeb | Confirmado |
+| DAS | Fiscal | DAS | Confirmado |
+| EFD CONTRIBUIÇÕES | Fiscal | EFD Contribuições | Confirmado |
+| GIA | Fiscal | Não mapeado | Revisar |
+
+---
+
+## 13. Geração automática da planilha Fiscal por competência
+
+### 13.1 Objetivo
+
+Gerar a planilha padrão do departamento Fiscal com base nas entregas retornadas pelo Acessórias.
+
+### 13.2 Entrada do processo
+
+```txt
+Departamento: Fiscal
+Competência: 2026-04
+Fonte: Acessórias
+```
+
+### 13.3 Processo
+
+```txt
+1. Buscar entregas do Acessórias para o departamento Fiscal.
+2. Filtrar ou identificar a competência.
+3. Identificar empresas.
+4. Identificar obrigações.
+5. Criar planilha Fiscal da competência, se não existir.
+6. Criar colunas com base nas obrigações encontradas.
+7. Criar linhas/células por empresa + obrigação.
+8. Definir status inicial.
+9. Salvar vencimentos oficiais.
+10. Agendar notificações.
+11. Registrar auditoria.
+```
+
+### 13.4 Criação de colunas
+
+As colunas podem ser criadas com base nas obrigações encontradas no Acessórias.
+
+No piloto, recomenda-se que novas colunas nasçam como:
+
+```txt
+PENDING_APPROVAL
+```
+
+Depois de confirmadas pelo gestor Fiscal, passam para:
+
+```txt
+ACTIVE
+```
+
+### 13.5 Obrigações não aplicáveis
+
+Se uma obrigação existe para algumas empresas e não para outras, existem duas opções:
+
+#### Opção A — Coluna global
+
+A coluna aparece para todas as empresas, mas algumas células ficam:
+
+```txt
+Não se aplica
+```
+
+#### Opção B — Coluna apenas se existir na competência
+
+A planilha cria apenas colunas encontradas na competência.
+
+Para o MVP, recomenda-se a **Opção B**, por ser mais simples. Para maturidade operacional, a **Opção A** pode ser adotada futuramente.
+
+---
+
+## 14. Status da planilha
+
+### 14.1 Status internos sugeridos
+
+```txt
+PENDING
+IN_PROGRESS
+OK
+ACESSORIAS_BAIXADO
+LATE
+BLOCKED
+CANCELED
+NOT_APPLICABLE
+```
+
+### 14.2 Exibição visual
+
+| Status técnico | Nome exibido | Cor sugerida | Significado |
+|---|---|---|---|
+| PENDING | Pendente | Amarelo | Ainda não tratado |
+| IN_PROGRESS | Em andamento | Azul | Em execução |
+| OK | OK | Verde | Concluído internamente |
+| ACESSORIAS_BAIXADO | Acessórias | Roxo | Baixado no Acessórias |
+| LATE | Atrasado | Vermelho | Vencido |
+| BLOCKED | Bloqueado | Cinza/Preto | Impedido |
+| CANCELED | Cancelado | Cinza | Cancelado |
+| NOT_APPLICABLE | Não se aplica | Cinza claro | Não aplicável |
+
+### 14.3 Diferença entre OK e Acessórias
+
+**OK** significa que a obrigação foi concluída internamente no Portal Sama.
+
+**Acessórias** significa que a obrigação foi baixada no sistema Acessórias e sincronizada para o Portal Sama.
+
+A diferença deve ser preservada para permitir alertas de divergência.
+
+---
+
+## 15. Regras de atualização automática
+
+### 15.1 Baixado no Acessórias e pendente no Portal Sama
+
+```txt
+Portal Sama: PENDING
+Acessórias: DELIVERED
+```
+
+Ação:
+
+```txt
+Atualizar display_status para ACESSORIAS_BAIXADO.
+Registrar histórico.
+Registrar auditoria.
+Cancelar notificações futuras.
+```
+
+### 15.2 OK no Portal Sama e pendente no Acessórias
+
+```txt
+Portal Sama: OK
+Acessórias: PENDING
+```
+
+Ação:
+
+```txt
+Manter OK.
+Gerar alerta para gestor.
+Exibir badge: Baixa Acessórias pendente.
+```
+
+### 15.3 OK no Portal Sama e baixado no Acessórias
+
+```txt
+Portal Sama: OK
+Acessórias: DELIVERED
+```
+
+Ação:
+
+```txt
+Atualizar display_status para ACESSORIAS_BAIXADO.
+Registrar histórico.
+Resolver alertas pendentes.
+```
+
+### 15.4 Pendente no Portal Sama e pendente no Acessórias
+
+```txt
+Portal Sama: PENDING
+Acessórias: PENDING
+```
+
+Ação:
+
+```txt
+Não alterar status.
+Atualizar última sincronização.
+Manter notificações conforme vencimento.
+```
+
+### 15.5 Entrega não mapeada
+
+Se a entrega existe no Acessórias, mas não há coluna/célula correspondente:
+
+```txt
+Não atualizar automaticamente.
+Criar divergência UNMATCHED_ACESSORIAS_DELIVERY.
+Enviar para revisão do gestor.
+```
+
+---
+
+## 16. Central de Vencimentos
+
+### 16.1 Substituição da página atual de vencimentos
+
+A página atual de vencimentos não deve ser simplesmente removida. Ela deve ser refatorada para se tornar a:
+
+```txt
+Central de Vencimentos
+```
+
+A nova Central deve exibir:
+
+- vencimentos oficiais vindos do Acessórias;
+- vencimentos previstos pelo Portal Sama;
+- vencimentos manuais excepcionais;
+- status de baixa no Acessórias;
+- status interno da planilha;
+- obrigações pendentes;
+- obrigações atrasadas;
+- notificações enviadas;
+- divergências.
+
+### 16.2 Fonte dos vencimentos
+
+Para o departamento Fiscal:
+
+```txt
+Acessórias = fonte principal dos vencimentos oficiais.
+Portal Sama = camada local de operação, alerta, histórico e previsão.
+```
+
+### 16.3 Tipos de origem
+
+```txt
+ACESSORIAS
+PORTAL_SAMA_PREDICTED
+MANUAL
+```
+
+### 16.4 Prioridade das fontes
+
+Quando houver conflito:
+
+```txt
+1. Acessórias oficial
+2. Ajuste manual aprovado por gestor
+3. Previsão inteligente do Portal Sama
+```
+
+Se o Acessórias trouxer data diferente da previsão local, a data oficial substitui a previsão.
+
+---
+
+## 17. Notificações de vencimento
+
+### 17.1 Objetivo
+
+Notificar colaboradores e gestores com base nos vencimentos das obrigações do Acessórias.
+
+### 17.2 Regra de notificação
+
+Regras sugeridas:
+
+```txt
+D-7: avisar colaborador responsável
+D-3: reforço para colaborador
+D-1: alerta forte para colaborador e gestor
+D0: alerta no dia do vencimento
+D+1: alerta de atraso para gestor, se ainda pendente
+```
+
+### 17.3 Exemplo
+
+```txt
+Obrigação: DCTFWeb
+Cliente: Empresa ABC
+Competência: 2026-04
+Vencimento: 15/05/2026
+Responsável: João
+```
+
+Notificações:
+
+```txt
+08/05/2026 → colaborador
+12/05/2026 → colaborador
+14/05/2026 → colaborador + gestor
+15/05/2026 → colaborador + gestor
+16/05/2026 → gestor, se não baixada
+```
+
+### 17.4 Canais de notificação
+
+MVP:
+
+```txt
+Notificação interna no Portal Sama
+E-mail
+```
+
+Futuro:
+
+```txt
+WhatsApp
+Microsoft Teams
+Slack
+```
+
+### 17.5 Cancelamento automático de notificações
+
+Quando a obrigação for baixada no Acessórias:
+
+```txt
+status = ACESSORIAS_BAIXADO
+```
+
+O sistema deve:
+
+- cancelar notificações futuras;
+- resolver alertas pendentes;
+- registrar histórico;
+- registrar auditoria.
+
+---
+
+## 18. Motor de recorrência inteligente
+
+### 18.1 Objetivo
+
+Reduzir dependência total do Acessórias por meio de previsões locais baseadas no histórico.
+
+Se o Portal Sama identificar que a mesma obrigação ocorre no mesmo dia em diferentes meses, ele pode sugerir ou criar vencimentos previstos.
+
+### 18.2 Exemplo
+
+Histórico sincronizado:
+
+```txt
+DAS — 20/03/2026
+DAS — 20/04/2026
+DAS — 20/05/2026
+```
+
+Previsão:
+
+```txt
+DAS — 20/06/2026
+DAS — 20/07/2026
+```
+
+### 18.3 Regras de recorrência
+
+```txt
+2 ocorrências consecutivas → sugerir recorrência.
+3 ocorrências consecutivas → ativar previsão com confiança média.
+6 ocorrências consecutivas → confiança alta.
+```
+
+### 18.4 Previsão não é vencimento oficial
+
+Vencimento previsto deve ser identificado na interface como:
+
+```txt
+Previsto pelo Portal Sama
+```
+
+Vencimento oficial deve ser identificado como:
+
+```txt
+Oficial Acessórias
+```
+
+### 18.5 Confirmação pelo Acessórias
+
+Quando o Acessórias sincronizar o vencimento oficial, a previsão deve ser substituída.
+
+Exemplo:
+
+```txt
+Previsto pelo Portal Sama: 20/06/2026
+Oficial Acessórias: 21/06/2026
+Resultado: 21/06/2026
+```
+
+Registrar histórico:
+
+```txt
+Previsão ajustada por dado oficial do Acessórias.
+```
+
+---
+
+## 19. Funcionamento quando o Acessórias estiver indisponível
+
+Se o Acessórias estiver fora do ar, o Portal Sama deve continuar funcionando com:
+
+- últimos vencimentos oficiais sincronizados;
+- planilhas já geradas;
+- status locais;
+- previsões inteligentes;
+- notificações locais;
+- histórico local.
+
+A interface deve exibir aviso:
+
+```txt
+Última sincronização Acessórias: 12/05/2026 08:15
+Status: falha há 2 horas
+Dados exibidos com base na última sincronização local.
+```
+
+Quando o Acessórias voltar:
+
+```txt
+Portal Sama reprocessa sincronizações.
+Compara previsões com dados oficiais.
+Atualiza vencimentos.
+Atualiza status Acessórias.
+Resolve divergências.
+```
+
+---
+
+## 20. Arquitetura técnica sugerida
+
+### 20.1 Módulos NestJS
+
+```txt
+src/modules/integrations/
+  integrations.module.ts
+
+src/modules/integrations/acessorias-deliveries/
+  acessorias-deliveries.module.ts
+  acessorias-deliveries.controller.ts
+  acessorias-deliveries.service.ts
+  acessorias-deliveries.client.ts
+  acessorias-deliveries.mapper.ts
+  acessorias-deliveries-sync.service.ts
+  acessorias-deliveries-scheduler.ts
+  dto/
+  types/
+
+src/modules/department-sheet/
+  department-sheet.module.ts
+  department-sheet.controller.ts
+  department-sheet.service.ts
+  department-sheet-generator.service.ts
+  department-sheet-status.service.ts
+  department-sheet-mapping.service.ts
+
+src/modules/due-dates/
+  due-dates.module.ts
+  due-dates.service.ts
+  due-date-recurrence.service.ts
+  due-date-notification.service.ts
+
+src/modules/notifications/
+  notifications.module.ts
+  notifications.service.ts
+
+src/modules/audit/
+  audit.module.ts
+  audit.service.ts
+```
+
+### 20.2 Serviços principais
+
+```txt
+AcessoriasDeliveriesClient
+- chama a API do Acessórias
+
+AcessoriasDeliveriesMapper
+- normaliza retorno externo
+
+AcessoriasDeliveriesSyncService
+- coordena sincronização
+
+DepartmentSheetGeneratorService
+- gera planilha por competência
+
+DepartmentSheetMappingService
+- resolve coluna correta
+
+DepartmentSheetStatusService
+- atualiza status e histórico
+
+DueDateRecurrenceService
+- detecta recorrência e cria previsões
+
+DueDateNotificationService
+- agenda e envia notificações
+
+AuditService
+- registra eventos críticos
+```
+
+---
+
+## 21. Endpoints internos sugeridos
+
+### 21.1 Sincronização
+
+```txt
+POST /api-v2/integrations/acessorias/deliveries/sync
+```
+
+Uso:
+
+- manual emergencial;
+- restrito a gestor/admin.
+
+### 21.2 Listar entregas sincronizadas
+
+```txt
+GET /api-v2/integrations/acessorias/deliveries
+```
+
+Filtros:
+
+```txt
+clientId
+departmentId
+status
+competence
+dueDateStart
+dueDateEnd
+responsibleId
+```
+
+### 21.3 Divergências
+
+```txt
+GET /api-v2/integrations/acessorias/deliveries/divergences
+```
+
+### 21.4 Resolver alerta
+
+```txt
+POST /api-v2/integrations/acessorias/delivery-alerts/:id/resolve
+```
+
+### 21.5 Vincular entrega à célula da planilha
+
+```txt
+POST /api-v2/integrations/acessorias/deliveries/:deliveryId/link-sheet-item
+```
+
+### 21.6 Gerar planilha por competência
+
+```txt
+POST /api-v2/department-sheets/fiscal/generate
+```
+
+Payload sugerido:
+
+```json
+{
+  "competence": "2026-04",
+  "source": "ACESSORIAS"
+}
+```
+
+### 21.7 Listar planilha por competência
+
+```txt
+GET /api-v2/department-sheets/fiscal?competence=2026-04
+```
+
+### 21.8 Central de vencimentos
+
+```txt
+GET /api-v2/due-dates
+```
+
+Filtros:
+
+```txt
+competence
+departmentId
+responsibleId
+clientId
+source
+status
+dueDateStart
+dueDateEnd
+```
+
+---
+
+## 22. Banco de dados proposto
+
+### 22.1 `acessorias_deliveries`
+
+Armazena cópia local das entregas consultadas.
+
+```txt
+id
+external_id
+client_id
+client_identifier
+department_id
+department_name
+obligation_name
+normalized_obligation_name
+competence
+due_date
+delivery_status
+delivered_at
+responsible_name
+responsible_email
+raw_payload
+last_synced_at
+created_at
+updated_at
+```
+
+### 22.2 `department_sheets`
+
+Representa a planilha de um departamento em uma competência.
+
+```txt
+id
+department_id
+competence
+status
+generated_from
+generated_at
+created_by
+created_at
+updated_at
+```
+
+### 22.3 `department_sheet_columns`
+
+Representa as colunas oficiais da planilha.
+
+```txt
+id
+department_sheet_id
+department_id
+obligation_key
+display_name
+source
+order_index
+status
+created_at
+updated_at
+```
+
+### 22.4 `department_sheet_column_aliases`
+
+Armazena variações de nomes de obrigação.
+
+```txt
+id
+column_id
+alias
+normalized_alias
+created_at
+updated_at
+```
+
+### 22.5 `acessorias_delivery_column_mappings`
+
+Mapeia entregas do Acessórias para colunas do Portal Sama.
+
+```txt
+id
+acessorias_delivery_name
+normalized_delivery_name
+acessorias_department_id
+acessorias_department_name
+portal_department_id
+sheet_column_id
+confidence
+mapping_type
+status
+created_at
+updated_at
+```
+
+### 22.6 `department_sheet_items`
+
+Representa cada célula da planilha.
+
+```txt
+id
+department_sheet_id
+client_id
+department_id
+sheet_column_id
+competence
+due_date
+internal_status
+acessorias_status
+display_status
+external_delivery_id
+last_acessorias_sync_at
+created_at
+updated_at
+```
+
+Restrição recomendada:
+
+```txt
+UNIQUE(client_id, department_id, sheet_column_id, competence)
+```
+
+### 22.7 `department_sheet_status_history`
+
+Histórico de alteração de status.
+
+```txt
+id
+sheet_item_id
+previous_internal_status
+new_internal_status
+previous_acessorias_status
+new_acessorias_status
+previous_display_status
+new_display_status
+source
+changed_by
+changed_at
+metadata
+```
+
+### 22.8 `obligation_due_dates`
+
+Tabela central de vencimentos.
+
+```txt
+id
+client_id
+department_id
+sheet_column_id
+obligation_name
+competence
+due_date
+source
+confidence
+external_delivery_id
+status
+created_at
+updated_at
+```
+
+Valores de `source`:
+
+```txt
+ACESSORIAS
+PORTAL_SAMA_PREDICTED
+MANUAL
+```
+
+### 22.9 `obligation_recurrence_rules`
+
+Regras aprendidas de recorrência.
+
+```txt
+id
+department_id
+sheet_column_id
+client_id nullable
+frequency
+day_of_month
+weekday_rule
+confidence
+source
+status
+last_detected_at
+created_at
+updated_at
+```
+
+### 22.10 `obligation_due_date_history`
+
+Histórico de alterações de vencimento.
+
+```txt
+id
+obligation_due_date_id
+previous_due_date
+new_due_date
+previous_source
+new_source
+reason
+changed_at
+metadata
+```
+
+### 22.11 `obligation_notifications`
+
+Notificações programadas e enviadas.
+
+```txt
+id
+obligation_due_date_id
+recipient_user_id
+notification_type
+scheduled_for
+sent_at
+status
+channel
+created_at
+updated_at
+```
+
+### 22.12 `acessorias_delivery_sync_runs`
+
+Registro de cada sincronização.
+
+```txt
+id
+started_at
+finished_at
+status
+total_read
+total_matched
+total_updated
+total_unmatched
+total_errors
+error_summary
+created_at
+```
+
+### 22.13 `acessorias_delivery_alerts`
+
+Alertas operacionais.
+
+```txt
+id
+sheet_item_id
+client_id
+department_id
+responsible_user_id
+alert_type
+message
+status
+created_at
+resolved_at
+```
+
+Tipos de alerta:
+
+```txt
+INTERNAL_OK_EXTERNAL_PENDING
+EXTERNAL_DELIVERED_INTERNAL_PENDING
+DELIVERY_OVERDUE
+UNMATCHED_ACESSORIAS_DELIVERY
+SYNC_FAILED
+```
+
+---
+
+## 23. Segurança
+
+### 23.1 Token do Acessórias
+
+O token da API do Acessórias deve ficar apenas no backend.
+
+Regras:
+
+- nunca expor token no React;
+- nunca salvar token em localStorage;
+- armazenar token em `.env` ou vault;
+- não registrar token em logs;
+- proteger endpoints de sincronização com RBAC.
+
+### 23.2 Permissões sugeridas
+
+```txt
+integrations.acessorias.deliveries.read
+integrations.acessorias.deliveries.sync
+integrations.acessorias.deliveries.sync_manual
+integrations.acessorias.deliveries.manage
+integrations.acessorias.deliveries.resolve_alert
+
+department_sheet.read
+department_sheet.update_status
+department_sheet.view_acessorias_status
+department_sheet.manage_mapping
+
+due_dates.read
+due_dates.manage_manual
+due_dates.view_predictions
+notifications.read
+notifications.manage
+```
+
+### 23.3 Perfis sugeridos
+
+```txt
+ADMIN: acesso total
+MANAGER: leitura, alertas, divergências e reprocessamento controlado
+DEPARTMENT_MANAGER: leitura e gestão do próprio departamento
+COLLABORATOR: leitura dos próprios itens e alertas
+AUDITOR: leitura de histórico e auditoria
+```
+
+### 23.4 Auditoria obrigatória
+
+Registrar:
+
+```txt
+Sincronização iniciada
+Sincronização concluída
+Sincronização falhou
+Planilha gerada
+Coluna criada
+Coluna aprovada
+Status alterado por sincronização
+Vencimento criado pelo Acessórias
+Vencimento previsto pelo Portal Sama
+Previsão substituída por vencimento oficial
+Notificação enviada
+Alerta gerado
+Alerta resolvido
+Vínculo manual criado entre entrega e item da planilha
+Erro de autenticação com Acessórias
+Erro de rate limit
+```
+
+---
+
+## 24. Frontend necessário
+
+### 24.1 Planilha Fiscal por competência
+
+Funcionalidades:
+
+- seletor de competência;
+- linhas por empresa;
+- colunas por obrigação;
+- status visual por célula;
+- badge **Acessórias** com cor roxa;
+- indicação de última sincronização;
+- tooltip com origem do status;
+- filtros por status, empresa, responsável e obrigação.
+
+### 24.2 Central de Vencimentos
+
+Funcionalidades:
+
+- listar vencimentos oficiais;
+- listar vencimentos previstos;
+- listar vencimentos manuais;
+- filtrar por origem;
+- filtrar por colaborador;
+- filtrar por competência;
+- cards de vencimentos próximos;
+- cards de atrasados;
+- status de baixa no Acessórias;
+- histórico de notificações.
+
+### 24.3 Tela de divergências
+
+Funcionalidades:
+
+- entregas sem mapeamento;
+- OK interno sem baixa no Acessórias;
+- baixado no Acessórias mas pendente no Portal Sama;
+- falhas de sincronização;
+- conflitos de vencimento;
+- botão de resolver divergência;
+- botão de criar mapeamento.
+
+### 24.4 Tela de mapeamento de obrigações
+
+Funcionalidades:
+
+- listar obrigações vindas do Acessórias;
+- mapear para coluna do Portal Sama;
+- cadastrar aliases;
+- aprovar colunas sugeridas;
+- ignorar obrigação;
+- visualizar confiança do matching.
+
+---
+
+## 25. Testes recomendados
+
+### 25.1 Testes unitários
+
+- normalização de nomes de obrigação;
+- mapper Acessórias → Portal Sama;
+- resolução de coluna por mapeamento;
+- cálculo de status visual;
+- geração de notificações D-7, D-3, D-1, D0 e D+1;
+- detecção de recorrência;
+- substituição de previsão por vencimento oficial.
+
+### 25.2 Testes de integração
+
+- sincronização de entregas com dados simulados;
+- geração de planilha Fiscal por competência;
+- criação de colunas por obrigação;
+- criação de células por empresa + obrigação;
+- atualização para status Acessórias;
+- criação de vencimentos oficiais;
+- criação de alertas de divergência;
+- cancelamento de notificações após baixa.
+
+### 25.3 Testes E2E
+
+- gestor visualiza planilha Fiscal;
+- colaborador visualiza status Acessórias;
+- gestor visualiza Central de Vencimentos;
+- colaborador recebe alerta D-7;
+- gestor visualiza divergência OK interno sem baixa no Acessórias;
+- admin cria mapeamento de coluna.
+
+### 25.4 Testes de segurança
+
+- token do Acessórias não aparece no frontend;
+- token do Acessórias não aparece em logs;
+- usuário sem permissão não sincroniza manualmente;
+- colaborador não acessa dados de outro departamento sem permissão;
+- endpoint de divergência exige autenticação;
+- endpoint de mapeamento exige permissão administrativa;
+- falha externa não expõe stack trace.
+
+---
+
+## 26. Fases de implementação futura
+
+### Fase 1 — Validação das dependências
+
+Antes de iniciar a integração, verificar se já existem:
+
+- AuthModule;
+- RBAC/PermissionsModule;
+- AuditModule;
+- NotificationsModule;
+- DepartmentSheetModule;
+- IntegrationsModule;
+- Prisma/MySQL;
+- testes mínimos;
+- frontend React base.
+
+Se qualquer item estiver ausente, a integração deve permanecer pendente.
+
+### Fase 2 — Base da integração
+
+- criar `IntegrationsModule` se ainda não existir;
+- criar `AcessoriasDeliveriesModule`;
+- configurar token via `.env`;
+- criar client HTTP para Acessórias;
+- criar mapper de entregas;
+- salvar entregas localmente;
+- registrar sync runs.
+
+### Fase 3 — Planilha Fiscal por competência
+
+- criar ou reaproveitar `DepartmentSheetModule`;
+- criar tabela `department_sheets`;
+- criar tabela `department_sheet_columns`;
+- criar tabela `department_sheet_items`;
+- gerar planilha Fiscal por competência;
+- criar colunas com base nas obrigações;
+- criar células por empresa + obrigação.
+
+### Fase 4 — Status Acessórias
+
+- mapear entregas para colunas;
+- atualizar células para `ACESSORIAS_BAIXADO`;
+- aplicar cor roxa no frontend;
+- registrar histórico de status;
+- gerar divergências quando não houver mapeamento seguro.
+
+### Fase 5 — Central de Vencimentos
+
+- criar ou reaproveitar `DueDatesModule`;
+- salvar vencimentos oficiais;
+- reaproveitar/refatorar página de vencimentos;
+- exibir origem do vencimento;
+- exibir filtros por competência, departamento, responsável e cliente.
+
+### Fase 6 — Notificações
+
+- criar notificações D-7, D-3, D-1, D0 e D+1;
+- enviar notificação interna;
+- enviar e-mail;
+- cancelar notificações futuras quando houver baixa no Acessórias;
+- escalar atrasos para gestor.
+
+### Fase 7 — Recorrência inteligente
+
+- detectar padrões mensais;
+- criar sugestões de recorrência;
+- gerar vencimentos previstos;
+- substituir previsão por vencimento oficial;
+- exibir confiabilidade da previsão.
+
+### Fase 8 — Expansão futura
+
+- validar comportamento no Fiscal;
+- ajustar mapeamentos;
+- expandir para outros departamentos;
+- avaliar novas integrações.
+
+---
+
+## 27. Critérios de aceite do MVP Fiscal
+
+A funcionalidade só deve ser considerada concluída no MVP se:
+
+- a implementação ocorrer depois da conclusão das dependências principais;
+- sincronização automática estiver ativa;
+- entregas do Fiscal forem salvas localmente;
+- planilha Fiscal for gerada por competência;
+- linhas forem criadas por empresa;
+- colunas forem criadas por obrigação;
+- células forem identificadas por empresa + departamento + obrigação + competência;
+- baixas do Acessórias atualizarem status para **Acessórias**;
+- status **Acessórias** tiver cor diferenciada;
+- vencimentos oficiais forem criados a partir do Acessórias;
+- notificações D-7 forem geradas;
+- gestores forem alertados em caso de divergência;
+- falhas da API externa não quebrarem a operação local;
+- token do Acessórias não for exposto;
+- auditoria registrar sincronizações e alterações de status;
+- testes principais estiverem implementados e executados;
+- documentação do status da implementação estiver atualizada.
+
+---
+
+## 28. Pontos a validar na API do Acessórias
+
+Antes da implementação completa, validar:
+
+```txt
+1. Qual campo indica que a entrega recebeu baixa.
+2. Qual campo traz data/hora da baixa.
+3. Se existe ID único estável da entrega.
+4. Se existe ID ou código estável do tipo de obrigação.
+5. Se a entrega retorna competência.
+6. Se a entrega retorna vencimento.
+7. Se a entrega retorna CNPJ/CPF da empresa.
+8. Se a entrega retorna departamento.
+9. Se a entrega retorna responsável.
+10. Se existe filtro por departamento.
+11. Se existe filtro por empresa/CNPJ.
+12. Se existe filtro por status.
+13. Se existe filtro por última alteração.
+14. Qual o limite de paginação.
+15. Qual o limite de requisições.
+16. Se entregas canceladas/dispensadas aparecem no retorno.
+17. Se existe diferença entre entregue, baixado, protocolado e concluído.
+```
+
+---
+
+## 29. Backlog consolidado
+
+### 29.1 Integração de Entregas Acessórias
+
+- **Nome:** Integração Acessórias — Entregas e baixa automática na planilha padrão
+- **Prioridade:** Alta após conclusão do plano principal
+- **Departamento inicial:** Fiscal
+- **Status:** Planejada para fase futura
+- **Motivo para não implementar agora:** depende da conclusão da base NestJS/React, autenticação, RBAC, auditoria, notificações e planilhas departamentais.
+
+### 29.2 Planilha Fiscal automática por competência
+
+- **Nome:** Planilha Fiscal automática por competência via entregas Acessórias
+- **Prioridade:** Alta após conclusão do plano principal
+- **Departamento inicial:** Fiscal
+- **Status:** Planejada para fase futura
+
+### 29.3 Central de Vencimentos Acessórias
+
+- **Nome:** Central de Vencimentos baseada nas entregas do Acessórias
+- **Prioridade:** Alta após conclusão do plano principal
+- **Departamento inicial:** Fiscal
+- **Status:** Planejada para fase futura
+
+### 29.4 Motor de recorrência inteligente
+
+- **Nome:** Previsão inteligente de vencimentos recorrentes
+- **Prioridade:** Média/Alta
+- **Status:** Planejar após sincronização e vencimentos oficiais
+
+---
+
+## 30. Registro sugerido no `docs/BACKLOG_FUNCIONALIDADES.md`
+
+```md
+## Integração Acessórias — Entregas, Planilha Fiscal e Central de Vencimentos
+
+- **Status:** Planejada para fase futura
+- **Prioridade:** Alta após conclusão do plano principal
+- **Momento de implementação:** Após estabilização da nova arquitetura TypeScript/NestJS/React
+- **Departamento inicial:** Fiscal
+- **Motivo para não implementar agora:** depende de autenticação, RBAC, auditoria, notificações, planilhas departamentais, estrutura de integração e banco Prisma já consolidados.
+- **Descrição:** Integrar entregas do Acessórias ao Portal Sama para gerar planilhas fiscais por competência, atualizar status `Acessórias`, substituir a página de vencimentos por uma Central de Vencimentos e notificar colaboradores automaticamente antes dos vencimentos.
+- **Dependências:** AuthModule, PermissionsModule, AuditModule, NotificationsModule, DepartmentSheetModule, IntegrationsModule, Prisma/MySQL, frontend React base, testes mínimos.
+- **Critério de início:** somente iniciar após conclusão validada das dependências principais.
+```
+
+---
+
+## 31. Registro sugerido no prompt mestre do projeto
+
+Adicionar a seguinte regra ao prompt mestre usado pela IA:
+
+```md
+A funcionalidade de Integração Acessórias — Entregas e Vencimentos não deve ser implementada antes da conclusão das etapas principais de migração e segurança.
+
+Antes de iniciar essa funcionalidade, validar se já existem:
+
+- backend NestJS estruturado;
+- frontend React estruturado;
+- autenticação segura;
+- RBAC;
+- auditoria;
+- módulo de notificações;
+- módulo de planilhas departamentais;
+- módulo base de integrações;
+- Prisma/MySQL configurado;
+- testes mínimos funcionando.
+
+Se qualquer uma dessas dependências não existir, a IA deve registrar a funcionalidade como pendente e continuar o plano principal.
+```
+
+---
+
+## 32. Conclusão
+
+A integração de entregas do Acessórias deve ser tratada como uma funcionalidade futura de alto valor operacional, mas não deve concorrer com o grande plano principal de migração e refatoração do Portal Sama.
+
+O modelo aprovado é:
+
+```txt
+Acessórias = fonte oficial de entregas, baixas e vencimentos.
+Portal Sama = camada operacional, visual, inteligente, auditável e resiliente.
+```
+
+Para o MVP futuro, o foco deve ser o departamento Fiscal, com geração automática de planilha por competência, sincronização automática de baixas, status visual **Acessórias**, Central de Vencimentos baseada no Acessórias e notificações iniciando 7 dias antes do vencimento.
+
+A principal decisão de planejamento é:
+
+```txt
+Não implementar agora.
+Documentar como funcionalidade futura prioritária.
+Executar somente depois da base principal estar finalizada.
+```
+
+A principal regra de segurança operacional é:
+
+```txt
+O sistema só deve atualizar automaticamente uma célula quando conseguir identificar com segurança:
+cliente + departamento + obrigação + competência.
+```
+
+Se essa identificação não for segura, o Portal Sama deve gerar divergência para análise do gestor, e não alterar a planilha automaticamente.

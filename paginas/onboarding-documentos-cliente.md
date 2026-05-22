@@ -1,0 +1,345 @@
+# Envio de Documentos pelo Cliente
+
+## 1. Identificação da página
+
+- **Arquivo HTML:** `Onboarding/documentos-cliente.html`
+- **Módulo:** Onboarding / Link público
+- **Arquivos CSS relacionados:** `global.css`, `Onboarding/public-links.css`
+- **Arquivos JavaScript relacionados:** `Onboarding/documentos-cliente.js`
+- **APIs/endpoints relacionados:** `/api/onboarding.php actions: docs_client_get, docs_upload`
+- **Perfil de usuário provável:** Cliente externo com token de documentos
+- **Nível de criticidade:** Crítico
+- **Prioridade de refatoração:** Urgente
+
+---
+
+## 2. Objetivo da página
+
+Permitir que o cliente envie documentos solicitados durante o onboarding por link público controlado por token.
+
+- **Problema resolvido:** centraliza o fluxo de onboarding / link público para reduzir consulta manual, duplicação operacional e perda de rastreabilidade.
+- **Quem utiliza:** Cliente externo com token de documentos.
+- **Etapa do fluxo:** Onboarding / Link público dentro do Portal Sama.
+- **Dados/documentos manipulados:** token público, documentos empresariais, arquivos enviados, status de recebimento e confirmação.
+- **Observação:** Por ser uma página pública por token, todo dado retornado precisa ser mínimo, temporário e auditável.
+
+---
+
+## 3. Funcionamento detalhado da interface
+
+Títulos/seções visíveis: `Envio de Documentos`, `Como funciona`, `Tipos aceitos`.
+
+Formulários identificados: `form` método `GET` com campos campos dinâmicos.
+
+Ações/botões identificados: `Enviar documentos selecionados`, `Atualizar`.
+
+Fluxo esperado do usuário:
+
+1. Acessar a página pela navegação interna ou link público/legado, conforme o caso.
+2. O JavaScript relacionado carrega sessão, dados iniciais, filtros e tabelas.
+3. O usuário preenche campos, seleciona filtros ou aciona botões de criação/edição/envio/download.
+4. As APIs PHP recebem a requisição, aplicam validações e retornam JSON ou arquivo.
+5. A interface atualiza status, tabelas, mensagens de sucesso/erro ou redireciona conforme o resultado.
+
+---
+
+## 4. Fluxo de dados
+
+- A página não usa `auth.js`; o acesso depende de token público na URL. O backend deve validar token, finalidade, expiração e escopo antes de retornar qualquer dado.
+
+- Endpoints envolvidos: `/api/onboarding.php`. As actions observadas são: `docs_client_get`, `docs_upload`.
+
+- Status de migração em 2026-05-12 13:52: `DocumentsModule` cobre upload autenticado interno, `POST /api-v2/documents/public-upload?token=...` com `PublicToken`, escopo, expiração, throttle, auditoria e quarentena/scanner configuravel, além de `GET/POST/DELETE /api-v2/documents/public-tokens` para emissão/listagem/revogação administrativa. Atualizacao em 2026-05-18: `/onboarding/publico/documentos/:token` ganhou `PublicDocumentsPage.tsx` em React para upload publico por token. Atualizacao em 2026-05-20 17:11: `GET /api-v2/documents/public-checklist?token=...` passou a retornar checklist publico minimo antes do upload. Manter `/api/onboarding.php` até existir validação com MySQL/homologação, tokens reais/legados, migrations/seed e ClamAV strict no host.
+
+- Dados preenchidos pelo usuário partem dos formulários/campos HTML e são tratados por JavaScript associado à página. Para campos críticos, a validação do frontend deve ser apenas auxiliar; a regra definitiva precisa existir no PHP.
+
+- Há manipulação de arquivos. Os dados saem como `FormData`, `multipart/form-data` ou dataURL, conforme a tela. O backend deve validar extensão, MIME real, tamanho, assinatura do arquivo, antivírus, armazenamento privado e permissão de download.
+
+- O token público é dado de autenticação contextual. Ele não deve ser gravado em logs de acesso sem mascaramento, nem reutilizado para finalidades diferentes.
+
+- Cookies de sessão são tratados pelo backend em `api/auth.php` com `HttpOnly`, `SameSite=Lax` e `Secure` condicional a HTTPS/proxy. Ponto a validar em produção: HTTPS obrigatório, HSTS efetivo e domínio/path restritivos.
+
+Campos/dados de entrada identificados no HTML: Nenhum campo HTML identificado diretamente.
+
+Quando alguma action for indireta ou montada dinamicamente no JavaScript, considerar: **ponto a validar no código/backend**.
+
+---
+
+## 5. APIs e integrações relacionadas
+
+### Endpoint: `/api/onboarding.php`
+
+- **Action observada:** `docs_client_get`
+  - **Método provável:** GET
+  - **Finalidade:** Carregar checklist público de documentos.
+  - **Dados enviados:** Token.
+  - **Dados retornados:** Itens esperados.
+  - **Validações esperadas:** Token válido.
+  - **Riscos de segurança:** Exposição de documentos solicitados.
+  - **Melhorias recomendadas:** Escopo mínimo e rate limiting.
+- **Action observada:** `docs_upload`
+  - **Método provável:** POST
+  - **Finalidade:** Receber documentos do cliente externo.
+  - **Dados enviados:** Token e arquivos.
+  - **Dados retornados:** Resultado do upload.
+  - **Validações esperadas:** Token, extensão/MIME/tamanho/quarentena.
+  - **Riscos de segurança:** Malware e upload público.
+  - **Melhorias recomendadas:** ClamAV, storage privado e CDR quando aplicável.
+
+Atualizacao em 2026-05-20 17:11: o checklist publico especifico foi implementado na API v2 por `GET /api-v2/documents/public-checklist?token=...`, retornando apenas metadados minimos por token valido. A tela React `/onboarding/publico/documentos/:token` passou a consumir esse contrato antes do upload, usar extensoes permitidas da API e preencher documento/departamento pelos itens solicitados. Permanecem pendentes validacao com MySQL/storage/ClamAV reais, tokens reais/legados, HTTPS/homologacao e Playwright.
+
+---
+
+## 6. Regras de negócio identificadas
+
+### Regras identificadas no frontend
+
+- Cliente envia documentos selecionados por link.
+- Tela mostra instruções e botão de atualização/envio.
+
+### Regras que devem existir obrigatoriamente no backend
+
+- Token público válido e limitado à etapa de documentos.
+- Upload com allowlist, MIME, tamanho, antivírus e storage privado.
+- Confirmação de recebimento e auditoria por processo.
+- Uploads devem ser validados por extensão, MIME, tamanho, assinatura, antivírus e armazenados fora da pasta pública.
+- Links públicos devem possuir token forte, expiração, finalidade única, rate limiting e revogação.
+
+---
+
+## 7. Análise de segurança
+
+### 7.1 Autenticação
+
+A página opera por token público, não por sessão interna. A autenticação contextual deve ser feita exclusivamente no backend pelo token.
+
+### 7.2 Autorização
+
+A autorização é pelo escopo do token: o token deve permitir apenas aquele contrato, proposta ou checklist de documentos, nunca acesso amplo ao portal.
+
+### 7.3 Proteção contra XSS
+
+Foram identificadas 7 ocorrência(s) de `innerHTML` nos scripts vinculados. Evitar inserir dados de API com `innerHTML`; preferir `textContent` ou sanitização contextual.
+
+### 7.4 Proteção contra CSRF
+
+Como a página pública não usa sessão interna, CSRF tradicional é menos central; o risco principal é replay/abuso do token. Ainda assim, actions POST devem validar token, origem quando aplicável, rate limit e idempotência.
+
+### 7.5 Proteção contra SQL Injection
+
+Os endpoints PHP analisados usam `PDO`/`prepare` em diversas consultas. Ainda assim, qualquer consulta dinâmica, filtro, `ORDER BY`, nome de tabela/coluna ou action genérica deve usar allowlist e prepared statements. Ponto a validar em cada endpoint relacionado.
+
+### 7.6 Segurança em uploads
+
+Há upload/manipulação de arquivo. Exigir allowlist de extensão, MIME real, assinatura mágica, tamanho máximo, nome gerado, quarentena, ClamAV, storage privado e download autenticado/autorizado.
+
+### 7.7 Dados sensíveis
+
+Dados sensíveis envolvidos: token público, documentos empresariais, arquivos enviados, status de recebimento e confirmação. Não expor esses dados no HTML inicial, em logs do navegador, em mensagens de erro, em query strings permanentes ou em `localStorage`.
+
+### 7.8 Logs e auditoria
+
+Ações críticas desta página devem gerar trilha de auditoria com usuário derivado da sessão, entidade, antes/depois quando aplicável, IP, user-agent e timestamp. Evitar registrar valores sensíveis em claro.
+
+---
+
+## 8. Checklist de segurança da página
+
+- [ ] Página protegida contra acesso não autenticado.
+- [ ] Permissões validadas no backend.
+- [ ] Inputs validados no frontend.
+- [ ] Inputs validados no backend.
+- [ ] Dados sensíveis não expostos no HTML.
+- [ ] Dados sensíveis não expostos no JavaScript.
+- [ ] Tokens não armazenados de forma insegura.
+- [x] Cookies configurados com `HttpOnly`, `Secure` e `SameSite` no backend de autenticação; validar HTTPS/proxy em produção.
+- [ ] Requisições críticas protegidas contra CSRF.
+- [ ] Dados renderizados no DOM protegidos contra XSS.
+- [ ] Endpoints protegidos contra SQL Injection.
+- [ ] Uploads validados por extensão, MIME type e conteúdo.
+- [ ] Arquivos armazenados fora da pasta pública.
+- [ ] Downloads protegidos por autenticação e autorização.
+- [ ] Ações críticas registradas em auditoria.
+- [ ] Erros tratados sem expor detalhes internos.
+- [ ] Logs não expõem dados sensíveis.
+
+---
+
+## 9. Problemas técnicos encontrados
+
+- Uso de `innerHTML` em scripts relacionados (7 ocorrência(s)), exigindo revisão de XSS.
+- Upload/arquivo exige maior segregação entre UI, validação, armazenamento, antivírus e autorização de download.
+- Fluxo por link público depende fortemente de token; precisa expiração, escopo, rate limiting e mascaramento de logs.
+
+---
+
+## 10. Melhorias recomendadas
+
+### 10.1 Melhorias rápidas
+
+- Centralizar chamadas `fetch` em um client com tratamento de erro, CSRF e timeout.
+- Padronizar mensagens de erro sem expor detalhes internos.
+- Garantir que botões sensíveis sejam ocultados e bloqueados por permissão no backend.
+- Revisar uploads com allowlist, MIME real, limite de tamanho e quarentena antes do storage final.
+- Adicionar expiração e rate limiting aos tokens públicos e mascará-los em logs.
+
+### 10.2 Melhorias de médio prazo
+
+- Separar componentes de layout, tabelas, filtros, formulários e modais.
+- Criar serviços de API por domínio em vez de usar actions genéricas espalhadas.
+- Implementar RBAC por perfil/departamento com testes automatizados.
+- Criar logs de auditoria estruturados para todas as ações críticas.
+
+### 10.3 Melhorias estruturais
+
+- Migrar gradualmente para React + TypeScript + Vite.
+- Reorganizar backend em NestJS com Modules, Controllers, DTOs, Services, Guards, Pipes, Prisma Migrations e Permissions/Policies.
+- Documentar contratos com OpenAPI/Swagger.
+- Adicionar CI/CD com testes, lint e análise estática.
+- Containerizar ambiente com Docker Compose e separar dev/homolog/prod.
+
+---
+
+## 11. Frameworks e tecnologias recomendadas para esta página
+
+### Frontend
+
+- React Hook Form + Zod para formulários tipados, validação consistente e mensagens de erro padronizadas.
+- Componente `SecureUploadField` com validação visual de extensão/tamanho e progresso, mantendo validação definitiva no backend.
+
+### Backend
+
+- NestJS com tokens públicos opacos, expiração de token, rate limiting e guards/policies específicas por finalidade do link.
+- NestJS com storage privado, DTOs/Pipes de validação, validação MIME/assinatura de arquivo, ClamAV e endpoints protegidos ou links temporários para download.
+
+### Segurança
+
+- Sessão server-side com cookies `HttpOnly`, `Secure` e `SameSite`, evitando armazenar tokens sensíveis em `localStorage`.
+- RBAC por perfil e departamento, validado no backend em todas as actions.
+- Tokens públicos assinados, com expiração, rotação, limitação de tentativas e escopo mínimo por recurso.
+- Upload seguro com allowlist de extensão, MIME real, assinatura mágica, quarentena, ClamAV e armazenamento fora da pasta pública.
+
+### Infraestrutura
+
+- Docker Compose com Apache/Nginx, PHP 8+, MySQL e volumes privados para `data/private`, `logs` e backups.
+- GitHub Actions com ESLint/Prettier, TypeScript strict, Jest/Supertest e Playwright em páginas críticas.
+
+---
+
+## 12. Sugestão de refatoração da página
+
+Componentes sugeridos:
+- `PageLayout`
+- `Sidebar`
+- `Header`
+- `ActionButton`
+- `FormSection`
+- `ValidatedInput`
+- `ConfirmModal`
+- `UploadField`
+- `SecureDownloadButton`
+- `FileStatusBadge`
+- `PublicTokenLayout`
+- `TokenErrorState`
+- `ClientActionPanel`
+
+Serviços sugeridos:
+- `authService`
+- `auditService`
+- `notificationService`
+- `onboardingService`
+- `publicLinkService`
+- `documentService`
+
+Estratégia de refatoração:
+- Separar layout, manipulação de DOM, regra de negócio e consumo de API.
+- Criar camada de API com autenticação, CSRF, timeout, tratamento de erro e logs padronizados.
+- Migrar primeiro os fluxos críticos para componentes tipados e cobertos por testes.
+- Remover regras de negócio do frontend que possam ser burladas e revalidá-las no backend.
+- Criar testes de regressão para permissões, XSS, CSRF e fluxos principais.
+
+---
+
+## 13. Testes recomendados
+
+### Testes unitários
+
+- Validar funções de formatação/normalização usadas pela página.
+- Validar renderização de status e mensagens de erro sem HTML inseguro.
+- Validar mensagens para extensão/tamanho inválidos no frontend.
+
+### Testes de integração
+
+- Endpoint deve rejeitar requisição sem autenticação quando a página for interna.
+- Endpoint deve rejeitar usuário sem perfil/departamento permitido.
+- Erro da API deve ser tratado na interface sem expor stack trace.
+- Upload inválido deve ser bloqueado pelo backend antes de persistir arquivo.
+- Token expirado, inválido, revogado ou de outro recurso deve retornar erro genérico.
+
+### Testes E2E
+
+- Usuário autorizado acessa a página e executa o fluxo principal.
+- Usuário sem permissão não visualiza nem executa ações críticas.
+- Cliente acessa link público válido, conclui ação e não consegue repetir quando a regra impedir replay.
+
+### Testes de segurança
+
+- Tentar XSS em campos livres e dados retornados pela API.
+- Tentar IDOR alterando IDs, client_id, doc_id ou token.
+- Verificar CSRF em actions POST/PUT/PATCH/DELETE.
+- Enviar arquivo com extensão dupla, MIME falso, payload EICAR e nome malicioso.
+- Token público não deve aparecer em logs de aplicação sem mascaramento.
+
+---
+
+## 14. Conclusão da página
+
+A página `Onboarding/documentos-cliente.html` atua no módulo **Onboarding / Link público** e manipula **token público, documentos empresariais, arquivos enviados, status de recebimento e confirmação**. Os principais riscos são: upload/download de arquivos, token público. A principal recomendação é reforçar validações server-side, autorização por recurso, auditoria e componentização gradual.
+
+- **Nível de criticidade:** Crítico
+- **Prioridade de refatoração:** Urgente
+- **Observações finais:** manter o HTML como camada de apresentação; regras de permissão, validação, persistência e auditoria devem residir no backend. Quando houver incerteza, tratar como **ponto a validar no código/backend**.
+
+
+---
+
+## 15. Atualização de stack alvo — TypeScript/NestJS
+
+Esta seção complementa a análise original da página com a decisão técnica posterior de migrar o backend PHP para **Node.js + TypeScript + NestJS** e evoluir o frontend para **React + TypeScript + Vite**.
+
+### 15.1 Mapeamento da tela para a arquitetura alvo
+
+- **Arquivo HTML atual:** `Onboarding/documentos-cliente.html`
+- **Rota React criada:** `/onboarding/publico/documentos/:token`
+- **Componente React criado:** `portal-sama-web/src/pages/documents/PublicDocumentsPage.tsx`
+- **Servico React criado:** `uploadPublicDocument()` em `portal-sama-web/src/services/documents.service.ts`
+- **Backend alvo:** `/api-v2`, implementado em NestJS
+- **Banco principal:** MySQL 8 com Prisma ORM
+
+### 15.2 Módulos NestJS relacionados
+
+- `OnboardingModule`
+- `DocumentsModule`
+- `PublicLinksModule`
+
+### 15.3 Arquivos atuais que devem ser usados como referência de migração
+
+- `Onboarding/documentos-cliente.html`
+- `api/onboarding.php`
+
+### 15.4 Diretriz de migração para esta tela
+
+1. Mapear todas as chamadas atuais a `/api` ou arquivos PHP relacionados.
+2. Criar contratos equivalentes em `/api-v2` com DTOs tipados.
+3. Validar autenticação, permissão e escopo no backend NestJS.
+4. Substituir gradualmente `fetch`/JavaScript vanilla por services TypeScript no frontend.
+5. Migrar a interface para React apenas depois de o endpoint crítico estar seguro.
+6. Registrar auditoria para ações críticas desta página, principalmente criação, alteração, upload, download, aprovação, assinatura ou acesso a dados sensíveis.
+
+### 15.5 Referências complementares
+
+- [`../GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](../GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md)
+- [`../ARQUITETURA_ALVO_TYPESCRIPT_NESTJS.md`](../ARQUITETURA_ALVO_TYPESCRIPT_NESTJS.md)
+- [`../BANCO_DADOS_MYSQL_PRISMA.md`](../BANCO_DADOS_MYSQL_PRISMA.md)
+- [`../SEGURANCA.md`](../SEGURANCA.md)
+- [`../MAPEAMENTO_MIGRACAO_APIS.md`](../MAPEAMENTO_MIGRACAO_APIS.md)
