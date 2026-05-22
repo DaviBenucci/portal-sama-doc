@@ -1,5 +1,59 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-22 16:08
+
+### Contexto
+
+- Correcao do deploy da API no EasyPanel apos erro Prisma `P1012` por ausencia de `DATABASE_URL`.
+- Objetivo: validar que a API continua gerando Prisma Client e compilando apos ajuste no Dockerfile.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco: nao acessado diretamente.
+- Observacoes: os comandos locais carregam `.env` automaticamente; nenhum valor sensivel foi exibido.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd run prisma:generate
+npm.cmd run build
+npm.cmd run prisma:validate
+docker build --pull=false -t portal-sama-api:prisma-env-fix .
+docker run --rm portal-sama-api:prisma-env-fix
+git diff --check
+```
+
+Em `portal-sama-docs`:
+
+```bash
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para novo build/deploy da API.
+- Prisma Client foi gerado com sucesso.
+- Build NestJS passou.
+- Prisma validate passou.
+- Docker build passou com `.env` ignorado no contexto; `prisma generate` usou a URL dummy `PRISMA_GENERATE_DATABASE_URL`.
+- Docker run sem `DATABASE_URL` encerrou com exit code 1 e a mensagem esperada: `DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.`
+- `git diff --check` passou no repo de docs.
+- `git diff --check` da API passou, mantendo apenas avisos LF/CRLF esperados no Windows.
+- O `npm ci` dentro do Docker build emitiu aviso de 1 vulnerabilidade moderada, sem falhar o build; auditoria de dependencias permanece uma verificacao separada.
+
+### Pendencias
+
+- Rebuild/redeploy real no EasyPanel.
+- Configurar `DATABASE_URL` real no servico `portal-sama-api`.
+- Validar `npx prisma migrate deploy`, `npm run prisma:seed`, `npm run prisma:bootstrap-admin`, health, csrf e login real no ambiente.
+
+### Observacao anti-alucinacao
+
+Nao foram executados migration, seed, bootstrap, smoke publico, Playwright nem conexao com MySQL do EasyPanel nesta rodada.
+
 ## Execucao 2026-05-22 15:22
 
 ### Contexto

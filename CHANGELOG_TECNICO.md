@@ -1,5 +1,48 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-22 16:08
+
+### Arquivos alterados
+
+- `portal-sama-api/Dockerfile`
+- `EASYPANEL_DEPLOY.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+
+### O que mudou
+
+- O build da API deixou de depender da `DATABASE_URL` real para executar `prisma generate`.
+- Adicionado `PRISMA_GENERATE_DATABASE_URL` dummy no stage `builder` do Dockerfile.
+- O start do container agora falha com mensagem direta se `DATABASE_URL` nao estiver configurada no runtime.
+- As docs de EasyPanel passaram a registrar a correcao para o erro Prisma `P1012`.
+
+### Motivo da alteracao
+
+Desbloquear o deploy da API no EasyPanel quando o Prisma valida `env("DATABASE_URL")` antes de o console/runtime estar acessivel.
+
+### Impacto esperado
+
+- Build da imagem deixa de quebrar apenas por falta de URL real durante `prisma generate`.
+- Runtime continua protegido: migrations e aplicacao so iniciam com `DATABASE_URL` real configurada no servico `portal-sama-api`.
+
+### Testes executados
+
+- `npm.cmd run prisma:generate` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `docker build --pull=false -t portal-sama-api:prisma-env-fix .` em `portal-sama-api`: passou sem `.env` no contexto.
+- `docker run --rm portal-sama-api:prisma-env-fix` sem `DATABASE_URL`: falhou como esperado com mensagem explicita de configuracao.
+- `git diff --check` em `portal-sama-docs`: passou.
+- `git diff --check` em `portal-sama-api`: passou com avisos LF/CRLF do Git no Windows.
+
+### Riscos ou pendencias
+
+- Ainda falta configurar a `DATABASE_URL` real no EasyPanel e fazer novo deploy da API.
+- Ainda falta validar `prisma migrate deploy`, seed, bootstrap admin, health, csrf e login real no MySQL do EasyPanel.
+
 ## 2026-05-22 15:22
 
 ### Arquivos alterados

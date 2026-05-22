@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-22 16:08 -03:00
+
+- Corrigido `portal-sama-api/Dockerfile` para o build nao depender da `DATABASE_URL` real durante `prisma generate`.
+- O runtime da API continua exigindo `DATABASE_URL` real antes de `prisma migrate deploy` e `node dist/main.js`.
+- Documentado o diagnostico do erro Prisma `P1012` no EasyPanel: configurar a variavel no servico `portal-sama-api`, apontando para `portal-sama_database:3306/banco-sama`.
+- Passaram `npm.cmd run prisma:generate`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `docker build --pull=false -t portal-sama-api:prisma-env-fix .` em `portal-sama-api`; `docker run --rm portal-sama-api:prisma-env-fix` sem env falhou como esperado com mensagem explicita; `git diff --check` passou nos docs e apontou apenas avisos LF/CRLF no repo da API.
+- Permanece pendente fazer rebuild/redeploy real no EasyPanel, rodar migrations/seed/bootstrap admin e validar health/csrf/login.
+
 ## Atualizacao 2026-05-22 15:22 -03:00
 
 - Passaram lint/build nos repos separados `portal-sama-api` e `portal-sama-web`.

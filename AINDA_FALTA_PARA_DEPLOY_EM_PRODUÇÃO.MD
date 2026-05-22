@@ -315,6 +315,8 @@ WEB_PUSH_PRIVATE_KEY=
 WEB_PUSH_SUBJECT=mailto:suporte@samacontabil.com.br
 ```
 
+Observacao 2026-05-22 16:08 -03:00: o erro Prisma `P1012` com `Environment variable not found: DATABASE_URL` indica que a variavel nao chegou ao build/runtime da API. O Dockerfile de `portal-sama-api` agora usa uma URL dummy somente para `prisma generate` no build; a `DATABASE_URL` real continua obrigatoria nas variaveis do servico `portal-sama-api` no EasyPanel antes de `prisma migrate deploy` e `node dist/main.js`.
+
 ### Usuario MySQL da aplicacao
 
 Nao usar `root` na API.
@@ -404,7 +406,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 ### Banco e dados
 
 - [ ] Criar usuario MySQL nao-root.
-- [ ] Validar `DATABASE_URL` real.
+- [ ] Configurar e validar `DATABASE_URL` real no servico `portal-sama-api` do EasyPanel.
 - [ ] Rodar `prisma migrate deploy` no MySQL 9.6.0.
 - [ ] Rodar seed RBAC.
 - [ ] Rodar bootstrap admin.

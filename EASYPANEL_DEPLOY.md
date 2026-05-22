@@ -105,7 +105,9 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
+# Prisma generate valida env("DATABASE_URL"), mas nao conecta no banco.
+ARG PRISMA_GENERATE_DATABASE_URL=mysql://portal_user:portal_password@localhost:3306/portal_sama
+RUN DATABASE_URL="$PRISMA_GENERATE_DATABASE_URL" npx prisma generate
 RUN npm run build
 
 FROM node:22-alpine AS runner
@@ -117,8 +119,10 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "if [ -z \"$DATABASE_URL\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; npx prisma migrate deploy && node dist/main.js"]
 ```
+
+> Atualizacao 2026-05-22 16:08 -03:00: o build da API usa `PRISMA_GENERATE_DATABASE_URL` apenas como URL dummy para `prisma generate`, porque o Prisma valida `env("DATABASE_URL")` mesmo sem conectar no banco durante a geracao do client. A `DATABASE_URL` real continua obrigatoria no ambiente runtime do servico `portal-sama-api` no EasyPanel.
 
 > Observação: no início, rodar `prisma migrate deploy` no start pode simplificar. Em uma operação mais madura, execute migrations em uma etapa separada de CI/CD.
 
@@ -301,6 +305,13 @@ Logo, a API deve apontar para o banco real, com usuario proprio da aplicacao e s
 ```env
 DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama_database:3306/banco-sama
 ```
+
+Se o log do deploy mostrar `Error code: P1012` e `Environment variable not found: DATABASE_URL`, a correcao operacional e:
+
+1. configurar `DATABASE_URL` nas variaveis de ambiente do servico `portal-sama-api`, nao no servico web nem apenas no banco;
+2. confirmar que o host interno e o banco batem com o phpMyAdmin (`portal-sama_database:3306/banco-sama`, conforme o caso real acima);
+3. fazer novo build/deploy da API usando o Dockerfile atualizado, que nao exige a URL real durante `prisma generate`;
+4. depois que o container subir, rodar/validar `npx prisma migrate deploy`, `npm run prisma:seed` e `npm run prisma:bootstrap-admin`.
 
 Se o usuario ainda nao existir, criar pelo phpMyAdmin/SQL do EasyPanel:
 

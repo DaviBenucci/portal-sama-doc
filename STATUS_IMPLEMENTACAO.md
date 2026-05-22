@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-22 16:08 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o caminho de build/deploy da API para o erro Prisma `P1012` por ausencia de `DATABASE_URL`.
+- **Backend/deploy:** `portal-sama-api/Dockerfile` agora passa `PRISMA_GENERATE_DATABASE_URL` dummy somente ao `prisma generate` no build e valida explicitamente `DATABASE_URL` no runtime antes de `prisma migrate deploy`.
+- **EasyPanel:** Documentado que a `DATABASE_URL` real deve ficar nas variaveis do servico `portal-sama-api`, apontando para `portal-sama_database:3306/banco-sama` com usuario nao-root.
+- **Validacao:** `npm.cmd run prisma:generate`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `docker build --pull=false -t portal-sama-api:prisma-env-fix .` passaram em `portal-sama-api`; `docker run --rm portal-sama-api:prisma-env-fix` sem env falhou como esperado com mensagem explicita de `DATABASE_URL`; `git diff --check` passou no repo de docs e apontou apenas avisos LF/CRLF no repo da API por causa do Windows.
+- **Pendente:** Rebuild/redeploy real no EasyPanel com `DATABASE_URL` configurada, depois executar/validar migrations, seed, bootstrap admin, health, csrf e login real.
+
 ## Atualizacao complementar 2026-05-22 15:22 -03:00
 
 - **Responsavel/IA:** Codex
