@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-22 15:22 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Validados lint/build nos workspaces tecnicos ja separados.
+- **Backend:** Passaram `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` em `portal-sama-api`.
+- **Frontend:** Passaram `npm.cmd run lint` e `npm.cmd run build` em `portal-sama-web`.
+- **Observacao:** `prisma validate` carregou `.env` automaticamente, mas nenhum valor de ambiente foi lido ou exibido.
+- **Andamento:** Estimativa operacional ajustada para 76% de prontidao para iniciar homologacao e 64% para producao sem legado.
+- **Pendente:** Remotes/push Bitbucket, EasyPanel real, migrations/seed/bootstrap em MySQL real, E2E/Playwright contra fluxos reais e QA visual.
+
 ## Atualizacao complementar 2026-05-22 15:16 -03:00
 
 - **Responsavel/IA:** Codex

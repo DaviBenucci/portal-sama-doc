@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-22 15:16 -03:00
+Ultima atualizacao: 2026-05-22 15:22 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,13 +45,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-22 15:16 -03:00:
+Estimativa operacional em 2026-05-22 15:22 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar homologacao da nova stack | 74% | Base tecnica existe e os workspaces locais ja foram preparados; falta publicar os repositorios no Bitbucket/EasyPanel e validar com banco/HTTPS reais. |
-| Pronto para producao sem depender do legado | 63% | A separacao local reduz risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA e fluxos criticos reais. |
-| Falta para producao | 37% | Principalmente infraestrutura real, migracao de dados, validacao operacional e desligamento seguro do legado. |
+| Pronto para iniciar homologacao da nova stack | 76% | Base tecnica existe, workspaces locais foram preparados e lint/build separados passaram; falta publicar os repositorios no Bitbucket/EasyPanel e validar com banco/HTTPS reais. |
+| Pronto para producao sem depender do legado | 64% | A separacao local e os builds separados reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA e fluxos criticos reais. |
+| Falta para producao | 36% | Principalmente infraestrutura real, migracao de dados, validacao operacional e desligamento seguro do legado. |
 
 ## Estado atual resumido
 
@@ -64,6 +64,7 @@ Estimativa operacional em 2026-05-22 15:16 -03:00:
 | EasyPanel | Documentado, nao homologado | Existe guia e Dockerfiles; falta criar servicos reais a partir do Bitbucket. |
 | Workspaces locais | Separado e preparado | Existem pastas irmas `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` no Desktop. |
 | Bitbucket/Git | Parcial | Git local inicializado em `main`; falta criar remotes Bitbucket e publicar os repositorios. |
+| Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
 | Storage privado | Parcial | Codigo e variaveis existem; falta volume real persistente e validacao de permissoes. |
 | ClamAV | Pendente em homologacao | Deve ser validado em modo `strict` antes de producao. |
 | Usuarios/permissoes reais | Pendente | Seed/roles existem; falta migrar/criar usuarios reais e testar perfis. |
@@ -441,8 +442,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 ### Testes e QA
 
-- [ ] Rodar lint/build da API no repo separado.
-- [ ] Rodar lint/build/E2E do Web no repo separado.
+- [x] Rodar lint/build da API no repo separado.
+- [x] Rodar lint/build do Web no repo separado.
+- [ ] Rodar E2E do Web no repo separado.
 - [ ] Rodar smoke publico sem `--soft`.
 - [ ] Criar Playwright contra homologacao real.
 - [ ] Testar fluxos por perfil real.

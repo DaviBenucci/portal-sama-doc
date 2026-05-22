@@ -1,11 +1,19 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-22 15:22 -03:00
+
+- Passaram lint/build nos repos separados `portal-sama-api` e `portal-sama-web`.
+- Passou `npm.cmd run prisma:validate` em `portal-sama-api`; o comando carregou `.env` automaticamente, sem exibir valores sensiveis.
+- Estimativa operacional atualizada: 76% para iniciar homologacao e 64% para producao sem legado.
+- Permanece pendente criar os tres repositorios no Bitbucket, adicionar remotes, fazer push e configurar o EasyPanel.
+- Permanece pendente E2E/Playwright real, migrations/seed/bootstrap em MySQL real, storage/ClamAV, backfills, usuarios/permissoes reais e QA visual.
+
 ## Atualizacao 2026-05-22 15:16 -03:00
 
 - Workspaces locais permanecem separados e preparados em `main`.
 - Criado `.gitattributes` em `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` para evitar churn de LF/CRLF antes de publicar no Bitbucket.
 - Estimativa operacional atualizada: 74% para iniciar homologacao e 63% para producao sem legado.
-- Permanece pendente criar os tres repositorios no Bitbucket, adicionar remotes, fazer push e validar lint/build a partir dos repos separados.
+- Permanece pendente criar os tres repositorios no Bitbucket, adicionar remotes, fazer push e validar E2E/Playwright a partir dos repos separados.
 
 ## Atualizacao 2026-05-22 15:10 -03:00
 

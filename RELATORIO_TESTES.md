@@ -1,5 +1,52 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-22 15:22
+
+### Contexto
+
+- Validacao dos workspaces tecnicos apos separacao fisica e commits iniciais locais.
+- Objetivo: confirmar que API e Web continuam compilando em suas pastas independentes.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco: nao acessado diretamente.
+- Observacoes: `.env` real nao foi aberto; `prisma validate` carregou variaveis automaticamente sem exibir valores.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run prisma:validate
+```
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para build local separado.
+- API: lint, build e Prisma validate passaram.
+- Web: lint e build passaram.
+- Artefatos gerados (`dist/`) permanecem ignorados.
+
+### Pendencias
+
+- Rodar E2E/Playwright no repo separado.
+- Criar repositorios/remotes Bitbucket e fazer push.
+- Validar deploy real no EasyPanel com MySQL, HTTPS, storage/ClamAV e usuarios reais.
+
+### Observacao anti-alucinacao
+
+Nao foram executados Playwright, migration, seed, bootstrap, backfill, upload/download real, ClamAV real nem smoke publico nesta rodada.
+
 ## Execucao 2026-05-22 15:16
 
 ### Contexto

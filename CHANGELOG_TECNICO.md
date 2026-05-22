@@ -1,5 +1,43 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-22 15:22
+
+### Arquivos alterados
+
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+
+### O que mudou
+
+- Registrada validacao de lint/build nos repos separados.
+- Atualizado o percentual operacional para 76% de prontidao para homologacao e 64% para producao sem legado.
+- Marcados como concluidos os itens de lint/build local separados; E2E separado permanece pendente.
+
+### Motivo da alteracao
+
+Confirmar que a separacao fisica dos workspaces nao quebrou os builds locais antes de publicar no Bitbucket.
+
+### Impacto esperado
+
+- Menor risco ao conectar `portal-sama-api` e `portal-sama-web` no EasyPanel.
+- Proximo bloqueio passa a ser remoto/deploy real, nao build local.
+
+### Testes executados
+
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta criar remotes Bitbucket e fazer push.
+- Ainda falta executar E2E/Playwright no repo separado e validar em EasyPanel com MySQL/HTTPS reais.
+
 ## 2026-05-22 15:16
 
 ### Arquivos alterados
