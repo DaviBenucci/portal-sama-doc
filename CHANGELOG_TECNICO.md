@@ -1,5 +1,59 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 16:18
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/README.md`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `portal-sama-api/scripts/backfill-readiness-report.js`
+- `portal-sama-api/src/modules/transfers/transfers.service.spec.ts`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- Criado `npm run ops:readiness` na API para validar ambiente, banco, migrations, RBAC, usuarios ADMIN/DEV, storage privado e ClamAV/EICAR.
+- Criado `npm run ops:backfill:report` na API para gerar relatorio read-only de tabelas atuais/legadas, contagens, gaps de usuarios/roles e vinculos de cliente.
+- Documentado o uso dos comandos no README da API e no guia do EasyPanel.
+- Corrigido `transfers.service.spec.ts` congelando o relogio em `2026-05-19T12:00:00.000Z`, removendo uma falha dependente da data atual.
+- Atualizadas as documentacoes vivas para marcar as ferramentas como implementadas e a execucao real sem skips como pendente.
+
+### Motivo da alteracao
+
+Dar continuidade aos itens pendentes de backfills, validacao por perfil/RBAC, storage/ClamAV em fluxo real, backups/rollback e desligamento seguro do legado, criando evidencias operacionais repetiveis antes de qualquer corte em producao.
+
+### Impacto esperado
+
+- O container da API passa a ter comandos claros para homologacao profunda no EasyPanel.
+- Backfills podem ser planejados com relatorio read-only antes de qualquer migracao destrutiva.
+- Falhas de seed RBAC, roles sem permissoes, usuarios ativos sem role, ClamAV ausente ou storage mal configurado devem aparecer mais cedo.
+
+### Testes executados
+
+- `node --check scripts/validate-operational-readiness.js`: passou.
+- `node --check scripts/backfill-readiness-report.js`: passou.
+- `npm.cmd run ops:readiness -- --help`: passou.
+- `npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft`: passou com warning esperado de backup/rollback.
+- `npm.cmd run ops:backfill:report -- --help`: passou.
+- `npm.cmd run ops:backfill:report -- --soft` com `DATABASE_URL` apontando para `127.0.0.1:9`: falhou por conexao esperada sem quebrar o processo.
+- `npm.cmd run test -- transfers.service.spec.ts --runInBand`: passou.
+- `npm.cmd run test -- --runInBand`: passou com 30 suites/165 testes.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run prisma:validate` com `DATABASE_URL` dummy: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta rodar `npm run ops:readiness` sem skips no container real do EasyPanel.
+- Ainda falta rodar `npm run ops:backfill:report -- --json` no MySQL real e anexar a evidencia.
+- Os comandos nao substituem backfill, restore drill, QA por perfil, Playwright real ou desligamento seguro do legado.
+
 ## 2026-05-25 11:46
 
 ### Arquivos alterados

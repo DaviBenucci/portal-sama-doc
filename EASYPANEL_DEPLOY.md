@@ -31,6 +31,8 @@ Atualizacao 2026-05-25 11:32 -03:00: `GET /api-v2/health` na API agora faz healt
 
 Atualizacao 2026-05-25 11:46 -03:00: o deploy real ja esta ativo no EasyPanel. O projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` com status online; `https://portal.samacontabil.com.br/` responde publicamente; o smoke publico sem `--soft` passou com frontend 200, `/api-v2/health` retornando `database=up` e `storage=up`, CORS aceitando `https://portal.samacontabil.com.br` e `/api-v2/auth/csrf` emitindo token/cookie.
 
+Atualizacao 2026-05-25 16:18 -03:00: o repo `portal-sama-api` agora expoe `npm run ops:readiness` e `npm run ops:backfill:report`. Esses comandos devem ser executados no container real da API para validar migrations/RBAC/usuarios/storage/ClamAV e gerar evidencia read-only de backfill antes do corte.
+
 ---
 
 ## 2. Serviços recomendados
@@ -527,7 +529,7 @@ Criar rota:
 GET /api-v2/health
 ```
 
-Estado atual: rota criada em `portal-sama-api/src/modules/health/health.controller.ts` e validada por unit/e2e. A resposta informa banco como `up`, `down` ou `not_checked` e storage como `up`, `down` ou `not_configured`. Em falha critica, a API responde HTTP 503 com o corpo de status. A validacao com MySQL/storage reais no EasyPanel segue pendente.
+Estado atual: rota criada em `portal-sama-api/src/modules/health/health.controller.ts`, validada por unit/e2e e confirmada publicamente em 2026-05-25 com `database=up` e `storage=up`. A resposta informa banco como `up`, `down` ou `not_checked` e storage como `up`, `down` ou `not_configured`. Em falha critica, a API responde HTTP 503 com o corpo de status. Persistencia do volume, backup e fluxos reais de upload/download ainda precisam de homologacao.
 
 Resposta esperada:
 
@@ -587,6 +589,42 @@ Durante diagnostico, `--soft` coleta evidencias sem falhar o processo; para homo
 
 ---
 
+### 9.2 Readiness operacional da API
+
+No console/one-off command do servico `portal-sama-api`, apos configurar variaveis, migrations, seed, usuarios reais, storage e ClamAV:
+
+```bash
+npm run ops:readiness
+```
+
+O comando valida:
+
+- ambiente de producao (`NODE_ENV`, secrets JWT, CORS/origin, cookies seguros e storage);
+- conexao MySQL com `SELECT 1`;
+- migrations Prisma versionadas aplicadas;
+- catalogo RBAC do banco contra `DEFAULT_PERMISSIONS`/`DEFAULT_ROLES`;
+- existencia de usuario ativo e usuario ativo `ADMIN`/`DEV`;
+- leitura/escrita em `STORAGE_PRIVATE_PATH`;
+- deteccao EICAR pelo ClamAV quando `SAMA_UPLOAD_SCAN_MODE=strict`.
+
+Para coletar evidencia sem interromper o shell durante diagnostico:
+
+```bash
+npm run ops:readiness -- --soft --json
+```
+
+Para homologacao final, rodar sem `--soft` e sem `--skip-*`.
+
+### 9.3 Relatorio read-only de backfill
+
+Antes de executar backfills ou desligar partes do legado, rode no mesmo container:
+
+```bash
+npm run ops:backfill:report -- --json
+```
+
+O relatorio nao altera dados. Ele lista tabelas atuais, candidatos legados conhecidos, contagens por modulo, usuarios ativos sem role, roles sem permissoes, tokens publicos expirados abertos e vinculos de cliente quebrados. Anexar a saida JSON na documentacao/issue operacional do backfill.
+
 ## 10. Checklist de deploy
 
 - [x] Criar/usar servico MySQL no EasyPanel (`portal-sama-database`).
@@ -599,6 +637,8 @@ Durante diagnostico, `--soft` coleta evidencias sem falhar o processo; para homo
 - [ ] Rodar migrations Prisma.
 - [ ] Rodar seed RBAC inicial com `npm.cmd run prisma:seed` ou comando equivalente do container, sem criar usuário/senha.
 - [ ] Registrar bootstrap admin ou procedimento equivalente usado para criar usuarios iniciais.
+- [ ] Rodar `npm run ops:readiness` sem skips no container `portal-sama-api`.
+- [ ] Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api`.
 - [x] Criar servico React/Vite (`portal-sama-web`).
 - [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
 - [x] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.

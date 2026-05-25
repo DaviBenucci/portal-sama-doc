@@ -1,5 +1,56 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 16:18
+
+### Contexto
+
+- Implementacao de comandos operacionais no `portal-sama-api` para readiness real, validacao de permissoes/RBAC, storage/ClamAV e relatorio read-only de backfill.
+- Correcao de teste temporal em `TransfersService` para impedir regressao/flakiness conforme a data real avanca.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Banco real: nao acessado nesta rodada; `prisma:validate` usou `DATABASE_URL` dummy e o relatorio de backfill foi exercitado com banco falso em modo `--soft`.
+- Storage local: `.ai-tests/readiness-storage`, ignorado pelo Git.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+node --check scripts/validate-operational-readiness.js
+node --check scripts/backfill-readiness-report.js
+npm.cmd run ops:readiness -- --help
+npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft
+npm.cmd run ops:backfill:report -- --help
+$env:DATABASE_URL='mysql://portal_user:portal_password@127.0.0.1:9/portal_sama'; npm.cmd run ops:backfill:report -- --soft
+npm.cmd run test -- transfers.service.spec.ts --runInBand
+npm.cmd run test -- --runInBand
+npm.cmd run lint
+npm.cmd run build
+$env:DATABASE_URL='mysql://portal_user:portal_password@localhost:3306/portal_sama'; npm.cmd run prisma:validate
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para scripts operacionais e regressao da API.
+- `ops:readiness` local passou com storage read/write e skips explicitos para env, banco e ClamAV.
+- `ops:backfill:report -- --help` passou; com banco falso e `--soft`, reportou falha esperada de conexao sem quebrar o processo.
+- `transfers.service.spec.ts` passou apos congelar o relogio do teste.
+- Suite Jest completa passou com 30 suites e 165 testes.
+- Lint, build e Prisma validate passaram.
+
+### Pendencias
+
+- Rodar `npm run ops:readiness` sem `--skip` no container real `portal-sama-api`.
+- Rodar `npm run ops:backfill:report -- --json` no MySQL real e anexar o JSON/evidencia ao plano de backfill.
+- Validar backup/rollback com restore drill real, matriz de permissoes por perfil, Playwright real e QA visual final.
+
+### Observacao anti-alucinacao
+
+Nao foram executados backfills, restore de backup, ClamAV real nem consulta ao MySQL do EasyPanel nesta rodada. Os comandos estao implementados e validados localmente; a prova operacional final depende do container real.
+
 ## Execucao 2026-05-25 11:46
 
 ### Contexto

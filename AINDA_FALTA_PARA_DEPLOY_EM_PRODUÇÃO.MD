@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 11:46 -03:00
+Ultima atualizacao: 2026-05-25 16:18 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,13 +45,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 11:46 -03:00:
+Estimativa operacional em 2026-05-25 16:18 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar/continuar homologacao da nova stack | 92% | Repositorios Bitbucket existem, API/Web/database estao publicados no EasyPanel, `https://portal.samacontabil.com.br/` esta ativo, o banco real esta conectado, usuarios iniciais foram criados e o smoke publico sem `--soft` passou com health `database=up` e `storage=up`; faltam QA por perfil, Playwright real, backfills e validacoes operacionais profundas. |
-| Pronto para producao sem depender do legado | 73% | Deploy publico, banco real, proxy `/api-v2`, CORS e CSRF ja funcionam; ainda faltam backfills, validacao de permissoes por perfil, storage/ClamAV em fluxo real, QA final, backups/rollback e desligamento seguro do legado. |
-| Falta para producao | 27% | Principalmente migracao/conferencia de dados, seguranca operacional, QA final, Playwright real, storage/ClamAV, backups e desligamento seguro do legado. |
+| Pronto para iniciar/continuar homologacao da nova stack | 93% | Alem do deploy publico e smoke real aprovados, a API agora possui comandos operacionais para validar ambiente/banco/migrations/RBAC/usuarios/storage/ClamAV e gerar relatorio read-only de backfill. Falta executar esses comandos no container real sem `--skip`, Playwright real e QA por perfil. |
+| Pronto para producao sem depender do legado | 75% | Deploy publico, banco real, proxy `/api-v2`, CORS e CSRF ja funcionam; agora existem validadores para backfills, permissoes, storage e ClamAV, mas ainda faltam executar evidencias reais, backups/rollback, QA final e desligamento seguro do legado. |
+| Falta para producao | 25% | Principalmente execucao/conferencia real de backfills, evidencias de permissoes por perfil, storage/ClamAV sem skips, backups/rollback, Playwright real, QA final e desligamento seguro do legado. |
 
 ## Estado atual resumido
 
@@ -66,9 +66,9 @@ Estimativa operacional em 2026-05-25 11:46 -03:00:
 | Bitbucket/Git | Remotos existentes | Repositorios Bitbucket existem para API, Web e documentacao (`portal-sama-api`, `portal-sama-web`, `portal-sama-doc` conforme evidencia visual). Falta apenas garantir push das atualizacoes documentais locais desta rodada. |
 | Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
 | Storage privado | Parcial validado | Health publico retornou `storage=up`, indicando caminho gravavel no container. Falta validar persistencia do volume, permissoes, backup e fluxos reais de upload/download. |
-| ClamAV | Pendente em homologacao | Deve ser validado em modo `strict` antes de producao. |
+| ClamAV | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:readiness`, que executa EICAR contra ClamAV quando rodado no container real. Falta executar sem `--skip-clamav` em modo `strict`. |
 | Usuarios/permissoes reais | Parcial | Usuarios iniciais foram criados no banco real; falta testar a matriz completa de roles/permissoes e fluxos por perfil. |
-| Backfills | Pendente critico | Dados legados precisam ser migrados/conferidos por modulo. |
+| Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
 | Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
@@ -390,18 +390,20 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 14. Rodar `npx prisma migrate deploy` em banco limpo ou `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing` em banco existente com `P3005`.
 15. Rodar `npm run prisma:seed`.
 16. Rodar `npm run prisma:bootstrap-admin`.
-17. [x] Validar `GET /api-v2/health` publicamente (`database=up`, `storage=up`).
-18. [x] Validar `GET /api-v2/auth/csrf` publicamente com CORS/cookie CSRF.
-19. [x] Validar acesso inicial ao frontend em HTTPS e criacao de usuarios iniciais.
-20. Configurar volume privado e permissoes de storage.
-21. Ativar e validar ClamAV em modo `strict`.
-22. Executar backfills por modulo.
-23. Criar/migrar usuarios reais e roles.
-24. [x] Rodar smoke publico sem `--soft`.
-25. Rodar Playwright contra homologacao real.
-26. Fazer QA visual desktop/mobile.
-27. Validar rollback.
-28. Aprovar corte para producao.
+17. Rodar `npm run ops:readiness` no container da API sem `--skip`.
+18. Rodar `npm run ops:backfill:report` no container da API e anexar JSON/evidencia ao plano de backfill.
+19. [x] Validar `GET /api-v2/health` publicamente (`database=up`, `storage=up`).
+20. [x] Validar `GET /api-v2/auth/csrf` publicamente com CORS/cookie CSRF.
+21. [x] Validar acesso inicial ao frontend em HTTPS e criacao de usuarios iniciais.
+22. Configurar volume privado e permissoes de storage.
+23. Ativar e validar ClamAV em modo `strict`.
+24. Executar backfills por modulo.
+25. Criar/migrar usuarios reais e roles.
+26. [x] Rodar smoke publico sem `--soft`.
+27. Rodar Playwright contra homologacao real.
+28. Fazer QA visual desktop/mobile.
+29. Validar rollback.
+30. Aprovar corte para producao.
 
 ## Checklist do que falta para producao
 
@@ -438,7 +440,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Rodar seed RBAC.
 - [ ] Rodar/registrar bootstrap admin ou procedimento equivalente usado para usuarios iniciais.
 - [ ] Comparar schema Prisma com schema legado.
-- [ ] Planejar backfills por modulo.
+- [x] Disponibilizar relatorio read-only de backfill/consistencia (`npm run ops:backfill:report`).
+- [ ] Rodar relatorio read-only de backfill no MySQL real e anexar evidencia.
+- [ ] Planejar backfills por modulo com base no relatorio real.
 - [ ] Executar backfills com logs e conferencia.
 - [ ] Validar contagens de registros.
 - [ ] Validar vinculos cliente/usuario/gestor/departamento/carteira.
@@ -451,7 +455,8 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Validar 401/403/200 por perfil.
 - [ ] Validar IDOR em documentos, certificados, propostas e contratos.
 - [ ] Validar storage privado sem acesso publico.
-- [ ] Validar ClamAV strict com EICAR.
+- [x] Disponibilizar validacao operacional de storage/ClamAV/RBAC (`npm run ops:readiness`).
+- [ ] Rodar `npm run ops:readiness` no EasyPanel sem `--skip` e validar ClamAV strict com EICAR.
 - [ ] Proteger phpMyAdmin.
 - [ ] Confirmar Swagger desabilitado/protegido em producao.
 
@@ -478,6 +483,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Disponibilizar smoke publico automatizado no repo separado do Web.
 - [x] Implementar health operacional da API para banco/storage.
 - [x] Rodar smoke publico sem `--soft`.
+- [x] Disponibilizar validadores operacionais da API para RBAC, storage, ClamAV, usuarios privilegiados e backfill read-only.
 - [ ] Criar Playwright contra homologacao real.
 - [ ] Testar fluxos por perfil real.
 - [ ] Fazer QA visual desktop.
@@ -486,14 +492,14 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 ## Bloqueios atuais principais
 
-1. Atualizacoes documentais locais desta rodada ainda precisam ser enviadas ao remoto de documentacao.
+1. Atualizacoes tecnicas e documentais locais desta rodada ainda precisam ser enviadas aos remotos.
 2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
-3. Backfills reais ainda nao foram executados/conferidos por modulo.
-4. Storage privado retornou `storage=up`, mas persistencia, permissoes, backup e fluxos reais de upload/download ainda precisam ser homologados.
-5. ClamAV strict ainda nao foi homologado com EICAR.
+3. Rodar `npm run ops:readiness` no container `portal-sama-api` sem `--skip` para provar env, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV/EICAR reais.
+4. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
+5. Storage privado retornou `storage=up`, mas persistencia, permissoes, backup e fluxos reais de upload/download ainda precisam ser homologados.
 6. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.
 7. Playwright real e QA visual final ainda nao foram concluidos.
-8. Backups, retencao de logs e plano de rollback ainda precisam ser formalizados.
+8. Backups, retencao de logs e plano de rollback ainda precisam ser formalizados e testados por restore drill.
 9. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 
 ## Criterio para dizer "pronto para producao"
@@ -520,7 +526,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> validar matriz de usuarios/perfis -> testar fluxos criticos reais -> validar storage/ClamAV -> configurar backups/rollback -> Playwright real -> QA visual final
+registrar migrations/seed/bootstrap -> rodar ops:readiness sem skips -> rodar ops:backfill:report --json -> validar matriz de usuarios/perfis -> testar fluxos criticos reais -> validar storage/ClamAV -> configurar backups/rollback -> Playwright real -> QA visual final
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

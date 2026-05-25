@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 16:18 -03:00
+
+- Reduzida a pendencia operacional de validacao profunda da API: `portal-sama-api` agora expoe `npm run ops:readiness`.
+- O readiness valida ambiente de producao, conexao MySQL, migrations aplicadas, drift de RBAC contra o catalogo padrao, usuarios ADMIN/DEV ativos, leitura/escrita no storage privado e ClamAV/EICAR quando rodado sem skips no container real.
+- Reduzida a pendencia de planejamento de backfills: `portal-sama-api` agora expoe `npm run ops:backfill:report`, read-only, listando tabelas atuais, candidatos legados conhecidos, contagens por modulo, usuarios ativos sem role, roles sem permissoes, tokens publicos expirados e vinculos de cliente quebrados.
+- Corrigida a fragilidade temporal de `transfers.service.spec.ts`: o teste de criacao de transferencia agora congela o relogio em `2026-05-19T12:00:00.000Z`, evitando que a transferencia de ferias seja tratada como expirada em datas futuras.
+- Passaram `node --check` nos scripts operacionais, `npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft`, `npm.cmd run ops:backfill:report -- --help`, `npm.cmd run ops:backfill:report -- --soft` com banco falso, `npm.cmd run test -- --runInBand` com 165 testes, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` com `DATABASE_URL` dummy.
+- Permanecem pendentes: rodar `ops:readiness` sem `--skip` no EasyPanel, rodar `ops:backfill:report -- --json` no MySQL real, executar/conferir backfills, formalizar restore drill de backup/rollback, validar matriz de perfis e concluir Playwright/QA real.
+
 ## Atualizacao 2026-05-25 11:46 -03:00
 
 - Atualizado o estado real de infraestrutura: repositorios Bitbucket ja existem, EasyPanel ja possui `portal-sama-api`, `portal-sama-database` e `portal-sama-web` online, e o dominio `https://portal.samacontabil.com.br/` esta ativo.

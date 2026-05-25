@@ -1,5 +1,16 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 16:18 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Adicionadas validacoes operacionais de API para readiness, RBAC/perfis, storage/ClamAV e relatorio read-only de backfill, alem de corrigir uma fragilidade temporal na suite de transferencias.
+- **Backend/operacao:** `portal-sama-api/package.json` agora expoe `npm run ops:readiness` e `npm run ops:backfill:report`.
+- **Readiness:** O comando valida ambiente de producao, MySQL, migrations Prisma aplicadas, seed RBAC contra catalogo padrao, usuarios ADMIN/DEV ativos, storage privado e ClamAV/EICAR. A execucao local foi feita com skips para banco/ClamAV; a execucao real sem skips continua pendente no EasyPanel.
+- **Backfill:** O relatorio read-only lista tabelas atuais, candidatos legados, contagens por modulo e gaps de relacao sem alterar dados, servindo como evidencia antes de qualquer backfill real.
+- **Transferencias:** `transfers.service.spec.ts` passou a congelar o relogio em `2026-05-19T12:00:00.000Z`, removendo flakiness causada pela data atual.
+- **Validacao:** Passaram `node --check` dos scripts, smokes locais dos comandos operacionais, `npm.cmd run test -- --runInBand` com 165 testes, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` com `DATABASE_URL` dummy.
+- **Pendente:** Rodar `ops:readiness` sem skips e `ops:backfill:report -- --json` no container real da API, anexar evidencias, executar backfills, backup/restore drill, validar matriz real de perfis e concluir Playwright/QA.
+
 ## Atualizacao complementar 2026-05-25 11:46 -03:00
 
 - **Responsavel/IA:** Codex
