@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 09:25 -03:00
+
+- Corrigido `npm run prisma:seed` no runtime Docker: o script agora usa `dist/prisma/seed.js` quando o build compilado existe.
+- Corrigido tambem `npm run prisma:bootstrap-admin` para usar `dist/prisma/bootstrap-admin.js` no container.
+- Passaram `node --check scripts/run-prisma-runtime-script.js`, `npm.cmd run build`, `npm.cmd run lint` e `npm.cmd run prisma:validate`.
+- `npm.cmd run prisma:seed` com banco falso em `127.0.0.1:9` falhou apenas por conexao recusada, confirmando que o erro de import TypeScript foi removido.
+- Permanece pendente redeployar a API no EasyPanel e rodar seed/bootstrap contra o MySQL real.
+
 ## Atualizacao 2026-05-22 16:38 -03:00
 
 - Corrigido o fluxo que derrubava o container da API com Prisma `P3005`: migrations nao rodam mais no start por padrao.

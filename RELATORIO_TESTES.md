@@ -1,5 +1,49 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 09:25
+
+### Contexto
+
+- Correcao do comando `npm run prisma:seed` dentro do container da API no EasyPanel.
+- Objetivo: impedir que o seed RBAC dependa de `src/` no runtime Docker.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco: nao acessado diretamente; a validacao negativa usou `127.0.0.1:9` para evitar tocar em banco real.
+- Observacoes: Docker Desktop local nao estava ativo nesta rodada.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+node --check scripts/run-prisma-runtime-script.js
+npm.cmd run build
+npm.cmd run lint
+npm.cmd run prisma:validate
+$env:DATABASE_URL='mysql://portal_user:portal_password@127.0.0.1:9/portal_sama_test'; npm.cmd run prisma:seed
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para corrigir o erro de TypeScript/import do seed no container.
+- `node --check` passou.
+- Build NestJS passou.
+- Lint passou.
+- Prisma validate passou.
+- `npm.cmd run prisma:seed` entrou em `dist/prisma/seed.js` e falhou somente por nao conseguir conectar em `127.0.0.1:9`, como esperado.
+
+### Pendencias
+
+- Rebuild/redeploy real no EasyPanel para que o container tenha o wrapper novo.
+- Executar `npm run prisma:seed` contra o `DATABASE_URL` real apos o redeploy.
+- Executar `npm run prisma:bootstrap-admin` com variaveis `SAMA_BOOTSTRAP_ADMIN_*`.
+
+### Observacao anti-alucinacao
+
+Nao foi executado seed contra o MySQL do EasyPanel nesta rodada. Nao houve Docker build local porque o Docker daemon nao estava disponivel.
+
 ## Execucao 2026-05-22 16:38
 
 ### Contexto

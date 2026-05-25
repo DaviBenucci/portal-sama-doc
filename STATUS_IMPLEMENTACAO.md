@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 09:25 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigida a execucao de `npm run prisma:seed` dentro da imagem Docker da API.
+- **Backend/deploy:** `portal-sama-api/package.json` agora chama `scripts/run-prisma-runtime-script.js` para `prisma:seed` e `prisma:bootstrap-admin`. O wrapper executa `dist/prisma/*.js` quando o build compilado existe no container e usa `prisma/*.ts` apenas em ambiente local sem `dist`.
+- **Causa raiz:** A imagem de runtime copia `dist/`, `prisma/` e `scripts/`, mas nao copia `src/`; por isso `ts-node prisma/seed.ts` nao encontrava `../src/modules/rbac/default-rbac`.
+- **Validacao:** `node --check scripts/run-prisma-runtime-script.js`, `npm.cmd run build`, `npm.cmd run lint`, `npm.cmd run prisma:validate` passaram. `npm.cmd run prisma:seed` com `DATABASE_URL` apontando para `127.0.0.1:9` falhou apenas por conexao recusada ao banco, confirmando que o script compilado foi usado.
+- **Observacao:** Docker Desktop local nao estava ativo em 2026-05-25 09:25, entao o rebuild Docker local nao foi repetido nesta rodada. A validacao com `dist/prisma/seed.js` cobriu o erro reportado no EasyPanel.
+
 ## Atualizacao complementar 2026-05-22 16:38 -03:00
 
 - **Responsavel/IA:** Codex

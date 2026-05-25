@@ -360,6 +360,8 @@ SAMA_BOOTSTRAP_ADMIN_ROLE=DEV \
 npm run prisma:bootstrap-admin
 ```
 
+> Atualizacao 2026-05-25 09:25 -03:00: em imagens antigas, `npm run prisma:seed` pode falhar com `Cannot find module '../src/modules/rbac/default-rbac'`, porque o runtime Docker nao copia `src/`. Ate redeployar a API com a imagem corrigida, rode temporariamente `node dist/prisma/seed.js`. Apos o redeploy, `npm run prisma:seed` volta a ser o comando recomendado.
+
 Primeira preparacao da API em um banco existente sem `_prisma_migrations`:
 
 ```bash

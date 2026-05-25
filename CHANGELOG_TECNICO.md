@@ -1,5 +1,46 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 09:25
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/run-prisma-runtime-script.js`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- `npm run prisma:seed` e `npm run prisma:bootstrap-admin` passaram a usar um wrapper de runtime.
+- No container Docker, o wrapper executa `dist/prisma/seed.js` ou `dist/prisma/bootstrap-admin.js`.
+- Em ambiente local sem `dist`, o wrapper continua executando `prisma/seed.ts` ou `prisma/bootstrap-admin.ts` via `ts-node`.
+
+### Motivo da alteracao
+
+No EasyPanel, `npm run prisma:seed` rodava `ts-node prisma/seed.ts`, mas a imagem de runtime nao copia `src/`. Como `seed.ts` importa `../src/modules/rbac/default-rbac`, o comando falhava antes de chegar ao banco.
+
+### Impacto esperado
+
+- A imagem Docker consegue rodar `npm run prisma:seed` sem precisar copiar `src/`.
+- O bootstrap administrativo tambem fica preparado para rodar a partir do JS compilado.
+- Quem estiver em um container antigo pode usar temporariamente `node dist/prisma/seed.js` ate redeployar a imagem nova.
+
+### Testes executados
+
+- `node --check scripts/run-prisma-runtime-script.js`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:seed` com `DATABASE_URL=mysql://portal_user:portal_password@127.0.0.1:9/portal_sama_test`: falhou por conexao recusada ao banco, confirmando que chegou em `dist/prisma/seed.js` e nao falhou mais por TypeScript/import.
+
+### Riscos ou pendencias
+
+- Docker Desktop local nao estava ativo, entao o rebuild Docker local nao foi repetido.
+- Ainda falta redeployar a API no EasyPanel para que `npm run prisma:seed` use o wrapper novo.
+
 ## 2026-05-22 16:38
 
 ### Arquivos alterados

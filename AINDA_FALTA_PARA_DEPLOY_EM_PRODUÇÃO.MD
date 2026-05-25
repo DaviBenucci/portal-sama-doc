@@ -352,6 +352,8 @@ Se o banco existente retornar `P3005`, usar o baseline controlado antes do seed/
 SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing
 ```
 
+Observacao 2026-05-25 09:25 -03:00: se o container atual ainda falhar em `npm run prisma:seed` com `Cannot find module '../src/modules/rbac/default-rbac'`, ele esta usando uma imagem anterior ao wrapper de runtime. Workaround imediato: `node dist/prisma/seed.js`. Correcao definitiva: redeployar `portal-sama-api` com o script atualizado.
+
 Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 ## Ordem segura para homologacao
