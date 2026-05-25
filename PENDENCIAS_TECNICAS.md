@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 10:33 -03:00
+
+- Corrigido desalinhamento visual da intro/welcome no frontend causado por dependencia da propriedade CSS individual `translate`.
+- A intro agora ancora logo/texto via atributos `data-intro-x-percent` e `data-intro-y-percent`, aplicados pela timeline GSAP.
+- As linhas laterais da welcome receberam mascaras CSS para esmaecerem antes do centro.
+- A lateral do login deixou de depender de `translate`; offsets foram movidos para keyframes com `translateY(...)`.
+- Passaram `npm.cmd run lint`, `npm.cmd run build`, `git diff --check`, smoke Playwright local em `/dev/intro-preview` e `/login`, e checagem de ausencia de `translate:` em `src`/`public`.
+- Permanece pendente redeployar o frontend no EasyPanel e validar visualmente em navegador real com cache limpo.
+
 ## Atualizacao 2026-05-25 09:48 -03:00
 
 - Diagnosticado o novo erro de deploy Prisma `P1013`: `invalid port number in database URL`.

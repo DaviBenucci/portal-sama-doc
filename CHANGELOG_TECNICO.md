@@ -1,5 +1,52 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 10:33
+
+### Arquivos alterados
+
+- `portal-sama-web/src/features/intro/components/PortalSamaLayer.tsx`
+- `portal-sama-web/src/features/intro/hooks/usePortalSamaGsapTimeline.ts`
+- `portal-sama-web/src/features/intro/styles/portal-sama-intro.css`
+- `portal-sama-web/src/index.css`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+
+### O que mudou
+
+- A centralizacao da logo e do texto da intro deixou de depender da propriedade CSS individual `translate`.
+- `PortalSamaLayer` passou a declarar percentuais de ancoragem via `data-intro-x-percent` e `data-intro-y-percent`.
+- A timeline GSAP aplica esses percentuais depois de limpar `transform`, preservando o centro durante `scale`, `rotation` e `y`.
+- As linhas laterais da cena `welcome` receberam `mask-image`/`-webkit-mask-image` para reforcar o esmaecimento antes do centro.
+- O login incorporou o deslocamento vertical das camadas de logo nos keyframes com `translateY(...)`.
+- A welcome em telas estreitas pode quebrar em duas linhas para evitar corte.
+
+### Motivo da alteracao
+
+No deploy, a cena de introducao podia aparecer com logo e texto deslocados para baixo/direita quando o navegador/cache nao aplicava `translate`. O sintoma era a frase de boas-vindas saindo pela direita e as camadas da logo desalinhadas.
+
+### Impacto esperado
+
+- A intro fica centralizada de forma mais compativel no deploy.
+- O primeiro login (`welcome`) preserva o texto e as linhas laterais sem invadir o centro.
+- A lateral do login continua alinhada sem depender de propriedades CSS individuais de transform.
+
+### Testes executados
+
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-web`: passou.
+- `rg "\btranslate\s*:" src public -S` em `portal-sama-web`: sem ocorrencias.
+- Smoke Playwright manual em `/dev/intro-preview` e `/login` com viewports `1920x900` e `390x844`: sem overflow horizontal e com logo/texto centralizados.
+- Checagem extra Playwright `320x720`: texto da welcome sem `scrollWidth` maior que `clientWidth`.
+
+### Riscos ou pendencias
+
+- Ainda falta validar no EasyPanel apos novo deploy, em navegador real, com cache limpo ou versao nova do asset/CSS.
+- QA visual final de homologacao continua pendente para aprovar timing e intensidade visual.
+
 ## 2026-05-25 09:48
 
 ### Arquivos alterados

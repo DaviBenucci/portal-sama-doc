@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 10:33 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido desalinhamento visual da intro/welcome observado no deploy e reforcado o fade das linhas laterais.
+- **Frontend/intro:** `portal-sama-web` nao depende mais da propriedade CSS individual `translate` para centralizar logo/texto da intro. A ancoragem animada agora e preservada pelo GSAP via `data-intro-x-percent`/`data-intro-y-percent`, evitando deslocamento para baixo/direita em navegadores/caches que nao aplicam `translate`.
+- **Login:** A animacao da lateral do login tambem deixou de depender de `translate`; os offsets foram incorporados nos keyframes com `translateY(...)`.
+- **Welcome:** As linhas laterais da cena `welcome` receberam mascaras CSS adicionais para esmaecerem antes do centro, e o texto ganhou ajuste mobile para nao cortar dentro do preview/viewport estreito.
+- **Validacao:** Passaram `npm.cmd run lint`, `npm.cmd run build`, `git diff --check`, smoke Playwright manual em `/dev/intro-preview` e `/login` com viewports `1920x900`, `390x844` e checagem extra `320x720`. `rg "\btranslate\s*:" src public -S` nao encontrou usos restantes.
+
 ## Atualizacao complementar 2026-05-25 09:48 -03:00
 
 - **Responsavel/IA:** Codex

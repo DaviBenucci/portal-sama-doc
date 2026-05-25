@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-22 15:22 -03:00
+Ultima atualizacao: 2026-05-25 10:33 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,20 +45,20 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-22 15:22 -03:00:
+Estimativa operacional em 2026-05-25 10:33 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar homologacao da nova stack | 76% | Base tecnica existe, workspaces locais foram preparados e lint/build separados passaram; falta publicar os repositorios no Bitbucket/EasyPanel e validar com banco/HTTPS reais. |
-| Pronto para producao sem depender do legado | 64% | A separacao local e os builds separados reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA e fluxos criticos reais. |
-| Falta para producao | 36% | Principalmente infraestrutura real, migracao de dados, validacao operacional e desligamento seguro do legado. |
+| Pronto para iniciar homologacao da nova stack | 77% | Base tecnica existe, workspaces locais foram preparados, lint/build separados passaram e o desalinhamento local da intro/welcome foi corrigido; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
+| Pronto para producao sem depender do legado | 65% | A separacao local, builds separados e ajustes visuais reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA final e fluxos criticos reais. |
+| Falta para producao | 35% | Principalmente infraestrutura real, migracao de dados, validacao operacional, QA final e desligamento seguro do legado. |
 
 ## Estado atual resumido
 
 | Area | Estado | Observacao |
 |---|---|---|
 | Backend `portal-sama-api` | Parcial avancado | NestJS/API v2 existe, com Auth, RBAC, auditoria e varios modulos migrados. Falta validar tudo com MySQL real. |
-| Frontend `portal-sama-web` | Parcial avancado | React/Vite existe, login e muitas rotas ja foram migradas. Parte dos testes ainda usa mocks. |
+| Frontend `portal-sama-web` | Parcial avancado | React/Vite existe, login e muitas rotas ja foram migradas. O desalinhamento local da intro/welcome foi corrigido em 2026-05-25; falta validar no EasyPanel/navegador real. Parte dos testes ainda usa mocks. |
 | Banco MySQL/Prisma | Parcial | Schema/migrations existem, mas precisam rodar no MySQL real do EasyPanel (`banco-sama`). |
 | Primeiro admin da API v2 | Implementado localmente | Existe `npm run prisma:bootstrap-admin`; falta executar no container real. |
 | EasyPanel | Documentado, nao homologado | Existe guia e Dockerfiles; falta criar servicos reais a partir do Bitbucket. |
@@ -70,7 +70,7 @@ Estimativa operacional em 2026-05-22 15:22 -03:00:
 | Usuarios/permissoes reais | Pendente | Seed/roles existem; falta migrar/criar usuarios reais e testar perfis. |
 | Backfills | Pendente critico | Dados legados precisam ser migrados/conferidos por modulo. |
 | Playwright real | Pendente | Ha cobertura com mocks; falta suite contra API/MySQL/HTTPS reais. |
-| QA visual | Pendente | Necessario aprovar desktop/mobile em navegador real. |
+| QA visual | Pendente | Intro/welcome corrigida localmente com Playwright desktop/mobile; ainda necessario aprovar desktop/mobile no EasyPanel em navegador real. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
 
 ## Separacao em repositorios Bitbucket

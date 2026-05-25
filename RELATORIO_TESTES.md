@@ -1,5 +1,50 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 10:33
+
+### Contexto
+
+- Correcao visual da intro/welcome e da lateral de login apos desalinhamento observado no deploy.
+- Objetivo: confirmar que logo/texto nao dependem de `translate`, que as linhas laterais esmaecem antes do centro e que nao ha corte horizontal.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Frontend: Vite dev server ja ativo em `http://localhost:5173`.
+- Banco/API: nao acessados nesta rodada.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+rg "\btranslate\s*:" src public -S
+git diff --check
+node <smoke Playwright inline para /dev/intro-preview e /login>
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para novo deploy visual do frontend.
+- Lint passou.
+- Build passou.
+- `git diff --check` passou.
+- A busca por `translate:` em `src` e `public` nao encontrou ocorrencias restantes.
+- Playwright validou `/dev/intro-preview` e `/login` em `1920x900` e `390x844` sem overflow horizontal.
+- Checagem extra em `320x720` confirmou que a copy da welcome nao fica com `scrollWidth` maior que `clientWidth`.
+
+### Pendencias
+
+- Redeploy do `portal-sama-web` no EasyPanel.
+- Validar visualmente em navegador real apos limpar cache/hard refresh.
+- Confirmar no primeiro login real que a cena `welcome` nao volta a cortar texto nem deslocar logo.
+
+### Observacao anti-alucinacao
+
+Nao foi executado teste contra o EasyPanel nesta rodada. As screenshots e metricas foram coletadas localmente via Playwright.
+
 ## Execucao 2026-05-25 09:48
 
 ### Contexto
