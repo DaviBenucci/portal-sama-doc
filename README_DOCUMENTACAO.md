@@ -17,7 +17,7 @@ Esta documentação foi atualizada após a primeira entrega para refletir as dec
 
 ## Novos documentos desta atualização
 
-Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter tres repositorios: `portal-sama-docs`, `portal-sama-api` e `portal-sama-web`. O repositorio `portal-sama-docs` deve ser lido antes de qualquer alteracao na API ou no frontend.
+Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter tres repositorios: `portal-sama-docs`/`portal-sama-doc` (documentacao), `portal-sama-api` e `portal-sama-web`. Em 2026-05-25, o remoto observado no Bitbucket para documentacao aparece como `portal-sama-doc`, enquanto o workspace local permanece `portal-sama-docs`. O repositorio de documentacao deve ser lido antes de qualquer alteracao na API ou no frontend.
 
 | Documento | Finalidade |
 |---|---|
@@ -190,7 +190,8 @@ Para começar a implementação, use diretamente:
 ## Topologia oficial de repositorios
 
 ```txt
-portal-sama-docs  -> documentacao completa e fonte de verdade
+portal-sama-docs  -> documentacao completa e fonte de verdade local
+portal-sama-doc   -> alias remoto observado no Bitbucket em 2026-05-25
 portal-sama-api   -> backend NestJS/API v2
 portal-sama-web   -> frontend React/Vite
 ```

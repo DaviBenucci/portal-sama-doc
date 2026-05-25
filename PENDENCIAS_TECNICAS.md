@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 11:46 -03:00
+
+- Atualizado o estado real de infraestrutura: repositorios Bitbucket ja existem, EasyPanel ja possui `portal-sama-api`, `portal-sama-database` e `portal-sama-web` online, e o dominio `https://portal.samacontabil.com.br/` esta ativo.
+- `npm.cmd run smoke:public` passou sem `--soft`: frontend 200, `/api-v2/health` 200 com `database=up` e `storage=up`, CORS aceitou `https://portal.samacontabil.com.br` e `/api-v2/auth/csrf` emitiu token/cookie.
+- `curl.exe` confirmou headers publicos de seguranca/CORS em `/api-v2/auth/csrf`, incluindo HSTS, CSP, `Access-Control-Allow-Credentials: true` e cookie CSRF `Secure; SameSite=Lax`.
+- O banco real do EasyPanel esta operacional como `portal-sama-database`; log informado mostra MySQL Community Server 9.7.0 pronto em `:3306`. Usuarios iniciais da aplicacao ja foram criados pelo operador.
+- Deixam de ser pendencias principais: criar repositorios Bitbucket, criar servicos EasyPanel, publicar dominio HTTPS, confirmar proxy `/api-v2`, validar health publico e rodar smoke publico sem `--soft`.
+- Permanecem pendentes: confirmar migrations/seed/bootstrap ou procedimento equivalente, validar matriz de permissoes por perfil, backfills, storage persistente/backup, ClamAV strict, Playwright real, QA visual final, backups/rollback e desligamento seguro do legado.
+
 ## Atualizacao 2026-05-25 11:32 -03:00
 
 - Reduzida a pendencia de health operacional da API: `GET /api-v2/health` agora checa banco e storage em vez de informar apenas configuracao.

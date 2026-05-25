@@ -2,6 +2,8 @@
 
 Data do registro: 2026-05-13 15:18 -03:00
 
+Status atualizado em 2026-05-25 11:46 -03:00: resolvido para a nova stack. O dominio `https://portal.samacontabil.com.br/` responde HTTP 200, `portal-sama-web` proxya `/api-v2`, `portal-sama-api` responde health com `database=up` e `storage=up`, e `npm.cmd run smoke:public` passou sem `--soft`.
+
 ## Contexto
 
 O subdominio `portal.samacontabil.com.br` ja foi apontado no EasyPanel para a aplicacao antiga, mas a aplicacao publica retorna erro e ainda nao deve receber a nova versao ate ficar estavel.
@@ -87,8 +89,7 @@ COOKIE_SAME_SITE=lax
 
 ## Pendencias
 
-- Corrigir o alvo interno do dominio customizado na aplicacao antiga ou confirmar nos logs o motivo do HTTP 500.
-- Validar a topologia `docker-compose.easypanel.example.yml` ou configurar servicos equivalentes no EasyPanel com os mesmos nomes internos.
-- Publicar o servico `portal-sama-api` e redeployar `portal-sama-web` com o novo proxy `/api-v2`.
-- Reexecutar `npm.cmd run smoke:public` sem `--soft` quando a API nova estiver publicada.
-- Validar CORS, cookies, login, refresh, upload e download via HTTPS real antes de trocar o trafego definitivo.
+- Manter monitoramento do dominio e certificado TLS.
+- Validar login, refresh, upload e download via HTTPS real por perfil.
+- Validar storage persistente, ClamAV strict, backups e rollback.
+- Registrar qualquer novo incidente separado se o dominio voltar a responder 5xx.

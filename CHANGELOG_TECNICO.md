@@ -1,5 +1,48 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 11:46
+
+### Arquivos alterados
+
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `EASYPANEL_DEPLOY.md`
+- `README_DOCUMENTACAO.md`
+- `INCIDENTE_SUBDOMINIO_PORTAL_SAMACONTABIL.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- Atualizado o estado real: Bitbucket ja possui repositorios, EasyPanel ja esta com API/database/Web online e `https://portal.samacontabil.com.br/` esta ativo.
+- Registrados nomes reais observados: `portal-sama-api`, `portal-sama-database`, `portal-sama-web` e repo de documentacao remoto `portal-sama-doc`.
+- Ajustado o painel de deploy para remover como bloqueio principal a criacao de repositorios, publicacao no EasyPanel, dominio HTTPS, proxy `/api-v2`, health publico e smoke publico.
+- Atualizada a estimativa operacional para 92% de prontidao para iniciar/continuar homologacao e 73% para producao sem legado.
+- Registrado que o banco real esta conectado, usuarios iniciais foram criados pelo operador e o health publico retornou `database=up`/`storage=up`.
+
+### Motivo da alteracao
+
+Sincronizar a documentacao com o estado real informado pelo operador e validado por smoke HTTP publico, evitando que os documentos continuem tratando Bitbucket/EasyPanel/banco/dominio como pendencias ja resolvidas.
+
+### Impacto esperado
+
+- Proximos ciclos deixam de focar criacao de infraestrutura e passam a focar homologacao funcional, permissoes reais, backfills, storage/ClamAV, backups/rollback e QA.
+- O smoke publico passa a ser evidencia registrada de que dominio, proxy, CORS, CSRF, API, banco e storage estao respondendo.
+
+### Testes executados
+
+- `npm.cmd run smoke:public` em `portal-sama-web`: passou sem `--soft`.
+- `curl.exe -sS https://portal.samacontabil.com.br/api-v2/health`: retornou `ok=true`, `database=up`, `storage=up`.
+- `curl.exe -sS -D - -o NUL -H "Origin: https://portal.samacontabil.com.br" https://portal.samacontabil.com.br/api-v2/auth/csrf`: retornou 200, CORS esperado, HSTS/CSP e cookie CSRF `Secure; SameSite=Lax`.
+
+### Riscos ou pendencias
+
+- Confirmar e registrar migrations/seed/bootstrap ou procedimento equivalente usado para usuarios iniciais.
+- Validar matriz de permissoes por perfil, backfills, storage persistente, ClamAV strict, backups/rollback, Playwright real e QA visual final.
+- Enviar esta atualizacao documental ao remoto de documentacao.
+
 ## 2026-05-25 11:32
 
 ### Arquivos alterados

@@ -1,5 +1,53 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 11:46
+
+### Contexto
+
+- Atualizacao documental apos confirmacao operacional do usuario: repositorios Bitbucket existentes, deploy EasyPanel realizado, aplicacao publica em `https://portal.samacontabil.com.br/`, banco real conectado e usuarios iniciais criados.
+- Objetivo: validar publicamente o estado do deploy e registrar o que deixa de ser pendencia.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Deploy remoto: EasyPanel com `portal-sama-api`, `portal-sama-database` e `portal-sama-web`.
+- Dominio publico: `https://portal.samacontabil.com.br/`.
+- Banco remoto: MySQL Community Server 9.7.0 conforme log visual informado pelo operador.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run smoke:public
+```
+
+Em `portal-sama-docs`:
+
+```bash
+curl.exe -sS -D - -o NUL -H "Origin: https://portal.samacontabil.com.br" https://portal.samacontabil.com.br/api-v2/auth/csrf
+curl.exe -sS https://portal.samacontabil.com.br/api-v2/health
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para smoke publico real sem `--soft`.
+- Frontend publico respondeu HTTP 200.
+- `/api-v2/health` respondeu HTTP 200 com `{"ok":true,"service":"portal-sama-api","database":"up","storage":"up"}`.
+- Preflight CORS para `/api-v2/auth/me` respondeu 204 e aceitou `https://portal.samacontabil.com.br` com credenciais.
+- `/api-v2/auth/csrf` respondeu 200 com token JSON e cookie CSRF.
+- Headers observados em `/api-v2/auth/csrf`: HSTS, CSP, `Access-Control-Allow-Origin: https://portal.samacontabil.com.br`, `Access-Control-Allow-Credentials: true`, `Set-Cookie` com `Secure; SameSite=Lax`.
+
+### Pendencias
+
+- Confirmar/registrar historico de migrations, seed RBAC e bootstrap admin ou procedimento equivalente usado para usuarios iniciais.
+- Validar login/Home e matriz de permissoes por perfil real.
+- Validar storage persistente, upload/download reais, ClamAV strict com EICAR, backups/rollback, Playwright real e QA visual final.
+
+### Observacao anti-alucinacao
+
+O smoke publico real passou. Nao foram executados testes Playwright reais, fluxos por perfil, migrations, seed, bootstrap, backfills, upload/download reais ou teste ClamAV nesta rodada.
+
 ## Execucao 2026-05-25 11:32
 
 ### Contexto

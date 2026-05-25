@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 11:32 -03:00
+Ultima atualizacao: 2026-05-25 11:46 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,32 +45,32 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 11:32 -03:00:
+Estimativa operacional em 2026-05-25 11:46 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar homologacao da nova stack | 81% | Base tecnica existe, workspaces locais foram preparados, API/Web possuem README minimo apontando para `portal-sama-docs`, lint/build separados passaram, o Web separado tem E2E local atualizado com 9 testes, expoe `npm.cmd run smoke:public` e a API agora reporta health real de banco/storage; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
-| Pronto para producao sem depender do legado | 66% | A separacao local, builds separados, ajustes visuais e E2E local reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA final e fluxos criticos reais. |
-| Falta para producao | 34% | Principalmente infraestrutura real, migracao de dados, validacao operacional, QA final e desligamento seguro do legado. |
+| Pronto para iniciar/continuar homologacao da nova stack | 92% | Repositorios Bitbucket existem, API/Web/database estao publicados no EasyPanel, `https://portal.samacontabil.com.br/` esta ativo, o banco real esta conectado, usuarios iniciais foram criados e o smoke publico sem `--soft` passou com health `database=up` e `storage=up`; faltam QA por perfil, Playwright real, backfills e validacoes operacionais profundas. |
+| Pronto para producao sem depender do legado | 73% | Deploy publico, banco real, proxy `/api-v2`, CORS e CSRF ja funcionam; ainda faltam backfills, validacao de permissoes por perfil, storage/ClamAV em fluxo real, QA final, backups/rollback e desligamento seguro do legado. |
+| Falta para producao | 27% | Principalmente migracao/conferencia de dados, seguranca operacional, QA final, Playwright real, storage/ClamAV, backups e desligamento seguro do legado. |
 
 ## Estado atual resumido
 
 | Area | Estado | Observacao |
 |---|---|---|
-| Backend `portal-sama-api` | Parcial avancado | NestJS/API v2 existe, com Auth, RBAC, auditoria, health operacional de banco/storage e varios modulos migrados. Falta validar tudo com MySQL real. |
-| Frontend `portal-sama-web` | Parcial avancado | React/Vite existe, login e muitas rotas ja foram migradas. O desalinhamento local da intro/welcome foi corrigido e protegido por E2E local em 2026-05-25; o repo separado agora possui `npm.cmd run smoke:public` para validar dominio/API/CORS/CSRF depois do deploy. Falta validar no EasyPanel/navegador real. Parte dos testes ainda usa mocks. |
-| Banco MySQL/Prisma | Parcial | Schema/migrations existem e `GET /api-v2/health` agora executa `SELECT 1` quando `PRISMA_CONNECT_ON_BOOT=true`, mas migrations e health ainda precisam rodar no MySQL real do EasyPanel (`banco-sama`). |
-| Primeiro admin da API v2 | Implementado localmente | Existe `npm run prisma:bootstrap-admin`; falta executar no container real. |
-| EasyPanel | Documentado, nao homologado | Existe guia, Dockerfiles e smoke publico automatizado no Web; falta criar servicos reais a partir do Bitbucket e rodar o smoke sem `--soft`. |
+| Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`. Falta validar fluxos de negocio e permissoes com dados reais. |
+| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; logs do Web mostram assets e chamadas `/api-v2/*` respondendo 200; smoke publico validou frontend, proxy, CORS e CSRF. |
+| Banco MySQL/Prisma | Operacional em homologacao | EasyPanel possui servico `portal-sama-database`; log mostra MySQL Community Server 9.7.0 pronto em `:3306`; health real da API retornou `database=up`. Falta confirmar historico de migrations/backfills e conferir dados por modulo. |
+| Primeiro admin/usuarios API v2 | Parcial operacional | Usuario(s) inicial(is) ja foram criados pelo operador e a aplicacao esta conectada ao banco real; falta registrar matriz de usuarios/perfis reais e validar permissoes por papel. |
+| EasyPanel | Deployado | Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` ativos. Falta completar validacoes finais, backups, rollback e hardening operacional. |
 | Workspaces locais | Separado e preparado | Existem pastas irmas `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` no Desktop; API/Web agora possuem README minimo com regra de leitura do repo de docs. |
-| Bitbucket/Git | Parcial | Git local inicializado em `main`; falta criar remotes Bitbucket e publicar os repositorios. |
+| Bitbucket/Git | Remotos existentes | Repositorios Bitbucket existem para API, Web e documentacao (`portal-sama-api`, `portal-sama-web`, `portal-sama-doc` conforme evidencia visual). Falta apenas garantir push das atualizacoes documentais locais desta rodada. |
 | Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
-| Storage privado | Parcial | Codigo, variaveis e checagem de health para leitura/escrita existem; falta volume real persistente e validacao de permissoes no EasyPanel. |
+| Storage privado | Parcial validado | Health publico retornou `storage=up`, indicando caminho gravavel no container. Falta validar persistencia do volume, permissoes, backup e fluxos reais de upload/download. |
 | ClamAV | Pendente em homologacao | Deve ser validado em modo `strict` antes de producao. |
-| Usuarios/permissoes reais | Pendente | Seed/roles existem; falta migrar/criar usuarios reais e testar perfis. |
+| Usuarios/permissoes reais | Parcial | Usuarios iniciais foram criados no banco real; falta testar a matriz completa de roles/permissoes e fluxos por perfil. |
 | Backfills | Pendente critico | Dados legados precisam ser migrados/conferidos por modulo. |
-| Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; falta suite contra API/MySQL/HTTPS reais. |
-| QA visual | Pendente | Intro/welcome corrigida localmente com Playwright desktop/mobile; ainda necessario aprovar desktop/mobile no EasyPanel em navegador real. |
+| Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
+| QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
 
 ## Separacao em repositorios Bitbucket
@@ -95,12 +95,22 @@ Estado encontrado:
 
 Ponto importante: a documentacao esta na raiz de `portal-sama-docs`, nao dentro de uma subpasta `docs/`. Ao trabalhar nesse repositorio separado, leia os arquivos diretamente na raiz, por exemplo `INSTRUÇÕEDS_AI.MD` e `STATUS_IMPLEMENTACAO.md`.
 
-Para o EasyPanel buscar origem pelo Bitbucket e para a documentacao continuar sendo a fonte de verdade, criar tres repositorios oficiais:
+Estado real informado em 2026-05-25 11:46 -03:00: os repositorios Bitbucket ja existem e o EasyPanel ja esta consumindo os repos tecnicos para deploy. A evidencia visual mostra:
 
 ```txt
 portal-sama-api
 portal-sama-web
-portal-sama-docs
+portal-sama-doc
+```
+
+O workspace local de documentacao continua chamado `portal-sama-docs`. Se o remoto permanecer como `portal-sama-doc`, tratar esse nome como alias operacional do repositorio de documentacao.
+
+Topologia-alvo de repositorios:
+
+```txt
+portal-sama-api
+portal-sama-web
+portal-sama-docs ou portal-sama-doc
 ```
 
 Regra central: qualquer IA, pessoa desenvolvedora ou manutencao operacional deve ler primeiro o repositorio `portal-sama-docs` antes de alterar `portal-sama-api` ou `portal-sama-web`.
@@ -267,16 +277,16 @@ Resolvido operacionalmente em 2026-05-25 11:09 -03:00: `portal-sama-api/README.m
 ```txt
 portal-sama-web
 portal-sama-api
-portal-sama_database
+portal-sama-database
 ```
 
 O banco ja informado no EasyPanel e:
 
 ```txt
-Host interno provavel: portal-sama_database
+Host interno observado: portal-sama-database
 Porta: 3306
 Banco: banco-sama
-Versao vista no phpMyAdmin: MySQL Community Server 9.6.0
+Versao vista no log EasyPanel: MySQL Community Server 9.7.0
 ```
 
 ### Variaveis essenciais da API
@@ -316,7 +326,7 @@ WEB_PUSH_PRIVATE_KEY=
 WEB_PUSH_SUBJECT=mailto:suporte@samacontabil.com.br
 ```
 
-Substituir `HOST_INTERNO_MYSQL` pelo host real exibido no EasyPanel/phpMyAdmin/log. Exemplos ja observados: `portal-sama_database` e `portal-sama_portal-sama_database`.
+Substituir `HOST_INTERNO_MYSQL` pelo host real exibido no EasyPanel/phpMyAdmin/log. Exemplo atualmente observado: `portal-sama-database`. Exemplos historicos ja observados em logs antigos: `portal-sama_database` e `portal-sama_portal-sama_database`.
 
 Observacao 2026-05-22 16:08 -03:00: o erro Prisma `P1012` com `Environment variable not found: DATABASE_URL` indica que a variavel nao chegou ao build/runtime da API. O Dockerfile de `portal-sama-api` agora usa uma URL dummy somente para `prisma generate` no build; a `DATABASE_URL` real continua obrigatoria nas variaveis do servico `portal-sama-api` no EasyPanel antes de `prisma migrate deploy` e start da API.
 
@@ -356,36 +366,38 @@ SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-exis
 
 Observacao 2026-05-25 09:25 -03:00: se o container atual ainda falhar em `npm run prisma:seed` com `Cannot find module '../src/modules/rbac/default-rbac'`, ele esta usando uma imagem anterior ao wrapper de runtime. Workaround imediato: `node dist/prisma/seed.js`. Correcao definitiva: redeployar `portal-sama-api` com o script atualizado.
 
-Observacao 2026-05-25 09:48 -03:00: se o deploy falhar com Prisma `P1013` e `invalid port number in database URL`, o problema e o valor de `DATABASE_URL`, nao as migrations. Usar o formato `mysql://portal_user:SENHA_URL_ENCODED@portal-sama_portal-sama_database:3306/banco-sama`, sem porta duplicada e com caracteres especiais da senha codificados por `encodeURIComponent`.
+Observacao 2026-05-25 09:48 -03:00, atualizada em 2026-05-25 11:46 -03:00: se o deploy falhar com Prisma `P1013` e `invalid port number in database URL`, o problema e o valor de `DATABASE_URL`, nao as migrations. Usar o formato `mysql://portal_user:SENHA_URL_ENCODED@portal-sama-database:3306/banco-sama`, sem porta duplicada e com caracteres especiais da senha codificados por `encodeURIComponent`.
 
-Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
+Atualizacao operacional 2026-05-25 11:46 -03:00: o banco do EasyPanel ja esta conectado a API, usuarios iniciais da aplicacao ja foram criados pelo operador e o health publico retornou `database=up`. Nao registrar nomes, e-mails ou senhas reais nesta documentacao.
+
+Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditados.
 
 ## Ordem segura para homologacao
 
-1. Criar o repositorio `portal-sama-docs` no Bitbucket.
-2. Subir todo o conteudo de `portal-sama-docs` para o repositorio homonimo.
-3. Criar o repositorio `portal-sama-api` no Bitbucket.
-4. Subir `portal-sama-api` para o Bitbucket.
-5. Criar o repositorio `portal-sama-web` no Bitbucket.
-6. Subir `portal-sama-web` para o Bitbucket.
-7. Conferir que os tres repositorios apontam para a mesma decisao/documentacao vigente.
-8. Criar servico API no EasyPanel apontando para o repo da API.
-9. Criar servico Web no EasyPanel apontando para o repo do Web.
-10. Confirmar que `portal-sama-web` resolve `portal-sama-api:3000` na rede interna.
-11. Configurar `DATABASE_URL` para `banco-sama`.
+1. [x] Criar o repositorio de documentacao no Bitbucket (`portal-sama-doc` observado; alias local `portal-sama-docs`).
+2. [x] Subir documentacao inicial para o repositorio de documentacao.
+3. [x] Criar o repositorio `portal-sama-api` no Bitbucket.
+4. [x] Subir `portal-sama-api` para o Bitbucket.
+5. [x] Criar o repositorio `portal-sama-web` no Bitbucket.
+6. [x] Subir `portal-sama-web` para o Bitbucket.
+7. [x] Conferir que os tres repositorios apontam para a mesma decisao/documentacao vigente.
+8. [x] Criar servico API no EasyPanel apontando para o repo da API.
+9. [x] Criar servico Web no EasyPanel apontando para o repo do Web.
+10. [x] Confirmar que `portal-sama-web` resolve/proxy `/api-v2` para `portal-sama-api`.
+11. [x] Configurar `DATABASE_URL` para o banco real do EasyPanel.
 12. Criar usuario MySQL nao-root.
 13. Fazer backup/snapshot do banco antes de migrations.
 14. Rodar `npx prisma migrate deploy` em banco limpo ou `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing` em banco existente com `P3005`.
 15. Rodar `npm run prisma:seed`.
 16. Rodar `npm run prisma:bootstrap-admin`.
-17. Validar `GET /api-v2/health`.
-18. Validar `GET /api-v2/auth/csrf`.
-19. Validar login real no frontend.
+17. [x] Validar `GET /api-v2/health` publicamente (`database=up`, `storage=up`).
+18. [x] Validar `GET /api-v2/auth/csrf` publicamente com CORS/cookie CSRF.
+19. [x] Validar acesso inicial ao frontend em HTTPS e criacao de usuarios iniciais.
 20. Configurar volume privado e permissoes de storage.
 21. Ativar e validar ClamAV em modo `strict`.
 22. Executar backfills por modulo.
 23. Criar/migrar usuarios reais e roles.
-24. Rodar smoke publico sem `--soft`.
+24. [x] Rodar smoke publico sem `--soft`.
 25. Rodar Playwright contra homologacao real.
 26. Fazer QA visual desktop/mobile.
 27. Validar rollback.
@@ -405,26 +417,26 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 - [x] Inicializar Git em `portal-sama-docs`.
 - [x] Inicializar Git em `portal-sama-api`.
 - [x] Inicializar Git em `portal-sama-web`.
-- [ ] Criar repo Bitbucket `portal-sama-api`.
-- [ ] Criar repo Bitbucket `portal-sama-web`.
-- [ ] Criar repo Bitbucket `portal-sama-docs`.
-- [ ] Subir toda a documentacao para `portal-sama-docs`.
+- [x] Criar repo Bitbucket `portal-sama-api`.
+- [x] Criar repo Bitbucket `portal-sama-web`.
+- [x] Criar repo Bitbucket de documentacao (`portal-sama-doc` observado; alias local `portal-sama-docs`).
+- [x] Subir documentacao inicial para o repo de documentacao.
 - [x] Definir regra operacional para toda IA ler `portal-sama-docs` antes de API/Web.
-- [ ] Configurar builds do EasyPanel a partir dos repos.
-- [ ] Configurar dominio HTTPS.
-- [ ] Confirmar proxy `/api-v2`.
-- [ ] Confirmar CORS e cookies seguros.
-- [ ] Configurar logs e retencao.
+- [x] Configurar builds do EasyPanel a partir dos repos.
+- [x] Configurar dominio HTTPS.
+- [x] Confirmar proxy `/api-v2`.
+- [x] Confirmar CORS e cookie CSRF seguro em HTTPS.
+- [x] Configurar logs basicos no EasyPanel.
 - [ ] Configurar backup do banco e do storage.
 - [ ] Definir plano de rollback.
 
 ### Banco e dados
 
 - [ ] Criar usuario MySQL nao-root.
-- [ ] Configurar e validar `DATABASE_URL` real no servico `portal-sama-api` do EasyPanel.
-- [ ] Rodar `prisma migrate deploy` em banco limpo ou baseline controlado para `P3005` no MySQL 9.6.0.
+- [x] Configurar e validar `DATABASE_URL` real no servico `portal-sama-api` do EasyPanel.
+- [ ] Rodar/registrar `prisma migrate deploy` em banco limpo ou baseline controlado para `P3005` no MySQL 9.7.0 observado no EasyPanel.
 - [ ] Rodar seed RBAC.
-- [ ] Rodar bootstrap admin.
+- [ ] Rodar/registrar bootstrap admin ou procedimento equivalente usado para usuarios iniciais.
 - [ ] Comparar schema Prisma com schema legado.
 - [ ] Planejar backfills por modulo.
 - [ ] Executar backfills com logs e conferencia.
@@ -434,7 +446,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 ### Seguranca
 
 - [ ] Validar login, refresh e logout em HTTPS.
-- [ ] Validar CSRF no navegador real.
+- [x] Validar CSRF publico em HTTPS.
 - [ ] Validar cookies `HttpOnly`, `Secure`, `SameSite`.
 - [ ] Validar 401/403/200 por perfil.
 - [ ] Validar IDOR em documentos, certificados, propostas e contratos.
@@ -445,8 +457,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 ### Aplicacao
 
-- [ ] Validar Home/login com usuario real.
-- [ ] Validar usuarios, roles e permissoes reais.
+- [x] Validar acesso inicial ao frontend publico em HTTPS.
+- [ ] Validar login/Home com usuario real por perfil.
+- [ ] Validar usuarios, roles e permissoes reais por matriz.
 - [ ] Validar clientes e colaboradores reais.
 - [ ] Validar documentos com upload/download reais.
 - [ ] Validar certificados digitais com storage real.
@@ -464,7 +477,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 - [x] Rodar E2E do Web no repo separado.
 - [x] Disponibilizar smoke publico automatizado no repo separado do Web.
 - [x] Implementar health operacional da API para banco/storage.
-- [ ] Rodar smoke publico sem `--soft`.
+- [x] Rodar smoke publico sem `--soft`.
 - [ ] Criar Playwright contra homologacao real.
 - [ ] Testar fluxos por perfil real.
 - [ ] Fazer QA visual desktop.
@@ -473,16 +486,15 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 ## Bloqueios atuais principais
 
-1. Workspaces locais foram separados e inicializados com Git, mas ainda nao possuem remote Bitbucket.
-2. Repositorios Bitbucket ainda nao foram criados/publicados (`portal-sama-api`, `portal-sama-web`, `portal-sama-docs`).
-3. EasyPanel ainda nao esta rodando API e Web novos a partir desses repos.
-4. `prisma migrate deploy` ainda nao foi validado no banco real `banco-sama`.
-5. Seed/bootstrap ainda nao foram executados no container real.
-6. Backfills reais ainda nao foram executados.
-7. Storage privado e ClamAV strict ainda nao foram homologados.
-8. Usuarios/permissoes reais ainda nao foram validados.
-9. Playwright real e QA visual final ainda nao foram concluidos.
-10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
+1. Atualizacoes documentais locais desta rodada ainda precisam ser enviadas ao remoto de documentacao.
+2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
+3. Backfills reais ainda nao foram executados/conferidos por modulo.
+4. Storage privado retornou `storage=up`, mas persistencia, permissoes, backup e fluxos reais de upload/download ainda precisam ser homologados.
+5. ClamAV strict ainda nao foi homologado com EICAR.
+6. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.
+7. Playwright real e QA visual final ainda nao foram concluidos.
+8. Backups, retencao de logs e plano de rollback ainda precisam ser formalizados.
+9. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 
 ## Criterio para dizer "pronto para producao"
 
@@ -505,18 +517,10 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 
 ## Proximo passo recomendado
 
-O proximo passo operacional e criar os tres repositorios no Bitbucket e adicionar os remotes:
+Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-portal-sama-docs
-portal-sama-api
-portal-sama-web
+registrar migrations/seed/bootstrap -> validar matriz de usuarios/perfis -> testar fluxos criticos reais -> validar storage/ClamAV -> configurar backups/rollback -> Playwright real -> QA visual final
 ```
 
-Depois disso, criar os dois servicos de aplicacao no EasyPanel e executar a primeira homologacao com:
-
-```txt
-health -> csrf -> migrate -> seed -> bootstrap-admin -> login real -> smoke publico
-```
-
-Somente depois dessa base estar estavel faz sentido executar backfills e Playwright contra fluxos reais.
+Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

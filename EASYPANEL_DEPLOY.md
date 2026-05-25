@@ -29,6 +29,8 @@ Atualizacao 2026-05-25 11:20 -03:00: o repo separado `portal-sama-web` agora exp
 
 Atualizacao 2026-05-25 11:32 -03:00: `GET /api-v2/health` na API agora faz health operacional: quando `PRISMA_CONNECT_ON_BOOT=true`, executa `SELECT 1` via Prisma; tambem cria/verifica `STORAGE_PRIVATE_PATH` com leitura/escrita e retorna HTTP 503 se banco ou storage falharem.
 
+Atualizacao 2026-05-25 11:46 -03:00: o deploy real ja esta ativo no EasyPanel. O projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` com status online; `https://portal.samacontabil.com.br/` responde publicamente; o smoke publico sem `--soft` passou com frontend 200, `/api-v2/health` retornando `database=up` e `storage=up`, CORS aceitando `https://portal.samacontabil.com.br` e `/api-v2/auth/csrf` emitindo token/cookie.
+
 ---
 
 ## 2. Serviços recomendados
@@ -36,7 +38,7 @@ Atualizacao 2026-05-25 11:32 -03:00: `GET /api-v2/health` na API agora faz healt
 ```txt
 portal-sama-web
 portal-sama-api
-portal-sama-mysql
+portal-sama-database
 portal-sama-redis
 portal-sama-phpmyadmin
 portal-sama-storage
@@ -46,7 +48,7 @@ portal-sama-storage
 |---|---|
 | `portal-sama-web` | Servir o build do React/Vite. |
 | `portal-sama-api` | Executar API NestJS em `/api-v2`. |
-| `portal-sama-mysql` | Banco relacional principal. |
+| `portal-sama-database` | Banco relacional principal. |
 | `portal-sama-redis` | Cache, filas, rate limit e sessões temporárias, se necessário. |
 | `portal-sama-phpmyadmin` | Administração controlada do MySQL. |
 | Volume privado | Armazenar documentos fora da pasta pública. |
@@ -62,7 +64,7 @@ NODE_ENV=production
 PORT=3000
 API_PREFIX=api-v2
 
-DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama-mysql:3306/portal_sama
+DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama-database:3306/banco-sama
 PRISMA_MIGRATE_ON_START=false
 
 JWT_ACCESS_SECRET=gerar_chave_forte_com_mais_de_32_caracteres
@@ -249,7 +251,7 @@ O compose usa os nomes reais esperados pelo proxy do frontend:
 ```txt
 portal-sama-web
 portal-sama-api
-portal-sama-mysql
+portal-sama-database
 ```
 
 Arquivo de variaveis de exemplo: `compose.easypanel.env.example`.
@@ -264,7 +266,7 @@ docker compose --env-file compose.easypanel.env.example -f docker-compose.easypa
 Saida esperada:
 
 ```txt
-portal-sama-mysql
+portal-sama-database
 portal-sama-api
 portal-sama-web
 
@@ -292,31 +294,31 @@ Repositorio/frontend  -> raiz portal-sama-web, Dockerfile portal-sama-web/Docker
 Banco existente       -> database do EasyPanel com banco banco-sama
 ```
 
-Nomes internos recomendados dos servicos:
+Nomes internos reais observados em 2026-05-25:
 
 ```txt
 portal-sama-api
 portal-sama-web
-portal-sama_database
+portal-sama-database
 ```
 
 O `nginx.conf` do frontend proxya `/api-v2/` para `portal-sama-api:3000`. Se o EasyPanel gerar outro nome interno para a API, ajustar esse upstream ou configurar path proxy/dominio separado no painel.
 
-Pelo ambiente informado em 2026-05-22, o phpMyAdmin mostra:
+Pelo ambiente observado em 2026-05-25 11:46 -03:00, o EasyPanel/log do banco mostra:
 
 ```txt
-Servidor: portal-sama_database via TCP/IP
+Servidor: portal-sama-database via TCP/IP
 Porta: 3306
 Banco: banco-sama
-Versao: MySQL Community Server 9.6.0
+Versao: MySQL Community Server 9.7.0
 ```
 
-O nome interno do host pode variar conforme o projeto/servico criado no EasyPanel. Em 2026-05-25, o log da API tambem mostrou o host `portal-sama_portal-sama_database`. Use exatamente o host exibido no phpMyAdmin/log, sempre com uma unica porta `:3306`.
+O nome interno do host pode variar conforme o projeto/servico criado no EasyPanel. Em 2026-05-25 11:46, o servico real exibido no EasyPanel e `portal-sama-database`; logs antigos tambem citaram `portal-sama_database` e `portal-sama_portal-sama_database`. Use exatamente o host exibido no phpMyAdmin/log, sempre com uma unica porta `:3306`.
 
 Logo, a API deve apontar para o banco real, com usuario proprio da aplicacao e sem usar `root`:
 
 ```env
-DATABASE_URL=mysql://portal_user:SENHA_FORTE@HOST_INTERNO_MYSQL:3306/banco-sama
+DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama-database:3306/banco-sama
 PRISMA_MIGRATE_ON_START=false
 ```
 
@@ -345,7 +347,7 @@ Esse comando marca a migration vazia `20260501000000_baseline_existing_database`
 Se o log mostrar `P1013` com `invalid port number in database URL`, o valor de `DATABASE_URL` esta malformado. Conferir no EasyPanel:
 
 ```env
-DATABASE_URL=mysql://portal_user:SENHA_URL_ENCODED@portal-sama_portal-sama_database:3306/banco-sama
+DATABASE_URL=mysql://portal_user:SENHA_URL_ENCODED@portal-sama-database:3306/banco-sama
 ```
 
 Regras:
@@ -373,7 +375,7 @@ FLUSH PRIVILEGES;
 Observacoes importantes:
 
 - O nome `banco-sama` contem hifen; em SQL manual usar crase, como em `` `banco-sama` ``. Na `DATABASE_URL`, o path `/banco-sama` e suficiente.
-- A documentacao original mirava MySQL 8/8.4; MySQL 9.6.0 precisa ser validado com `npx prisma migrate deploy`, SQL modes e collation antes de declarar homologacao aprovada.
+- A documentacao original mirava MySQL 8/8.4; MySQL 9.7.0 foi observado no EasyPanel e precisa permanecer validado com Prisma/migrations, SQL modes e collation antes de declarar producao aprovada.
 - Nao criar outro MySQL se o banco do EasyPanel ja sera usado. O compose versionado continua sendo referencia local/reproduzivel.
 
 Primeira preparacao da API em um banco limpo:
@@ -435,6 +437,8 @@ portal.seudominio.com.br/api-v2 -> API NestJS via proxy
 
 ### 7.1 Caso real: `portal.samacontabil.com.br`
 
+Atualizacao 2026-05-25 11:46 -03:00: o incidente inicial de HTTP 500 nao representa mais o estado atual da nova stack. O dominio `https://portal.samacontabil.com.br/` responde HTTP 200, o Web serve assets e proxya `/api-v2`, e o smoke publico sem `--soft` passou.
+
 Diagnostico registrado em 2026-05-13:
 
 - DNS respondeu `portal.samacontabil.com.br` como CNAME para o host do EasyPanel e A `191.252.218.31`.
@@ -468,11 +472,12 @@ COOKIE_SAME_SITE=lax
 
 Checklist especifico do subdominio:
 
-- [ ] Corrigir o alvo interno do dominio customizado para `http://...:80` quando o container for HTTP.
-- [ ] Validar se o container da aplicacao antiga responde internamente em HTTP e na porta esperada.
-- [ ] Validar logs do container/proxy no momento do HTTP 500.
-- [ ] Conferir se o servico web da nova stack escuta `0.0.0.0` e a porta exposta no EasyPanel.
-- [ ] Validar `https://portal.samacontabil.com.br/api-v2/health` quando a API nova estiver publicada.
+- [x] Corrigir/publicar o alvo interno do dominio customizado para a nova stack Web.
+- [x] Conferir que o servico web da nova stack responde publicamente em HTTPS.
+- [x] Validar logs do Web/API sem HTTP 500 na raiz publica.
+- [x] Validar `https://portal.samacontabil.com.br/api-v2/health` com API nova publicada (`database=up`, `storage=up`).
+- [x] Rodar smoke publico sem `--soft`.
+- [ ] Manter monitoramento e validar renovacao/estado do certificado TLS.
 
 Detalhes do incidente estao em [`INCIDENTE_SUBDOMINIO_PORTAL_SAMACONTABIL.md`](INCIDENTE_SUBDOMINIO_PORTAL_SAMACONTABIL.md).
 
@@ -584,26 +589,26 @@ Durante diagnostico, `--soft` coleta evidencias sem falhar o processo; para homo
 
 ## 10. Checklist de deploy
 
-- [ ] Criar serviço MySQL 8 no EasyPanel ou usar o database existente do EasyPanel.
-- [ ] Criar banco `portal_sama` ou apontar para o banco real `banco-sama`.
-- [ ] Criar usuário não-root da aplicação.
-- [ ] Validar `docker-compose.easypanel.example.yml` com `compose.easypanel.env.example` ou configurar serviços equivalentes manualmente no EasyPanel.
-- [ ] Criar serviço NestJS.
-- [ ] Configurar variáveis de ambiente.
-- [ ] Criar volume privado para documentos.
+- [x] Criar/usar servico MySQL no EasyPanel (`portal-sama-database`).
+- [x] Apontar para o banco real `banco-sama`.
+- [ ] Confirmar usuario nao-root da aplicacao e permissoes minimas.
+- [x] Configurar servicos equivalentes manualmente no EasyPanel.
+- [x] Criar servico NestJS (`portal-sama-api`).
+- [x] Configurar variaveis de ambiente suficientes para API iniciar e conectar no banco.
+- [ ] Criar/validar volume privado persistente para documentos.
 - [ ] Rodar migrations Prisma.
 - [ ] Rodar seed RBAC inicial com `npm.cmd run prisma:seed` ou comando equivalente do container, sem criar usuário/senha.
-- [ ] Criar primeiro admin da API v2 com `npm run prisma:bootstrap-admin` usando variaveis `SAMA_BOOTSTRAP_ADMIN_*` no ambiente seguro do EasyPanel.
-- [ ] Criar serviço React/Vite.
-- [ ] Garantir que `portal-sama-web` consiga resolver `portal-sama-api` na rede interna do EasyPanel.
-- [ ] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.
-- [ ] Configurar domínio e HTTPS.
-- [ ] Restringir CORS.
+- [ ] Registrar bootstrap admin ou procedimento equivalente usado para criar usuarios iniciais.
+- [x] Criar servico React/Vite (`portal-sama-web`).
+- [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
+- [x] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.
+- [x] Configurar dominio e HTTPS.
+- [x] Restringir CORS para `https://portal.samacontabil.com.br`.
 - [ ] Proteger phpMyAdmin.
 - [ ] Configurar backups.
-- [ ] Validar `/api-v2/health`.
-- [ ] Rodar `npm.cmd run smoke:public` sem `--soft`.
-- [ ] Validar login.
+- [x] Validar `/api-v2/health`.
+- [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
+- [ ] Validar login por perfil real.
 - [ ] Validar permissões.
 - [ ] Validar upload/download.
 - [ ] Validar auditoria.

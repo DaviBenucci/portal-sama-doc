@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 11:46 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Documentacao atualizada para refletir o estado real informado e validado: Bitbucket, EasyPanel, dominio publico e banco ja estao operacionais.
+- **Bitbucket:** Repositorios existentes conforme evidencia visual: `portal-sama-api`, `portal-sama-web` e `portal-sama-doc` (alias remoto observado para a documentacao local `portal-sama-docs`).
+- **EasyPanel:** Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` online. Logs da API mostram NestJS iniciado; logs do Web mostram assets e chamadas `/api-v2/*`; logs do banco mostram MySQL Community Server 9.7.0 pronto na porta 3306.
+- **Dominio publico:** `https://portal.samacontabil.com.br/` esta ativo. `npm.cmd run smoke:public` passou sem `--soft`: frontend HTTP 200, health com `database=up` e `storage=up`, preflight CORS 204 e CSRF 200 com token/cookie.
+- **Seguranca HTTP:** `curl.exe` em `/api-v2/auth/csrf` confirmou `Access-Control-Allow-Origin: https://portal.samacontabil.com.br`, `Access-Control-Allow-Credentials: true`, HSTS, CSP e cookie CSRF com `Secure; SameSite=Lax`.
+- **Pendente:** Registrar/confirmar migrations, seed/bootstrap ou procedimento equivalente de usuarios iniciais, matriz de permissoes por perfil, backups/rollback, storage persistente, ClamAV strict, Playwright real e QA visual final.
+
 ## Atualizacao complementar 2026-05-25 11:32 -03:00
 
 - **Responsavel/IA:** Codex
@@ -863,7 +873,7 @@
 | Auditoria | Parcial | Existem `audit_log`, eventos e actions em `api/storage.php`; `AuditModule` NestJS foi iniciado com gravacao centralizada, mascaramento de metadados sensiveis, consulta protegida por `audit.read` e exportacao CSV auditada. A tela React `/auditoria` consome listagem/detalhe/exportacao com filtros e possui smoke Playwright inicial; ainda falta validar com MySQL real/usuarios reais, ampliar Playwright e definir retencao. |
 | Testes | Parcial | ✅ Suite completa passou com MySQL real em 2026-05-11 14:45. Em 2026-05-14 10:39, notificacoes/Web Push foram revalidadas com testes focados, `tsc --noEmit`, lint, build, e2e com 132 testes e suite completa com 23 suites/137 unitarios. Lint PHP segue bloqueado por ausencia de `php` no PATH. |
 | Ambiente local TypeScript | Parcial | ✅ Em 2026-05-13 09:15, `portal-sama-api/tsconfig.json` passou a incluir explicitamente tipos `node`/`jest` e arquivos `src`, `test` e `prisma`; `.vscode/settings.json` aponta para o TypeScript local da API. Em 2026-05-13 09:20, `baseUrl` foi removido para eliminar alerta de depreciação do TypeScript 6. `tsc --noEmit`, lint, build e teste focado passaram. No PowerShell, usar `npm.cmd`, pois `npm.ps1` é bloqueado pela política local. |
-| Deploy EasyPanel | Parcial | Existe Dockerfile PHP/Apache e Procfile legado; `portal-sama-api/Dockerfile` foi criado para a API NestJS. O subdominio `portal.samacontabil.com.br` resolve para EasyPanel, mas a aplicacao antiga retorna HTTP 500; documentado provavel ajuste de alvo interno `http://...:80` em `docs/INCIDENTE_SUBDOMINIO_PORTAL_SAMACONTABIL.md`. Deploy real da nova stack ainda nao foi executado. |
+| Deploy EasyPanel | Parcial avancado | Nova stack ja esta publicada no EasyPanel com `portal-sama-api`, `portal-sama-database` e `portal-sama-web`; `https://portal.samacontabil.com.br/` responde HTTP 200 e o smoke publico validou frontend, `/api-v2/health`, CORS e CSRF. Ainda faltam backups/rollback, ClamAV/storage em fluxo real, matriz de permissoes, Playwright real e QA final. |
 
 ---
 
