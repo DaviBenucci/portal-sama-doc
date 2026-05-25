@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 10:51 -03:00
+
+- A pendencia de E2E local do Web separado foi reduzida: `portal-sama-web/tests/e2e/smoke.spec.ts` agora cobre login mobile e intro `welcome` do primeiro login.
+- O mock de autenticacao passou a simular `csrf -> login` com `welcomeAnimationSeen=false`, permitindo validar o `IntroGate` sem API real.
+- O smoke mobile do login valida ausencia de overflow, logo dentro da area visual, texto manuscrito sem corte e painel no viewport.
+- O smoke da welcome valida logo centralizada, texto dentro do viewport e mascaras de fade nas linhas laterais.
+- Passaram `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e` com 9 testes Chromium e `git diff --check` no repo `portal-sama-web`.
+- Permanece pendente Playwright contra homologacao real, QA visual no EasyPanel, usuarios/permissoes reais e validacao com API/MySQL/HTTPS reais.
+
 ## Atualizacao 2026-05-25 10:33 -03:00
 
 - Corrigido desalinhamento visual da intro/welcome no frontend causado por dependencia da propriedade CSS individual `translate`.

@@ -1,5 +1,49 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 10:51
+
+### Contexto
+
+- Ampliacao da cobertura E2E do `portal-sama-web` apos aprovacao da correcao visual de intro/login.
+- Objetivo: persistir em Playwright os smokes de alinhamento mobile do login e da cena `welcome` do primeiro login.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Frontend: Playwright subiu/reusou Vite dev server em `http://127.0.0.1:4173`.
+- Banco/API: nao acessados; endpoints de auth e telas seguem mockados na suite E2E local.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para cobertura E2E local no workspace separado do Web.
+- Lint passou.
+- Build passou.
+- Playwright passou com 9 testes Chromium.
+- O novo smoke de `/login` em `390x844` confirmou ausencia de overflow horizontal, logo dentro da lateral, texto sem corte e painel dentro do viewport.
+- O novo smoke de primeiro login confirmou a cena `welcome`, logo centralizada, texto dentro do viewport e linhas laterais com mascara de fade.
+- `git diff --check` passou.
+
+### Pendencias
+
+- Rodar Playwright contra homologacao real com API/MySQL/HTTPS reais.
+- Validar visualmente no EasyPanel em navegador real e cache limpo.
+- Manter o aviso `No HydrateFallback element provided...` como ruido conhecido ate decidir se sera tratado.
+
+### Observacao anti-alucinacao
+
+Nao foi executado teste contra EasyPanel nem banco real nesta rodada. A cobertura nova usa mocks locais da suite Playwright.
+
 ## Execucao 2026-05-25 10:33
 
 ### Contexto

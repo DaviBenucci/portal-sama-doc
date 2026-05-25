@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 10:51 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** A cobertura E2E do `portal-sama-web` foi ampliada para proteger o login mobile e a intro `welcome` do primeiro login.
+- **Frontend/testes:** `portal-sama-web/tests/e2e/smoke.spec.ts` agora possui mock de login com usuario `welcomeAnimationSeen=false`, simulando o fluxo real `csrf -> login -> /home -> IntroGate`.
+- **Login mobile:** Adicionado smoke que valida a lateral visual do login em `390x844`, sem overflow horizontal, com logo dentro da area de boas-vindas, texto sem corte e painel dentro do viewport.
+- **Welcome primeiro login:** Adicionado smoke que confirma a cena `welcome` apos login, logo centralizada, texto dentro do viewport e mascaras de fade nas linhas laterais.
+- **Validacao:** Passaram `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e` com 9 testes Chromium e `git diff --check` em `portal-sama-web`. O aviso conhecido `No HydrateFallback element provided...` continuou aparecendo no Vite durante o E2E, sem falha funcional.
+- **Pendente:** Playwright contra homologacao real com API/MySQL/HTTPS reais e QA visual final no EasyPanel continuam pendentes.
+
 ## Atualizacao complementar 2026-05-25 10:33 -03:00
 
 - **Responsavel/IA:** Codex

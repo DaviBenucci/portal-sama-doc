@@ -1,5 +1,46 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 10:51
+
+### Arquivos alterados
+
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+
+### O que mudou
+
+- O smoke E2E do frontend ganhou helper compartilhado para resposta de sessao autenticada.
+- Foi adicionado mock de login de primeiro acesso com `welcomeAnimationSeen=false`.
+- Foi adicionado teste mobile do login, cobrindo overflow, logo da lateral, texto manuscrito e painel.
+- Foi adicionado teste da intro `welcome` apos login, cobrindo logo centralizada, texto dentro do viewport e `mask-image` nas linhas laterais.
+
+### Motivo da alteracao
+
+Depois da correcao visual aprovada no deploy, a pendencia local mais util era transformar o smoke manual da intro/login em cobertura versionada, reduzindo risco de regressao no proximo ajuste do frontend.
+
+### Impacto esperado
+
+- O item de E2E local do Web no workspace separado passa a ter evidencia automatizada recente.
+- Regressao de alinhamento mobile do login e da welcome deve falhar na suite antes de chegar ao deploy.
+- A validacao real de EasyPanel/HTTPS segue separada, pois estes testes usam mocks locais.
+
+### Testes executados
+
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e` em `portal-sama-web`: passou com 9 testes Chromium.
+- `git diff --check` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- O E2E continua mockado e nao substitui Playwright contra homologacao real.
+- QA visual desktop/mobile no EasyPanel ainda precisa confirmar cache, assets e CSS servidos pelo deploy.
+- O aviso conhecido do React Router sobre `HydrateFallback` segue aparecendo no web server do Playwright sem quebrar os testes.
+
 ## 2026-05-25 10:33
 
 ### Arquivos alterados

@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 10:33 -03:00
+Ultima atualizacao: 2026-05-25 10:51 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,20 +45,20 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 10:33 -03:00:
+Estimativa operacional em 2026-05-25 10:51 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar homologacao da nova stack | 77% | Base tecnica existe, workspaces locais foram preparados, lint/build separados passaram e o desalinhamento local da intro/welcome foi corrigido; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
-| Pronto para producao sem depender do legado | 65% | A separacao local, builds separados e ajustes visuais reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA final e fluxos criticos reais. |
-| Falta para producao | 35% | Principalmente infraestrutura real, migracao de dados, validacao operacional, QA final e desligamento seguro do legado. |
+| Pronto para iniciar homologacao da nova stack | 78% | Base tecnica existe, workspaces locais foram preparados, lint/build separados passaram e o Web separado agora tem E2E local atualizado com 9 testes; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
+| Pronto para producao sem depender do legado | 66% | A separacao local, builds separados, ajustes visuais e E2E local reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA final e fluxos criticos reais. |
+| Falta para producao | 34% | Principalmente infraestrutura real, migracao de dados, validacao operacional, QA final e desligamento seguro do legado. |
 
 ## Estado atual resumido
 
 | Area | Estado | Observacao |
 |---|---|---|
 | Backend `portal-sama-api` | Parcial avancado | NestJS/API v2 existe, com Auth, RBAC, auditoria e varios modulos migrados. Falta validar tudo com MySQL real. |
-| Frontend `portal-sama-web` | Parcial avancado | React/Vite existe, login e muitas rotas ja foram migradas. O desalinhamento local da intro/welcome foi corrigido em 2026-05-25; falta validar no EasyPanel/navegador real. Parte dos testes ainda usa mocks. |
+| Frontend `portal-sama-web` | Parcial avancado | React/Vite existe, login e muitas rotas ja foram migradas. O desalinhamento local da intro/welcome foi corrigido e protegido por E2E local em 2026-05-25; falta validar no EasyPanel/navegador real. Parte dos testes ainda usa mocks. |
 | Banco MySQL/Prisma | Parcial | Schema/migrations existem, mas precisam rodar no MySQL real do EasyPanel (`banco-sama`). |
 | Primeiro admin da API v2 | Implementado localmente | Existe `npm run prisma:bootstrap-admin`; falta executar no container real. |
 | EasyPanel | Documentado, nao homologado | Existe guia e Dockerfiles; falta criar servicos reais a partir do Bitbucket. |
@@ -69,7 +69,7 @@ Estimativa operacional em 2026-05-25 10:33 -03:00:
 | ClamAV | Pendente em homologacao | Deve ser validado em modo `strict` antes de producao. |
 | Usuarios/permissoes reais | Pendente | Seed/roles existem; falta migrar/criar usuarios reais e testar perfis. |
 | Backfills | Pendente critico | Dados legados precisam ser migrados/conferidos por modulo. |
-| Playwright real | Pendente | Ha cobertura com mocks; falta suite contra API/MySQL/HTTPS reais. |
+| Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; falta suite contra API/MySQL/HTTPS reais. |
 | QA visual | Pendente | Intro/welcome corrigida localmente com Playwright desktop/mobile; ainda necessario aprovar desktop/mobile no EasyPanel em navegador real. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
 
@@ -461,7 +461,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 
 - [x] Rodar lint/build da API no repo separado.
 - [x] Rodar lint/build do Web no repo separado.
-- [ ] Rodar E2E do Web no repo separado.
+- [x] Rodar E2E do Web no repo separado.
 - [ ] Rodar smoke publico sem `--soft`.
 - [ ] Criar Playwright contra homologacao real.
 - [ ] Testar fluxos por perfil real.
