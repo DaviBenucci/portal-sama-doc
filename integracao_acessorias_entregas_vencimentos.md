@@ -2,7 +2,7 @@
 
 ## 1. Visão geral
 
-Esta documentação descreve a funcionalidade futura de integração entre o **Portal Sama** e o módulo de **entregas/obrigações do Acessórias**, com foco inicial no **departamento Fiscal**.
+Esta documentação descreve a funcionalidade futura de integração entre o **Portal Sama** e o módulo de **entregas/obrigações do Acessórias**.
 
 A funcionalidade tem como objetivo transformar o Portal Sama em uma camada operacional inteligente sobre as obrigações do Acessórias, permitindo:
 
@@ -24,13 +24,13 @@ Esta funcionalidade **não deve ser implementada agora**. Ela deve ser planejada
 
 ### 2.1 Decisão principal
 
-A integração de entregas do Acessórias, geração automática da planilha Fiscal, Central de Vencimentos e notificações por vencimento será planejada como uma funcionalidade futura, a ser implementada somente após a conclusão do grande plano principal de migração e refatoração do Portal Sama.
+A integração de entregas do Acessórias, geração automática da planilha Fiscal, Central de Vencimentos e notificações por vencimento será planejada como uma funcionalidade futura, a ser implementada.
 
 ### 2.2 Status da funcionalidade
 
 ```txt
 Status: Planejada para fase futura
-Prioridade: Alta após conclusão do plano principal
+Prioridade: Alta 
 Momento de implementação: Pós-migração base TypeScript/NestJS/React
 Departamento inicial: Fiscal
 ```
@@ -68,7 +68,7 @@ Implementar esta integração antes dessas bases aumentaria o risco de:
 
 ## 3. Posicionamento no roadmap
 
-Esta funcionalidade deve entrar como uma etapa posterior ao plano principal.
+Esta funcionalidade deve entrar como uma etapa posterior.
 
 Ordem recomendada:
 
@@ -1622,7 +1622,611 @@ Se qualquer uma dessas dependências não existir, a IA deve registrar a funcion
 
 ---
 
-## 32. Conclusão
+## 32. Funcionalidade futura pós-Acessórias — Web Push Notifications
+
+### 32.1 Visão geral
+
+Após a implementação da integração com o Acessórias — Entregas, Planilha Fiscal, Central de Vencimentos e Notificações — deve ser planejada uma camada de **Web Push Notifications** para que os usuários recebam alertas do Portal Sama mesmo quando não estiverem com a tela principal aberta no computador.
+
+Essa funcionalidade deve permitir que notificações importantes da plataforma também sejam enviadas como notificações nativas do navegador, desde que o usuário tenha concedido permissão.
+
+Exemplos de notificações que podem usar Web Push:
+
+```txt
+Obrigação vencendo em 7 dias
+Obrigação vencendo hoje
+Obrigação atrasada
+Baixa pendente no Acessórias
+Divergência entre Portal Sama e Acessórias
+Documento recusado
+Nova solicitação de acesso
+Contrato aguardando assinatura
+Certificado digital próximo do vencimento
+Tarefa atribuída ao colaborador
+Alerta para gestor
+```
+
+### 32.2 Momento de implementação
+
+Esta funcionalidade deve ser implementada **somente após**:
+
+```txt
+1. Conclusão do grande plano principal de migração/refatoração.
+2. Implementação da integração Acessórias — Entregas e Vencimentos.
+3. Existência de um NotificationsModule funcional.
+4. Existência de RBAC e auditoria.
+5. Existência de preferências de notificação por usuário.
+```
+
+Status recomendado:
+
+```txt
+Status: Planejada para fase futura pós-Acessórias
+Prioridade: Média/Alta
+Momento de implementação: Depois da Central de Vencimentos e notificações internas/e-mail
+```
+
+### 32.3 Decisão funcional
+
+A Web Push Notification não substitui as notificações internas do Portal Sama.
+
+Ela deve ser uma extensão dos canais de notificação.
+
+Modelo recomendado:
+
+```txt
+Notificação interna = canal obrigatório principal
+E-mail = canal complementar inicial
+Web Push = canal complementar em tempo real
+```
+
+Ou seja:
+
+```txt
+Portal Sama gera uma notificação
+        ↓
+Salva no banco
+        ↓
+Exibe na central interna de notificações
+        ↓
+Envia e-mail, se configurado
+        ↓
+Envia Web Push, se o usuário autorizou
+```
+
+### 32.4 Objetivo
+
+Permitir que o usuário receba alertas importantes mesmo quando:
+
+- está com o Portal Sama fechado;
+- está em outra aba do navegador;
+- está usando outro sistema;
+- não está na tela principal do Portal Sama;
+- precisa ser alertado rapidamente sobre uma obrigação, divergência ou vencimento.
+
+### 32.5 Requisitos funcionais
+
+A funcionalidade deve permitir:
+
+- solicitar permissão de notificação ao usuário;
+- registrar o dispositivo/navegador autorizado;
+- enviar notificações push para usuários específicos;
+- enviar notificações push para grupos/perfis;
+- respeitar preferências individuais;
+- permitir ativar/desativar Web Push;
+- permitir configurar tipos de notificação recebidos por push;
+- expirar ou remover assinaturas inválidas;
+- registrar auditoria de envio;
+- registrar falhas de entrega;
+- evitar envio duplicado;
+- não enviar dados sensíveis no conteúdo da notificação.
+
+### 32.6 Requisitos de segurança
+
+As notificações Web Push devem seguir regras rígidas de segurança, principalmente porque o Portal Sama lida com documentos empresariais, certificados, contratos e informações sensíveis.
+
+Regras obrigatórias:
+
+```txt
+1. Não enviar dados sensíveis no texto da notificação.
+2. Não enviar CNPJ completo, CPF, senha, token, certificado, contrato ou documento no push.
+3. A notificação deve conter apenas resumo seguro.
+4. O clique na notificação deve abrir o Portal Sama e exigir sessão válida.
+5. Se o usuário não estiver autenticado, redirecionar para login.
+6. A autorização real deve continuar no backend.
+7. O endpoint de inscrição push deve exigir autenticação.
+8. Cada subscription deve pertencer a um usuário autenticado.
+9. O usuário deve poder revogar dispositivos.
+10. Falhas de push não devem expor detalhes internos.
+```
+
+Exemplo de notificação segura:
+
+```txt
+Título: Obrigação próxima do vencimento
+Mensagem: Você possui uma obrigação fiscal vencendo em 7 dias.
+Ação: Abrir Portal Sama
+```
+
+Evitar:
+
+```txt
+Título: DCTFWeb Empresa ABC Ltda CNPJ 12.345.678/0001-99
+Mensagem: Documento fiscal X está atrasado...
+```
+
+### 32.7 Permissões sugeridas
+
+```txt
+notifications.read
+notifications.manage_preferences
+notifications.web_push.subscribe
+notifications.web_push.unsubscribe
+notifications.web_push.send
+notifications.web_push.manage_devices
+notifications.web_push.audit
+```
+
+Perfis:
+
+```txt
+ADMIN: gerenciar configuração global
+MANAGER: receber alertas gerenciais
+DEPARTMENT_MANAGER: receber alertas do departamento
+COLLABORATOR: receber alertas próprios
+AUDITOR: visualizar auditoria de notificações
+```
+
+### 32.8 Preferências por usuário
+
+O usuário deve poder configurar quais notificações deseja receber por Web Push.
+
+Exemplo:
+
+```txt
+Obrigação vencendo em 7 dias: ativado
+Obrigação vencendo hoje: ativado
+Obrigação atrasada: ativado
+Baixa pendente no Acessórias: ativado
+Documento recusado: ativado
+Contrato aguardando assinatura: desativado
+Solicitação de acesso: ativado
+```
+
+Também deve ser possível configurar canais:
+
+```txt
+Interna: sempre ativa
+E-mail: ativável/desativável
+Web Push: ativável/desativável
+```
+
+### 32.9 Arquitetura técnica sugerida
+
+Adicionar ao backend NestJS:
+
+```txt
+src/modules/notifications/
+  notifications.module.ts
+  notifications.service.ts
+  notification-preferences.service.ts
+  notification-dispatcher.service.ts
+
+src/modules/notifications/web-push/
+  web-push.module.ts
+  web-push.controller.ts
+  web-push.service.ts
+  web-push-subscription.service.ts
+  web-push-dispatcher.service.ts
+  web-push-cleanup.service.ts
+  dto/
+  types/
+```
+
+Adicionar ao frontend React:
+
+```txt
+src/services/web-push-service.ts
+src/hooks/useWebPush.ts
+src/components/notifications/EnablePushNotificationsButton.tsx
+src/components/notifications/NotificationPreferencesPanel.tsx
+src/components/notifications/NotificationCenter.tsx
+public/service-worker.js
+```
+
+### 32.10 Service Worker
+
+Para Web Push funcionar no navegador, será necessário registrar um **Service Worker** no frontend.
+
+Responsabilidades do Service Worker:
+
+- receber push em background;
+- exibir notificação nativa;
+- tratar clique na notificação;
+- abrir ou focar a aba do Portal Sama;
+- redirecionar para a rota correta, quando permitido.
+
+Exemplo de comportamento:
+
+```txt
+Usuário recebe push
+        ↓
+Clica na notificação
+        ↓
+Service Worker abre /notifications ou rota específica
+        ↓
+Frontend valida sessão
+        ↓
+Backend valida permissão ao carregar dados
+```
+
+### 32.11 VAPID keys
+
+A implementação de Web Push normalmente exige chaves VAPID.
+
+Regras:
+
+```txt
+VAPID_PUBLIC_KEY pode ir para o frontend.
+VAPID_PRIVATE_KEY deve ficar somente no backend.
+VAPID_PRIVATE_KEY deve ficar em variável de ambiente segura.
+Nunca commitar chaves no repositório.
+```
+
+Variáveis sugeridas:
+
+```env
+WEB_PUSH_VAPID_PUBLIC_KEY="..."
+WEB_PUSH_VAPID_PRIVATE_KEY="..."
+WEB_PUSH_CONTACT="mailto:suporte@empresa.com"
+```
+
+### 32.12 Banco de dados proposto
+
+#### `notification_preferences`
+
+```txt
+id
+user_id
+notification_type
+channel
+enabled
+created_at
+updated_at
+```
+
+Exemplo de `channel`:
+
+```txt
+IN_APP
+EMAIL
+WEB_PUSH
+```
+
+#### `web_push_subscriptions`
+
+```txt
+id
+user_id
+endpoint
+p256dh_key
+auth_key
+user_agent
+device_name
+last_used_at
+revoked_at
+created_at
+updated_at
+```
+
+Observação:
+
+- `endpoint`, `p256dh_key` e `auth_key` devem ser tratados como dados sensíveis operacionais.
+- avaliar criptografia em repouso para esses campos.
+
+#### `notification_events`
+
+```txt
+id
+user_id
+notification_type
+title
+message
+safe_payload
+status
+created_at
+read_at
+```
+
+#### `notification_delivery_attempts`
+
+```txt
+id
+notification_event_id
+channel
+provider
+status
+attempted_at
+error_message
+metadata
+```
+
+### 32.13 Endpoints internos sugeridos
+
+#### Inscrever navegador/dispositivo
+
+```txt
+POST /api-v2/notifications/web-push/subscribe
+```
+
+Payload esperado:
+
+```json
+{
+  "endpoint": "https://...",
+  "keys": {
+    "p256dh": "...",
+    "auth": "..."
+  },
+  "deviceName": "Chrome - Notebook"
+}
+```
+
+#### Remover inscrição
+
+```txt
+POST /api-v2/notifications/web-push/unsubscribe
+```
+
+#### Listar dispositivos inscritos
+
+```txt
+GET /api-v2/notifications/web-push/devices
+```
+
+#### Revogar dispositivo
+
+```txt
+DELETE /api-v2/notifications/web-push/devices/:id
+```
+
+#### Preferências de notificação
+
+```txt
+GET /api-v2/notifications/preferences
+PATCH /api-v2/notifications/preferences
+```
+
+#### Listar notificações internas
+
+```txt
+GET /api-v2/notifications
+```
+
+#### Marcar como lida
+
+```txt
+PATCH /api-v2/notifications/:id/read
+```
+
+### 32.14 Fluxo de inscrição Web Push
+
+```txt
+Usuário acessa Portal Sama
+        ↓
+Frontend verifica suporte a notificações
+        ↓
+Usuário clica em Ativar notificações
+        ↓
+Navegador solicita permissão
+        ↓
+Usuário permite
+        ↓
+Frontend registra Service Worker
+        ↓
+Frontend cria Push Subscription
+        ↓
+Frontend envia subscription para API NestJS
+        ↓
+Backend salva subscription vinculada ao usuário
+        ↓
+Portal Sama passa a poder enviar Web Push para aquele navegador
+```
+
+### 32.15 Fluxo de envio
+
+```txt
+Evento ocorre no Portal Sama
+        ↓
+NotificationsService cria notification_event
+        ↓
+NotificationDispatcher verifica preferências
+        ↓
+Se Web Push estiver ativo, WebPushDispatcher busca subscriptions do usuário
+        ↓
+Backend envia Web Push
+        ↓
+Registra tentativa de entrega
+        ↓
+Se subscription inválida, marca como revogada/inativa
+```
+
+### 32.16 Eventos que devem disparar Web Push
+
+Após a integração com Acessórias:
+
+```txt
+D-7 obrigação vencendo
+D-3 obrigação vencendo
+D-1 obrigação vencendo
+D0 vencimento hoje
+D+1 obrigação atrasada
+Baixa pendente no Acessórias
+Divergência Acessórias
+Falha crítica de sincronização
+```
+
+Eventos gerais do Portal Sama:
+
+```txt
+Documento recusado
+Documento aprovado
+Nova tarefa atribuída
+Solicitação de acesso aprovada
+Solicitação de acesso recusada
+Contrato aguardando assinatura
+Proposta aguardando aprovação
+Certificado digital próximo do vencimento
+```
+
+### 32.17 Regras anti-spam
+
+Para evitar excesso de notificações:
+
+```txt
+Não enviar a mesma notificação mais de uma vez no mesmo nível de alerta.
+Agrupar notificações quando houver muitas obrigações.
+Permitir resumo diário para notificações menos críticas.
+Não enviar push fora do horário configurado, exceto alertas críticos.
+Permitir silenciar tipos específicos de notificação.
+```
+
+Exemplo de agrupamento:
+
+```txt
+Você possui 8 obrigações fiscais vencendo nos próximos 7 dias.
+```
+
+### 32.18 Auditoria
+
+Registrar:
+
+```txt
+Usuário ativou Web Push
+Usuário desativou Web Push
+Dispositivo inscrito
+Dispositivo revogado
+Preferência alterada
+Notificação criada
+Web Push enviado
+Web Push falhou
+Subscription inválida removida
+```
+
+Nunca registrar conteúdo sensível da notificação em logs.
+
+### 32.19 Frontend esperado
+
+#### Botão de ativação
+
+Adicionar componente:
+
+```txt
+Ativar notificações neste dispositivo
+```
+
+Estados:
+
+```txt
+Não suportado pelo navegador
+Permissão ainda não solicitada
+Permissão concedida
+Permissão negada
+Dispositivo já inscrito
+Erro ao inscrever
+```
+
+#### Painel de preferências
+
+Permitir ao usuário configurar:
+
+```txt
+Receber alertas de vencimento por Web Push
+Receber alertas de atraso por Web Push
+Receber alertas de documentos por Web Push
+Receber alertas de contratos/propostas por Web Push
+Receber alertas de solicitações de acesso por Web Push
+```
+
+#### Central de notificações
+
+A Web Push deve sempre apontar para a Central de Notificações ou para a rota segura relacionada ao evento.
+
+### 32.20 Testes recomendados
+
+#### Testes unitários
+
+- criação de preferência de notificação;
+- validação de subscription;
+- dispatcher escolhendo canais corretos;
+- sanitização do conteúdo enviado no push;
+- remoção de subscription inválida.
+
+#### Testes de integração
+
+- inscrição de dispositivo autenticado;
+- revogação de dispositivo;
+- envio de push para usuário com preferência ativa;
+- não envio para usuário com preferência desativada;
+- registro de tentativa de entrega;
+- falha de provider sem quebrar fluxo principal.
+
+#### Testes E2E
+
+- usuário ativa notificações;
+- usuário recebe aviso visual de permissão concedida;
+- usuário altera preferências;
+- usuário visualiza notificação na Central;
+- clique na notificação abre rota segura.
+
+#### Testes de segurança
+
+- endpoint de subscribe exige autenticação;
+- usuário não lista dispositivos de outro usuário;
+- usuário não revoga dispositivo de outro usuário;
+- payload do push não contém dados sensíveis;
+- VAPID private key não aparece no frontend;
+- falhas não expõem stack trace.
+
+### 32.21 Critérios de aceite
+
+A funcionalidade só deve ser considerada concluída se:
+
+- Service Worker estiver registrado corretamente;
+- usuário conseguir ativar/desativar Web Push;
+- subscription for salva vinculada ao usuário autenticado;
+- VAPID private key não for exposta;
+- preferências por usuário funcionarem;
+- notificações internas continuarem funcionando independentemente do Web Push;
+- Web Push for enviado somente quando permitido;
+- payload não contiver dados sensíveis;
+- tentativas de entrega forem registradas;
+- subscriptions inválidas forem tratadas;
+- auditoria for registrada;
+- testes principais passarem;
+- documentação e backlog forem atualizados.
+
+### 32.22 Registro sugerido no backlog
+
+```md
+## Web Push Notifications
+
+- **Status:** Planejada para fase futura pós-Acessórias
+- **Prioridade:** Média/Alta
+- **Momento de implementação:** Após NotificationsModule, integração Acessórias e Central de Vencimentos
+- **Descrição:** Permitir que notificações importantes do Portal Sama sejam enviadas como Web Push Notifications para o navegador do usuário, mesmo quando ele não estiver com a tela principal aberta.
+- **Módulos afetados:** NotificationsModule, WebPushModule, AuditModule, AuthModule, UsersModule, DueDatesModule, AcessoriasDeliveriesModule.
+- **Frontend necessário:** Service Worker, botão de ativação, painel de preferências, central de notificações, tratamento de permissão do navegador.
+- **Backend necessário:** endpoints de subscribe/unsubscribe, dispatcher de notificações, armazenamento de subscriptions, envio Web Push com VAPID, auditoria e tratamento de falhas.
+- **Banco de dados necessário:** notification_preferences, web_push_subscriptions, notification_events, notification_delivery_attempts.
+- **Riscos de segurança:** exposição de dados sensíveis no push, exposição da VAPID private key, envio para dispositivo indevido, ausência de revogação, spam de notificações.
+- **Dependências:** AuthModule, RBAC, AuditModule, NotificationsModule, frontend React base, configuração segura de .env.
+- **Critério de início:** somente iniciar após a integração Acessórias e a Central de Vencimentos estarem estabilizadas.
+```
+
+---
+
+## 33. Conclusão
 
 A integração de entregas do Acessórias deve ser tratada como uma funcionalidade futura de alto valor operacional, mas não deve concorrer com o grande plano principal de migração e refatoração do Portal Sama.
 
@@ -1635,12 +2239,15 @@ Portal Sama = camada operacional, visual, inteligente, auditável e resiliente.
 
 Para o MVP futuro, o foco deve ser o departamento Fiscal, com geração automática de planilha por competência, sincronização automática de baixas, status visual **Acessórias**, Central de Vencimentos baseada no Acessórias e notificações iniciando 7 dias antes do vencimento.
 
+Após essa etapa, deve ser planejada a implementação de **Web Push Notifications**, permitindo que usuários recebam notificações importantes do Portal Sama mesmo fora da tela principal da aplicação.
+
 A principal decisão de planejamento é:
 
 ```txt
 Não implementar agora.
 Documentar como funcionalidade futura prioritária.
 Executar somente depois da base principal estar finalizada.
+Executar Web Push somente depois da integração Acessórias e da Central de Vencimentos estarem estabilizadas.
 ```
 
 A principal regra de segurança operacional é:
@@ -1651,3 +2258,10 @@ cliente + departamento + obrigação + competência.
 ```
 
 Se essa identificação não for segura, o Portal Sama deve gerar divergência para análise do gestor, e não alterar a planilha automaticamente.
+
+A principal regra de segurança para Web Push é:
+
+```txt
+Notificações Web Push nunca devem expor dados sensíveis; devem apenas avisar o usuário e direcioná-lo ao Portal Sama, onde autenticação e autorização serão validadas pelo backend.
+```
+
