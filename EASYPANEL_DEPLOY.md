@@ -305,17 +305,19 @@ Banco: banco-sama
 Versao: MySQL Community Server 9.6.0
 ```
 
+O nome interno do host pode variar conforme o projeto/servico criado no EasyPanel. Em 2026-05-25, o log da API tambem mostrou o host `portal-sama_portal-sama_database`. Use exatamente o host exibido no phpMyAdmin/log, sempre com uma unica porta `:3306`.
+
 Logo, a API deve apontar para o banco real, com usuario proprio da aplicacao e sem usar `root`:
 
 ```env
-DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama_database:3306/banco-sama
+DATABASE_URL=mysql://portal_user:SENHA_FORTE@HOST_INTERNO_MYSQL:3306/banco-sama
 PRISMA_MIGRATE_ON_START=false
 ```
 
 Se o log do deploy mostrar `Error code: P1012` e `Environment variable not found: DATABASE_URL`, a correcao operacional e:
 
 1. configurar `DATABASE_URL` nas variaveis de ambiente do servico `portal-sama-api`, nao no servico web nem apenas no banco;
-2. confirmar que o host interno e o banco batem com o phpMyAdmin (`portal-sama_database:3306/banco-sama`, conforme o caso real acima);
+2. confirmar que o host interno e o banco batem com o phpMyAdmin/log (`HOST_INTERNO_MYSQL:3306/banco-sama`, conforme o caso real);
 3. fazer novo build/deploy da API usando o Dockerfile atualizado, que nao exige a URL real durante `prisma generate`;
 4. depois que o container subir, rodar/validar `npx prisma migrate deploy`, `npm run prisma:seed` e `npm run prisma:bootstrap-admin`.
 
@@ -333,6 +335,26 @@ SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-exis
 ```
 
 Esse comando marca a migration vazia `20260501000000_baseline_existing_database` como aplicada e depois executa `prisma migrate deploy` para as migrations reais. Se o banco ja tiver tabelas Prisma parcialmente criadas por tentativa anterior, parar e revisar antes de forcar qualquer resolve adicional.
+
+Se o log mostrar `P1013` com `invalid port number in database URL`, o valor de `DATABASE_URL` esta malformado. Conferir no EasyPanel:
+
+```env
+DATABASE_URL=mysql://portal_user:SENHA_URL_ENCODED@portal-sama_portal-sama_database:3306/banco-sama
+```
+
+Regras:
+
+1. nao colocar duas portas, como `:3306:3306`;
+2. nao colocar espacos, aspas ou `DATABASE_URL=` dentro do valor do campo se o painel ja separa chave/valor;
+3. codificar caracteres especiais da senha (`@`, `#`, `/`, `?`, `:`, `&`, `=`, `+`, `%`) com URL encode.
+
+Para codificar somente a senha:
+
+```bash
+node -e "console.log(encodeURIComponent(process.argv[1]))" "SUA_SENHA_AQUI"
+```
+
+Depois substituir apenas a parte da senha na URL. Exemplo: se a senha codificada saiu `abc%23123`, usar `portal_user:abc%23123@...`.
 
 Se o usuario ainda nao existir, criar pelo phpMyAdmin/SQL do EasyPanel:
 

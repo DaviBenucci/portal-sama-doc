@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 09:48 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o diagnostico do deploy com Prisma `P1013` (`invalid port number in database URL`).
+- **Backend/config:** `portal-sama-api/src/config/env.schema.ts` agora valida `DATABASE_URL` antes do Prisma inicializar e retorna mensagem mais direta para URL MySQL malformada, porta duplicada ou senha com caracteres especiais sem URL encode.
+- **EasyPanel:** Documentado que o valor deve seguir `mysql://usuario:SENHA_URL_ENCODED@host:3306/banco`, usando o host interno mostrado pelo EasyPanel e sem repetir a porta. O erro nao indica problema nas migrations nem necessidade de recriar o banco.
+- **Validacao:** `npm.cmd test -- env.schema.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` passaram em `portal-sama-api`.
+- **Pendente:** Ajustar a variavel `DATABASE_URL` real no servico `portal-sama-api`, redeployar e entao rodar `npm run prisma:seed`, `npm run prisma:bootstrap-admin`, health, csrf e login real.
+
 ## Atualizacao complementar 2026-05-25 09:25 -03:00
 
 - **Responsavel/IA:** Codex

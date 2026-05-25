@@ -289,7 +289,7 @@ PORT=3000
 API_PREFIX=api-v2
 FRONTEND_URL=https://portal.samacontabil.com.br
 CORS_ORIGIN=https://portal.samacontabil.com.br
-DATABASE_URL=mysql://portal_user:SENHA_FORTE@portal-sama_database:3306/banco-sama
+DATABASE_URL=mysql://portal_user:SENHA_FORTE@HOST_INTERNO_MYSQL:3306/banco-sama
 PRISMA_CONNECT_ON_BOOT=true
 PRISMA_MIGRATE_ON_START=false
 
@@ -315,6 +315,8 @@ WEB_PUSH_PUBLIC_KEY=
 WEB_PUSH_PRIVATE_KEY=
 WEB_PUSH_SUBJECT=mailto:suporte@samacontabil.com.br
 ```
+
+Substituir `HOST_INTERNO_MYSQL` pelo host real exibido no EasyPanel/phpMyAdmin/log. Exemplos ja observados: `portal-sama_database` e `portal-sama_portal-sama_database`.
 
 Observacao 2026-05-22 16:08 -03:00: o erro Prisma `P1012` com `Environment variable not found: DATABASE_URL` indica que a variavel nao chegou ao build/runtime da API. O Dockerfile de `portal-sama-api` agora usa uma URL dummy somente para `prisma generate` no build; a `DATABASE_URL` real continua obrigatoria nas variaveis do servico `portal-sama-api` no EasyPanel antes de `prisma migrate deploy` e start da API.
 
@@ -353,6 +355,8 @@ SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-exis
 ```
 
 Observacao 2026-05-25 09:25 -03:00: se o container atual ainda falhar em `npm run prisma:seed` com `Cannot find module '../src/modules/rbac/default-rbac'`, ele esta usando uma imagem anterior ao wrapper de runtime. Workaround imediato: `node dist/prisma/seed.js`. Correcao definitiva: redeployar `portal-sama-api` com o script atualizado.
+
+Observacao 2026-05-25 09:48 -03:00: se o deploy falhar com Prisma `P1013` e `invalid port number in database URL`, o problema e o valor de `DATABASE_URL`, nao as migrations. Usar o formato `mysql://portal_user:SENHA_URL_ENCODED@portal-sama_portal-sama_database:3306/banco-sama`, sem porta duplicada e com caracteres especiais da senha codificados por `encodeURIComponent`.
 
 Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 

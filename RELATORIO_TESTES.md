@@ -1,5 +1,47 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 09:48
+
+### Contexto
+
+- Correcao do deploy da API apos Prisma `P1013`: `invalid port number in database URL`.
+- Objetivo: validar a `DATABASE_URL` no schema de ambiente antes da inicializacao do Prisma e documentar o formato correto no EasyPanel.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco: nao acessado diretamente.
+- Observacoes: nenhum valor real de `DATABASE_URL` ou senha foi exibido.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd test -- env.schema.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run prisma:validate
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para melhorar o diagnostico do erro `P1013`.
+- O teste unitario novo aceitou o formato MySQL esperado para EasyPanel.
+- O teste unitario novo rejeitou URL com porta duplicada antes do Prisma inicializar.
+- O teste unitario novo confirmou mensagem orientando URL encode para caracteres especiais na senha.
+- Lint, build e Prisma validate passaram.
+
+### Pendencias
+
+- Corrigir `DATABASE_URL` real no EasyPanel usando host interno correto, porta unica `3306`, nome do banco e senha com URL encode quando necessario.
+- Redeployar a API.
+- Rodar seed, bootstrap admin, health, csrf e login real no ambiente.
+
+### Observacao anti-alucinacao
+
+Nao houve conexao com o MySQL do EasyPanel nesta rodada. A correcao cobre validacao e diagnostico local da string de conexao.
+
 ## Execucao 2026-05-25 09:25
 
 ### Contexto

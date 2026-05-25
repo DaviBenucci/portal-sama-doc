@@ -1,5 +1,46 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 09:48
+
+### Arquivos alterados
+
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/src/config/env.schema.spec.ts`
+- `EASYPANEL_DEPLOY.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+
+### O que mudou
+
+- `DATABASE_URL` passou a ser validada pela configuracao da API antes do Prisma Client tentar conectar.
+- URLs MySQL malformadas agora recebem erro direto sobre formato, porta e nome do banco.
+- A documentacao do EasyPanel ganhou o diagnostico do Prisma `P1013` com `invalid port number in database URL`.
+
+### Motivo da alteracao
+
+O deploy chegou ao start da API, mas o Prisma falhou com `P1013` porque a string de conexao do banco estava malformada. Esse erro nao e de migration nem de seed; ele acontece antes da conexao real com o MySQL.
+
+### Impacto esperado
+
+- O log da API passa a apontar a configuracao incorreta de forma mais clara.
+- A equipe consegue corrigir `DATABASE_URL` no EasyPanel sem recriar o banco.
+- Senhas com caracteres especiais ficam documentadas como dependentes de URL encode.
+
+### Testes executados
+
+- `npm.cmd test -- env.schema.spec.ts --runInBand` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta corrigir a variavel `DATABASE_URL` real no EasyPanel e redeployar.
+- Depois do start da API, ainda faltam seed, bootstrap admin e validacoes funcionais do ambiente.
+
 ## 2026-05-25 09:25
 
 ### Arquivos alterados

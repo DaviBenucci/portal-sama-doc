@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 09:48 -03:00
+
+- Diagnosticado o novo erro de deploy Prisma `P1013`: `invalid port number in database URL`.
+- Corrigida a validacao de ambiente da API para rejeitar `DATABASE_URL` malformada antes da inicializacao do Prisma Client.
+- Adicionado teste unitario para URL MySQL valida no formato EasyPanel, porta duplicada e senha com caracteres especiais sem URL encode.
+- Documentado no EasyPanel que esse erro nao exige recriar o banco; exige corrigir a string `mysql://usuario:SENHA_URL_ENCODED@host:3306/banco`.
+- Passaram `npm.cmd test -- env.schema.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate`.
+- Permanece pendente corrigir `DATABASE_URL` real no EasyPanel, redeployar API e executar seed/bootstrap/validacoes reais.
+
 ## Atualizacao 2026-05-25 09:25 -03:00
 
 - Corrigido `npm run prisma:seed` no runtime Docker: o script agora usa `dist/prisma/seed.js` quando o build compilado existe.
