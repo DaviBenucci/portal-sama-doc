@@ -23,6 +23,8 @@ portal-sama-web   -> frontend React/Vite
 
 O EasyPanel deve consumir os repositorios `portal-sama-api` e `portal-sama-web` para build/deploy. O repositorio `portal-sama-docs` nao vira servico de aplicacao; ele e a fonte obrigatoria de contexto antes de qualquer alteracao tecnica.
 
+Atualizacao 2026-05-25 11:09 -03:00: `portal-sama-api/README.md` e `portal-sama-web/README.md` agora trazem instrucao minima apontando para `portal-sama-docs`, para preservar a regra de leitura obrigatoria mesmo quando alguem abrir primeiro um repo tecnico separado.
+
 ---
 
 ## 2. Serviços recomendados

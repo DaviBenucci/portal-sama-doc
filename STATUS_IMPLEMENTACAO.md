@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 11:09 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Adicionada instrucao minima de continuidade nos repos separados de API e Web.
+- **Backend/repo:** `portal-sama-api/README.md` foi criado com a regra de ler `portal-sama-docs` antes de alterar codigo, deploy, banco, seguranca ou testes, alem dos comandos principais de API/Prisma.
+- **Frontend/repo:** `portal-sama-web/README.md` foi reforcado com a mesma regra operacional, comandos incluindo Playwright e nota de deploy do proxy `/api-v2`.
+- **Validacao:** Passaram `git diff --check` em `portal-sama-api`, `portal-sama-web` e `portal-sama-docs`. Lint/build nao foram executados porque a rodada alterou apenas READMEs e documentacao.
+- **Pendente:** Criar/publicar remotes Bitbucket e validar EasyPanel/API/MySQL/HTTPS reais.
+
 ## Atualizacao complementar 2026-05-25 10:51 -03:00
 
 - **Responsavel/IA:** Codex

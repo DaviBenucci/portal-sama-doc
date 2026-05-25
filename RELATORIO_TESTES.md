@@ -1,5 +1,52 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 11:09
+
+### Contexto
+
+- Criacao/atualizacao de READMEs nos repos separados `portal-sama-api` e `portal-sama-web`.
+- Objetivo: validar a mudanca documental que aponta API/Web para `portal-sama-docs` antes de qualquer alteracao tecnica futura.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Banco/API: nao acessados nesta rodada.
+- Observacoes: nao houve alteracao de codigo TypeScript, schema Prisma, Dockerfile ou configuracao de runtime.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+git diff --check
+```
+
+Em `portal-sama-web`:
+
+```bash
+git diff --check
+```
+
+Em `portal-sama-docs`:
+
+```bash
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para alteracao documental.
+- `git diff --check` passou em API, Web e Docs.
+
+### Pendencias
+
+- Lint/build nao foram executados porque a rodada alterou apenas README e documentos Markdown.
+- Continuam pendentes remotes Bitbucket, EasyPanel real, MySQL real, seed/bootstrap, smoke publico sem `--soft`, Playwright contra homologacao e QA visual final.
+
+### Observacao anti-alucinacao
+
+Nao foi executado teste funcional, build, lint, seed, migration ou conexao com MySQL nesta rodada.
+
 ## Execucao 2026-05-25 10:51
 
 ### Contexto

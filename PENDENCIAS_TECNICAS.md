@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 11:09 -03:00
+
+- Resolvido o ponto operacional de README minimo em `portal-sama-api` e `portal-sama-web` apontando para `portal-sama-docs`.
+- `portal-sama-api/README.md` foi criado com documentos obrigatorios, comandos principais, notas de Prisma/MySQL e cuidados de versionamento.
+- `portal-sama-web/README.md` foi atualizado com documentos obrigatorios, paginas relacionadas, comando E2E e nota do proxy `/api-v2` para EasyPanel.
+- Passaram `git diff --check` nos repos de API, Web e Docs.
+- Permanece pendente criar remotes Bitbucket, fazer push, configurar EasyPanel e validar banco/HTTPS/usuarios reais.
+
 ## Atualizacao 2026-05-25 10:51 -03:00
 
 - A pendencia de E2E local do Web separado foi reduzida: `portal-sama-web/tests/e2e/smoke.spec.ts` agora cobre login mobile e intro `welcome` do primeiro login.

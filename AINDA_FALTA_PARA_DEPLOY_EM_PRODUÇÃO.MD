@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 10:51 -03:00
+Ultima atualizacao: 2026-05-25 11:09 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,11 +45,11 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 10:51 -03:00:
+Estimativa operacional em 2026-05-25 11:09 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar homologacao da nova stack | 78% | Base tecnica existe, workspaces locais foram preparados, lint/build separados passaram e o Web separado agora tem E2E local atualizado com 9 testes; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
+| Pronto para iniciar homologacao da nova stack | 79% | Base tecnica existe, workspaces locais foram preparados, API/Web agora possuem README minimo apontando para `portal-sama-docs`, lint/build separados passaram e o Web separado tem E2E local atualizado com 9 testes; falta publicar/validar repositorios no Bitbucket/EasyPanel e confirmar banco/HTTPS reais. |
 | Pronto para producao sem depender do legado | 66% | A separacao local, builds separados, ajustes visuais e E2E local reduzem risco operacional, mas ainda faltam backfills, storage/ClamAV real, usuarios/permissoes reais, QA final e fluxos criticos reais. |
 | Falta para producao | 34% | Principalmente infraestrutura real, migracao de dados, validacao operacional, QA final e desligamento seguro do legado. |
 
@@ -62,7 +62,7 @@ Estimativa operacional em 2026-05-25 10:51 -03:00:
 | Banco MySQL/Prisma | Parcial | Schema/migrations existem, mas precisam rodar no MySQL real do EasyPanel (`banco-sama`). |
 | Primeiro admin da API v2 | Implementado localmente | Existe `npm run prisma:bootstrap-admin`; falta executar no container real. |
 | EasyPanel | Documentado, nao homologado | Existe guia e Dockerfiles; falta criar servicos reais a partir do Bitbucket. |
-| Workspaces locais | Separado e preparado | Existem pastas irmas `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` no Desktop. |
+| Workspaces locais | Separado e preparado | Existem pastas irmas `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` no Desktop; API/Web agora possuem README minimo com regra de leitura do repo de docs. |
 | Bitbucket/Git | Parcial | Git local inicializado em `main`; falta criar remotes Bitbucket e publicar os repositorios. |
 | Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
 | Storage privado | Parcial | Codigo e variaveis existem; falta volume real persistente e validacao de permissoes. |
@@ -258,7 +258,7 @@ Depois da separacao:
 5. O commit de documentacao deve acompanhar ou anteceder o commit tecnico.
 6. Quando a mudanca afetar deploy/producao, atualizar este documento e `docs/EASYPANEL_DEPLOY.md`.
 
-Ponto a validar operacional: se os repositorios `portal-sama-api` e `portal-sama-web` terao uma copia minima de `docs/INSTRUÇÕEDS_AI.MD` apontando para `portal-sama-docs`, para evitar que uma IA comece pelo repositorio errado.
+Resolvido operacionalmente em 2026-05-25 11:09 -03:00: `portal-sama-api/README.md` foi criado e `portal-sama-web/README.md` foi reforcado com a regra minima de leitura do workspace irmao `portal-sama-docs`, incluindo os documentos obrigatorios antes de alterar API/Web.
 
 ## Configuracao necessaria no EasyPanel
 
@@ -409,7 +409,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e criar usuarios reais.
 - [ ] Criar repo Bitbucket `portal-sama-web`.
 - [ ] Criar repo Bitbucket `portal-sama-docs`.
 - [ ] Subir toda a documentacao para `portal-sama-docs`.
-- [ ] Definir regra operacional para toda IA ler `portal-sama-docs` antes de API/Web.
+- [x] Definir regra operacional para toda IA ler `portal-sama-docs` antes de API/Web.
 - [ ] Configurar builds do EasyPanel a partir dos repos.
 - [ ] Configurar dominio HTTPS.
 - [ ] Confirmar proxy `/api-v2`.

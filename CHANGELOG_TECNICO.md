@@ -1,5 +1,48 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 11:09
+
+### Arquivos alterados
+
+- `portal-sama-api/README.md`
+- `portal-sama-web/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- Criado README minimo no repo separado da API.
+- Reforcado README do repo separado do Web.
+- Ambos os READMEs apontam para `portal-sama-docs` como fonte de verdade antes de alterar API/Web.
+- Registrados comandos principais, cuidados de deploy e itens que nao devem ser versionados.
+- O painel de prontidao marcou como concluida a regra operacional de leitura do repo de docs antes de API/Web.
+- O guia de EasyPanel registrou a existencia dos READMEs minimos nos repos tecnicos separados.
+
+### Motivo da alteracao
+
+Fechar o ponto operacional documentado apos a separacao em tres repositorios: evitar que uma IA ou pessoa desenvolvedora comece por `portal-sama-api` ou `portal-sama-web` sem ler o contexto vigente em `portal-sama-docs`.
+
+### Impacto esperado
+
+- Melhora a continuidade entre repositorios separados.
+- Reduz risco de alteracoes tecnicas fora do contexto documental.
+- Nao muda comportamento de runtime da API nem do frontend.
+
+### Testes executados
+
+- `git diff --check` em `portal-sama-api`: passou.
+- `git diff --check` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-docs`: passou.
+
+### Riscos ou pendencias
+
+- Lint/build nao foram executados porque nao houve alteracao de codigo.
+- Ainda faltam remotes Bitbucket, push dos repos, configuracao EasyPanel e validacao real com MySQL/HTTPS.
+
 ## 2026-05-25 10:51
 
 ### Arquivos alterados
