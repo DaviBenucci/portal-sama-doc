@@ -1,5 +1,56 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 16:31
+
+### Arquivos alterados
+
+- `portal-sama-api/Dockerfile`
+- `portal-sama-api/.env.example`
+- `portal-sama-api/package.json`
+- `portal-sama-api/README.md`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `EASYPANEL_DEPLOY.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- A imagem runtime da API passou a instalar `clamav` via `apk add --no-cache clamav`.
+- O Dockerfile define `SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan` e `SAMA_CLAMAV_UPDATE_ON_START=false` como defaults.
+- Criado `npm run ops:clamav:update`, que executa `freshclam` dentro do container para baixar/atualizar assinaturas.
+- `ops:readiness` ganhou hint operacional quando o scanner nao existe ou quando ClamAV abre mas nao detecta EICAR.
+- README e docs de deploy passaram a orientar: redeploy -> `npm run ops:clamav:update` -> `npm run ops:readiness`.
+
+### Motivo da alteracao
+
+O operador executou corretamente `npm run ops:readiness` no console real do `portal-sama-api`. A validacao provou banco, migrations, RBAC, usuarios e storage, mas falhou em `clamav-eicar` porque a imagem anterior nao continha `clamscan/clamdscan`.
+
+### Impacto esperado
+
+- A proxima imagem da API tera o scanner ClamAV disponivel no container.
+- A falha esperada apos instalar o scanner, se existir, passa a ser apenas assinatura ausente/desatualizada, corrigivel com `npm run ops:clamav:update`.
+- O readiness strict deve conseguir validar EICAR apos update de assinaturas.
+
+### Testes executados
+
+- `node --check scripts/validate-operational-readiness.js`: passou.
+- `npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft`: passou.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `docker build --pull=false -t portal-sama-api:clamav-runtime .`: passou.
+- `docker run --rm portal-sama-api:clamav-runtime sh -lc "which clamscan && which freshclam && which clamdscan && clamscan --version"`: passou e mostrou `ClamAV 1.4.4`.
+- `docker run --rm portal-sama-api:clamav-runtime npm run ops:readiness -- --skip-env --skip-database --storage-path /tmp/portal-sama-readiness --soft`: passou com warning esperado de assinaturas ausentes antes do `freshclam`.
+
+### Riscos ou pendencias
+
+- Ainda falta redeployar o `portal-sama-api` no EasyPanel com a imagem nova.
+- Ainda falta rodar `npm run ops:clamav:update` no container real; `freshclam` depende de rede/DNS e pode sofrer rate limit do mirror.
+- Depois do update, repetir `npm run ops:readiness` sem skips.
+
 ## 2026-05-25 16:18
 
 ### Arquivos alterados

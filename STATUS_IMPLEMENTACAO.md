@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 16:31 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o gap real encontrado no `ops:readiness` executado no console do `portal-sama-api`: ClamAV nao estava instalado na imagem anterior.
+- **Evidencia real:** O readiness do operador passou em environment, database, migrations, RBAC, privileged-users e storage; falhou somente em `clamav-eicar` por ausencia de scanner em modo `strict`.
+- **Backend/Docker:** `portal-sama-api/Dockerfile` agora instala `clamav`, cria diretorios padrao do ClamAV e define `SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan`.
+- **Operacao:** Adicionado `npm run ops:clamav:update` para executar `freshclam` no container antes do readiness final. `SAMA_CLAMAV_UPDATE_ON_START=false` fica documentado como default, com opcao de habilitar update no boot conscientemente.
+- **Validacao:** Passaram `node --check`, readiness local com skips, lint, build, Docker build `portal-sama-api:clamav-runtime`, checagem de `clamscan/freshclam/clamdscan` dentro da imagem e readiness Docker com falha esperada apenas por assinaturas ainda ausentes.
+- **Pendente:** Redeployar a API, rodar `npm run ops:clamav:update` no console do container e repetir `npm run ops:readiness` sem skips.
+
 ## Atualizacao complementar 2026-05-25 16:18 -03:00
 
 - **Responsavel/IA:** Codex

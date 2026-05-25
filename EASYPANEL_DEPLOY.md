@@ -33,6 +33,8 @@ Atualizacao 2026-05-25 11:46 -03:00: o deploy real ja esta ativo no EasyPanel. O
 
 Atualizacao 2026-05-25 16:18 -03:00: o repo `portal-sama-api` agora expoe `npm run ops:readiness` e `npm run ops:backfill:report`. Esses comandos devem ser executados no container real da API para validar migrations/RBAC/usuarios/storage/ClamAV e gerar evidencia read-only de backfill antes do corte.
 
+Atualizacao 2026-05-25 16:31 -03:00: o readiness real foi executado corretamente no console do `portal-sama-api`; passaram ambiente, banco, migrations, RBAC, usuarios e storage, mas falhou `clamav-eicar` porque a imagem anterior nao tinha scanner. O Dockerfile da API agora instala `clamav`; apos redeploy, rodar `npm run ops:clamav:update` e repetir `npm run ops:readiness`.
+
 ---
 
 ## 2. Serviços recomendados
@@ -91,6 +93,7 @@ SAMA_UPLOAD_SCAN_TIMEOUT_SEC=45
 SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
 SAMA_UPLOAD_SCAN_ARGS=
 SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
+SAMA_CLAMAV_UPDATE_ON_START=false
 
 REDIS_URL=redis://portal-sama-redis:6379
 
@@ -125,6 +128,11 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PRISMA_MIGRATE_ON_START=false
+ENV SAMA_CLAMAV_UPDATE_ON_START=false
+ENV SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
+RUN apk add --no-cache clamav \
+  && mkdir -p /var/lib/clamav /run/clamav /var/log/clamav \
+  && chmod -R 755 /var/lib/clamav /run/clamav /var/log/clamav
 COPY package*.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
@@ -132,12 +140,14 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3000
-CMD ["sh", "-c", "if [ -z \"${DATABASE_URL:-}\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; if [ \"${PRISMA_MIGRATE_ON_START:-false}\" = \"true\" ]; then npx prisma migrate deploy; else echo \"Skipping Prisma migrations on startup. Run migrations from an EasyPanel one-off command after backup/baseline.\"; fi; exec node dist/src/main.js"]
+CMD ["sh", "-c", "if [ \"${SAMA_CLAMAV_UPDATE_ON_START:-false}\" = \"true\" ]; then freshclam || echo \"freshclam failed; continuing API start. Run npm run ops:clamav:update from the container before strict readiness.\"; fi; if [ -z \"${DATABASE_URL:-}\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; if [ \"${PRISMA_MIGRATE_ON_START:-false}\" = \"true\" ]; then npx prisma migrate deploy; else echo \"Skipping Prisma migrations on startup. Run migrations from an EasyPanel one-off command after backup/baseline.\"; fi; exec node dist/src/main.js"]
 ```
 
 > Atualizacao 2026-05-22 16:08 -03:00: o build da API usa `PRISMA_GENERATE_DATABASE_URL` apenas como URL dummy para `prisma generate`, porque o Prisma valida `env("DATABASE_URL")` mesmo sem conectar no banco durante a geracao do client. A `DATABASE_URL` real continua obrigatoria no ambiente runtime do servico `portal-sama-api` no EasyPanel.
 >
 > Atualizacao 2026-05-22 16:38 -03:00: migrations nao rodam mais no start por padrao. Em banco existente sem `_prisma_migrations`, `prisma migrate deploy` retorna `P3005`; portanto o container deve subir primeiro e a migration deve ser rodada por comando unico apos backup/baseline.
+>
+> Atualizacao 2026-05-25 16:31 -03:00: o runtime da API instala `clamav`, mas as assinaturas devem ser atualizadas no container com `npm run ops:clamav:update` antes da validacao strict. `SAMA_CLAMAV_UPDATE_ON_START=true` pode atualizar no boot, mas o default permanece `false` para evitar depender de mirror/rate limit no start da API.
 
 > Observação: no início, rodar `prisma migrate deploy` no start pode simplificar. Em uma operação mais madura, execute migrations em uma etapa separada de CI/CD.
 
@@ -615,6 +625,15 @@ npm run ops:readiness -- --soft --json
 
 Para homologacao final, rodar sem `--soft` e sem `--skip-*`.
 
+Se o check `clamav-eicar` falhar por scanner ausente, a imagem publicada ainda e anterior a correcao com ClamAV. Fazer novo deploy do `portal-sama-api`. Depois, no console do container:
+
+```bash
+npm run ops:clamav:update
+npm run ops:readiness
+```
+
+Se `freshclam` sofrer rate limit ou indisponibilidade de mirror, aguardar e repetir; o readiness strict so deve ser considerado aprovado quando EICAR for detectado.
+
 ### 9.3 Relatorio read-only de backfill
 
 Antes de executar backfills ou desligar partes do legado, rode no mesmo container:
@@ -639,6 +658,7 @@ O relatorio nao altera dados. Ele lista tabelas atuais, candidatos legados conhe
 - [ ] Registrar bootstrap admin ou procedimento equivalente usado para criar usuarios iniciais.
 - [ ] Rodar `npm run ops:readiness` sem skips no container `portal-sama-api`.
 - [ ] Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api`.
+- [ ] Rodar `npm run ops:clamav:update` apos redeploy da API com ClamAV.
 - [x] Criar servico React/Vite (`portal-sama-web`).
 - [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
 - [x] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.

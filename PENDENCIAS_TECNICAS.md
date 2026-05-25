@@ -1,5 +1,15 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 16:31 -03:00
+
+- Diagnostico do readiness real informado pelo operador: o comando foi executado corretamente no console do `portal-sama-api`.
+- Passaram no container real: environment, database `SELECT 1`, migrations Prisma, RBAC, usuarios privilegiados e storage privado em `/var/private/portal-sama`.
+- Falhou apenas `clamav-eicar`: `SAMA_UPLOAD_SCAN_MODE=strict` exige scanner, mas a imagem anterior nao tinha `clamscan/clamdscan`.
+- `portal-sama-api/Dockerfile` agora instala `clamav` no runtime Alpine, define `SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan` como default e permite `SAMA_CLAMAV_UPDATE_ON_START=false/true`.
+- `portal-sama-api` agora expoe `npm run ops:clamav:update` para atualizar assinaturas com `freshclam` antes de repetir `npm run ops:readiness`.
+- Validado localmente: Docker build `portal-sama-api:clamav-runtime` passou, a imagem contem `/usr/bin/clamscan`, `/usr/bin/freshclam` e `/usr/bin/clamdscan`, e o readiness dentro da imagem passa a falhar apenas por base de assinaturas ausente quando `freshclam` ainda nao foi rodado.
+- Proximo passo: redeployar a API, rodar `npm run ops:clamav:update` no console do container e repetir `npm run ops:readiness` sem skips.
+
 ## Atualizacao 2026-05-25 16:18 -03:00
 
 - Reduzida a pendencia operacional de validacao profunda da API: `portal-sama-api` agora expoe `npm run ops:readiness`.

@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 16:18 -03:00
+Ultima atualizacao: 2026-05-25 16:31 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,7 +45,7 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 16:18 -03:00:
+Estimativa operacional em 2026-05-25 16:31 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
@@ -66,7 +66,7 @@ Estimativa operacional em 2026-05-25 16:18 -03:00:
 | Bitbucket/Git | Remotos existentes | Repositorios Bitbucket existem para API, Web e documentacao (`portal-sama-api`, `portal-sama-web`, `portal-sama-doc` conforme evidencia visual). Falta apenas garantir push das atualizacoes documentais locais desta rodada. |
 | Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
 | Storage privado | Parcial validado | Health publico retornou `storage=up`, indicando caminho gravavel no container. Falta validar persistencia do volume, permissoes, backup e fluxos reais de upload/download. |
-| ClamAV | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:readiness`, que executa EICAR contra ClamAV quando rodado no container real. Falta executar sem `--skip-clamav` em modo `strict`. |
+| ClamAV | Parcial corrigido | O readiness real no console do `portal-sama-api` falhou apenas porque a imagem anterior nao tinha `clamscan/clamdscan`. O Dockerfile agora instala `clamav` e expoe `npm run ops:clamav:update`; falta redeployar, atualizar assinaturas e repetir `ops:readiness`. |
 | Usuarios/permissoes reais | Parcial | Usuarios iniciais foram criados no banco real; falta testar a matriz completa de roles/permissoes e fluxos por perfil. |
 | Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
 | Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
@@ -320,6 +320,7 @@ SAMA_UPLOAD_SCAN_MODE=strict
 SAMA_UPLOAD_SCAN_TIMEOUT_SEC=45
 SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
 SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
+SAMA_CLAMAV_UPDATE_ON_START=false
 
 WEB_PUSH_PUBLIC_KEY=
 WEB_PUSH_PRIVATE_KEY=
@@ -456,7 +457,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Validar IDOR em documentos, certificados, propostas e contratos.
 - [ ] Validar storage privado sem acesso publico.
 - [x] Disponibilizar validacao operacional de storage/ClamAV/RBAC (`npm run ops:readiness`).
-- [ ] Rodar `npm run ops:readiness` no EasyPanel sem `--skip` e validar ClamAV strict com EICAR.
+- [ ] Redeployar `portal-sama-api` com ClamAV instalado, rodar `npm run ops:clamav:update` e repetir `npm run ops:readiness` sem `--skip`.
 - [ ] Proteger phpMyAdmin.
 - [ ] Confirmar Swagger desabilitado/protegido em producao.
 
@@ -494,7 +495,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 1. Atualizacoes tecnicas e documentais locais desta rodada ainda precisam ser enviadas aos remotos.
 2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
-3. Rodar `npm run ops:readiness` no container `portal-sama-api` sem `--skip` para provar env, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV/EICAR reais.
+3. Repetir `npm run ops:readiness` no container `portal-sama-api` apos redeploy com ClamAV instalado e `npm run ops:clamav:update`; na tentativa de 2026-05-25 16:27, env, banco, migrations, RBAC, usuarios e storage passaram, mas ClamAV estava ausente na imagem.
 4. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
 5. Storage privado retornou `storage=up`, mas persistencia, permissoes, backup e fluxos reais de upload/download ainda precisam ser homologados.
 6. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.

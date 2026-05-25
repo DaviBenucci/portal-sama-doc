@@ -1,5 +1,52 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 16:31
+
+### Contexto
+
+- Correcao do erro real informado pelo operador ao rodar `npm run ops:readiness` no console do `portal-sama-api`.
+- O readiness real passou nas validacoes de ambiente, banco, migrations, RBAC, usuarios privilegiados e storage; falhou somente porque o scanner ClamAV nao existia na imagem da API.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Docker local: Docker Desktop disponivel, build executado com `node:22-alpine`.
+- Banco real: nao acessado localmente nesta rodada.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+node --check scripts/validate-operational-readiness.js
+npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft
+npm.cmd run lint
+npm.cmd run build
+docker build --pull=false -t portal-sama-api:clamav-runtime .
+docker run --rm portal-sama-api:clamav-runtime sh -lc "which clamscan && which freshclam && which clamdscan && clamscan --version"
+docker run --rm portal-sama-api:clamav-runtime npm run ops:readiness -- --skip-env --skip-database --storage-path /tmp/portal-sama-readiness --soft
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para imagem com ClamAV instalado.
+- Docker build passou.
+- A imagem possui `/usr/bin/clamscan`, `/usr/bin/freshclam` e `/usr/bin/clamdscan`.
+- `clamscan --version` retornou `ClamAV 1.4.4`.
+- O readiness dentro da imagem deixou de falhar por scanner ausente; sem `freshclam`, retornou a falha esperada de base de assinaturas ausente em `/var/lib/clamav`, com hint para `npm run ops:clamav:update`.
+- Lint e build da API passaram.
+
+### Pendencias
+
+- Redeployar a API no EasyPanel com a nova imagem.
+- Rodar `npm run ops:clamav:update` no console do container.
+- Repetir `npm run ops:readiness` sem skips e registrar o resultado.
+
+### Observacao anti-alucinacao
+
+Nao foi executado `freshclam` contra o ambiente real nesta rodada e nao foi repetido o readiness real no EasyPanel. A correcao foi validada localmente na imagem Docker.
+
 ## Execucao 2026-05-25 16:18
 
 ### Contexto
