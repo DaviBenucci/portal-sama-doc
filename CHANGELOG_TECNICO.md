@@ -1,5 +1,56 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 17:19
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/documents/documents.controller.ts`
+- `portal-sama-api/src/modules/documents/documents.controller.spec.ts`
+- `portal-sama-web/src/services/documents.service.ts`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `MATRIZ_MIGRACAO_PHP_PARA_NESTJS.md`
+- `MATRIZ_MIGRACAO_HTML_PARA_REACT.md`
+- `SEGURANCA.md`
+- `INVENTARIO_ENDPOINTS.md`
+- `paginas/onboarding-documentos-cliente.md`
+
+### O que mudou
+
+- `DocumentsController` passou a expor `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`.
+- Os endpoints publicos genericos de documentos foram preservados para compatibilidade.
+- `portal-sama-web/src/services/documents.service.ts` passou a consumir os aliases especificos de onboarding.
+- O smoke Playwright da tela publica foi atualizado para mockar o novo alias.
+
+### Motivo da alteracao
+
+Alinhar o codigo real ao contrato documentado para documentos publicos de onboarding, reduzindo a divergencia entre a rota React `/onboarding/publico/documentos/:token` e o endpoint alvo em `/api-v2/public/onboarding/documents/:token`.
+
+### Impacto esperado
+
+- O frontend publico passa a conversar com a API pelo contrato semantico de onboarding.
+- Backends/clients que ainda usem `documents/public-checklist` e `documents/public-upload` continuam funcionando.
+- Nao muda schema, migration, storage ou regra de validacao de token; a seguranca permanece centralizada no `DocumentsService`.
+
+### Testes executados
+
+- `npm.cmd test -- documents.controller.spec.ts --runInBand`: passou com 2 testes.
+- `npm.cmd run lint` em `portal-sama-api`: passou apos ajuste do mock no spec.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` com `DATABASE_URL` dummy: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou apos reexecucao isolada.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "public documents page"`: passou com 1 teste Chromium.
+- `git diff --check` em API e Web: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta validar os aliases publicos contra o EasyPanel com token real/legado.
+- Ainda falta Playwright de upload publico real, MySQL/storage/ClamAV reais e evidencia HTTPS.
+
 ## 2026-05-25 16:54
 
 ### Arquivos alterados

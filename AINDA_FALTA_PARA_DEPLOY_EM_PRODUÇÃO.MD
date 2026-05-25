@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 16:54 -03:00
+Ultima atualizacao: 2026-05-25 17:27 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,34 +45,47 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 16:54 -03:00:
+Estimativa operacional em 2026-05-25 17:27 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar/continuar homologacao da nova stack | 95% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; a API tambem possui relatorio read-only de backfill e comando operacional de backup. Falta Playwright real, QA por perfil e evidencias de restore drill. |
-| Pronto para producao sem depender do legado | 80% | A stack nova esta operacional no EasyPanel e o readiness real passou com warning apenas de backup/rollback. Permanecem pendentes backfills/conferencias reais, matriz 401/403/200 por perfil, restore drill, QA final e desligamento seguro do legado. |
-| Falta para producao | 20% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por perfil, backup externo com restore testado, Playwright real, QA final e plano de corte/desligamento do legado. |
+| Pronto para iniciar/continuar homologacao da nova stack | 96% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; a API tambem possui relatorio read-only de backfill, comando operacional de backup e aliases publicos documentados para documentos de onboarding. Falta Playwright real, QA por perfil, upload real com token/storage e evidencias de restore drill. |
+| Pronto para producao sem depender do legado | 81% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback e o fluxo publico de documentos de onboarding agora esta alinhado aos contratos documentados. Permanecem pendentes backfills/conferencias reais, matriz 401/403/200 por perfil, restore drill, QA final, validacao real de uploads e desligamento seguro do legado. |
+| Falta para producao | 19% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por perfil, backup externo com restore testado, Playwright real, upload/download real de documentos, QA final e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
 | Area | Estado | Observacao |
 |---|---|---|
-| Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`. Falta validar fluxos de negocio e permissoes com dados reais. |
-| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; logs do Web mostram assets e chamadas `/api-v2/*` respondendo 200; smoke publico validou frontend, proxy, CORS e CSRF. |
+| Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`; aliases publicos de documentos de onboarding foram implementados. Falta validar fluxos de negocio e permissoes com dados reais. |
+| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; logs do Web mostram assets e chamadas `/api-v2/*` respondendo 200; smoke publico validou frontend, proxy, CORS e CSRF; pagina publica de documentos foi migrada para consumir os aliases documentados. |
 | Banco MySQL/Prisma | Operacional em homologacao | EasyPanel possui servico `portal-sama-database`; log mostra MySQL Community Server 9.7.0 pronto em `:3306`; readiness real confirmou database `SELECT 1` e 19 migrations Prisma aplicadas. Falta rodar relatorio de backfill e conferir dados por modulo. |
 | Primeiro admin/usuarios API v2 | Parcial operacional | Usuario(s) inicial(is) ja foram criados pelo operador e a aplicacao esta conectada ao banco real; falta registrar matriz de usuarios/perfis reais e validar permissoes por papel. |
 | EasyPanel | Deployado | Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` ativos. Readiness real passou com warning apenas de backup/rollback; falta restore drill e hardening operacional final. |
 | Workspaces locais | Separado e preparado | Existem pastas irmas `portal-sama-docs`, `portal-sama-api` e `portal-sama-web` no Desktop; API/Web agora possuem README minimo com regra de leitura do repo de docs. |
 | Bitbucket/Git | Remotos existentes | Repositorios Bitbucket existem para API, Web e documentacao (`portal-sama-api`, `portal-sama-web`, `portal-sama-doc` conforme evidencia visual). Falta apenas garantir push das atualizacoes documentais locais desta rodada. |
 | Builds locais separados | Validado | Passaram lint/build da API, `prisma:validate` e lint/build do Web nos repos separados. |
-| Storage privado | Parcial validado | Health publico retornou `storage=up` e readiness real confirmou leitura/escrita em `/var/private/portal-sama`. Falta validar persistencia do volume, permissoes, backup externo e fluxos reais de upload/download. |
+| Storage privado | Parcial validado | Health publico retornou `storage=up` e readiness real confirmou leitura/escrita em `/var/private/portal-sama`. O Web ja aponta para o upload publico documentado de onboarding, mas ainda falta validar persistencia do volume, permissoes, backup externo e fluxos reais de upload/download. |
 | ClamAV | Validado em homologacao real | Readiness real detectou EICAR com `/usr/bin/clamscan` em modo strict. Manter `npm run ops:clamav:update` como rotina operacional quando assinaturas precisarem ser atualizadas. |
 | Usuarios/permissoes reais | Parcial | Usuarios iniciais foram criados no banco real; falta testar a matriz completa de roles/permissoes e fluxos por perfil. |
 | Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
 | Backups/rollback | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backup:create`, que gera `database.sql.gz`, `storage-manifest.json`, `metadata.json` e opcionalmente `storage.tar.gz`. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill. |
-| Playwright real | Parcial | E2E local do Web separado passou com 9 testes Chromium usando mocks; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
+| Playwright real | Parcial | E2E local do Web separado passou com mocks, incluindo smoke da pagina publica de documentos usando o alias novo; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-25 17:27 -03:00
+
+Nesta rodada foi concluida uma pendencia de aderencia entre documentacao, API e Web no fluxo publico de documentos de onboarding:
+
+- `portal-sama-api` agora expoe os aliases documentados `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`, mantendo os endpoints genericos antigos como compatibilidade.
+- `portal-sama-web` agora consome esses aliases na pagina publica de documentos do cliente.
+- Foi adicionado teste unitario focado na controller de documentos e o smoke Playwright local do Web passou mockando o alias novo.
+- A documentacao viva foi atualizada em `STATUS_IMPLEMENTACAO.md`, `PENDENCIAS_TECNICAS.md`, `RELATORIO_TESTES.md`, `CHANGELOG_TECNICO.md`, matrizes de migracao, seguranca, inventario e pagina de onboarding.
+
+Validacoes locais registradas nesta rodada: teste unitario da API, lint da API, build da API, `prisma:validate`, lint do Web, build do Web, smoke Playwright local do fluxo publico de documentos e `git diff --check` nos tres repositorios.
+
+Pendencia real remanescente: validar no EasyPanel o fluxo publico completo com token real, MySQL real, storage privado real, ClamAV em modo strict e upload de arquivo real pelo navegador.
 
 ## Separacao em repositorios Bitbucket
 
@@ -404,10 +417,11 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 24. Executar backfills por modulo.
 25. Criar/migrar usuarios reais e roles.
 26. [x] Rodar smoke publico sem `--soft`.
-27. Rodar Playwright contra homologacao real.
-28. Fazer QA visual desktop/mobile.
-29. Rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill.
-30. Aprovar corte para producao.
+27. [x] Implementar e testar localmente aliases publicos de documentos de onboarding na API/Web.
+28. Rodar Playwright contra homologacao real.
+29. Fazer QA visual desktop/mobile.
+30. Rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill.
+31. Aprovar corte para producao.
 
 ## Checklist do que falta para producao
 
@@ -475,6 +489,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Validar certificados digitais com storage real.
 - [ ] Validar propostas e contratos.
 - [ ] Validar assinatura publica.
+- [x] Conectar pagina publica de documentos de onboarding aos aliases documentados da API v2.
 - [ ] Validar solicitacoes de acesso.
 - [ ] Validar notificacoes/Web Push se forem liberadas.
 - [ ] Validar gestor/calendario/transferencias.
@@ -488,6 +503,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Disponibilizar smoke publico automatizado no repo separado do Web.
 - [x] Implementar health operacional da API para banco/storage.
 - [x] Rodar smoke publico sem `--soft`.
+- [x] Rodar smoke local da pagina publica de documentos usando alias `/api-v2/public/onboarding/documents/:token`.
 - [x] Disponibilizar validadores operacionais da API para RBAC, storage, ClamAV, usuarios privilegiados e backfill read-only.
 - [x] Disponibilizar gerador de backup operacional da API (`npm run ops:backup:create`).
 - [ ] Criar Playwright contra homologacao real.
@@ -498,11 +514,11 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 ## Bloqueios atuais principais
 
-1. Atualizacoes tecnicas e documentais locais desta rodada ainda precisam ser enviadas aos remotos.
+1. Atualizacoes tecnicas e documentais desta rodada precisam ser enviadas aos remotos.
 2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
 3. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
 4. Rodar `npm run ops:backup:create` no container `portal-sama-api`, copiar os artefatos para fora do container e documentar restore drill.
-5. Storage privado retornou `storage=up` e readiness real confirmou escrita em `/var/private/portal-sama`, mas persistencia, permissoes, backup externo e fluxos reais de upload/download ainda precisam ser homologados.
+5. Storage privado retornou `storage=up` e readiness real confirmou escrita em `/var/private/portal-sama`; aliases publicos de onboarding ja estao implementados, mas persistencia, permissoes, backup externo e fluxos reais de upload/download ainda precisam ser homologados.
 6. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.
 7. Playwright real e QA visual final ainda nao foram concluidos.
 8. Backup operacional foi instrumentalizado, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado por restore drill; retencao de logs e plano de rollback tambem seguem pendentes.

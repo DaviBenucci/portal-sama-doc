@@ -288,7 +288,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Testes necessários:** 200/201 com MySQL real, 403 sem CSRF, 403 sem `documents.public_tokens`, 404 cliente/token inexistente, auditoria persistida e token bruto ausente de logs.
 - **Observações:** Unitários de emissão/listagem/revogação e e2e 401/403/CSRF passaram em 2026-05-12 13:52.
 
-## Endpoint novo: `/api-v2/documents/public-upload`
+## Endpoint novo: `/api-v2/documents/public-upload` e aliases de onboarding publico
 
 - **Arquivo:** `portal-sama-api/src/modules/documents/documents.controller.ts`, `portal-sama-api/src/modules/documents/documents.service.ts`, `portal-sama-web/src/pages/documents/PublicDocumentsPage.tsx`
 - **Método provável:** POST multipart, campo `file`, token em query string `token`.
@@ -299,7 +299,9 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Status de migração:** Implementado parcialmente; conectado ao frontend React publico em 2026-05-18 e ainda nao validado contra MySQL/storage/ClamAV reais.
 - **Riscos de segurança:** abuso de token publico, upload malicioso, replay de link, vazamento de token em logs e persistencia indevida de arquivo. O backend valida hash do token, expiracao, revogacao, escopo/modulo, cliente, extensao, MIME, assinatura, tamanho, scanner/quarentena, storage privado e auditoria.
 - **Testes necessários:** token invalido/expirado/revogado, escopo incorreto, arquivo valido, extensao/MIME/assinatura invalidos, EICAR/ClamAV em modo strict, storage real, auditoria sem token bruto e Playwright da tela publica.
-- **Observações:** A tela React nao grava token em storage do navegador e nao renderiza HTML bruto; checklist publico especifico ainda esta pendente.
+- **Observações:** A tela React nao grava token em storage do navegador e nao renderiza HTML bruto; o checklist publico minimo e os aliases de onboarding estao implementados, mantendo os endpoints genericos por compatibilidade.
+
+Atualizacao 2026-05-25 17:19: o checklist publico minimo e os aliases `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload` estao implementados. O frontend React publico passou a consumir esses aliases; os endpoints genericos por query string seguem compativeis.
 
 ## Endpoint novo: `/api-v2/documents/:id`
 
@@ -665,6 +667,8 @@ Atualizacao 2026-05-15 16:13: rota conectada ao frontend publico React em `/assi
 - **Riscos de segurança:** Upload público, token sem escopo correto, avanço indevido de etapa, download indevido.
 - **Testes necessários:** Token inválido/expirado, upload inválido, etapa bloqueada, escopo por departamento, máquina de estados completa e validação com dados reais.
 - **Observações:** Actions identificadas incluem `create`, `delete`, `move`, `stage_set`, `proposal_send`, `docs_upload`, `docs_download`, `docs_finish`. Em 2026-05-13 15:18, CRUD interno, status/etapa, timeline, documentos em metadata, CSRF, RBAC e auditoria foram implementados em `/api-v2/onboarding/processes`.
+
+Atualizacao 2026-05-25 17:19: o fluxo publico especifico de documentos de onboarding deixou de estar pendente no contrato de rota e passou a existir por `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`; seguem pendentes proposta publica especifica de onboarding, finalizacao e validacao real.
 
 ## Endpoint novo: `/api-v2/onboarding/processes`
 

@@ -1,5 +1,62 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 17:19
+
+### Contexto
+
+- Implementacao dos aliases publicos documentados para documentos de onboarding na API v2.
+- Ajuste do service React de documentos publicos para consumir `/api-v2/public/onboarding/documents/:token` e `/api-v2/public/onboarding/documents/:token/upload`.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Frontend: `portal-sama-web`.
+- Banco real: nao acessado; `prisma:validate` usou `DATABASE_URL` dummy e o teste do controller usou mocks.
+- Navegador E2E: Chromium via Playwright local com API mockada.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd test -- documents.controller.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+$env:DATABASE_URL='mysql://portal_user:portal_password@localhost:3306/portal_sama'; npm.cmd run prisma:validate
+git diff --check
+```
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e -- -g "public documents page"
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente.
+- API: teste focado do `DocumentsController` passou com 2 testes; lint, build, Prisma validate e `git diff --check` passaram.
+- Web: lint, build, Playwright focado da rota publica e `git diff --check` passaram.
+- O Playwright manteve o aviso conhecido do React Router sobre `HydrateFallback`, sem falha funcional.
+
+### Falhas encontradas
+
+- Primeira execucao do lint da API apontou `@typescript-eslint/unbound-method` no novo spec; o mock foi ajustado e o lint passou na reexecucao.
+- Primeira execucao do lint do Web em paralelo com Playwright falhou por corrida no diretorio `test-results`; reexecutado isoladamente e passou.
+
+### Pendencias
+
+- Validar os aliases publicos no EasyPanel com token real/legado e MySQL/storage/ClamAV reais.
+- Criar Playwright de upload publico real em homologacao.
+
+### Observacao anti-alucinacao
+
+Nao foi executado upload real, token real/legado, MySQL real nem ClamAV real nesta rodada. A validacao foi local, com mocks onde necessario.
+
 ## Execucao 2026-05-25 16:54
 
 ### Contexto

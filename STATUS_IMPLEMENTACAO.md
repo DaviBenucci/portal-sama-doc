@@ -1,5 +1,14 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 17:19 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** O fluxo publico de documentos de onboarding passou a expor tambem os aliases documentados em `/api-v2/public/onboarding/documents/:token`.
+- **Backend/documentos:** `DocumentsController` agora mantem compatibilidade com `GET /api-v2/documents/public-checklist?token=...` e `POST /api-v2/documents/public-upload?token=...`, mas tambem expoe `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`, usando o mesmo `DocumentsService`, `PublicToken`, throttle, validacao de token, scanner/storage e auditoria existentes.
+- **Frontend publico:** `portal-sama-web/src/services/documents.service.ts` passou a consumir os aliases especificos de onboarding; a rota React continua sendo `/onboarding/publico/documentos/:token`, sem gravar token em storage do navegador.
+- **Validacao:** Passaram `npm.cmd test -- documents.controller.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `prisma:validate` na API; no Web passaram `npm.cmd run lint`, `npm.cmd run build`, Playwright focado `npm.cmd run test:e2e -- -g "public documents page"` e `git diff --check`.
+- **Pendente:** Validar esses aliases no EasyPanel com token real/legado, MySQL/storage/ClamAV reais e executar Playwright de upload publico real em homologacao.
+
 ## Atualizacao complementar 2026-05-25 16:54 -03:00
 
 - **Responsavel/IA:** Codex

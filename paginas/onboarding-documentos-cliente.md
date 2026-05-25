@@ -59,6 +59,8 @@ Fluxo esperado do usuário:
 
 - Cookies de sessão são tratados pelo backend em `api/auth.php` com `HttpOnly`, `SameSite=Lax` e `Secure` condicional a HTTPS/proxy. Ponto a validar em produção: HTTPS obrigatório, HSTS efetivo e domínio/path restritivos.
 
+Atualizacao em 2026-05-25 17:19: a API v2 tambem expoe os aliases especificos `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`, e a tela React `/onboarding/publico/documentos/:token` passou a consumir esses contratos. Os endpoints genericos `documents/public-checklist` e `documents/public-upload` seguem compativeis.
+
 Campos/dados de entrada identificados no HTML: Nenhum campo HTML identificado diretamente.
 
 Quando alguma action for indireta ou montada dinamicamente no JavaScript, considerar: **ponto a validar no código/backend**.
@@ -86,7 +88,9 @@ Quando alguma action for indireta ou montada dinamicamente no JavaScript, consid
   - **Riscos de segurança:** Malware e upload público.
   - **Melhorias recomendadas:** ClamAV, storage privado e CDR quando aplicável.
 
-Atualizacao em 2026-05-20 17:11: o checklist publico especifico foi implementado na API v2 por `GET /api-v2/documents/public-checklist?token=...`, retornando apenas metadados minimos por token valido. A tela React `/onboarding/publico/documentos/:token` passou a consumir esse contrato antes do upload, usar extensoes permitidas da API e preencher documento/departamento pelos itens solicitados. Permanecem pendentes validacao com MySQL/storage/ClamAV reais, tokens reais/legados, HTTPS/homologacao e Playwright.
+Atualizacao em 2026-05-20 17:11: o checklist publico especifico foi implementado na API v2 por `GET /api-v2/documents/public-checklist?token=...`, retornando apenas metadados minimos por token valido. A tela React `/onboarding/publico/documentos/:token` passou a consumir esse contrato antes do upload, usar extensoes permitidas da API e preencher documento/departamento pelos itens solicitados. Atualizacao em 2026-05-25 17:19: a tela passou a consumir `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`. Permanecem pendentes validacao com MySQL/storage/ClamAV reais, tokens reais/legados, HTTPS/homologacao e Playwright de upload real.
+
+Atualizacao em 2026-05-25 17:19: o contrato semantico de onboarding foi alinhado por `GET /api-v2/public/onboarding/documents/:token` e `POST /api-v2/public/onboarding/documents/:token/upload`, mantendo os endpoints genericos por compatibilidade. Permanecem pendentes validacao com MySQL/storage/ClamAV reais, tokens reais/legados, HTTPS/homologacao e Playwright de upload real.
 
 ---
 
