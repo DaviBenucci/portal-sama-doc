@@ -25,6 +25,8 @@ O EasyPanel deve consumir os repositorios `portal-sama-api` e `portal-sama-web` 
 
 Atualizacao 2026-05-25 11:09 -03:00: `portal-sama-api/README.md` e `portal-sama-web/README.md` agora trazem instrucao minima apontando para `portal-sama-docs`, para preservar a regra de leitura obrigatoria mesmo quando alguem abrir primeiro um repo tecnico separado.
 
+Atualizacao 2026-05-25 11:20 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:public` e versiona `scripts/portal-public-smoke.mjs`; o comando abaixo deve ser executado a partir desse workspace apos publicar Web/API no EasyPanel.
+
 ---
 
 ## 2. Serviços recomendados
@@ -533,13 +535,13 @@ Resposta esperada:
 
 ### 9.1 Smoke publico automatizado
 
-Para homologar o dominio publico depois de publicar `portal-sama-web` e `portal-sama-api`, execute na raiz do repositorio:
+Para homologar o dominio publico depois de publicar `portal-sama-web` e `portal-sama-api`, execute na raiz do repo separado `portal-sama-web`:
 
 ```bash
 npm.cmd run smoke:public
 ```
 
-O script `scripts/portal-public-smoke.mjs` valida:
+O script `portal-sama-web/scripts/portal-public-smoke.mjs` valida:
 
 - `GET https://portal.samacontabil.com.br`;
 - `GET https://portal.samacontabil.com.br/api-v2/health`;

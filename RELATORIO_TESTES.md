@@ -1,5 +1,56 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 11:20
+
+### Contexto
+
+- Implementacao do smoke publico no repo separado `portal-sama-web`, alinhando o que ja estava previsto em `EASYPANEL_DEPLOY.md`.
+- Objetivo: validar localmente o script de smoke sem depender do EasyPanel real ainda nao publicado.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- Banco/API real: nao acessados; a validacao positiva usou servidor HTTP fake local.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+node --check scripts/portal-public-smoke.mjs
+node - # servidor HTTP fake local + scripts/portal-public-smoke.mjs
+npm.cmd run smoke:public -- --url http://127.0.0.1:9 --api-url http://127.0.0.1:9/api-v2 --origin http://127.0.0.1:9 --timeout 250 --soft
+npm.cmd run lint
+npm.cmd run build
+git diff --check
+```
+
+Em `portal-sama-docs`:
+
+```bash
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para script de smoke publico no repo separado do Web.
+- `node --check` passou.
+- Smoke positivo com servidor fake passou validando `public-web`, `api-health`, `cors-preflight` e `auth-csrf`.
+- Smoke `--soft` contra porta fechada retornou falhas esperadas e manteve exit code 0.
+- `npm.cmd run lint` passou.
+- `npm.cmd run build` passou.
+- `git diff --check` passou no Web e nos Docs.
+
+### Pendencias
+
+- Rodar `npm.cmd run smoke:public` sem `--soft` contra `https://portal.samacontabil.com.br` apos publicar API/Web no EasyPanel.
+- Validar MySQL real, HTTPS, CORS, cookies e usuarios reais em homologacao.
+
+### Observacao anti-alucinacao
+
+Nao foi executado smoke real contra EasyPanel nesta rodada. O teste positivo usou servidor fake local para isolar comportamento do script.
+
 ## Execucao 2026-05-25 11:09
 
 ### Contexto

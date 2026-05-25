@@ -1,5 +1,52 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 11:20
+
+### Arquivos alterados
+
+- `portal-sama-web/package.json`
+- `portal-sama-web/scripts/portal-public-smoke.mjs`
+- `portal-sama-web/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- Criado smoke publico no repo separado `portal-sama-web`.
+- Exposto `npm.cmd run smoke:public` no `package.json` do Web.
+- O script valida frontend publico, `/api-v2/health`, preflight CORS de `/api-v2/auth/me` e CSRF em `/api-v2/auth/csrf`.
+- O README do Web passou a documentar uso, variaveis de ambiente e modo `--soft`.
+- A documentacao de deploy foi ajustada para deixar claro que o comando deve ser rodado no repo separado do Web.
+
+### Motivo da alteracao
+
+Fechar a divergencia entre a documentacao de EasyPanel, que ja previa `npm.cmd run smoke:public`, e o estado real do workspace separado `portal-sama-web`, que ainda nao expunha esse comando.
+
+### Impacto esperado
+
+- Homologacao passa a ter uma checagem repetivel para dominio, proxy `/api-v2`, CORS e cookie CSRF.
+- O smoke pode ser usado em diagnostico com `--soft` e em aprovacao final sem `--soft`.
+- Nao altera runtime do frontend nem da API; adiciona apenas ferramenta operacional.
+
+### Testes executados
+
+- `node --check scripts/portal-public-smoke.mjs`: passou.
+- Smoke com servidor HTTP fake local: passou nos quatro checks.
+- `npm.cmd run smoke:public -- --url http://127.0.0.1:9 --api-url http://127.0.0.1:9/api-v2 --origin http://127.0.0.1:9 --timeout 250 --soft`: passou com falhas esperadas e exit code 0.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-docs`: passou.
+
+### Riscos ou pendencias
+
+- O smoke real contra `https://portal.samacontabil.com.br` nao foi executado sem `--soft`, pois API/Web ainda precisam ser publicados/validados no EasyPanel.
+- Banco MySQL real, HTTPS, CORS/cookies em navegador e usuarios/permissoes reais continuam pendentes de homologacao.
+
 ## 2026-05-25 11:09
 
 ### Arquivos alterados

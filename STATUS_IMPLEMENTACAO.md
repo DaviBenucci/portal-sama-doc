@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 11:20 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** O smoke publico documentado para deploy foi implementado no repo separado `portal-sama-web`.
+- **Frontend/deploy:** `portal-sama-web/package.json` agora expoe `npm.cmd run smoke:public`, chamando `scripts/portal-public-smoke.mjs`.
+- **Smoke publico:** O script valida a raiz publica do frontend, `GET /api-v2/health`, preflight CORS de `/api-v2/auth/me` e `GET /api-v2/auth/csrf` com token e cookie.
+- **Documentacao:** `portal-sama-web/README.md` e `EASYPANEL_DEPLOY.md` agora indicam que o smoke deve ser executado a partir do repo separado do Web.
+- **Validacao:** Passaram `node --check scripts/portal-public-smoke.mjs`, smoke local com servidor HTTP fake, smoke `--soft` contra porta fechada, `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` em `portal-sama-web`.
+- **Pendente:** Rodar `npm.cmd run smoke:public` sem `--soft` contra o dominio real apos publicar API/Web no EasyPanel.
+
 ## Atualizacao complementar 2026-05-25 11:09 -03:00
 
 - **Responsavel/IA:** Codex

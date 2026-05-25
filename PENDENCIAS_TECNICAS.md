@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 11:20 -03:00
+
+- Resolvida a lacuna entre `EASYPANEL_DEPLOY.md` e o repo separado do Web: `portal-sama-web` agora possui `npm.cmd run smoke:public`.
+- Criado `portal-sama-web/scripts/portal-public-smoke.mjs` para validar frontend publico, `/api-v2/health`, preflight CORS de `/api-v2/auth/me` e `/api-v2/auth/csrf` com token/cookie.
+- `portal-sama-web/README.md` agora documenta uso, variaveis `PORTAL_PUBLIC_URL`, `PORTAL_API_BASE_URL`, `PORTAL_CORS_ORIGIN`, `PORTAL_SMOKE_TIMEOUT_MS` e modo `--soft`.
+- Passaram `node --check`, smoke local com servidor HTTP fake, smoke `--soft` contra porta fechada, `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` no repo `portal-sama-web`.
+- Permanece pendente publicar API/Web no EasyPanel e rodar `npm.cmd run smoke:public` sem `--soft` contra o dominio real.
+
 ## Atualizacao 2026-05-25 11:09 -03:00
 
 - Resolvido o ponto operacional de README minimo em `portal-sama-api` e `portal-sama-web` apontando para `portal-sama-docs`.
