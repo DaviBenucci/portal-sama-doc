@@ -1,5 +1,54 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 17:37
+
+### Contexto
+
+- Criacao de smoke operacional em `portal-sama-web` para validar autenticacao real da API v2 em homologacao.
+- O script cobre `csrf -> login -> me -> refresh -> me -> logout`, sem imprimir senha, access token, refresh token ou CSRF token.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- API real/MySQL real: nao acessados nesta rodada.
+- Validacao positiva: servidor HTTP fake local simulando `/api-v2/auth/*`.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+node --check scripts/portal-auth-smoke.mjs
+npm.cmd run smoke:auth -- --help
+npm.cmd run smoke:auth -- --api-url http://127.0.0.1:9/api-v2 --url http://127.0.0.1:9 --origin http://127.0.0.1:9 --timeout 250 --soft --json
+node - # servidor HTTP fake local + scripts/portal-auth-smoke.mjs
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para a ferramenta de smoke.
+- `node --check` passou.
+- `npm.cmd run smoke:auth -- --help` passou.
+- Smoke positivo contra servidor fake local passou nos checks `auth-csrf-login`, `auth-login`, `auth-me-after-login`, `auth-csrf-refresh`, `auth-refresh`, `auth-me-after-refresh` e `auth-logout`.
+- Smoke `--soft` sem credenciais retornou falha esperada de credenciais ausentes e manteve exit code 0.
+- Lint e build do Web passaram.
+
+### Falhas encontradas
+
+- Primeira execucao do smoke fake apontou erro de ordem de inicializacao do cookie jar no ES module. O script foi ajustado para criar o jar por funcao hoisted e a execucao passou.
+
+### Pendencias
+
+- Rodar `npm.cmd run smoke:auth` contra `https://portal.samacontabil.com.br/api-v2` com usuario real de homologacao.
+- Repetir por perfis criticos e anexar evidencia sem credenciais, tokens ou cookies.
+
+### Observacao anti-alucinacao
+
+Nao foi executado login real, refresh real, logout real, MySQL real nem HTTPS real nesta rodada. A ferramenta foi implementada e validada localmente com servidor fake.
+
 ## Execucao 2026-05-25 17:19
 
 ### Contexto

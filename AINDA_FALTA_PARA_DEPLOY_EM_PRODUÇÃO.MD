@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-25 17:27 -03:00
+Ultima atualizacao: 2026-05-25 17:37 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,11 +45,11 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-25 17:27 -03:00:
+Estimativa operacional em 2026-05-25 17:37 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar/continuar homologacao da nova stack | 96% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; a API tambem possui relatorio read-only de backfill, comando operacional de backup e aliases publicos documentados para documentos de onboarding. Falta Playwright real, QA por perfil, upload real com token/storage e evidencias de restore drill. |
+| Pronto para iniciar/continuar homologacao da nova stack | 97% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; a API tambem possui relatorio read-only de backfill, comando operacional de backup, aliases publicos documentados para documentos de onboarding e smoke operacional de autenticacao real. Falta rodar esse smoke com usuario real, Playwright real, QA por perfil, upload real com token/storage e evidencias de restore drill. |
 | Pronto para producao sem depender do legado | 81% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback e o fluxo publico de documentos de onboarding agora esta alinhado aos contratos documentados. Permanecem pendentes backfills/conferencias reais, matriz 401/403/200 por perfil, restore drill, QA final, validacao real de uploads e desligamento seguro do legado. |
 | Falta para producao | 19% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por perfil, backup externo com restore testado, Playwright real, upload/download real de documentos, QA final e plano de corte/desligamento do legado. |
 
@@ -58,7 +58,7 @@ Estimativa operacional em 2026-05-25 17:27 -03:00:
 | Area | Estado | Observacao |
 |---|---|---|
 | Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`; aliases publicos de documentos de onboarding foram implementados. Falta validar fluxos de negocio e permissoes com dados reais. |
-| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; logs do Web mostram assets e chamadas `/api-v2/*` respondendo 200; smoke publico validou frontend, proxy, CORS e CSRF; pagina publica de documentos foi migrada para consumir os aliases documentados. |
+| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; logs do Web mostram assets e chamadas `/api-v2/*` respondendo 200; smoke publico validou frontend, proxy, CORS e CSRF; pagina publica de documentos foi migrada para consumir os aliases documentados; `smoke:auth` foi disponibilizado para validar login/refresh/logout reais. |
 | Banco MySQL/Prisma | Operacional em homologacao | EasyPanel possui servico `portal-sama-database`; log mostra MySQL Community Server 9.7.0 pronto em `:3306`; readiness real confirmou database `SELECT 1` e 19 migrations Prisma aplicadas. Falta rodar relatorio de backfill e conferir dados por modulo. |
 | Primeiro admin/usuarios API v2 | Parcial operacional | Usuario(s) inicial(is) ja foram criados pelo operador e a aplicacao esta conectada ao banco real; falta registrar matriz de usuarios/perfis reais e validar permissoes por papel. |
 | EasyPanel | Deployado | Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` ativos. Readiness real passou com warning apenas de backup/rollback; falta restore drill e hardening operacional final. |
@@ -73,6 +73,17 @@ Estimativa operacional em 2026-05-25 17:27 -03:00:
 | Playwright real | Parcial | E2E local do Web separado passou com mocks, incluindo smoke da pagina publica de documentos usando o alias novo; smoke HTTP real passou contra HTTPS/API/MySQL. Falta suite Playwright navegando contra homologacao real. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-25 17:37 -03:00
+
+Nesta rodada foi disponibilizada a ferramenta operacional para validar autenticacao real no EasyPanel:
+
+- `portal-sama-web` agora expoe `npm.cmd run smoke:auth`.
+- O script executa `csrf -> login -> me -> refresh -> me -> logout`.
+- O smoke mantem cookies apenas em memoria, mascara o usuario e nao imprime senha, access token, refresh token ou CSRF token.
+- A validacao local passou com servidor fake e o script checa `HttpOnly`, `SameSite` e `Secure` no refresh cookie quando a API esta em HTTPS.
+
+Pendencia real remanescente: rodar `npm.cmd run smoke:auth` contra `https://portal.samacontabil.com.br/api-v2` com usuario real de homologacao, sem registrar credenciais ou tokens, e repetir por perfis criticos.
 
 ## Atualizacao operacional de 2026-05-25 17:27 -03:00
 
@@ -418,10 +429,12 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 25. Criar/migrar usuarios reais e roles.
 26. [x] Rodar smoke publico sem `--soft`.
 27. [x] Implementar e testar localmente aliases publicos de documentos de onboarding na API/Web.
-28. Rodar Playwright contra homologacao real.
-29. Fazer QA visual desktop/mobile.
-30. Rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill.
-31. Aprovar corte para producao.
+28. [x] Disponibilizar smoke operacional de autenticacao real (`npm.cmd run smoke:auth`).
+29. Rodar `npm.cmd run smoke:auth` com usuario real de homologacao.
+30. Rodar Playwright contra homologacao real.
+31. Fazer QA visual desktop/mobile.
+32. Rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill.
+33. Aprovar corte para producao.
 
 ## Checklist do que falta para producao
 
@@ -471,6 +484,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Validar login, refresh e logout em HTTPS.
 - [x] Validar CSRF publico em HTTPS.
 - [ ] Validar cookies `HttpOnly`, `Secure`, `SameSite`.
+- [x] Disponibilizar smoke para validar login/refresh/logout e politica de refresh cookie em HTTPS.
 - [ ] Validar 401/403/200 por perfil.
 - [ ] Validar IDOR em documentos, certificados, propostas e contratos.
 - [ ] Validar storage privado sem acesso publico.
@@ -504,6 +518,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Implementar health operacional da API para banco/storage.
 - [x] Rodar smoke publico sem `--soft`.
 - [x] Rodar smoke local da pagina publica de documentos usando alias `/api-v2/public/onboarding/documents/:token`.
+- [x] Disponibilizar smoke operacional de autenticacao real (`npm.cmd run smoke:auth`).
 - [x] Disponibilizar validadores operacionais da API para RBAC, storage, ClamAV, usuarios privilegiados e backfill read-only.
 - [x] Disponibilizar gerador de backup operacional da API (`npm run ops:backup:create`).
 - [ ] Criar Playwright contra homologacao real.
@@ -519,10 +534,11 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 3. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
 4. Rodar `npm run ops:backup:create` no container `portal-sama-api`, copiar os artefatos para fora do container e documentar restore drill.
 5. Storage privado retornou `storage=up` e readiness real confirmou escrita em `/var/private/portal-sama`; aliases publicos de onboarding ja estao implementados, mas persistencia, permissoes, backup externo e fluxos reais de upload/download ainda precisam ser homologados.
-6. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.
-7. Playwright real e QA visual final ainda nao foram concluidos.
-8. Backup operacional foi instrumentalizado, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado por restore drill; retencao de logs e plano de rollback tambem seguem pendentes.
-9. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
+6. O smoke operacional de autenticacao foi disponibilizado, mas ainda precisa ser rodado com usuario real de homologacao e repetido por perfis criticos.
+7. Usuarios/permissoes reais ainda precisam ser validados por matriz de roles/perfis.
+8. Playwright real e QA visual final ainda nao foram concluidos.
+9. Backup operacional foi instrumentalizado, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado por restore drill; retencao de logs e plano de rollback tambem seguem pendentes.
+10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 
 ## Criterio para dizer "pronto para producao"
 
@@ -548,7 +564,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> rodar ops:backfill:report --json -> rodar ops:backup:create e copiar artefatos -> validar restore drill -> validar matriz de usuarios/perfis -> testar fluxos criticos reais -> validar uploads/downloads/storage -> Playwright real -> QA visual final -> desligamento seguro do legado
+registrar migrations/seed/bootstrap -> rodar smoke:auth com usuario real -> rodar ops:backfill:report --json -> rodar ops:backup:create e copiar artefatos -> validar restore drill -> validar matriz de usuarios/perfis -> testar fluxos criticos reais -> validar uploads/downloads/storage -> Playwright real -> QA visual final -> desligamento seguro do legado
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

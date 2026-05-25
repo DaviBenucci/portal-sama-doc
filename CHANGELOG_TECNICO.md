@@ -1,5 +1,52 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 17:37
+
+### Arquivos alterados
+
+- `portal-sama-web/package.json`
+- `portal-sama-web/scripts/portal-auth-smoke.mjs`
+- `portal-sama-web/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+- `SEGURANCA.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- Criado `npm.cmd run smoke:auth` no `portal-sama-web`.
+- O script `scripts/portal-auth-smoke.mjs` valida `GET /auth/csrf`, `POST /auth/login`, `GET /auth/me`, `POST /auth/refresh`, novo `GET /auth/me` e `POST /auth/logout`.
+- O cookie jar do script e mantido apenas em memoria; usuario e mascarado no resumo; senha, access token, refresh token e CSRF token nao sao impressos.
+- O smoke valida que o refresh cookie tenha `HttpOnly`, `SameSite` e `Secure` quando a API estiver em HTTPS.
+
+### Motivo da alteracao
+
+Reduzir a pendencia de homologacao de login/refresh/logout/cookies em HTTPS com uma ferramenta repetivel, parametrizada por ambiente e segura para registrar evidencias sem segredos.
+
+### Impacto esperado
+
+- Operadores podem validar a autenticacao real no EasyPanel usando usuario de homologacao.
+- A documentacao passa a diferenciar ferramenta disponivel de validacao real ainda pendente.
+- Nao houve mudanca de runtime do frontend nem da API; a alteracao adiciona script operacional e documentacao.
+
+### Testes executados
+
+- `node --check scripts/portal-auth-smoke.mjs`: passou.
+- `npm.cmd run smoke:auth -- --help`: passou.
+- Smoke positivo contra servidor fake local: passou.
+- `npm.cmd run smoke:auth -- --api-url http://127.0.0.1:9/api-v2 --url http://127.0.0.1:9 --origin http://127.0.0.1:9 --timeout 250 --soft --json`: passou com falha esperada de credenciais ausentes e exit code 0.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta executar o smoke contra `https://portal.samacontabil.com.br/api-v2` com usuario real e sem registrar credenciais.
+- Ainda falta repetir por perfis criticos e cruzar com a matriz 401/403/200.
+
 ## 2026-05-25 17:19
 
 ### Arquivos alterados

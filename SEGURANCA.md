@@ -86,6 +86,8 @@ Atualização em 2026-05-08 14:14: `GET /api-v2/auth/csrf` foi adicionado e `POS
 
 Atualizacao em 2026-05-14 14:54: `portal-sama-web` foi criado com login React inicial em `/login`, consumindo `/api-v2/auth/csrf`, `/login`, `/refresh`, `/logout`, `/me` e `/forgot-password`. Nesta fundacao React, o access token fica somente em memoria no Zustand; o refresh token permanece no cookie HttpOnly/Secure/SameSite da API v2. Ainda falta validar em navegador HTTPS com MySQL/homologacao e usuario real.
 
+Atualizacao em 2026-05-25 17:37: `portal-sama-web` agora possui `npm.cmd run smoke:auth` para validar em homologacao a sequencia `csrf -> login -> me -> refresh -> me -> logout`. O script mantem cookies apenas em memoria, nao imprime senha/tokens e falha em HTTPS se o refresh cookie nao tiver `HttpOnly`, `SameSite` e `Secure`. Ainda falta executar contra EasyPanel com usuario real e registrar evidencia sem segredos.
+
 Atualizacao em 2026-05-18 17:35: o motion system privado do `portal-sama-web` foi iniciado com `IntroGate`, splash padrao e boas-vindas somente apos autenticacao. A marcacao `welcomeAnimationSeen` usa `PATCH /api-v2/me/preferences/intro`, protegido por JWT e CSRF, com auditoria e persistencia em `User.metadata.portalIntro`. A intro nao aparece em rotas publicas, nao expoe dados sensiveis e nao grava tokens no navegador. Validacao com HTTPS/MySQL/usuario real e Playwright segue pendente.
 
 Atualizacao em 2026-05-21 14:05: a intro visual oficial foi migrada para GSAP v2 em `portal-sama-web/src/features/intro`, mantendo `IntroGate`, `welcomeAnimationSeen`, `markWelcomeIntroSeen`, CSRF e auditoria. A nova camada consome apenas assets locais em `/brand/sama/intro/assets`, valida paths relativos e bloqueia remoto, `data:`, `javascript:`, `../`, `http:`, `https:` e `//`. Falha de manifesto, mapa, GSAP ou asset obrigatorio cai para fallback estatico e nao deve bloquear login, sessao ou navegacao. Rotas publicas seguem sem intro autenticada.
@@ -518,6 +520,7 @@ Também configurar:
 - [ ] Autenticação centralizada no NestJS.
 - [ ] Tokens sensíveis fora do `localStorage`.
 - [ ] Cookies com `HttpOnly`, `Secure` e `SameSite`.
+- [x] Smoke operacional disponivel para validar login/refresh/logout e politica do refresh cookie em HTTPS.
 - [ ] RBAC implementado.
 - [ ] Escopo de recurso validado no backend.
 - [ ] Proteção contra IDOR.

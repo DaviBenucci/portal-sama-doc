@@ -37,6 +37,8 @@ Atualizacao 2026-05-25 16:31 -03:00: o readiness real foi executado corretamente
 
 Atualizacao 2026-05-25 16:54 -03:00: o readiness real foi repetido e passou com ClamAV/EICAR strict; restou apenas warning de `backup-rollback`. O repo `portal-sama-api` agora expoe `npm run ops:backup:create` e a imagem instala `mariadb-client` para gerar dump MySQL no container.
 
+Atualizacao 2026-05-25 17:37 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:auth`, que valida `csrf -> login -> me -> refresh -> me -> logout` contra a API v2. O comando deve ser rodado com usuario real de homologacao, sem registrar credenciais/tokens, para reduzir a pendencia de login/cookies HTTPS.
+
 ---
 
 ## 2. Serviços recomendados
@@ -605,7 +607,43 @@ Durante diagnostico, `--soft` coleta evidencias sem falhar o processo; para homo
 
 ---
 
-### 9.2 Readiness operacional da API
+### 9.2 Smoke de autenticacao real
+
+Depois de criar/validar um usuario real de homologacao, execute no repo separado `portal-sama-web`:
+
+```powershell
+$env:PORTAL_AUTH_USERNAME='usuario_de_homologacao'
+$env:PORTAL_AUTH_PASSWORD='senha_nao_versionada'
+npm.cmd run smoke:auth
+```
+
+O script `portal-sama-web/scripts/portal-auth-smoke.mjs` valida:
+
+- `GET /api-v2/auth/csrf`;
+- `POST /api-v2/auth/login`;
+- `GET /api-v2/auth/me`;
+- `POST /api-v2/auth/refresh`;
+- novo `GET /api-v2/auth/me` com access token renovado;
+- `POST /api-v2/auth/logout`.
+
+O smoke mantem cookies apenas em memoria, mascara o usuario no resumo e nao imprime senha, access token, refresh token ou CSRF token. Em HTTPS, ele falha se o refresh cookie emitido no login/refresh nao tiver `HttpOnly`, `SameSite` e `Secure`.
+
+Variaveis suportadas:
+
+```env
+PORTAL_PUBLIC_URL=https://portal.samacontabil.com.br
+PORTAL_API_BASE_URL=https://portal.samacontabil.com.br/api-v2
+PORTAL_CORS_ORIGIN=https://portal.samacontabil.com.br
+PORTAL_AUTH_USERNAME=usuario_de_homologacao
+PORTAL_AUTH_PASSWORD=senha_nao_versionada
+PORTAL_SMOKE_TIMEOUT_MS=10000
+```
+
+Durante diagnostico, `--soft` coleta falhas sem quebrar o processo; para homologacao final, rodar sem `--soft`.
+
+---
+
+### 9.3 Readiness operacional da API
 
 No console/one-off command do servico `portal-sama-api`, apos configurar variaveis, migrations, seed, usuarios reais, storage e ClamAV:
 
@@ -640,7 +678,7 @@ npm run ops:readiness
 
 Se `freshclam` sofrer rate limit ou indisponibilidade de mirror, aguardar e repetir; o readiness strict so deve ser considerado aprovado quando EICAR for detectado.
 
-### 9.3 Relatorio read-only de backfill
+### 9.4 Relatorio read-only de backfill
 
 Antes de executar backfills ou desligar partes do legado, rode no mesmo container:
 
@@ -650,7 +688,7 @@ npm run ops:backfill:report -- --json
 
 O relatorio nao altera dados. Ele lista tabelas atuais, candidatos legados conhecidos, contagens por modulo, usuarios ativos sem role, roles sem permissoes, tokens publicos expirados abertos e vinculos de cliente quebrados. Anexar a saida JSON na documentacao/issue operacional do backfill.
 
-### 9.4 Backup operacional e restore drill
+### 9.5 Backup operacional e restore drill
 
 Antes de backfills, mudancas de schema sensiveis ou desligamento do legado, rode no console/one-off command do `portal-sama-api`:
 
@@ -705,6 +743,8 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [ ] Validar restore drill e plano de rollback.
 - [x] Validar `/api-v2/health`.
 - [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
+- [x] Disponibilizar `npm.cmd run smoke:auth` no repo separado do Web.
+- [ ] Rodar `npm.cmd run smoke:auth` com usuario real de homologacao.
 - [ ] Validar login por perfil real.
 - [ ] Validar permissões.
 - [ ] Validar upload/download.
