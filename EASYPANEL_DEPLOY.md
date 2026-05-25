@@ -35,6 +35,8 @@ Atualizacao 2026-05-25 16:18 -03:00: o repo `portal-sama-api` agora expoe `npm r
 
 Atualizacao 2026-05-25 16:31 -03:00: o readiness real foi executado corretamente no console do `portal-sama-api`; passaram ambiente, banco, migrations, RBAC, usuarios e storage, mas falhou `clamav-eicar` porque a imagem anterior nao tinha scanner. O Dockerfile da API agora instala `clamav`; apos redeploy, rodar `npm run ops:clamav:update` e repetir `npm run ops:readiness`.
 
+Atualizacao 2026-05-25 16:54 -03:00: o readiness real foi repetido e passou com ClamAV/EICAR strict; restou apenas warning de `backup-rollback`. O repo `portal-sama-api` agora expoe `npm run ops:backup:create` e a imagem instala `mariadb-client` para gerar dump MySQL no container.
+
 ---
 
 ## 2. Serviços recomendados
@@ -94,6 +96,8 @@ SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
 SAMA_UPLOAD_SCAN_ARGS=
 SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
 SAMA_CLAMAV_UPDATE_ON_START=false
+SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
+SAMA_MYSQL_DUMP_BIN=
 
 REDIS_URL=redis://portal-sama-redis:6379
 
@@ -130,7 +134,7 @@ ENV NODE_ENV=production
 ENV PRISMA_MIGRATE_ON_START=false
 ENV SAMA_CLAMAV_UPDATE_ON_START=false
 ENV SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
-RUN apk add --no-cache clamav \
+RUN apk add --no-cache clamav mariadb-client \
   && mkdir -p /var/lib/clamav /run/clamav /var/log/clamav \
   && chmod -R 755 /var/lib/clamav /run/clamav /var/log/clamav
 COPY package*.json ./
@@ -148,6 +152,8 @@ CMD ["sh", "-c", "if [ \"${SAMA_CLAMAV_UPDATE_ON_START:-false}\" = \"true\" ]; t
 > Atualizacao 2026-05-22 16:38 -03:00: migrations nao rodam mais no start por padrao. Em banco existente sem `_prisma_migrations`, `prisma migrate deploy` retorna `P3005`; portanto o container deve subir primeiro e a migration deve ser rodada por comando unico apos backup/baseline.
 >
 > Atualizacao 2026-05-25 16:31 -03:00: o runtime da API instala `clamav`, mas as assinaturas devem ser atualizadas no container com `npm run ops:clamav:update` antes da validacao strict. `SAMA_CLAMAV_UPDATE_ON_START=true` pode atualizar no boot, mas o default permanece `false` para evitar depender de mirror/rate limit no start da API.
+>
+> Atualizacao 2026-05-25 16:54 -03:00: o runtime instala tambem `mariadb-client`, disponibilizando `/usr/bin/mariadb-dump` para `npm run ops:backup:create`. O readiness real ja passou com ClamAV/EICAR; o warning restante e restore/rollback documentado.
 
 > Observação: no início, rodar `prisma migrate deploy` no start pode simplificar. Em uma operação mais madura, execute migrations em uma etapa separada de CI/CD.
 
@@ -644,6 +650,35 @@ npm run ops:backfill:report -- --json
 
 O relatorio nao altera dados. Ele lista tabelas atuais, candidatos legados conhecidos, contagens por modulo, usuarios ativos sem role, roles sem permissoes, tokens publicos expirados abertos e vinculos de cliente quebrados. Anexar a saida JSON na documentacao/issue operacional do backfill.
 
+### 9.4 Backup operacional e restore drill
+
+Antes de backfills, mudancas de schema sensiveis ou desligamento do legado, rode no console/one-off command do `portal-sama-api`:
+
+```bash
+npm run ops:backup:create
+```
+
+Artefatos gerados:
+
+- `database.sql.gz`: dump MySQL compactado usando `mariadb-dump` ou `mysqldump`;
+- `storage-manifest.json`: inventario read-only do `STORAGE_PRIVATE_PATH`;
+- `metadata.json`: metadados, caminhos e hashes SHA-256 dos artefatos.
+
+Para incluir tambem o conteudo do storage privado, grave a saida fora do volume do storage:
+
+```bash
+npm run ops:backup:create -- --output-dir /tmp/portal-sama-backups --include-storage-archive
+```
+
+Depois do comando:
+
+1. copiar os artefatos para fora do container;
+2. armazenar em local externo ao volume da aplicacao;
+3. validar restauracao em ambiente separado;
+4. registrar data, responsavel, hash dos artefatos e resultado do restore drill.
+
+O check `backup-rollback` do readiness continua como warning enquanto essa restauracao nao estiver documentada, porque o container da aplicacao nao consegue provar sozinho snapshot, retencao e rollback do EasyPanel.
+
 ## 10. Checklist de deploy
 
 - [x] Criar/usar servico MySQL no EasyPanel (`portal-sama-database`).
@@ -656,16 +691,18 @@ O relatorio nao altera dados. Ele lista tabelas atuais, candidatos legados conhe
 - [ ] Rodar migrations Prisma.
 - [ ] Rodar seed RBAC inicial com `npm.cmd run prisma:seed` ou comando equivalente do container, sem criar usuário/senha.
 - [ ] Registrar bootstrap admin ou procedimento equivalente usado para criar usuarios iniciais.
-- [ ] Rodar `npm run ops:readiness` sem skips no container `portal-sama-api`.
+- [x] Rodar `npm run ops:readiness` sem skips no container `portal-sama-api` (passou com warning de backup/rollback).
 - [ ] Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api`.
-- [ ] Rodar `npm run ops:clamav:update` apos redeploy da API com ClamAV.
+- [x] Validar ClamAV/EICAR strict no readiness real.
+- [x] Disponibilizar `npm run ops:backup:create` no container `portal-sama-api`.
+- [ ] Rodar `npm run ops:backup:create` no EasyPanel e copiar artefatos para fora do container.
 - [x] Criar servico React/Vite (`portal-sama-web`).
 - [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
 - [x] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.
 - [x] Configurar dominio e HTTPS.
 - [x] Restringir CORS para `https://portal.samacontabil.com.br`.
 - [ ] Proteger phpMyAdmin.
-- [ ] Configurar backups.
+- [ ] Validar restore drill e plano de rollback.
 - [x] Validar `/api-v2/health`.
 - [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
 - [ ] Validar login por perfil real.

@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 16:54 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Readiness real passou com ClamAV strict/EICAR e a pendencia de backup/rollback ganhou ferramenta operacional executavel.
+- **Evidencia real:** O operador repetiu o readiness no console do `portal-sama-api`; passaram ambiente, banco, 19 migrations Prisma, RBAC, usuarios privilegiados, storage em `/var/private/portal-sama` e `clamav-eicar` com `/usr/bin/clamscan`.
+- **Backend/operacao:** `portal-sama-api` agora expoe `npm run ops:backup:create`, gerando dump MySQL compactado, manifesto de storage, metadados com SHA-256 e arquivo de storage opcional.
+- **Docker/runtime:** O runtime da API instala `mariadb-client` alem de `clamav`, deixando `mariadb-dump` disponivel dentro da imagem.
+- **Validacao:** Passaram `node --check`, help do comando de backup, backup local sem banco com manifesto/archive, `prisma:validate`, lint, build, Jest completo com 165 testes, Docker build e checagem de `/usr/bin/mariadb-dump` dentro da imagem.
+- **Pendente:** Rodar `ops:backfill:report -- --json` e `ops:backup:create` no EasyPanel, copiar artefatos para fora do container, provar restore drill, validar matriz real de perfis, Playwright real e QA final.
+
 ## Atualizacao complementar 2026-05-25 16:31 -03:00
 
 - **Responsavel/IA:** Codex

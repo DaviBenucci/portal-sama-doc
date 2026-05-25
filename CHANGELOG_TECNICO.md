@@ -1,5 +1,62 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 16:54
+
+### Arquivos alterados
+
+- `portal-sama-api/Dockerfile`
+- `portal-sama-api/.env.example`
+- `portal-sama-api/package.json`
+- `portal-sama-api/README.md`
+- `portal-sama-api/scripts/create-operational-backup.js`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `EASYPANEL_DEPLOY.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- Criado `npm run ops:backup:create` na API para gerar artefatos operacionais de backup.
+- O backup cria `database.sql.gz` via `mariadb-dump/mysqldump`, `storage-manifest.json`, `metadata.json` com SHA-256 e `storage.tar.gz` opcional.
+- O Dockerfile da API passou a instalar `mariadb-client`, mantendo `clamav`.
+- O readiness passou a apontar o comando de backup no aviso `backup-rollback`.
+- Documentacoes vivas foram atualizadas para registrar que ClamAV/EICAR strict ja passou no container real e que o unico warning atual e restore drill.
+
+### Motivo da alteracao
+
+Depois que o operador confirmou o readiness real aprovado com warning apenas de backup/rollback, a proxima pendencia tecnica implementavel era criar um comando repetivel para gerar artefatos antes de backfills, rollback ou corte do legado.
+
+### Impacto esperado
+
+- O container da API passa a ter um caminho operacional para extrair backup de banco e manifesto de storage.
+- O restore drill continua separado e precisa ser executado/documentado fora do container.
+- A pendencia de backup sai de "sem ferramenta" para "ferramenta criada, falta prova real de restore".
+
+### Testes executados
+
+- `node --check scripts/create-operational-backup.js`: passou.
+- `npm.cmd run ops:backup:create -- --help`: passou.
+- `node --check scripts/validate-operational-readiness.js`: passou.
+- `npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/backup-storage --output-dir .ai-tests/ops-backups --include-storage-archive`: passou.
+- `npm.cmd run prisma:validate` com `DATABASE_URL` dummy: passou.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run test -- --runInBand`: passou com 30 suites/165 testes.
+- `git diff --check`: passou com avisos LF/CRLF esperados no Windows.
+- `docker build --pull=false -t portal-sama-api:backup-runtime .`: passou.
+- `docker run --rm --entrypoint sh portal-sama-api:backup-runtime -lc "which mariadb-dump || which mysqldump"`: passou e retornou `/usr/bin/mariadb-dump`.
+- `docker run --rm --entrypoint sh portal-sama-api:backup-runtime -lc "npm run ops:backup:create -- --help"`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta executar `npm run ops:backup:create` no EasyPanel com o `DATABASE_URL` real.
+- Ainda falta copiar os artefatos para fora do container, armazenar fora do volume da aplicacao e provar restore drill.
+- Backfills, validacao funcional por perfil, Playwright real, QA final e desligamento seguro do legado continuam pendentes.
+
 ## 2026-05-25 16:31
 
 ### Arquivos alterados

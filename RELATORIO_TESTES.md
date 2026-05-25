@@ -1,5 +1,56 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 16:54
+
+### Contexto
+
+- Readiness real do `portal-sama-api` passou com ClamAV/EICAR strict, restando somente warning de backup/rollback.
+- Implementacao de ferramenta operacional para gerar backup MySQL e manifestos de storage antes de backfills, restore drill ou corte do legado.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Docker local: Docker Desktop disponivel, build executado com `node:22-alpine`.
+- Banco real: nao acessado localmente nesta rodada; readiness real foi informado pelo operador via console do EasyPanel.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+node --check scripts/create-operational-backup.js
+npm.cmd run ops:backup:create -- --help
+node --check scripts/validate-operational-readiness.js
+npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/backup-storage --output-dir .ai-tests/ops-backups --include-storage-archive
+$env:DATABASE_URL='mysql://portal_user:portal_password@localhost:3306/portal_sama'; npm.cmd run prisma:validate
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test -- --runInBand
+git diff --check
+docker build --pull=false -t portal-sama-api:backup-runtime .
+docker run --rm --entrypoint sh portal-sama-api:backup-runtime -lc "which mariadb-dump || which mysqldump"
+docker run --rm --entrypoint sh portal-sama-api:backup-runtime -lc "npm run ops:backup:create -- --help"
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para ferramenta de backup e runtime Docker.
+- Backup local sem banco gerou manifesto de storage e `storage.tar.gz`.
+- Prisma validate, lint, build e Jest completo passaram; Jest ficou com 30 suites e 165 testes.
+- Docker build passou e a imagem contem `/usr/bin/mariadb-dump`.
+- O comando de backup abre dentro da imagem Docker.
+
+### Pendencias
+
+- Rodar `npm run ops:backfill:report -- --json` no MySQL real.
+- Rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container e validar restore drill.
+- QA funcional por perfil, Playwright real e desligamento seguro do legado continuam com o operador/rodadas futuras.
+
+### Observacao anti-alucinacao
+
+Nao foi executado restore real nem backup contra o banco de producao nesta rodada local. A ferramenta foi implementada e validada localmente; a prova final depende do container real e de restauracao documentada.
+
 ## Execucao 2026-05-25 16:31
 
 ### Contexto

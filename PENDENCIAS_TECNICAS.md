@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 16:54 -03:00
+
+- Readiness real informado pelo operador passou no `portal-sama-api` com `environment`, `database`, `migrations`, `rbac`, `privileged-users`, `storage` e `clamav-eicar`.
+- O unico ponto restante no readiness foi `backup-rollback` como warning operacional, porque restore nao pode ser provado somente de dentro do container da aplicacao.
+- `portal-sama-api` agora expoe `npm run ops:backup:create`, que gera `database.sql.gz`, `storage-manifest.json`, `metadata.json` e, opcionalmente, `storage.tar.gz`.
+- O runtime Docker da API agora instala tambem `mariadb-client`, deixando `/usr/bin/mariadb-dump` disponivel para backup do MySQL no container.
+- Proximo passo operacional: rodar `npm run ops:backfill:report -- --json`, rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container, validar restore drill e entao seguir com matriz de permissoes, Playwright real e QA final.
+
 ## Atualizacao 2026-05-25 16:31 -03:00
 
 - Diagnostico do readiness real informado pelo operador: o comando foi executado corretamente no console do `portal-sama-api`.
