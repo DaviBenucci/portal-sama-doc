@@ -1,5 +1,53 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 17:54
+
+### Arquivos alterados
+
+- `portal-sama-web/package.json`
+- `portal-sama-web/playwright.real.config.ts`
+- `portal-sama-web/tests/e2e/real-auth.spec.ts`
+- `portal-sama-web/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+- `SEGURANCA.md`
+- `MATRIZ_MIGRACAO_HTML_PARA_REACT.md`
+
+### O que mudou
+
+- Criado `npm.cmd run test:e2e:real` no `portal-sama-web`.
+- Adicionada config `playwright.real.config.ts` sem servidor local, com target padrao `https://portal.samacontabil.com.br`.
+- Adicionada spec `tests/e2e/real-auth.spec.ts`, bloqueada por `PORTAL_REAL_E2E=1` e credenciais em ambiente.
+- A spec cobre login pela UI, Home autenticada, armazenamento local sem chaves sensiveis, refresh cookie fora de `document.cookie`, politica `HttpOnly`/`SameSite`/`Secure` e logout.
+- A config real desliga trace, screenshot e video para reduzir risco de vazar credenciais de homologacao.
+
+### Motivo da alteracao
+
+Reduzir a pendencia "Criar Playwright contra homologacao real" com uma suite operacional segura, repetivel e alinhada ao fluxo real do navegador, complementando o smoke HTTP de autenticacao.
+
+### Impacto esperado
+
+- Operadores podem validar login/Home/logout contra o deploy publico usando usuario real de homologacao.
+- A suite nao altera runtime do Web/API e fica opt-in para nao executar login real acidentalmente.
+- A documentacao passa a separar ferramenta Playwright disponivel de execucao real ainda pendente.
+
+### Testes executados
+
+- `npm.cmd run test:e2e:real`: passou com 1 skipped sem variaveis reais.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e` em `portal-sama-web`: passou com 9 testes e 1 skipped.
+- `git diff --check` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta executar a suite contra `https://portal.samacontabil.com.br` com usuario real e sem registrar segredos.
+- Ainda falta repetir por perfis criticos, cruzar com a matriz 401/403/200 e anexar evidencia sanitizada.
+
 ## 2026-05-25 17:37
 
 ### Arquivos alterados

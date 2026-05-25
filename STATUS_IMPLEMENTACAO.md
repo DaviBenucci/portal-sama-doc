@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 17:54 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** O repo `portal-sama-web` ganhou uma suite Playwright opt-in para homologacao real de autenticacao via navegador.
+- **Frontend/testes:** `portal-sama-web/package.json` agora expoe `npm.cmd run test:e2e:real`, usando `playwright.real.config.ts` sem web server local.
+- **Cobertura real planejada:** A spec `tests/e2e/real-auth.spec.ts` acessa `/login` no dominio publico, faz login pela UI React, valida chegada na Home, checa ausencia de chaves sensiveis em `localStorage`/`sessionStorage`, confirma que o refresh cookie nao aparece em `document.cookie`, valida `HttpOnly`, `SameSite` e `Secure` quando HTTPS e encerra a sessao pelo botao `Sair`.
+- **Seguranca operacional:** A suite so roda com `PORTAL_REAL_E2E=1` e credenciais por variaveis de ambiente. Trace, screenshot e video ficam desligados na config real para reduzir risco de vazar credenciais de homologacao.
+- **Validacao:** Passaram `npm.cmd run test:e2e:real` sem variaveis com 1 teste skipped, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e` com 9 testes passados e 1 skipped, e `git diff --check` em `portal-sama-web`.
+- **Pendente:** Rodar `npm.cmd run test:e2e:real` contra `https://portal.samacontabil.com.br` com usuario real de homologacao, sem registrar credenciais/cookies/tokens, e repetir por perfis criticos.
+
 ## Atualizacao complementar 2026-05-25 17:37 -03:00
 
 - **Responsavel/IA:** Codex

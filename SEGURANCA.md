@@ -88,6 +88,8 @@ Atualizacao em 2026-05-14 14:54: `portal-sama-web` foi criado com login React in
 
 Atualizacao em 2026-05-25 17:37: `portal-sama-web` agora possui `npm.cmd run smoke:auth` para validar em homologacao a sequencia `csrf -> login -> me -> refresh -> me -> logout`. O script mantem cookies apenas em memoria, nao imprime senha/tokens e falha em HTTPS se o refresh cookie nao tiver `HttpOnly`, `SameSite` e `Secure`. Ainda falta executar contra EasyPanel com usuario real e registrar evidencia sem segredos.
 
+Atualizacao em 2026-05-25 17:54: `portal-sama-web` agora possui `npm.cmd run test:e2e:real` para validar autenticacao real pelo navegador, usando Playwright Chromium contra o dominio publico. A suite fica bloqueada por `PORTAL_REAL_E2E=1`, recebe credenciais somente por variaveis de ambiente, desliga trace/video/screenshot e valida login, Home, ausencia de chaves sensiveis no storage, refresh cookie fora de `document.cookie`, politica `HttpOnly`/`SameSite`/`Secure` e logout. Ainda falta executar contra EasyPanel com usuario real.
+
 Atualizacao em 2026-05-18 17:35: o motion system privado do `portal-sama-web` foi iniciado com `IntroGate`, splash padrao e boas-vindas somente apos autenticacao. A marcacao `welcomeAnimationSeen` usa `PATCH /api-v2/me/preferences/intro`, protegido por JWT e CSRF, com auditoria e persistencia em `User.metadata.portalIntro`. A intro nao aparece em rotas publicas, nao expoe dados sensiveis e nao grava tokens no navegador. Validacao com HTTPS/MySQL/usuario real e Playwright segue pendente.
 
 Atualizacao em 2026-05-21 14:05: a intro visual oficial foi migrada para GSAP v2 em `portal-sama-web/src/features/intro`, mantendo `IntroGate`, `welcomeAnimationSeen`, `markWelcomeIntroSeen`, CSRF e auditoria. A nova camada consome apenas assets locais em `/brand/sama/intro/assets`, valida paths relativos e bloqueia remoto, `data:`, `javascript:`, `../`, `http:`, `https:` e `//`. Falha de manifesto, mapa, GSAP ou asset obrigatorio cai para fallback estatico e nao deve bloquear login, sessao ou navegacao. Rotas publicas seguem sem intro autenticada.
@@ -521,6 +523,7 @@ Também configurar:
 - [ ] Tokens sensíveis fora do `localStorage`.
 - [ ] Cookies com `HttpOnly`, `Secure` e `SameSite`.
 - [x] Smoke operacional disponivel para validar login/refresh/logout e politica do refresh cookie em HTTPS.
+- [x] Playwright opt-in disponivel para validar login/Home/logout real sem trace/video/screenshot.
 - [ ] RBAC implementado.
 - [ ] Escopo de recurso validado no backend.
 - [ ] Proteção contra IDOR.

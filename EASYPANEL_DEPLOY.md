@@ -39,6 +39,8 @@ Atualizacao 2026-05-25 16:54 -03:00: o readiness real foi repetido e passou com 
 
 Atualizacao 2026-05-25 17:37 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:auth`, que valida `csrf -> login -> me -> refresh -> me -> logout` contra a API v2. O comando deve ser rodado com usuario real de homologacao, sem registrar credenciais/tokens, para reduzir a pendencia de login/cookies HTTPS.
 
+Atualizacao 2026-05-25 17:54 -03:00: o repo separado `portal-sama-web` agora expoe tambem `npm.cmd run test:e2e:real`, com Playwright Chromium contra o dominio publico. A suite e opt-in por `PORTAL_REAL_E2E=1`, usa credenciais apenas via variaveis de ambiente e desliga trace/video/screenshot para reduzir risco de expor segredos.
+
 ---
 
 ## 2. Serviços recomendados
@@ -643,6 +645,33 @@ Durante diagnostico, `--soft` coleta falhas sem quebrar o processo; para homolog
 
 ---
 
+### 9.2.1 Playwright de homologacao real
+
+Depois do smoke HTTP de autenticacao, rode tambem o fluxo real pelo navegador no repo `portal-sama-web`:
+
+```powershell
+$env:PORTAL_REAL_E2E='1'
+$env:PORTAL_E2E_USERNAME='usuario_de_homologacao'
+$env:PORTAL_E2E_PASSWORD='senha_nao_versionada'
+npm.cmd run test:e2e:real
+```
+
+O teste acessa `/login`, autentica pela UI React, valida Home, confirma que chaves sensiveis nao foram gravadas no storage do navegador, checa refresh cookie fora de `document.cookie`, valida `HttpOnly`, `SameSite` e `Secure` quando HTTPS e faz logout pela UI.
+
+Variaveis suportadas:
+
+```env
+PORTAL_REAL_E2E=1
+PORTAL_PUBLIC_URL=https://portal.samacontabil.com.br
+PORTAL_E2E_USERNAME=usuario_de_homologacao
+PORTAL_E2E_PASSWORD=senha_nao_versionada
+PORTAL_REFRESH_COOKIE_NAME=sama_refresh_token
+```
+
+Nao registrar credenciais, tokens, cookies, traces, videos ou screenshots dessa execucao. A config real de Playwright ja desliga trace/video/screenshot por padrao; se for necessario coletar evidencia visual, mascarar dados sensiveis antes de anexar.
+
+---
+
 ### 9.3 Readiness operacional da API
 
 No console/one-off command do servico `portal-sama-api`, apos configurar variaveis, migrations, seed, usuarios reais, storage e ClamAV:
@@ -745,6 +774,8 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
 - [x] Disponibilizar `npm.cmd run smoke:auth` no repo separado do Web.
 - [ ] Rodar `npm.cmd run smoke:auth` com usuario real de homologacao.
+- [x] Disponibilizar `npm.cmd run test:e2e:real` no repo separado do Web.
+- [ ] Rodar `npm.cmd run test:e2e:real` com usuario real de homologacao.
 - [ ] Validar login por perfil real.
 - [ ] Validar permissões.
 - [ ] Validar upload/download.

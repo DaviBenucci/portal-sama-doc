@@ -1,5 +1,54 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 17:54
+
+### Contexto
+
+- Criacao de suite Playwright opt-in em `portal-sama-web` para validar autenticacao real via navegador contra homologacao.
+- A suite real fica bloqueada por `PORTAL_REAL_E2E=1` e credenciais em variaveis de ambiente, sem trace/video/screenshot.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- Navegador: Chromium via Playwright.
+- API real/MySQL real: nao acessados nesta rodada; a suite real foi validada em modo seguro/skipped sem credenciais.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+npm.cmd run test:e2e:real
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para a base de Playwright real.
+- `npm.cmd run test:e2e:real` passou com 1 teste skipped quando `PORTAL_REAL_E2E`/credenciais nao estao definidos.
+- `npm.cmd run lint` passou.
+- `npm.cmd run build` passou.
+- `npm.cmd run test:e2e` passou com 9 testes Chromium e 1 skipped da suite real.
+- `git diff --check` passou.
+
+### Falhas encontradas
+
+- Nenhuma falha tecnica encontrada nesta rodada.
+
+### Pendencias
+
+- Rodar `PORTAL_REAL_E2E=1 npm.cmd run test:e2e:real` com usuario real de homologacao.
+- Anexar evidencia sem credenciais, tokens, cookies, trace, video ou screenshot.
+- Repetir por perfis criticos depois da matriz de usuarios reais estar definida.
+
+### Observacao anti-alucinacao
+
+Nao foi executado login real, MySQL real, HTTPS real com credenciais nem validacao por perfil nesta rodada. Foi criada e validada a base segura para essa execucao.
+
 ## Execucao 2026-05-25 17:37
 
 ### Contexto
