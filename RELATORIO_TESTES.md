@@ -1,5 +1,51 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-25 11:32
+
+### Contexto
+
+- Conversao do `GET /api-v2/health` da API para health operacional de banco/storage.
+- Objetivo: permitir que smoke e EasyPanel detectem falha real de MySQL ou storage privado, mantendo `PRISMA_CONNECT_ON_BOOT=false` como modo de diagnostico local.
+
+### Ambiente
+
+- Sistema operacional: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Banco real: nao acessado; teste unitario usa mock de Prisma e E2E usa `PRISMA_CONNECT_ON_BOOT=false`.
+- Storage: teste unitario usa diretorio temporario; E2E usa `.ai-tests/api-e2e-private-storage`.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+npm.cmd test -- health.service.spec.ts --runInBand
+npm.cmd run test:e2e -- --runInBand
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run prisma:validate
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado para health operacional local.
+- `health.service.spec.ts` passou com 4 testes cobrindo banco `up`, banco `not_checked`, banco `down` e storage `down`.
+- E2E passou com 136 testes.
+- Lint passou.
+- Build passou.
+- Prisma validate passou.
+- `git diff --check` passou.
+
+### Pendencias
+
+- Validar `GET /api-v2/health` no EasyPanel com `DATABASE_URL` real do `banco-sama` e volume persistente real.
+- Rodar `npm.cmd run smoke:public` sem `--soft` depois do deploy Web/API.
+
+### Observacao anti-alucinacao
+
+Nao foi executada conexao com MySQL real nesta rodada. O teste de banco `up/down` foi unitario com mock; o E2E preservou `database=not_checked`.
+
 ## Execucao 2026-05-25 11:20
 
 ### Contexto

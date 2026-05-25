@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-25 11:32 -03:00
+
+- Reduzida a pendencia de health operacional da API: `GET /api-v2/health` agora checa banco e storage em vez de informar apenas configuracao.
+- `HealthService` executa `SELECT 1` via Prisma quando `PRISMA_CONNECT_ON_BOOT=true`; com `false`, mantem `database=not_checked` para testes/diagnostico sem banco.
+- O storage configurado em `STORAGE_PRIVATE_PATH` agora e criado/verificado com permissao de leitura/escrita; falhas retornam `storage=down` e HTTP 503.
+- Passaram `npm.cmd test -- health.service.spec.ts --runInBand`, `npm.cmd run test:e2e -- --runInBand` com 136 testes, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `git diff --check` em `portal-sama-api`.
+- Permanece pendente validar esse health contra o MySQL/volume reais do EasyPanel e rodar o smoke publico sem `--soft`.
+
 ## Atualizacao 2026-05-25 11:20 -03:00
 
 - Resolvida a lacuna entre `EASYPANEL_DEPLOY.md` e o repo separado do Web: `portal-sama-web` agora possui `npm.cmd run smoke:public`.

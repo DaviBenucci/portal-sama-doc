@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-25 11:32 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** `GET /api-v2/health` deixou de ser apenas declarativo e passou a validar banco/storage quando aplicavel.
+- **Backend/health:** `HealthService` agora retorna `database=up/down/not_checked` e `storage=up/down/not_configured`; em caso de falha, o controller responde com HTTP 503 mantendo o corpo de status.
+- **Banco:** Quando `PRISMA_CONNECT_ON_BOOT=true`, o health executa `SELECT 1` via Prisma. Quando `PRISMA_CONNECT_ON_BOOT=false`, preserva `database=not_checked` para testes e diagnostico controlado.
+- **Storage:** O health cria/verifica o caminho de `STORAGE_PRIVATE_PATH` e confirma permissao de leitura/escrita.
+- **Validacao:** Passaram `npm.cmd test -- health.service.spec.ts --runInBand`, `npm.cmd run test:e2e -- --runInBand` com 136 testes, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `git diff --check` em `portal-sama-api`.
+- **Pendente:** Validar o health real no EasyPanel com `DATABASE_URL` do `banco-sama`, volume persistente e HTTPS.
+
 ## Atualizacao complementar 2026-05-25 11:20 -03:00
 
 - **Responsavel/IA:** Codex

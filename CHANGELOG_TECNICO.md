@@ -1,5 +1,56 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-25 11:32
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/health/health.controller.ts`
+- `portal-sama-api/src/modules/health/health.module.ts`
+- `portal-sama-api/src/modules/health/health.service.ts`
+- `portal-sama-api/src/modules/health/health.service.spec.ts`
+- `portal-sama-api/test/app.e2e-spec.ts`
+- `portal-sama-api/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `CHANGELOG_TECNICO.md`
+- `RELATORIO_TESTES.md`
+- `PENDENCIAS_TECNICAS.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- `GET /api-v2/health` passou a validar banco e storage de forma operacional.
+- O health retorna `database=up/down/not_checked` e `storage=up/down/not_configured`.
+- Quando `PRISMA_CONNECT_ON_BOOT=true`, a API executa `SELECT 1` via Prisma; quando `false`, mantem `database=not_checked`.
+- O storage configurado em `STORAGE_PRIVATE_PATH` e criado/verificado com permissao de leitura/escrita.
+- O controller responde HTTP 503 quando algum item critico fica indisponivel.
+- O E2E foi alinhado ao novo `storage=up` e a mensagem atual de token publico obrigatorio para documentos.
+
+### Motivo da alteracao
+
+Reduzir a pendencia documentada de health real antes da homologacao, permitindo que EasyPanel/smoke detectem indisponibilidade de MySQL ou storage privado em vez de apenas confirmar que variaveis existem.
+
+### Impacto esperado
+
+- O smoke publico passa a ter um sinal mais confiavel de API pronta.
+- Falhas de banco/storage devem aparecer cedo em homologacao.
+- Ambientes de teste continuam podendo evitar conexao real com banco usando `PRISMA_CONNECT_ON_BOOT=false`.
+
+### Testes executados
+
+- `npm.cmd test -- health.service.spec.ts --runInBand`: passou com 4 testes.
+- `npm.cmd run test:e2e -- --runInBand`: passou com 136 testes.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `git diff --check` em `portal-sama-api`: passou.
+
+### Riscos ou pendencias
+
+- Health real ainda nao foi executado contra o MySQL/volume do EasyPanel.
+- Se `STORAGE_PRIVATE_PATH` apontar para caminho errado mas gravavel dentro do container, o health confirma escrita local, nao a persistencia do volume; a montagem real ainda precisa ser conferida no EasyPanel.
+
 ## 2026-05-25 11:20
 
 ### Arquivos alterados

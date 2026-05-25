@@ -27,6 +27,8 @@ Atualizacao 2026-05-25 11:09 -03:00: `portal-sama-api/README.md` e `portal-sama-
 
 Atualizacao 2026-05-25 11:20 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:public` e versiona `scripts/portal-public-smoke.mjs`; o comando abaixo deve ser executado a partir desse workspace apos publicar Web/API no EasyPanel.
 
+Atualizacao 2026-05-25 11:32 -03:00: `GET /api-v2/health` na API agora faz health operacional: quando `PRISMA_CONNECT_ON_BOOT=true`, executa `SELECT 1` via Prisma; tambem cria/verifica `STORAGE_PRIVATE_PATH` com leitura/escrita e retorna HTTP 503 se banco ou storage falharem.
+
 ---
 
 ## 2. Serviços recomendados
@@ -520,14 +522,27 @@ Criar rota:
 GET /api-v2/health
 ```
 
-Estado atual: rota criada em `portal-sama-api/src/modules/health/health.controller.ts` e validada por teste e2e. A resposta ainda informa banco como `configured` ou `not_checked`; checagem real de MySQL/storage em produção segue ponto a validar.
+Estado atual: rota criada em `portal-sama-api/src/modules/health/health.controller.ts` e validada por unit/e2e. A resposta informa banco como `up`, `down` ou `not_checked` e storage como `up`, `down` ou `not_configured`. Em falha critica, a API responde HTTP 503 com o corpo de status. A validacao com MySQL/storage reais no EasyPanel segue pendente.
 
 Resposta esperada:
 
 ```json
 {
   "ok": true,
+  "service": "portal-sama-api",
   "database": "up",
+  "storage": "up",
+  "timestamp": "2026-05-07T00:00:00.000Z"
+}
+```
+
+Em testes/diagnostico com `PRISMA_CONNECT_ON_BOOT=false`, a resposta esperada pode trazer:
+
+```json
+{
+  "ok": true,
+  "service": "portal-sama-api",
+  "database": "not_checked",
   "storage": "up",
   "timestamp": "2026-05-07T00:00:00.000Z"
 }
