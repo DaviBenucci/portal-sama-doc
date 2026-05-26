@@ -1,5 +1,17 @@
 # Decisões de Arquitetura - Portal Sama
 
+## ADR-0031 - Restore drill protegido em alvo isolado
+
+- **Data:** 2026-05-26
+- **Status:** Aceita
+- **Contexto:** A stack nova ja possui geracao e verificacao de backup operacional, mas a prontidao para producao ainda exige provar restore/rollback sem risco de sobrescrever o banco ou storage reais da aplicacao.
+- **Decisao:** Criar `npm run ops:restore:drill` no `portal-sama-api`, operando em dry-run por padrao. A aplicacao real de restore exige banco/storage isolados, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH` e exige a frase `RESTORE_DRILL_TARGET_IS_ISOLATED`.
+- **Alternativas consideradas:** Manter restore apenas como procedimento manual; embutir restauracao no verificador de backup; permitir restore direto no `DATABASE_URL` com confirmacao simples; aguardar CI/CD externo antes de documentar rollback.
+- **Consequencias positivas:** O plano de rollback passa a ser executavel e auditavel, reduz risco de erro operacional e mantem a restauracao real separada do ambiente produtivo.
+- **Consequencias negativas:** O comando ainda depende de alvo MySQL/storage isolados e nao substitui snapshots/retencao externos do EasyPanel; a execucao real continua pendente ate haver artefatos reais e janela operacional.
+- **Arquivos impactados:** `portal-sama-api/scripts/restore-drill-operational-backup.js`, `portal-sama-api/package.json`, `portal-sama-api/README.md`, `portal-sama-api/.env.example`, `PLANO_ROLLBACK_RESTORE_DRILL.md`, `EASYPANEL_DEPLOY.md`, `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`.
+- **Referencias:** `EASYPANEL_DEPLOY.md`, `PLANO_ROLLBACK_RESTORE_DRILL.md`, `SEGURANCA.md`, `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`.
+
 ## ADR-0030 - Tres repositorios oficiais com documentacao centralizada
 
 - **Data:** 2026-05-22

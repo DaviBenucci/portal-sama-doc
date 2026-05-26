@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-26 09:38 -03:00
+Ultima atualizacao: 2026-05-26 16:50 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,13 +45,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-26 09:38 -03:00:
+Estimativa operacional em 2026-05-26 16:50 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; nesta rodada tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. Falta ampliar matriz por perfis reais, QA por perfil, upload real com token/storage, backfill real e evidencias de restore drill. |
-| Pronto para producao sem depender do legado | 84% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill, QA final, validacao real de uploads e desligamento seguro do legado. |
-| Falta para producao | 16% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download real de documentos, QA final e plano de corte/desligamento do legado. |
+| Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
+| Pronto para producao sem depender do legado | 85% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O plano de rollback/restore drill foi instrumentalizado; permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads e desligamento seguro do legado. |
+| Falta para producao | 15% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download real de documentos, QA final e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
@@ -69,10 +69,21 @@ Estimativa operacional em 2026-05-26 09:38 -03:00:
 | ClamAV | Validado em homologacao real | Readiness real detectou EICAR com `/usr/bin/clamscan` em modo strict. Manter `npm run ops:clamav:update` como rotina operacional quando assinaturas precisarem ser atualizadas. |
 | Usuarios/permissoes reais | Parcial validado | Usuario bootstrap/DEV autenticou em HTTPS e passou matriz minima 401/200 para `/auth/me`, `/users`, `/roles` e `/permissions`. Falta matriz oficial com CLIENT, MANAGER, departamentos e perfis operacionais, incluindo 403 esperados. |
 | Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
-| Backups/rollback | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backup:create`, que gera `database.sql.gz`, `storage-manifest.json`, `metadata.json` e opcionalmente `storage.tar.gz`, e `npm run ops:backup:verify`, que confere metadata, SHA-256, gzip, manifesto e archive. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill. |
+| Backups/rollback | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backup:create`, `npm run ops:backup:verify` e agora `npm run ops:restore:drill`, com dry-run, bloqueio de alvo igual ao banco/storage da aplicacao e confirmacao explicita para aplicar restore. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill real. |
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-26 16:50 -03:00
+
+Nesta rodada foi criado o plano executavel de rollback/restore drill:
+
+- `portal-sama-api` agora expoe `npm run ops:restore:drill`.
+- O comando roda em dry-run por padrao, chama `ops:backup:verify`, valida o alvo de banco e storage, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH` e exige `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED` para aplicar restore.
+- `PLANO_ROLLBACK_RESTORE_DRILL.md` foi criado com procedimento, evidencias esperadas e criterio para fechar a pendencia de backup/rollback.
+- Validacao local: `node --check`, help do comando, backup descartavel sem banco com archive de storage, dry-run do restore, restore de storage em `.ai-tests`, lint/build/Prisma validate da API e `git diff --check` passaram.
+
+Pendencia real remanescente: gerar backup real no EasyPanel, verificar artefatos reais, copiar para fora do container, criar banco/storage isolados e executar `ops:restore:drill` com evidencia sanitizada.
 
 ## Atualizacao operacional de 2026-05-26 09:38 -03:00
 
@@ -412,6 +423,11 @@ SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
 SAMA_CLAMAV_UPDATE_ON_START=false
 SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
 SAMA_MYSQL_DUMP_BIN=
+SAMA_MYSQL_CLIENT_BIN=
+SAMA_RESTORE_BACKUP_DIR=
+SAMA_RESTORE_TARGET_DATABASE_URL=mysql://portal_restore:SENHA_FORTE@portal-sama-database:3306/banco_sama_restore_drill
+SAMA_RESTORE_TARGET_STORAGE_PATH=/tmp/portal-sama-restore-storage
+SAMA_RESTORE_DRILL_CONFIRM=
 
 WEB_PUSH_PUBLIC_KEY=
 WEB_PUSH_PRIVATE_KEY=
@@ -480,6 +496,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 12. Criar usuario MySQL nao-root.
 13. [x] Disponibilizar comando operacional de backup no container da API (`npm run ops:backup:create`).
 14. [x] Disponibilizar verificador operacional dos artefatos de backup (`npm run ops:backup:verify`).
+14.1. [x] Disponibilizar restore drill operacional protegido (`npm run ops:restore:drill`) e plano documentado em `PLANO_ROLLBACK_RESTORE_DRILL.md`.
 15. Rodar `npx prisma migrate deploy` em banco limpo ou `SAMA_PRISMA_BASELINE_EXISTING_DATABASE=true npm run prisma:migrate:baseline-existing` em banco existente com `P3005`.
 16. Rodar `npm run prisma:seed`.
 17. Rodar `npm run prisma:bootstrap-admin`.
@@ -503,7 +520,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 35. [x] Rodar matriz minima `smoke:permissions` com usuario real bootstrap/DEV.
 36. Rodar `npm.cmd run smoke:permissions` com usuarios reais por todos os perfis oficiais.
 37. Fazer QA visual desktop/mobile.
-38. Rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill.
+38. Rodar `npm run ops:backup:create`, `npm run ops:backup:verify` e `npm run ops:restore:drill` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill real.
 39. Aprovar corte para producao.
 
 ## Checklist do que falta para producao
@@ -532,8 +549,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Configurar logs basicos no EasyPanel.
 - [x] Disponibilizar backup operacional da API (`npm run ops:backup:create`).
 - [x] Disponibilizar verificador de artefatos de backup (`npm run ops:backup:verify`).
+- [x] Disponibilizar restore drill operacional protegido (`npm run ops:restore:drill`) e plano de rollback.
 - [ ] Rodar backup real no EasyPanel, verificar artefatos, copiar para fora do container e validar retencao.
-- [ ] Definir plano de rollback.
+- [x] Definir plano de rollback.
 
 ### Banco e dados
 
@@ -597,6 +615,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Disponibilizar validadores operacionais da API para RBAC, storage, ClamAV, usuarios privilegiados e backfill read-only.
 - [x] Disponibilizar gerador de backup operacional da API (`npm run ops:backup:create`).
 - [x] Disponibilizar verificador de artefatos de backup da API (`npm run ops:backup:verify`).
+- [x] Disponibilizar restore drill operacional da API (`npm run ops:restore:drill`).
 - [x] Criar Playwright contra homologacao real (`npm.cmd run test:e2e:real`).
 - [ ] Rodar Playwright contra homologacao real com usuario real.
 - [ ] Testar fluxos por perfil real.
@@ -609,12 +628,12 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 1. Atualizacoes tecnicas e documentais desta rodada precisam ser enviadas aos remotos.
 2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
 3. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
-4. Rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no container `portal-sama-api`, copiar os artefatos para fora do container e documentar restore drill.
+4. Rodar `npm run ops:backup:create`, `npm run ops:backup:verify` e `npm run ops:restore:drill` no container `portal-sama-api`, copiar os artefatos para fora do container e documentar restore drill real.
 5. Storage privado retornou `storage=up` e readiness real confirmou escrita em `/var/private/portal-sama`; aliases publicos de onboarding ja estao implementados, mas persistencia, permissoes, backup externo e fluxos reais de upload/download ainda precisam ser homologados.
 6. O smoke operacional de autenticacao passou com usuario bootstrap/DEV; ainda precisa ser repetido por perfis criticos quando as credenciais forem disponibilizadas.
 7. Smoke de permissoes passou na matriz minima bootstrap/DEV; usuarios/permissoes reais ainda precisam ser validados por matriz oficial de roles/perfis no EasyPanel.
 8. Suite Playwright real passou com usuario bootstrap/DEV, mas precisa ser ampliada por perfis/fluxos e o QA visual final ainda nao foi concluido.
-9. Backup operacional foi instrumentalizado com geracao e verificacao de artefatos, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado por restore drill; retencao de logs e plano de rollback tambem seguem pendentes.
+9. Backup operacional foi instrumentalizado com geracao, verificacao e restore drill protegido, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado em alvo isolado real; retencao de logs segue pendente.
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 
 ## Criterio para dizer "pronto para producao"
@@ -641,7 +660,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> carregar credenciais no shell -> rodar homologation:real -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> copiar artefatos -> validar restore drill -> testar fluxos criticos reais -> validar uploads/downloads/storage -> QA visual final -> desligamento seguro do legado
+registrar migrations/seed/bootstrap -> carregar credenciais no shell -> rodar homologation:real -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> QA visual final -> desligamento seguro do legado
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

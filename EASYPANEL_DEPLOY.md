@@ -49,6 +49,8 @@ Atualizacao 2026-05-26 09:23 -03:00: o repo separado `portal-sama-web` agora exp
 
 Atualizacao 2026-05-26 09:38 -03:00: usando as variaveis de bootstrap admin do `.env` apenas no processo local, passaram `smoke:auth`, matriz minima `smoke:permissions`, `test:e2e:real` e `homologation:real` contra `https://portal.samacontabil.com.br`. O `DATABASE_URL` do `.env` aponta para hostname interno do EasyPanel, entao `ops:backfill:report`, backup e restore reais devem ser executados no container `portal-sama-api`.
 
+Atualizacao 2026-05-26 16:50 -03:00: o repo separado `portal-sama-api` agora expoe `npm run ops:restore:drill`, com preflight/dry-run de restore e aplicacao opcional em banco/storage isolados. O comando chama `ops:backup:verify`, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH` e exige `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED` para executar restauracao real.
+
 ---
 
 ## 2. Serviços recomendados
@@ -110,6 +112,11 @@ SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
 SAMA_CLAMAV_UPDATE_ON_START=false
 SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
 SAMA_MYSQL_DUMP_BIN=
+SAMA_MYSQL_CLIENT_BIN=
+SAMA_RESTORE_BACKUP_DIR=
+SAMA_RESTORE_TARGET_DATABASE_URL=mysql://portal_restore:SENHA_FORTE@portal-sama-database:3306/banco_sama_restore_drill
+SAMA_RESTORE_TARGET_STORAGE_PATH=/tmp/portal-sama-restore-storage
+SAMA_RESTORE_DRILL_CONFIRM=
 
 REDIS_URL=redis://portal-sama-redis:6379
 
@@ -832,14 +839,41 @@ npm run ops:backup:verify -- --backup-dir /tmp/portal-sama-backups/<backup-id>
 
 O verificador confere `metadata.json`, passos concluidos, SHA-256/tamanho dos artefatos, integridade gzip de `database.sql.gz`, consistencia interna de `storage-manifest.json` e listagem de `storage.tar.gz` quando o archive existir. Ele nao restaura banco nem storage sozinho; a restauracao real continua obrigatoria em alvo isolado.
 
+Antes de aplicar restore, rode o preflight em modo seco:
+
+```bash
+npm run ops:restore:drill -- \
+  --backup-dir /tmp/portal-sama-backups/<backup-id> \
+  --target-database-url mysql://portal_restore:SENHA_URL_ENCODED@portal-sama-database:3306/banco_sama_restore_drill \
+  --target-storage-path /tmp/portal-sama-restore-storage \
+  --json
+```
+
+O alvo precisa ser isolado. O comando bloqueia restauracao quando o banco alvo
+e igual ao `DATABASE_URL` ou quando o storage alvo e igual ao `STORAGE_PRIVATE_PATH`.
+
+Para executar o drill real em alvo isolado:
+
+```bash
+npm run ops:restore:drill -- \
+  --backup-dir /tmp/portal-sama-backups/<backup-id> \
+  --target-database-url mysql://portal_restore:SENHA_URL_ENCODED@portal-sama-database:3306/banco_sama_restore_drill \
+  --target-storage-path /tmp/portal-sama-restore-storage \
+  --apply-database \
+  --apply-storage \
+  --confirm RESTORE_DRILL_TARGET_IS_ISOLATED \
+  --json
+```
+
 Depois do comando:
 
 1. rodar `ops:backup:create`;
 2. rodar `ops:backup:verify`;
-3. copiar os artefatos para fora do container;
-4. armazenar em local externo ao volume da aplicacao;
-5. validar restauracao em ambiente separado;
-6. registrar data, responsavel, hash dos artefatos e resultado do restore drill.
+3. rodar `ops:restore:drill` primeiro em dry-run;
+4. rodar `ops:restore:drill` com `--apply-database`/`--apply-storage` somente contra alvo isolado;
+5. copiar os artefatos e evidencias para fora do container;
+6. armazenar em local externo ao volume da aplicacao;
+7. registrar data, responsavel, hash dos artefatos e resultado do restore drill.
 
 O check `backup-rollback` do readiness continua como warning enquanto essa restauracao nao estiver documentada, porque o container da aplicacao nao consegue provar sozinho snapshot, retencao e rollback do EasyPanel.
 
@@ -860,6 +894,7 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [x] Validar ClamAV/EICAR strict no readiness real.
 - [x] Disponibilizar `npm run ops:backup:create` no container `portal-sama-api`.
 - [x] Disponibilizar `npm run ops:backup:verify` no container `portal-sama-api`.
+- [x] Disponibilizar `npm run ops:restore:drill` no container `portal-sama-api`.
 - [ ] Rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no EasyPanel e copiar artefatos para fora do container.
 - [x] Criar servico React/Vite (`portal-sama-web`).
 - [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
@@ -867,7 +902,8 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [x] Configurar dominio e HTTPS.
 - [x] Restringir CORS para `https://portal.samacontabil.com.br`.
 - [ ] Proteger phpMyAdmin.
-- [ ] Validar restore drill e plano de rollback.
+- [x] Documentar plano de rollback e restore drill.
+- [ ] Validar restore drill real em alvo isolado.
 - [x] Validar `/api-v2/health`.
 - [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
 - [x] Disponibilizar `npm.cmd run smoke:auth` no repo separado do Web.

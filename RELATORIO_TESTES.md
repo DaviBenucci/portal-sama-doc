@@ -1,5 +1,53 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 16:50
+
+### Contexto
+
+- Criacao do comando operacional `ops:restore:drill` no `portal-sama-api`.
+- Criacao do plano documentado de rollback/restore drill.
+- Validacao local do fluxo com backup descartavel sem banco e archive de storage.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Banco real/EasyPanel: nao acessados nesta rodada.
+- Artefatos temporarios: `.ai-tests/restore-drill-storage`, `.ai-tests/restore-drill-backups`, `.ai-tests/restore-drill-target`.
+
+### Comandos executados
+
+```bash
+node --check scripts/restore-drill-operational-backup.js
+npm.cmd run ops:restore:drill -- --help
+npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/restore-drill-storage --output-dir .ai-tests/restore-drill-backups --include-storage-archive --json
+npm.cmd run ops:restore:drill -- --backup-dir <backup-local> --skip-database --target-storage-path .ai-tests/restore-drill-target --json
+npm.cmd run ops:restore:drill -- --backup-dir <backup-local> --skip-database --target-storage-path .ai-tests/restore-drill-target --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED --json
+node --check scripts/validate-operational-readiness.js
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run prisma:validate
+git diff --check
+```
+
+### Resultado
+
+- O novo script passou em `node --check` e exibiu help corretamente.
+- O backup descartavel com `--skip-database` e archive de storage foi gerado.
+- O dry-run do restore drill passou, com aviso esperado porque o backup local nao tinha dump de banco.
+- O restore de storage em alvo isolado local passou e restaurou `sample.txt`.
+- Lint/build/Prisma validate da API passaram.
+- `git diff --check` passou na API; houve apenas avisos LF/CRLF em arquivos ja existentes.
+
+### Pendencias
+
+- Executar `ops:backup:create`, `ops:backup:verify` e `ops:restore:drill` no container real do EasyPanel, com `DATABASE_URL`, `STORAGE_PRIVATE_PATH`, banco alvo e storage alvo isolados.
+- Validar a importacao real de `database.sql.gz` em MySQL isolado.
+
+### Observacao anti-alucinacao
+
+Nao houve backup real, restore real de banco, restore no EasyPanel nem validacao de dados reais nesta rodada. A validacao local provou o script, o dry-run e a restauracao de storage descartavel.
+
 ## Execucao 2026-05-26 16:08
 
 ### Contexto

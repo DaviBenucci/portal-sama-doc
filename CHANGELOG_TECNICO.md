@@ -1,5 +1,57 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 16:50
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/.env.example`
+- `portal-sama-api/README.md`
+- `portal-sama-api/scripts/restore-drill-operational-backup.js`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `PLANO_ROLLBACK_RESTORE_DRILL.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+- `SEGURANCA.md`
+- `INVENTARIO_SEGURANCA.md`
+- `DECISOES_ARQUITETURA.md`
+
+### O que mudou
+
+- Criado `npm run ops:restore:drill` no `portal-sama-api`.
+- O comando executa preflight/dry-run por padrao, valida integridade dos artefatos via `ops:backup:verify`, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH` e exige frase explicita para aplicar restore.
+- Criado `PLANO_ROLLBACK_RESTORE_DRILL.md` com procedimento, comandos, evidencias esperadas e criterio para fechar a pendencia.
+- O aviso `backup-rollback` do readiness passou a apontar a sequencia com `ops:restore:drill`.
+
+### Motivo da alteracao
+
+Reduzir a pendencia de rollback documentada em producao, transformando o restore drill em um procedimento executavel e com protecoes contra restauracao acidental no banco/storage da aplicacao.
+
+### Impacto esperado
+
+- Operadores passam a ter um caminho repetivel para provar restore em alvo isolado.
+- O plano de rollback fica documentado e versionado.
+- O restore real continua pendente ate ser executado no EasyPanel com backup, banco e storage reais.
+
+### Testes executados
+
+- `node --check scripts/restore-drill-operational-backup.js`: passou.
+- `npm.cmd run ops:restore:drill -- --help`: passou.
+- `npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/restore-drill-storage --output-dir .ai-tests/restore-drill-backups --include-storage-archive --json`: passou.
+- `npm.cmd run ops:restore:drill -- --backup-dir <backup-local> --skip-database --target-storage-path .ai-tests/restore-drill-target --json`: passou em dry-run.
+- `npm.cmd run ops:restore:drill -- --backup-dir <backup-local> --skip-database --target-storage-path .ai-tests/restore-drill-target --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED --json`: passou e restaurou `sample.txt` em alvo isolado local.
+- `node --check scripts/validate-operational-readiness.js`: passou.
+- `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `git diff --check` em `portal-sama-api`: passaram.
+
+### Riscos ou pendencias
+
+- Ainda falta gerar backup real no EasyPanel, verificar artefatos reais, copiar para fora do container e executar `ops:restore:drill` contra banco/storage isolados reais.
+- O teste local validou storage com backup sem banco; importacao real de `database.sql.gz` depende de alvo MySQL isolado.
+
 ## 2026-05-26 16:08
 
 ### Arquivos alterados

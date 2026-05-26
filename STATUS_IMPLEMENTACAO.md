@@ -1,6 +1,15 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-26 16:50 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Criado o plano operacional de rollback/restore drill e disponibilizado `npm run ops:restore:drill` no `portal-sama-api`.
+- **Backend/operacao:** O novo script `scripts/restore-drill-operational-backup.js` valida artefatos gerados por `ops:backup:create`, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH`, opera em dry-run por padrao e exige `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED` para aplicar restore em banco/storage isolados.
+- **Documentacao:** Criado `PLANO_ROLLBACK_RESTORE_DRILL.md` e atualizados README da API, deploy, seguranca, status, pendencias, changelog e prontidao de producao.
+- **Validacao:** Passaram `node --check` do novo script e do readiness, help do comando, backup descartavel sem banco com archive de storage, dry-run do restore, restore de storage em alvo `.ai-tests`, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run prisma:validate` e `git diff --check` na API.
+- **Pendente:** Rodar backup real no EasyPanel, verificar artefatos, copiar para fora do container e executar `ops:restore:drill` com banco/storage isolados reais.
+
 ## Atualizacao complementar 2026-05-26 16:08 -03:00
 
 - **Responsavel/IA:** Codex

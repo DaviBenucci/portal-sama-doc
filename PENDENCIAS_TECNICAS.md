@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-26 16:50 -03:00
+
+- `portal-sama-api` agora possui `npm run ops:restore:drill`, com preflight/dry-run de restore e aplicacao opcional em banco/storage isolados.
+- Criado `PLANO_ROLLBACK_RESTORE_DRILL.md` com comandos, regras de seguranca, evidencias esperadas e criterio para fechar backup/rollback.
+- O readiness passou a orientar `ops:backup:create -> ops:backup:verify -> ops:restore:drill em alvo isolado -> copia/evidencia externa`.
+- Passaram validacoes locais do script, backup descartavel sem banco, dry-run, restore de storage em `.ai-tests`, lint/build/Prisma validate da API e `git diff --check`.
+- Permanece pendente: executar backup real no EasyPanel, copiar artefatos para fora do container, criar banco/storage isolados e rodar restore drill real com evidencia sanitizada.
+
 ## Atualizacao 2026-05-26 16:08 -03:00
 
 - Corrigido o filtro de contas do plano no Integra-AI para busca textual por nome/classificacao na API v2.
