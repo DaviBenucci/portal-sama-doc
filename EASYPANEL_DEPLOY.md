@@ -43,6 +43,8 @@ Atualizacao 2026-05-25 17:54 -03:00: o repo separado `portal-sama-web` agora exp
 
 Atualizacao 2026-05-26 08:49 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:permissions`, que executa matriz 401/403/200 por perfil contra a API v2. A matriz deve usar `usernameEnv`/`passwordEnv`, manter credenciais fora de arquivos versionados e registrar apenas evidencias sanitizadas.
 
+Atualizacao 2026-05-26 09:10 -03:00: o repo separado `portal-sama-api` agora expoe `npm run ops:backup:verify`, para conferir artefatos gerados por `ops:backup:create` antes de copiar/anexar evidencias. O comando valida `metadata.json`, hashes SHA-256, integridade gzip do dump, consistencia do manifesto e listagem de `storage.tar.gz` quando existir; ele nao substitui restore drill real.
+
 ---
 
 ## 2. Serviços recomendados
@@ -796,12 +798,22 @@ Para incluir tambem o conteudo do storage privado, grave a saida fora do volume 
 npm run ops:backup:create -- --output-dir /tmp/portal-sama-backups --include-storage-archive
 ```
 
+Antes de copiar/anexar a evidencia, rode a verificacao de integridade no diretorio do backup gerado:
+
+```bash
+npm run ops:backup:verify -- --backup-dir /tmp/portal-sama-backups/<backup-id>
+```
+
+O verificador confere `metadata.json`, passos concluidos, SHA-256/tamanho dos artefatos, integridade gzip de `database.sql.gz`, consistencia interna de `storage-manifest.json` e listagem de `storage.tar.gz` quando o archive existir. Ele nao restaura banco nem storage sozinho; a restauracao real continua obrigatoria em alvo isolado.
+
 Depois do comando:
 
-1. copiar os artefatos para fora do container;
-2. armazenar em local externo ao volume da aplicacao;
-3. validar restauracao em ambiente separado;
-4. registrar data, responsavel, hash dos artefatos e resultado do restore drill.
+1. rodar `ops:backup:create`;
+2. rodar `ops:backup:verify`;
+3. copiar os artefatos para fora do container;
+4. armazenar em local externo ao volume da aplicacao;
+5. validar restauracao em ambiente separado;
+6. registrar data, responsavel, hash dos artefatos e resultado do restore drill.
 
 O check `backup-rollback` do readiness continua como warning enquanto essa restauracao nao estiver documentada, porque o container da aplicacao nao consegue provar sozinho snapshot, retencao e rollback do EasyPanel.
 
@@ -821,7 +833,8 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [ ] Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api`.
 - [x] Validar ClamAV/EICAR strict no readiness real.
 - [x] Disponibilizar `npm run ops:backup:create` no container `portal-sama-api`.
-- [ ] Rodar `npm run ops:backup:create` no EasyPanel e copiar artefatos para fora do container.
+- [x] Disponibilizar `npm run ops:backup:verify` no container `portal-sama-api`.
+- [ ] Rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no EasyPanel e copiar artefatos para fora do container.
 - [x] Criar servico React/Vite (`portal-sama-web`).
 - [x] Garantir que `portal-sama-web` consiga resolver/proxyar `portal-sama-api` via `/api-v2`.
 - [x] Redeployar `portal-sama-web` apos alteracoes no `nginx.conf`.

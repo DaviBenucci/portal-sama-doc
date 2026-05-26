@@ -1,5 +1,58 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 09:10
+
+### Contexto
+
+- Criacao de verificador operacional em `portal-sama-api` para conferir artefatos de backup gerados por `ops:backup:create`.
+- O comando reduz risco antes do restore drill real, mas nao substitui restauracao de banco/storage em alvo isolado.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- API real/MySQL real: nao acessados nesta rodada.
+- Validacao positiva: backup local descartavel com `--skip-database`, storage fake e archive `storage.tar.gz`.
+
+### Comandos executados
+
+Em `portal-sama-api`:
+
+```bash
+node --check scripts/verify-operational-backup.js
+npm.cmd run ops:backup:verify -- --help
+npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/backup-verify-storage --output-dir .ai-tests/backup-verify-output --include-storage-archive --json
+npm.cmd run ops:backup:verify -- --backup-dir .ai-tests/backup-verify-output/<backup-id> --json
+node --check scripts/validate-operational-readiness.js
+npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft --json
+npm.cmd run build
+npm.cmd run prisma:validate # repetido com DATABASE_URL dummy
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para ferramenta de verificacao de backup.
+- `node --check` e help do comando passaram.
+- Backup local descartavel foi gerado com manifesto e `storage.tar.gz`.
+- `ops:backup:verify --json` passou sobre o backup gerado, com avisos esperados porque o banco foi pulado e restore real permanece pendente.
+- Readiness local com skips passou e passou a orientar `ops:backup:verify`.
+- Build da API e `prisma:validate` com `DATABASE_URL` dummy passaram.
+
+### Falhas encontradas
+
+- `npm.cmd run prisma:validate` sem `DATABASE_URL` falhou com `P1012`, como esperado pelo schema Prisma. A execucao foi repetida com `DATABASE_URL=mysql://sama:sama@127.0.0.1:3306/portal_sama` e passou.
+
+### Pendencias
+
+- Rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no EasyPanel com banco/storage reais.
+- Copiar artefatos para fora do container e armazenar fora do volume da aplicacao.
+- Executar restore drill em alvo isolado e documentar responsavel, hashes, data e resultado.
+
+### Observacao anti-alucinacao
+
+Nao foi executado backup contra o banco real nem restore real nesta rodada local. A ferramenta verifica integridade de artefatos, mas a prova final de rollback depende de restauracao operacional documentada.
+
 ## Execucao 2026-05-26 08:49
 
 ### Contexto

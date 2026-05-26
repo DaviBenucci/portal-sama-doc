@@ -1,5 +1,54 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 09:10
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/verify-operational-backup.js`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `portal-sama-api/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- Criado `npm run ops:backup:verify` no `portal-sama-api`.
+- O script verifica `metadata.json`, status dos passos do backup, SHA-256/tamanho dos artefatos, integridade gzip de `database.sql.gz`, consistencia interna do `storage-manifest.json` e listagem de `storage.tar.gz` quando existir.
+- O aviso `backup-rollback` do readiness passou a orientar `ops:backup:create -> ops:backup:verify -> copia externa -> restore drill`.
+- O README da API e a documentacao viva foram atualizados para diferenciar verificacao de artefatos de restore drill real.
+
+### Motivo da alteracao
+
+Reduzir a pendencia de backup/rollback com uma verificacao repetivel dos artefatos gerados antes de copiar evidencias ou iniciar restauracao em alvo isolado.
+
+### Impacto esperado
+
+- Operadores conseguem detectar backup incompleto/corrompido antes de sair do container.
+- A trilha operacional de backup fica mais auditavel: gerar, verificar, copiar para fora e restaurar em ambiente separado.
+- O restore drill continua pendente e obrigatorio; o novo comando nao restaura banco nem storage.
+
+### Testes executados
+
+- `node --check scripts/verify-operational-backup.js`: passou.
+- `npm.cmd run ops:backup:verify -- --help`: passou.
+- `npm.cmd run ops:backup:create -- --skip-database --storage-path .ai-tests/backup-verify-storage --output-dir .ai-tests/backup-verify-output --include-storage-archive --json`: passou.
+- `npm.cmd run ops:backup:verify -- --backup-dir .ai-tests/backup-verify-output/<backup-id> --json`: passou com avisos esperados por banco pulado e restore real pendente.
+- `node --check scripts/validate-operational-readiness.js`: passou.
+- `npm.cmd run ops:readiness -- --skip-env --skip-database --skip-clamav --storage-path .ai-tests/readiness-storage --soft --json`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` com `DATABASE_URL` dummy: passou.
+- `git diff --check` em `portal-sama-api`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta executar backup e verificacao no EasyPanel com `DATABASE_URL` e `STORAGE_PRIVATE_PATH` reais.
+- Ainda falta copiar os artefatos para fora do container e executar restore drill em alvo isolado.
+
 ## 2026-05-26 08:49
 
 ### Arquivos alterados

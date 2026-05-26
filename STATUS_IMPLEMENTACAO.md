@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-26 09:10 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** O repo `portal-sama-api` ganhou um verificador operacional de artefatos de backup para reduzir risco antes do restore drill real.
+- **Backend/operacao:** `portal-sama-api/package.json` agora expoe `npm run ops:backup:verify`, chamando `scripts/verify-operational-backup.js`.
+- **Cobertura do verificador:** O script valida `metadata.json`, status dos passos, hash/tamanho de artefatos, integridade gzip de `database.sql.gz`, consistencia de `storage-manifest.json` e listagem de `storage.tar.gz` quando existir.
+- **Readiness:** O aviso `backup-rollback` agora orienta a sequencia `ops:backup:create -> ops:backup:verify -> copia externa -> restore drill`.
+- **Validacao:** Passaram `node --check scripts/verify-operational-backup.js`, help do comando, backup local descartavel com storage archive, `ops:backup:verify --json` sobre o backup gerado, `node --check scripts/validate-operational-readiness.js`, readiness local com skips, `npm.cmd run build`, `npm.cmd run prisma:validate` com `DATABASE_URL` dummy e `git diff --check` em `portal-sama-api`.
+- **Pendente:** Rodar `ops:backup:create` e `ops:backup:verify` no EasyPanel com banco/storage reais, copiar artefatos para fora do container e executar restore drill em alvo isolado. O verificador nao substitui restauracao real.
+
 ## Atualizacao complementar 2026-05-26 08:49 -03:00
 
 - **Responsavel/IA:** Codex

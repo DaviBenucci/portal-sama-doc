@@ -2,6 +2,8 @@
 
 Status: inventário em andamento. Inventário baseado em `docs/SEGURANCA.md`, `.htaccess`, `Dockerfile`, `api/auth.php`, `api/security_lib.php`, `api/client_documents_lib.php`, `api/public_token_lib.php` e endpoints críticos. Testes unitários/e2e parciais foram executados para Auth/CSRF/Audit/RBAC/Documents no NestJS; testes completos de segurança, MySQL real e PHP legado seguem pendentes.
 
+Atualizacao em 2026-05-26 09:10: `portal-sama-api` agora possui `npm run ops:backup:verify` para conferir artefatos gerados por `ops:backup:create`: metadata, passos, SHA-256, tamanho, gzip do dump, consistencia do manifesto e listagem do archive de storage. Falta executar backup/verificacao reais no EasyPanel, copiar artefatos para fora do container e provar restore drill externo.
+
 Atualizacao em 2026-05-25 16:54: readiness real passou tambem em `clamav-eicar`, detectando EICAR com `/usr/bin/clamscan`; o unico warning restante e `backup-rollback`. `portal-sama-api` agora possui `npm run ops:backup:create` e runtime com `mariadb-client`, permitindo dump MySQL e manifesto de storage antes de backfills/corte. Falta restore drill externo e matriz 401/403/200 por perfil.
 
 Atualizacao em 2026-05-25 16:31: o readiness real executado no console do `portal-sama-api` passou em ambiente, banco, migrations, RBAC, usuario privilegiado e storage, falhando apenas em `clamav-eicar` por ausencia de scanner na imagem anterior. O Dockerfile agora instala `clamav` e o repo expoe `npm run ops:clamav:update` para atualizar assinaturas antes do readiness final. Falta redeployar e repetir o teste com EICAR.

@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-26 09:10 -03:00
+
+- `portal-sama-api` agora possui `npm run ops:backup:verify`, com `scripts/verify-operational-backup.js`, para verificar artefatos gerados por `ops:backup:create`.
+- O verificador confere `metadata.json`, passos do backup, SHA-256/tamanho dos artefatos, integridade gzip de `database.sql.gz`, consistencia de `storage-manifest.json` e listagem de `storage.tar.gz` quando existir.
+- O readiness passou a orientar a sequencia `ops:backup:create -> ops:backup:verify -> copia externa -> restore drill`.
+- Passaram `node --check`, help do comando, backup local descartavel com manifesto/archive, verificacao JSON do backup gerado, readiness local com skips, build da API, `prisma:validate` com `DATABASE_URL` dummy e `git diff --check`.
+- Permanece pendente: rodar `ops:backup:create` e `ops:backup:verify` no EasyPanel com banco/storage reais, copiar os artefatos para fora do container e executar restore drill em alvo isolado.
+
 ## Atualizacao 2026-05-26 08:49 -03:00
 
 - `portal-sama-web` agora possui `npm.cmd run smoke:permissions`, com `scripts/portal-permissions-smoke.mjs`, para validar matriz 401/403/200 por perfil contra a API v2.
@@ -35,9 +43,9 @@
 
 - Readiness real informado pelo operador passou no `portal-sama-api` com `environment`, `database`, `migrations`, `rbac`, `privileged-users`, `storage` e `clamav-eicar`.
 - O unico ponto restante no readiness foi `backup-rollback` como warning operacional, porque restore nao pode ser provado somente de dentro do container da aplicacao.
-- `portal-sama-api` agora expoe `npm run ops:backup:create`, que gera `database.sql.gz`, `storage-manifest.json`, `metadata.json` e, opcionalmente, `storage.tar.gz`.
+- `portal-sama-api` agora expoe `npm run ops:backup:create`, que gera `database.sql.gz`, `storage-manifest.json`, `metadata.json` e, opcionalmente, `storage.tar.gz`, e `npm run ops:backup:verify`, que verifica hashes, gzip, manifesto e archive.
 - O runtime Docker da API agora instala tambem `mariadb-client`, deixando `/usr/bin/mariadb-dump` disponivel para backup do MySQL no container.
-- Proximo passo operacional: rodar `npm run ops:backfill:report -- --json`, rodar `npm run ops:backup:create` no EasyPanel, copiar artefatos para fora do container, validar restore drill e entao seguir com matriz de permissoes, Playwright real e QA final.
+- Proximo passo operacional: rodar `npm run ops:backfill:report -- --json`, rodar `npm run ops:backup:create` e `npm run ops:backup:verify` no EasyPanel, copiar artefatos para fora do container, validar restore drill e entao seguir com matriz de permissoes, Playwright real e QA final.
 
 ## Atualizacao 2026-05-25 16:31 -03:00
 
