@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-26 09:23 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Foi iniciada a execucao dos itens reais de homologacao com o ambiente disponivel e criado um runner consolidado para a bateria Web.
+- **Frontend/operacao:** `portal-sama-web/package.json` agora expoe `npm.cmd run homologation:real`, chamando `scripts/portal-real-homologation.mjs`.
+- **Cobertura do runner:** Executa `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real`; antes dos checks autenticados, valida somente a presenca das variaveis obrigatorias e pode gravar evidencia JSON sanitizada em `.ai-tests/homologation-real`.
+- **Execucao real parcial:** `npm.cmd run smoke:public` passou contra o dominio publico. `smoke:permissions --soft --json` confirmou anonimos 401 em `/auth/me`, `/users` e `/documents`. `smoke:auth`, matriz autenticada e Playwright real ficaram bloqueados/skipped por ausencia de credenciais e matriz no shell local.
+- **Backend/operacao:** `ops:readiness --soft --json` foi corrigido para retornar resumo JSON controlado quando `DATABASE_URL` nao existe, sem abortar a coleta por erro Prisma.
+- **Pendente:** Carregar credenciais reais/matriz no shell, rodar `npm.cmd run homologation:real -- --evidence-dir .ai-tests/homologation-real`, executar backfill/backup/restore no container EasyPanel e anexar evidencias sanitizadas.
+
 ## Atualizacao complementar 2026-05-26 09:10 -03:00
 
 - **Responsavel/IA:** Codex

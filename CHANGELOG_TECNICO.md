@@ -1,5 +1,55 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 09:23
+
+### Arquivos alterados
+
+- `portal-sama-web/package.json`
+- `portal-sama-web/scripts/portal-real-homologation.mjs`
+- `portal-sama-web/README.md`
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+
+### O que mudou
+
+- Criado `npm.cmd run homologation:real` no `portal-sama-web`.
+- O runner executa `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real` em sequencia.
+- Antes dos checks autenticados, o runner verifica somente a presenca das variaveis necessarias e registra blockers sem imprimir valores sensiveis.
+- O runner pode gerar resumo JSON sanitizado em `.ai-tests/homologation-real`.
+- `ops:readiness --soft --json` na API passou a retornar falhas controladas quando `DATABASE_URL`/ambiente real nao existem, em vez de abortar por erro Prisma.
+
+### Motivo da alteracao
+
+Dar continuidade aos itens reais pendentes de homologacao e deixar a proxima execucao com credenciais reais em um unico comando auditavel, sem depender de requests manuais.
+
+### Impacto esperado
+
+- Operadores conseguem rodar a bateria real Web/HTTP/navegador com uma unica chamada.
+- Ambientes sem credenciais passam a mostrar exatamente quais variaveis faltam, sem vazar segredos.
+- Readiness em modo diagnostico fica mais util para evidencia de ambiente incompleto.
+
+### Testes executados
+
+- `npm.cmd run smoke:public`: passou contra o dominio publico.
+- `npm.cmd run smoke:auth -- --soft --json`: bloqueou por falta de credenciais, como esperado.
+- `npm.cmd run smoke:permissions -- --soft --json`: anonimos 401 passaram; matriz autenticada bloqueou por falta de matriz, como esperado.
+- `npm.cmd run test:e2e:real`: passou com 1 skipped por falta de opt-in/credenciais, como esperado.
+- `npm.cmd run ops:backfill:report -- --soft --json`: bloqueou por falta de `DATABASE_URL`, como esperado.
+- `npm.cmd run ops:readiness -- --soft --json`: passou a retornar JSON controlado em modo soft.
+- `node --check scripts/portal-real-homologation.mjs`: passou.
+- `npm.cmd run homologation:real -- --help`: passou.
+- `npm.cmd run homologation:real -- --soft --json`: passou com smoke publico e blockers autenticados.
+
+### Riscos ou pendencias
+
+- Ainda falta executar com credenciais reais, matriz real, `DATABASE_URL` real e acesso ao container EasyPanel.
+- Ainda faltam upload/download real, restore drill e QA final por perfil.
+
 ## 2026-05-26 09:10
 
 ### Arquivos alterados

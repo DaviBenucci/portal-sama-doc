@@ -1,5 +1,58 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 09:23
+
+### Contexto
+
+- Inicio da execucao dos itens reais pendentes de homologacao com o ambiente local disponivel.
+- Criacao de runner consolidado para Web: `npm.cmd run homologation:real`.
+- Correcao do readiness para diagnostico JSON controlado quando variaveis reais nao estao carregadas.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- Backend: `portal-sama-api`.
+- Dominio publico acessado: `https://portal.samacontabil.com.br`.
+- Credenciais reais, matriz de permissoes e `DATABASE_URL`: ausentes no shell local.
+
+### Comandos executados
+
+```bash
+npm.cmd run smoke:public
+npm.cmd run smoke:auth -- --soft --json
+npm.cmd run smoke:permissions -- --soft --json
+npm.cmd run test:e2e:real
+npm.cmd run ops:backfill:report -- --soft --json
+npm.cmd run ops:readiness -- --soft --json
+node --check scripts/portal-real-homologation.mjs
+npm.cmd run homologation:real -- --help
+npm.cmd run homologation:real -- --soft --json
+npm.cmd run homologation:real -- --soft --skip-public --evidence-dir .ai-tests/homologation-real
+node --check scripts/validate-operational-readiness.js
+```
+
+### Resultado
+
+- `smoke:public` passou contra o dominio publico: frontend 200, health `database=up/storage=up`, CORS 204 e CSRF 200.
+- `smoke:auth --soft --json` nao executou login porque faltam `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
+- `smoke:permissions --soft --json` confirmou anonimos reais 401 em `/auth/me`, `/users` e `/documents`, mas bloqueou matriz autenticada por falta de `PORTAL_PERMISSION_MATRIX_FILE` ou `PORTAL_PERMISSION_MATRIX_JSON`.
+- `test:e2e:real` ficou com 1 skipped porque faltam `PORTAL_REAL_E2E=1`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD`.
+- `ops:backfill:report --soft --json` bloqueou por falta de `DATABASE_URL`.
+- `ops:readiness --soft --json` agora retorna JSON controlado com falhas de ambiente/banco/storage ausentes e exit code 0 em modo soft.
+- `homologation:real --soft --json` passou o smoke publico e marcou os checks autenticados como blocked por variaveis ausentes.
+- `homologation:real --soft --skip-public --evidence-dir .ai-tests/homologation-real` gerou resumo JSON sanitizado local.
+
+### Pendencias
+
+- Carregar credenciais reais/matriz no shell e rodar `npm.cmd run homologation:real -- --evidence-dir .ai-tests/homologation-real`.
+- Rodar `ops:backfill:report`, `ops:backup:create` e `ops:backup:verify` no container real da API com `DATABASE_URL`/storage reais.
+- Executar restore drill, upload/download real e QA por perfil com evidencias sanitizadas.
+
+### Observacao anti-alucinacao
+
+Nao houve login real, matriz autenticada, Playwright real autenticado, backfill real, backup real nem restore drill nesta rodada porque as credenciais e o acesso ao ambiente/container real nao estavam disponiveis neste shell.
+
 ## Execucao 2026-05-26 09:10
 
 ### Contexto

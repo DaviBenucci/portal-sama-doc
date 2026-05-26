@@ -45,6 +45,8 @@ Atualizacao 2026-05-26 08:49 -03:00: o repo separado `portal-sama-web` agora exp
 
 Atualizacao 2026-05-26 09:10 -03:00: o repo separado `portal-sama-api` agora expoe `npm run ops:backup:verify`, para conferir artefatos gerados por `ops:backup:create` antes de copiar/anexar evidencias. O comando valida `metadata.json`, hashes SHA-256, integridade gzip do dump, consistencia do manifesto e listagem de `storage.tar.gz` quando existir; ele nao substitui restore drill real.
 
+Atualizacao 2026-05-26 09:23 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run homologation:real`, que executa `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real` em sequencia. Na execucao local sem credenciais, `smoke:public` passou e os checks autenticados foram bloqueados de forma sanitizada por ausencia das variaveis reais.
+
 ---
 
 ## 2. Serviços recomendados
@@ -733,6 +735,28 @@ Durante diagnostico, `--soft` coleta falhas sem quebrar o processo; para homolog
 
 ---
 
+### 9.2.3 Bateria consolidada de homologacao real
+
+Depois de carregar as credenciais reais e a matriz de permissoes no shell, e possivel rodar a bateria Web/HTTP/navegador em sequencia:
+
+```powershell
+$env:PORTAL_AUTH_USERNAME='usuario_de_homologacao'
+$env:PORTAL_AUTH_PASSWORD='senha_nao_versionada'
+$env:PORTAL_ADMIN_USERNAME='usuario_admin'
+$env:PORTAL_ADMIN_PASSWORD='senha_nao_versionada'
+$env:PORTAL_CLIENT_USERNAME='usuario_cliente'
+$env:PORTAL_CLIENT_PASSWORD='senha_nao_versionada'
+$env:PORTAL_PERMISSION_MATRIX_FILE='.ai-tests/permission-matrix.homolog.json'
+$env:PORTAL_REAL_E2E='1'
+$env:PORTAL_E2E_USERNAME='usuario_de_homologacao'
+$env:PORTAL_E2E_PASSWORD='senha_nao_versionada'
+npm.cmd run homologation:real -- --evidence-dir .ai-tests/homologation-real
+```
+
+O runner nao imprime valores sensiveis. Ele verifica somente a presenca das variaveis obrigatorias, delega aos scripts ja sanitizados e pode gravar resumo JSON sem senhas/tokens/cookies em `.ai-tests/homologation-real`.
+
+---
+
 ### 9.3 Readiness operacional da API
 
 No console/one-off command do servico `portal-sama-api`, apos configurar variaveis, migrations, seed, usuarios reais, storage e ClamAV:
@@ -850,6 +874,7 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [ ] Rodar `npm.cmd run test:e2e:real` com usuario real de homologacao.
 - [x] Disponibilizar `npm.cmd run smoke:permissions` no repo separado do Web.
 - [ ] Rodar `npm.cmd run smoke:permissions` com usuarios reais por perfil.
+- [x] Disponibilizar `npm.cmd run homologation:real` no repo separado do Web.
 - [ ] Validar login por perfil real.
 - [ ] Validar permissões.
 - [ ] Validar upload/download.

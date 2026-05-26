@@ -1,5 +1,12 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-26 09:23 -03:00
+
+- A execucao real foi tentada com o ambiente local disponivel: `smoke:public` passou contra o dominio publico, `smoke:permissions --soft --json` validou anonimos 401 reais, `smoke:auth` bloqueou por falta de `PORTAL_AUTH_USERNAME`/`PORTAL_AUTH_PASSWORD`, Playwright real ficou skipped por falta de `PORTAL_REAL_E2E=1` e credenciais, e `ops:backfill:report --soft --json` bloqueou por ausencia de `DATABASE_URL`.
+- `portal-sama-web` agora possui `npm.cmd run homologation:real`, com `scripts/portal-real-homologation.mjs`, para rodar `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real` em sequencia, com preflight sanitizado e evidencia JSON opcional.
+- `portal-sama-api/scripts/validate-operational-readiness.js` foi ajustado para `--soft --json` retornar falhas controladas quando o banco/ambiente nao existem, sem abortar a coleta por erro Prisma.
+- Permanece pendente: carregar credenciais reais/matriz no shell, rodar `homologation:real`, executar backfill/backup/restore no EasyPanel e anexar evidencias sanitizadas.
+
 ## Atualizacao 2026-05-26 09:10 -03:00
 
 - `portal-sama-api` agora possui `npm run ops:backup:verify`, com `scripts/verify-operational-backup.js`, para verificar artefatos gerados por `ops:backup:create`.
