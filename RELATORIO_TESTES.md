@@ -5,7 +5,8 @@
 ### Contexto
 
 - Correcao do filtro de contas do plano no Integra-AI por nome/texto.
-- Ajuste da tela React de regras contabeis para autosave e remocao do botao manual por linha.
+- Ajuste da tela React de regras contabeis para autosave, remocao do botao manual por linha e salvamento de conta editavel somente ao perder foco.
+- Ajuste visual do sidebar recolhido para impedir sobreposicao da marca com os itens do menu.
 
 ### Ambiente
 
@@ -20,6 +21,7 @@
 npm.cmd test -- accounting.service.spec.ts --runInBand
 npm.cmd run lint
 npm.cmd run build
+npm.cmd run test:e2e -- -g "sidebar"
 git diff --check
 ```
 
@@ -28,15 +30,16 @@ git diff --check
 - Teste focado de `AccountingService` passou com 4 testes, incluindo cobertura para busca textual que nao pode casar todos os codigos quando o termo nao tem digitos.
 - Lint/build da API passaram.
 - Lint/build do Web passaram.
+- Playwright focado em `sidebar` passou com 2 testes, incluindo checagem de layout compactado sem sobreposicao entre marca e primeiro link.
 - `git diff --check` passou em API e Web.
 
 ### Pendencias
 
-- Validar em navegador/homologacao real apos deploy, com job real do Integra-AI, usuario contabil, busca por nome e autosave em regras paginadas.
+- Validar em navegador/homologacao real apos deploy, com job real do Integra-AI, usuario contabil, busca por nome e salvamento da conta ao perder foco em regras paginadas.
 
 ### Observacao anti-alucinacao
 
-Nao houve Playwright real nem teste contra MySQL/EasyPanel nesta rodada; a validacao foi local de unidade, lint, build e diff.
+Nao houve Playwright real nem teste contra MySQL/EasyPanel nesta rodada; a validacao foi local de unidade, lint, build, Playwright mockado/focado e diff.
 
 ## Execucao 2026-05-26 09:38
 

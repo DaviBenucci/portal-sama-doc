@@ -6,7 +6,9 @@
 
 - `portal-sama-api/src/modules/accounting/accounting.service.ts`
 - `portal-sama-api/src/modules/accounting/accounting.service.spec.ts`
+- `portal-sama-web/src/index.css`
 - `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
 - `STATUS_IMPLEMENTACAO.md`
 - `PENDENCIAS_TECNICAS.md`
 - `RELATORIO_TESTES.md`
@@ -15,8 +17,9 @@
 ### O que mudou
 
 - Corrigida a busca de contas do plano por texto no Integra-AI: termos sem digitos nao sao mais interpretados como match de todos os codigos.
-- A tela React `/contabil/integra-ai` passou a autosalvar regras contabeis por linha, com debounce, ao alterar categoria, conta editavel, historico ou sem uso.
+- A tela React `/contabil/integra-ai` passou a autosalvar regras contabeis por linha; categoria, historico e sem uso usam debounce, e a conta editavel salva somente quando o campo perde foco ou quando a sugestao e selecionada.
 - Removida a coluna/botao manual `Salvar` da tabela de regras contabeis.
+- O sidebar desktop recolhido passou a usar uma marca compacta no topo, com teste para garantir que ela nao sobreponha o primeiro item do menu.
 
 ### Motivo da alteracao
 
@@ -25,7 +28,8 @@ Permitir filtrar contas por nome na etapa 3 e nas regras contabeis, alem de redu
 ### Impacto esperado
 
 - Digitar nomes como `merc` passa a filtrar por nome/classificacao em vez de retornar as contas bancarias padrao.
-- O operador nao precisa clicar em `Salvar` a cada regra; a linha indica `Aguardando...`, `Salvando...`, `Salvo` ou erro de salvamento.
+- O operador nao precisa clicar em `Salvar` a cada regra; ao editar contas, a persistencia espera a saida do foco para permitir selecionar a sugestao correta.
+- O menu lateral recolhido deixa de ter a imagem da marca invadindo a area dos icones.
 
 ### Testes executados
 
@@ -34,11 +38,12 @@ Permitir filtrar contas por nome na etapa 3 e nas regras contabeis, alem de redu
 - `npm.cmd run build` em `portal-sama-api`: passou.
 - `npm.cmd run lint` em `portal-sama-web`: passou.
 - `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "sidebar"` em `portal-sama-web`: passou, 2 testes.
 - `git diff --check` em `portal-sama-api` e `portal-sama-web`: passou.
 
 ### Riscos ou pendencias
 
-- Ainda falta validar em homologacao real, com job contabil real, que o autosave persiste corretamente em tabela paginada e que o filtro por nome usa os dados reais do plano.
+- Ainda falta validar em homologacao real, com job contabil real, que o filtro por nome usa os dados reais do plano e que a conta editavel salva ao sair do foco em tabela paginada.
 
 ## 2026-05-26 09:38
 
