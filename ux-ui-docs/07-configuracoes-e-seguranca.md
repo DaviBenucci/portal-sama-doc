@@ -91,3 +91,55 @@ Nunca salvar no localStorage:
 - certificados;
 - segredos;
 - credenciais.
+
+
+## Governanca de departamentos, roles e permissoes
+
+### Departamento
+
+Departamento e dado de seguranca operacional. Nao deve ser texto livre.
+
+Regras:
+- selecionar departamento por lista controlada;
+- bloquear duplicidade por chave normalizada;
+- auditar criacao, edicao e inativacao;
+- nao excluir departamento com usuarios, clientes ou historico vinculado;
+- restringir criacao de departamento a MASTER/Admin autorizado.
+
+### Roles
+
+Roles devem ser apresentadas com nome amigavel, descricao, tipo e risco.
+
+A interface deve mostrar:
+- quantidade de usuarios vinculados;
+- quantidade de permissoes;
+- quantidade de permissoes criticas;
+- ultima atualizacao;
+- historico de alteracoes.
+
+### Permissoes
+
+Permissoes devem ter titulo descritivo, modulo, acao, descricao e risco.
+
+A chave tecnica deve continuar existindo, mas como informacao secundaria.
+
+Exemplo:
+
+```text
+Titulo: Visualizar clientes
+Descricao: Permite consultar clientes dentro do escopo autorizado.
+Chave tecnica: clients.read
+Risco: Baixo
+```
+
+### Acoes sensiveis adicionais
+
+Tambem exigem confirmacao e auditoria:
+- criar departamento;
+- inativar departamento;
+- alterar departamento de usuario;
+- atribuir role critica;
+- criar permissao;
+- editar permissao;
+- alterar risco de permissao;
+- executar solicitacao de acesso aprovada.

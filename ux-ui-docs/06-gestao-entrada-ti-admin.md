@@ -142,3 +142,44 @@ Aparece apenas para DEV/MASTER ou ambiente autorizado.
 - filas;
 - parametros;
 - auditoria tecnica.
+
+
+## Revisao UX - Solicitacoes, Departamentos e Permissoes
+
+### Solicitacoes de Acesso para todos
+
+Solicitacoes de Acesso devem estar disponiveis para todos os usuarios autenticados.
+
+A diferenca nao e quem pode acessar a pagina, mas o que cada perfil pode fazer dentro dela:
+
+```text
+Colaborador: cria solicitacao, envia feedback e acompanha retorno.
+Gestor: cria solicitacao, solicita pela equipe e aprova dentro do escopo.
+T.I.: executa solicitacoes aprovadas e registra a acao.
+MASTER: gerencia, executa, corrige fluxo e audita.
+Auditor: consulta historico, quando permitido.
+```
+
+### Departamentos controlados
+
+No cadastro de usuarios e colaboradores, departamento deve ser select/combobox controlado, nao input livre.
+
+```text
+Admin > Usuarios > Editar usuario > Departamento: [Fiscal v]
+```
+
+A criacao de novos departamentos deve ficar em area administrativa restrita.
+
+### Usuarios e Permissoes
+
+A area de Usuarios e Permissoes deve usar abas:
+
+```text
+Usuarios | Roles | Permissoes | Departamentos | Auditoria
+```
+
+A guia `Departamentos` deve permitir criar, editar, inativar e ordenar departamentos controlados.
+
+A guia `Roles` deve exibir permissoes agrupadas por modulo, com nome amigavel, descricao e risco.
+
+A guia `Permissoes` deve permitir criacao guiada, evitando texto tecnico livre como unica forma de cadastro.

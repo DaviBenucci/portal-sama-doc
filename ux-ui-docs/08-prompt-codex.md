@@ -57,6 +57,15 @@ Implementar:
 12. Permitir foto de perfil com validacoes seguras.
 13. Troca de senha somente para MASTER, com auditoria.
 14. Reforcar UX de seguranca em documentos, links publicos e auditoria.
+15. Trocar campos livres de departamento por select/combobox com dados controlados pelo backend.
+16. Garantir que Solicitacoes de Acesso esteja disponivel para todos os usuarios autenticados, com guias e acoes filtradas por perfil/permissao.
+17. Melhorar Usuarios e Permissoes:
+   - Roles com nome amigavel, descricao, tipo e risco;
+   - Permissoes agrupadas por modulo e acao;
+   - Chave tecnica como detalhe secundario;
+   - Criacao de permissao por formulario guiado;
+   - Confirmacao extra para permissoes criticas.
+18. Criar ou preparar guia `Departamentos` em Usuarios e Permissoes, restrita a MASTER/Admin autorizado.
 
 Criterios de aceite:
 - Sidebar desktop mantem hover/foco.
@@ -69,5 +78,9 @@ Criterios de aceite:
 - Entrada de Cliente concentra onboarding.
 - Foto de perfil e segura.
 - Troca de senha restrita a MASTER.
+- Departamento nao e campo livre.
+- Solicitacoes de Acesso acessivel a todos os usuarios autenticados.
+- Roles e permissoes exibem titulos amigaveis, descricoes e risco.
+- Criacao de permissoes e guiada e auditada.
 - `npm run lint` e `npm run build` devem passar.
 ```

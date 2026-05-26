@@ -53,7 +53,7 @@ Admin
 | Transferencias | Gestores ou usuários com permissão mais elevada |
 | Historico | Gestores ou usuários com perissão mais elevada |
 | Entrada de Cliente | colaboradores dos departamentos Legalização, financeiro, comercial e gestores de qualquer departamento |
-| Solicitacoes de Acesso | todos os usuários de acordo com o escopo. Pois colaboradores enviarão a petição para seus devidos gestores e com a aprovação dos gestores a solicitação chegará aos usuários com permissão MASTER que são do departamento T.I, já os gestores poderão enviar a solicitação por si mesmos, por toda a equipe ou por colaboradores selecionados. |
+| Solicitacoes de Acesso | Todos os usuarios autenticados devem acessar para pedir acesso, reportar problema ou enviar feedback. O conteudo interno muda por perfil: colaborador cria e acompanha; gestor aprova no proprio escopo; T.I./MASTER executa; auditor consulta. |
 | Acessos de TI | T.I ou usuários com permissão MASTER |
 | Auditoria | T.I e MASTER |
 | Usuarios e Permissoes | Admin/MASTER |
@@ -85,3 +85,35 @@ As notificacoes devem sair da sidebar e ir para o header:
 - popover com recentes;
 - botao "Ver todas as notificacoes";
 - pagina completa para historico.
+
+
+## Regras revisadas de navegacao por solicitacoes
+
+Solicitacoes de Acesso nao devem ser tratadas como area exclusiva de T.I. Todos os usuarios autenticados precisam conseguir abrir uma solicitacao ou enviar feedback.
+
+```text
+Todos os usuarios autenticados:
+- Minhas solicitacoes;
+- Nova solicitacao;
+- Feedback do sistema.
+
+Gestores:
+- Aprovacoes pendentes;
+- Solicitacoes da equipe.
+
+T.I./MASTER:
+- Execucao de solicitacoes;
+- Controle tecnico de acessos;
+- Auditoria de acessos.
+```
+
+A sidebar pode exibir `Solicitacoes` para todos. As guias internas devem ser filtradas por permissao.
+
+## Regra revisada para departamentos
+
+Departamento nao deve ser campo livre em nenhuma tela de cadastro de usuario, colaborador, cliente ou filtro critico. Deve vir de entidade controlada pelo backend.
+
+```text
+Correto: selecionar departamento em lista controlada.
+Incorreto: digitar departamento em input livre.
+```

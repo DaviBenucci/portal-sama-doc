@@ -54,3 +54,20 @@
 ## Build
 - [ ] `npm run lint` passa.
 - [ ] `npm run build` passa.
+
+
+## Departamentos, solicitacoes e permissoes
+- [ ] Departamento no cadastro de usuario nao e campo livre.
+- [ ] Departamento vem de lista controlada pelo backend.
+- [ ] Departamento possui chave tecnica unica.
+- [ ] Criacao/edicao de departamento e restrita a MASTER/Admin autorizado.
+- [ ] Solicitacoes de Acesso aparecem para todos os usuarios autenticados.
+- [ ] Colaborador consegue criar solicitacao e enviar feedback.
+- [ ] Gestor consegue aprovar solicitacoes do proprio escopo.
+- [ ] T.I./MASTER consegue executar solicitacoes aprovadas.
+- [ ] Roles exibem nome amigavel, descricao, risco e permissoes criticas.
+- [ ] Permissoes sao agrupadas por modulo e acao.
+- [ ] Chave tecnica da permissao aparece como informacao secundaria.
+- [ ] Criacao de permissao usa formulario guiado.
+- [ ] Atribuicao de permissao critica exige confirmacao.
+- [ ] Alteracoes em usuarios, roles, permissoes e departamentos geram auditoria.

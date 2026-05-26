@@ -9,6 +9,7 @@ Pacote de documentação em Markdown para orientar a melhoria das telas do Porta
 - Wireframes textuais.
 - Configuracoes da conta.
 - Seguranca aplicada a interface.
+- Governanca de departamentos, solicitacoes, roles e permissoes.
 - Prompt para implementacao no Codex.
 
 ## Fora do escopo
@@ -31,5 +32,9 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 7. `07-configuracoes-e-seguranca.md`
 8. `08-prompt-codex.md`
 9. `09-checklist-aceite.md`
+10. `10-departamentos-solicitacoes-permissoes.md`
 
 Decisao importante: a sidebar desktop deve manter a expansao por hover/foco. No mobile, deve existir botao hamburguer.
+
+
+Decisao adicional: departamentos nao devem ser campos livres; solicitacoes de acesso devem estar disponiveis para todos os usuarios autenticados; roles e permissoes devem ser configuraveis por MASTER com interface mais descritiva, agrupada e auditada.
