@@ -1,5 +1,54 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 08:49
+
+### Arquivos alterados
+
+- `portal-sama-web/package.json`
+- `portal-sama-web/scripts/portal-permissions-smoke.mjs`
+- `portal-sama-web/README.md`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `EASYPANEL_DEPLOY.md`
+- `SEGURANCA.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- Criado `npm.cmd run smoke:permissions` no `portal-sama-web`.
+- O script `scripts/portal-permissions-smoke.mjs` valida checks anonimos esperando 401 e uma matriz parametrizada de perfis autenticados com status esperados 200/403/401.
+- A matriz pode ser passada por `PORTAL_PERMISSION_MATRIX_FILE`, `PORTAL_PERMISSION_MATRIX_JSON`, `--matrix-file` ou `--matrix-json`.
+- O formato recomendado usa `usernameEnv` e `passwordEnv` para evitar credenciais em arquivos versionados.
+- A saida mascara usuarios e nao imprime senha, access token, refresh token ou CSRF token.
+
+### Motivo da alteracao
+
+Reduzir a pendencia de matriz 401/403/200 por perfil com uma ferramenta operacional repetivel, segura para evidencias e alinhada ao fluxo real de autenticacao da API v2.
+
+### Impacto esperado
+
+- Operadores podem validar permissoes reais por perfil no EasyPanel sem montar requests manuais.
+- A documentacao diferencia ferramenta disponivel de execucao real ainda pendente.
+- Nao houve mudanca de runtime do frontend nem da API; a alteracao adiciona script operacional e documentacao.
+
+### Testes executados
+
+- `node --check scripts/portal-permissions-smoke.mjs`: passou.
+- `npm.cmd run smoke:permissions -- --help`: passou.
+- `npm.cmd run smoke:permissions -- --api-url http://127.0.0.1:9/api-v2 --url http://127.0.0.1:9 --origin http://127.0.0.1:9 --timeout 250 --soft --json`: passou com falhas esperadas e exit code 0.
+- Smoke positivo contra servidor fake local: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta executar o smoke contra `https://portal.samacontabil.com.br/api-v2` com usuarios reais por perfil.
+- Ainda falta fechar a matriz oficial de rotas/status esperados e cruzar com escopo real/IDOR.
+
 ## 2026-05-25 17:54
 
 ### Arquivos alterados

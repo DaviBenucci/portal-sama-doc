@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-26 08:49 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** O repo `portal-sama-web` ganhou um smoke operacional de permissoes para montar e executar matriz 401/403/200 por perfil contra a API v2.
+- **Frontend/operacao:** `portal-sama-web/package.json` agora expoe `npm.cmd run smoke:permissions`, chamando `scripts/portal-permissions-smoke.mjs`.
+- **Cobertura do smoke:** O script valida anonimos contra `/auth/me`, `/users` e `/documents` esperando 401 e aceita uma matriz JSON de perfis com credenciais via `usernameEnv`/`passwordEnv`, checks por rota/metodo e status esperado 200/403/401.
+- **Seguranca:** O script mantem cookies apenas em memoria, mascara usuarios e nao imprime senha, access token, refresh token ou CSRF token. O formato recomendado evita senhas no JSON usando variaveis de ambiente.
+- **Validacao:** Passaram `node --check scripts/portal-permissions-smoke.mjs`, `npm.cmd run smoke:permissions -- --help`, smoke `--soft --json` contra porta fechada, smoke positivo contra servidor fake local com cenarios ADMIN 200, CLIENT 200/403 e anonimo 401, `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` em `portal-sama-web`.
+- **Pendente:** Rodar `npm.cmd run smoke:permissions` no EasyPanel com usuarios reais por perfil, sem registrar credenciais/tokens/cookies, e anexar a evidencia sanitizada da matriz.
+
 ## Atualizacao complementar 2026-05-25 17:54 -03:00
 
 - **Responsavel/IA:** Codex

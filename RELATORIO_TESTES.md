@@ -1,5 +1,56 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 08:49
+
+### Contexto
+
+- Criacao de smoke operacional em `portal-sama-web` para validar matriz 401/403/200 por perfil contra a API v2.
+- O script aceita matriz JSON com perfis e checks esperados, mantendo credenciais em variaveis de ambiente quando usado em homologacao.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- API real/MySQL real: nao acessados nesta rodada.
+- Validacao positiva: servidor HTTP fake local simulando `/api-v2/auth/*`, `/users`, `/documents` e `/audit/logs`.
+
+### Comandos executados
+
+Em `portal-sama-web`:
+
+```bash
+node --check scripts/portal-permissions-smoke.mjs
+npm.cmd run smoke:permissions -- --help
+npm.cmd run smoke:permissions -- --api-url http://127.0.0.1:9/api-v2 --url http://127.0.0.1:9 --origin http://127.0.0.1:9 --timeout 250 --soft --json
+node - # servidor HTTP fake local + npm.cmd run smoke:permissions
+npm.cmd run lint
+npm.cmd run build
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Aprovado localmente para a ferramenta de smoke de permissoes.
+- `node --check` passou.
+- `npm.cmd run smoke:permissions -- --help` passou.
+- Smoke `--soft --json` contra porta fechada retornou falhas esperadas sem quebrar o processo.
+- Smoke positivo contra servidor fake local passou com anonimos 401, ADMIN 200 em usuarios/auditoria e CLIENT 200 em documentos/403 em usuarios.
+- Lint, build e `git diff --check` do Web passaram.
+
+### Falhas encontradas
+
+- Nenhuma falha no script final. Durante a validacao fake, a primeira tentativa de harness local bloqueou o event loop por usar `spawnSync`; a reexecucao com processo filho assincrono validou o fluxo.
+
+### Pendencias
+
+- Rodar `npm.cmd run smoke:permissions` contra `https://portal.samacontabil.com.br/api-v2` com usuarios reais de homologacao por perfil.
+- Definir/registrar a matriz oficial de rotas esperadas por perfil sem salvar credenciais.
+- Anexar evidencia sem senhas, tokens, cookies ou dados reais sensiveis.
+
+### Observacao anti-alucinacao
+
+Nao foi executada matriz real em HTTPS/MySQL real nesta rodada. A ferramenta foi implementada e validada localmente com servidor fake.
+
 ## Execucao 2026-05-25 17:54
 
 ### Contexto

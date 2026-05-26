@@ -41,6 +41,8 @@ Atualizacao 2026-05-25 17:37 -03:00: o repo separado `portal-sama-web` agora exp
 
 Atualizacao 2026-05-25 17:54 -03:00: o repo separado `portal-sama-web` agora expoe tambem `npm.cmd run test:e2e:real`, com Playwright Chromium contra o dominio publico. A suite e opt-in por `PORTAL_REAL_E2E=1`, usa credenciais apenas via variaveis de ambiente e desliga trace/video/screenshot para reduzir risco de expor segredos.
 
+Atualizacao 2026-05-26 08:49 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run smoke:permissions`, que executa matriz 401/403/200 por perfil contra a API v2. A matriz deve usar `usernameEnv`/`passwordEnv`, manter credenciais fora de arquivos versionados e registrar apenas evidencias sanitizadas.
+
 ---
 
 ## 2. Serviços recomendados
@@ -672,6 +674,63 @@ Nao registrar credenciais, tokens, cookies, traces, videos ou screenshots dessa 
 
 ---
 
+### 9.2.2 Smoke de permissoes por perfil
+
+Depois de cadastrar usuarios reais por perfil, rode a matriz 401/403/200 no repo `portal-sama-web`:
+
+```powershell
+$env:PORTAL_ADMIN_USERNAME='usuario_admin'
+$env:PORTAL_ADMIN_PASSWORD='senha_nao_versionada'
+$env:PORTAL_CLIENT_USERNAME='usuario_cliente'
+$env:PORTAL_CLIENT_PASSWORD='senha_nao_versionada'
+$env:PORTAL_PERMISSION_MATRIX_FILE='.ai-tests/permission-matrix.homolog.json'
+npm.cmd run smoke:permissions
+```
+
+Exemplo minimo de matriz:
+
+```json
+{
+  "profiles": [
+    {
+      "label": "ADMIN",
+      "usernameEnv": "PORTAL_ADMIN_USERNAME",
+      "passwordEnv": "PORTAL_ADMIN_PASSWORD",
+      "checks": [
+        { "name": "users-read", "method": "GET", "path": "/users?take=1", "expectStatus": 200 },
+        { "name": "audit-read", "method": "GET", "path": "/audit/logs?take=1", "expectStatus": 200 }
+      ]
+    },
+    {
+      "label": "CLIENT",
+      "usernameEnv": "PORTAL_CLIENT_USERNAME",
+      "passwordEnv": "PORTAL_CLIENT_PASSWORD",
+      "checks": [
+        { "name": "documents-read", "method": "GET", "path": "/documents?take=1", "expectStatus": 200 },
+        { "name": "users-forbidden", "method": "GET", "path": "/users?take=1", "expectStatus": 403 }
+      ]
+    }
+  ]
+}
+```
+
+O script tambem valida anonimos esperando 401 em `/auth/me`, `/users` e `/documents`. Nao registrar senhas, tokens, cookies ou dados reais sensiveis na evidencia.
+
+Variaveis suportadas:
+
+```env
+PORTAL_PUBLIC_URL=https://portal.samacontabil.com.br
+PORTAL_API_BASE_URL=https://portal.samacontabil.com.br/api-v2
+PORTAL_CORS_ORIGIN=https://portal.samacontabil.com.br
+PORTAL_PERMISSION_MATRIX_FILE=.ai-tests/permission-matrix.homolog.json
+PORTAL_PERMISSION_MATRIX_JSON={"profiles":[]}
+PORTAL_SMOKE_TIMEOUT_MS=10000
+```
+
+Durante diagnostico, `--soft` coleta falhas sem quebrar o processo; para homologacao final, rodar sem `--soft`.
+
+---
+
 ### 9.3 Readiness operacional da API
 
 No console/one-off command do servico `portal-sama-api`, apos configurar variaveis, migrations, seed, usuarios reais, storage e ClamAV:
@@ -776,6 +835,8 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [ ] Rodar `npm.cmd run smoke:auth` com usuario real de homologacao.
 - [x] Disponibilizar `npm.cmd run test:e2e:real` no repo separado do Web.
 - [ ] Rodar `npm.cmd run test:e2e:real` com usuario real de homologacao.
+- [x] Disponibilizar `npm.cmd run smoke:permissions` no repo separado do Web.
+- [ ] Rodar `npm.cmd run smoke:permissions` com usuarios reais por perfil.
 - [ ] Validar login por perfil real.
 - [ ] Validar permissões.
 - [ ] Validar upload/download.
