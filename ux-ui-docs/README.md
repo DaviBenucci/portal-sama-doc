@@ -1,6 +1,6 @@
 # Portal Sama - Docs UX/UI e Configuracoes
 
-Pacote de documentação em Markdown para orientar a melhoria das telas do Portal Sama.
+Pacote de documentacao em Markdown para orientar a melhoria das telas do Portal Sama.
 
 ## Escopo
 - UX/UI das telas.
@@ -10,13 +10,15 @@ Pacote de documentação em Markdown para orientar a melhoria das telas do Porta
 - Configuracoes da conta.
 - Seguranca aplicada a interface.
 - Governanca de departamentos, solicitacoes, roles e permissoes.
+- Responsabilidade de clientes por usuario, departamento e gestor.
 - Prompt para implementacao no Codex.
 
 ## Fora do escopo
 - QA funcional.
 - Teste do dominio.
-- Alteracao de contratos da API.
+- Alteracao de contratos da API sem documentacao previa.
 - Remocao de permissoes existentes.
+- Escrita externa em sistemas integrados sem fase aprovada.
 
 ## Uso no QA de UI/UX
 
@@ -33,8 +35,13 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 8. `08-prompt-codex.md`
 9. `09-checklist-aceite.md`
 10. `10-departamentos-solicitacoes-permissoes.md`
+11. `11-responsabilidade-clientes-usuarios.md`
 
-Decisao importante: a sidebar desktop deve manter a expansao por hover/foco. No mobile, deve existir botao hamburguer.
+## Decisoes importantes
 
-
-Decisao adicional: departamentos nao devem ser campos livres; solicitacoes de acesso devem estar disponiveis para todos os usuarios autenticados; roles e permissoes devem ser configuraveis por MASTER com interface mais descritiva, agrupada e auditada.
+- A sidebar desktop deve manter a expansao por hover/foco.
+- No mobile, deve existir botao hamburguer.
+- Departamentos nao devem ser campos livres.
+- Solicitacoes de acesso devem estar disponiveis para todos os usuarios autenticados.
+- Roles e permissoes devem ser configuraveis por MASTER com interface mais descritiva, agrupada e auditada.
+- Responsabilidade de cliente nao deve depender exclusivamente de `clients.metadata`; deve evoluir para entidade propria cliente x departamento x usuario.

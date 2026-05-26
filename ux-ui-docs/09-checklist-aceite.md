@@ -71,3 +71,16 @@
 - [ ] Criacao de permissao usa formulario guiado.
 - [ ] Atribuicao de permissao critica exige confirmacao.
 - [ ] Alteracoes em usuarios, roles, permissoes e departamentos geram auditoria.
+
+## Responsabilidade de clientes por usuario
+
+- [ ] Departamento deixou de ser campo livre na atribuicao de responsabilidade.
+- [ ] Existe entidade/tabela propria para responsabilidade cliente x departamento x usuario.
+- [ ] Cadastro de cliente permite escolher responsavel operacional por departamento.
+- [ ] Cadastro de cliente permite escolher gestor responsavel por departamento, quando aplicavel.
+- [ ] Painel do Cliente possui guia Equipe/Responsaveis.
+- [ ] Gestor consegue transferir carteira com auditoria.
+- [ ] Colaborador visualiza apenas sua carteira conforme escopo.
+- [ ] Vencimentos, documentos e planilhas usam a responsabilidade normalizada para filtros.
+- [ ] Nao existe dependencia operacional exclusiva de `clients.metadata` para carteira.
+- [ ] Toda alteracao de responsavel registra usuario, data, motivo e valor anterior/novo.

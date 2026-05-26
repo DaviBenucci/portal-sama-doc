@@ -67,6 +67,15 @@ Implementar:
    - Confirmacao extra para permissoes criticas.
 18. Criar ou preparar guia `Departamentos` em Usuarios e Permissoes, restrita a MASTER/Admin autorizado.
 
+19. Implementar ou preparar a modelagem de responsabilidade de clientes por usuario:
+   - nao usar departamento como texto livre;
+   - criar entidade propria para cliente x departamento x responsavel;
+   - separar responsavel operacional de gestor responsavel quando necessario;
+   - permitir atribuicao inicial no cadastro/edicao do cliente;
+   - permitir transferencia de carteira com auditoria;
+   - criar guia Equipe/Responsaveis no Painel do Cliente;
+   - evitar dependencia operacional exclusiva de `clients.metadata`.
+
 Criterios de aceite:
 - Sidebar desktop mantem hover/foco.
 - Mobile tem menu hamburguer.
@@ -82,5 +91,7 @@ Criterios de aceite:
 - Solicitacoes de Acesso acessivel a todos os usuarios autenticados.
 - Roles e permissoes exibem titulos amigaveis, descricoes e risco.
 - Criacao de permissoes e guiada e auditada.
+- Responsabilidade de clientes usa entidade propria, nao apenas metadata.
+- Painel do Cliente possui guia Equipe/Responsaveis.
 - `npm run lint` e `npm run build` devem passar.
 ```
