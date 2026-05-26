@@ -84,7 +84,10 @@ Ordem recomendada:
 9. Estrutura base de planilhas/departamentos
 10. Módulo base de integrações
 11. Integração Acessórias — Entregas e Vencimentos
+12. QA de UI/UX seguindo `ux-ui-docs/09-checklist-aceite.md`
 ```
+
+Depois que a integração com o Acessórias estiver funcionalmente validada, a etapa de melhoria de interface deve seguir a documentação [`ux-ui-docs/`](ux-ui-docs/). Esse QA de UI/UX será a última verificação antes de liberar o sistema para os usuários utilizarem.
 
 ### 3.1 Etapa futura sugerida no roadmap
 

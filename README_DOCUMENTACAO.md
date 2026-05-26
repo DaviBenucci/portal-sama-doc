@@ -29,6 +29,7 @@ Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter
 | [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD) | Painel obrigatorio do que falta para homologacao/producao, separacao Bitbucket/EasyPanel, percentual de prontidao e pendencias reais. |
 | [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md) | Mapeia endpoints PHP atuais para módulos e rotas NestJS futuras. |
 | [`REFERENCIAS_TECNICAS.md`](REFERENCIAS_TECNICAS.md) | Lista referências oficiais das tecnologias recomendadas. |
+| [`ux-ui-docs/README.md`](ux-ui-docs/README.md) | Referencia obrigatoria para melhoria de UI/UX, navegacao, wireframes e checklist de aceite visual. |
 
 ---
 
@@ -38,13 +39,20 @@ Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter
 2. [`ARQUITETURA_ATUAL.md`](ARQUITETURA_ATUAL.md)
 3. [`ARQUITETURA_ALVO_TYPESCRIPT_NESTJS.md`](ARQUITETURA_ALVO_TYPESCRIPT_NESTJS.md)
 4. [`SEGURANCA.md`](SEGURANCA.md)
-5. [`BANCO_DADOS_MYSQL_PRISMA.md`](BANCO_DADOS_MYSQL_PRISMA.md)
-6. [`GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md)
-7. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
-8. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
-9. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
-10. [`ROADMAP_REFATORACAO.md`](ROADMAP_REFATORACAO.md)
-11. Documentos individuais em [`paginas/`](paginas/)
+5. [`ux-ui-docs/README.md`](ux-ui-docs/README.md)
+6. [`BANCO_DADOS_MYSQL_PRISMA.md`](BANCO_DADOS_MYSQL_PRISMA.md)
+7. [`GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md)
+8. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
+9. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
+10. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
+11. [`ROADMAP_REFATORACAO.md`](ROADMAP_REFATORACAO.md)
+12. Documentos individuais em [`paginas/`](paginas/)
+
+---
+
+## QA de UI/UX antes de liberacao
+
+A documentacao em [`ux-ui-docs/`](ux-ui-docs/) deve ser seguida na fase de melhoria de UI/UX apos a integracao com o Acessorias. O checklist [`ux-ui-docs/09-checklist-aceite.md`](ux-ui-docs/09-checklist-aceite.md) e o ultimo gate de QA antes de liberar o sistema para uso dos usuarios.
 
 ---
 
