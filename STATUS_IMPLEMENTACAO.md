@@ -1,5 +1,15 @@
 # Status de Implementação - Portal Sama
 
+
+## Atualizacao complementar 2026-05-26 16:08 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o filtro de contas do plano no Integra-AI para busca textual por nome/classificacao, incluindo Conta banco da etapa 3 e contas editaveis das regras contabeis.
+- **Backend/API v2:** `AccountingService.searchPlanAccounts` deixou de tratar busca textual sem digitos como match de todos os codigos; agora consulta por nome como `merc` retorna somente contas realmente compativeis.
+- **Frontend React:** `/contabil/integra-ai` passou a salvar regras contabeis automaticamente com debounce por linha ao alterar categoria, conta editavel, historico ou sem uso; a coluna/botao manual `Salvar` foi removida da tabela.
+- **Validacao:** Passaram `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` na API; `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` no Web/API.
+- **Pendente:** Validar em navegador/homologacao real apos deploy, com job real e usuario contabil, confirmando busca por nome e autosave na tabela paginada.
+
 ## Atualizacao complementar 2026-05-26 09:38 -03:00
 
 - **Responsavel/IA:** Codex

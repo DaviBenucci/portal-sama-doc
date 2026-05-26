@@ -1,5 +1,12 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-26 16:08 -03:00
+
+- Corrigido o filtro de contas do plano no Integra-AI para busca textual por nome/classificacao na API v2.
+- `/contabil/integra-ai` passou a autosalvar regras contabeis por linha e nao exibe mais o botao manual `Salvar` na tabela de regras.
+- Passaram teste focado de `AccountingService`, lint/build da API, lint/build do Web e `git diff --check` em API/Web.
+- Permanece pendente validar em homologacao real, com job contabil real, que busca por nome e autosave funcionam contra dados reais e tabela paginada.
+
 ## Atualizacao 2026-05-26 09:38 -03:00
 
 - Com o `.env` real da API alocado localmente e ignorado pelo Git, foram usadas apenas variaveis de bootstrap no processo do shell para executar checks reais autenticados sem imprimir segredos.

@@ -1,5 +1,45 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 16:08
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/accounting/accounting.service.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.spec.ts`
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+
+### O que mudou
+
+- Corrigida a busca de contas do plano por texto no Integra-AI: termos sem digitos nao sao mais interpretados como match de todos os codigos.
+- A tela React `/contabil/integra-ai` passou a autosalvar regras contabeis por linha, com debounce, ao alterar categoria, conta editavel, historico ou sem uso.
+- Removida a coluna/botao manual `Salvar` da tabela de regras contabeis.
+
+### Motivo da alteracao
+
+Permitir filtrar contas por nome na etapa 3 e nas regras contabeis, alem de reduzir o risco operacional de esquecer de salvar uma regra preenchida.
+
+### Impacto esperado
+
+- Digitar nomes como `merc` passa a filtrar por nome/classificacao em vez de retornar as contas bancarias padrao.
+- O operador nao precisa clicar em `Salvar` a cada regra; a linha indica `Aguardando...`, `Salvando...`, `Salvo` ou erro de salvamento.
+
+### Testes executados
+
+- `npm.cmd test -- accounting.service.spec.ts --runInBand` em `portal-sama-api`: passou, 4 testes.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-api` e `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta validar em homologacao real, com job contabil real, que o autosave persiste corretamente em tabela paginada e que o filtro por nome usa os dados reais do plano.
+
 ## 2026-05-26 09:38
 
 ### Arquivos alterados

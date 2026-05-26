@@ -1,5 +1,43 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 16:08
+
+### Contexto
+
+- Correcao do filtro de contas do plano no Integra-AI por nome/texto.
+- Ajuste da tela React de regras contabeis para autosave e remocao do botao manual por linha.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Frontend: `portal-sama-web`.
+- Banco/API real: nao acessados nesta rodada de teste local.
+
+### Comandos executados
+
+```bash
+npm.cmd test -- accounting.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+git diff --check
+```
+
+### Resultado
+
+- Teste focado de `AccountingService` passou com 4 testes, incluindo cobertura para busca textual que nao pode casar todos os codigos quando o termo nao tem digitos.
+- Lint/build da API passaram.
+- Lint/build do Web passaram.
+- `git diff --check` passou em API e Web.
+
+### Pendencias
+
+- Validar em navegador/homologacao real apos deploy, com job real do Integra-AI, usuario contabil, busca por nome e autosave em regras paginadas.
+
+### Observacao anti-alucinacao
+
+Nao houve Playwright real nem teste contra MySQL/EasyPanel nesta rodada; a validacao foi local de unidade, lint, build e diff.
+
 ## Execucao 2026-05-26 09:38
 
 ### Contexto
