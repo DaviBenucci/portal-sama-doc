@@ -6,6 +6,8 @@ Atualizacao em 2026-05-26 09:10: `portal-sama-api` agora possui `npm run ops:bac
 
 Atualizacao em 2026-05-26 09:23: `portal-sama-web` ganhou `npm.cmd run homologation:real`, runner sanitizado para encadear `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real`. Nesta rodada, o dominio publico passou novamente e anonimos receberam 401 nas rotas protegidas; checks autenticados seguem pendentes por falta de credenciais/matriz no shell.
 
+Atualizacao em 2026-05-26 09:38: com as credenciais bootstrap do `.env` carregadas apenas no processo, passaram `smoke:auth`, matriz minima DEV/bootstrap, Playwright real e `homologation:real` contra HTTPS. O `DATABASE_URL` local usa hostname interno do EasyPanel; backfill/backup/restore reais devem rodar no container. Readiness agora falha para secrets configurados com menos de 32 caracteres.
+
 Atualizacao em 2026-05-25 16:54: readiness real passou tambem em `clamav-eicar`, detectando EICAR com `/usr/bin/clamscan`; o unico warning restante e `backup-rollback`. `portal-sama-api` agora possui `npm run ops:backup:create` e runtime com `mariadb-client`, permitindo dump MySQL e manifesto de storage antes de backfills/corte. Falta restore drill externo e matriz 401/403/200 por perfil.
 
 Atualizacao em 2026-05-25 16:31: o readiness real executado no console do `portal-sama-api` passou em ambiente, banco, migrations, RBAC, usuario privilegiado e storage, falhando apenas em `clamav-eicar` por ausencia de scanner na imagem anterior. O Dockerfile agora instala `clamav` e o repo expoe `npm run ops:clamav:update` para atualizar assinaturas antes do readiness final. Falta redeployar e repetir o teste com EICAR.

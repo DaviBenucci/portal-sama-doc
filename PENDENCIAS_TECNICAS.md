@@ -1,5 +1,16 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-26 09:38 -03:00
+
+- Com o `.env` real da API alocado localmente e ignorado pelo Git, foram usadas apenas variaveis de bootstrap no processo do shell para executar checks reais autenticados sem imprimir segredos.
+- `smoke:auth` passou contra HTTPS com usuario bootstrap/DEV: CSRF, login, `/auth/me`, refresh, novo `/auth/me` e logout.
+- `smoke:permissions` passou com anonimos 401 em `/auth/me`, `/users` e `/documents`, e bootstrap/DEV 200 em `/auth/me`, `/users`, `/roles` e `/permissions`.
+- `test:e2e:real` passou com usuario bootstrap/DEV.
+- `homologation:real --soft --evidence-dir .ai-tests/homologation-real` passou e gerou evidencia JSON sanitizada.
+- O `DATABASE_URL` do `.env` aponta para hostname interno `portal-sama_portal-sama-database:3306`; portanto backfill/readiness/backup reais de banco devem rodar no container EasyPanel.
+- `ops:readiness` passou a falhar quando secrets configurados tiverem menos de 32 caracteres, alinhando a validacao operacional ao schema da API.
+- Permanece pendente: matriz oficial por multiplos perfis reais, backfill/backup/restore no EasyPanel, upload/download real, QA final e desligamento seguro do legado.
+
 ## Atualizacao 2026-05-26 09:23 -03:00
 
 - A execucao real foi tentada com o ambiente local disponivel: `smoke:public` passou contra o dominio publico, `smoke:permissions --soft --json` validou anonimos 401 reais, `smoke:auth` bloqueou por falta de `PORTAL_AUTH_USERNAME`/`PORTAL_AUTH_PASSWORD`, Playwright real ficou skipped por falta de `PORTAL_REAL_E2E=1` e credenciais, e `ops:backfill:report --soft --json` bloqueou por ausencia de `DATABASE_URL`.

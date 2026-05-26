@@ -1,5 +1,17 @@
 # Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-05-26 09:38 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Com o `.env` real da API alocado localmente e ignorado pelo Git, foi possivel executar a bateria real autenticada usando as variaveis de bootstrap admin apenas no processo do shell.
+- **Evidencia real:** `smoke:auth` passou contra `https://portal.samacontabil.com.br/api-v2` com usuario bootstrap/DEV: CSRF, login, `/auth/me`, refresh, novo `/auth/me` e logout.
+- **Permissoes reais:** `smoke:permissions` passou com anonimos 401 em `/auth/me`, `/users` e `/documents`, e bootstrap/DEV 200 em `/auth/me`, `/users`, `/roles` e `/permissions`.
+- **Playwright real:** `npm.cmd run test:e2e:real` passou com usuario bootstrap/DEV, validando login pela UI, Home, politica de storage/cookie e logout.
+- **Runner consolidado:** `npm.cmd run homologation:real -- --soft --evidence-dir .ai-tests/homologation-real` passou os quatro passos e gerou evidencia JSON sanitizada local.
+- **Backend/operacao:** O `DATABASE_URL` do `.env` aponta para `portal-sama_portal-sama-database:3306`, hostname interno do EasyPanel; por isso `ops:backfill:report` e checks de banco do readiness nao conectam a partir do Windows local e devem rodar no container.
+- **Hardening:** `ops:readiness` agora falha se `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CSRF_SECRET` ou `CERTIFICATE_ENCRYPTION_KEY` estiverem configurados com menos de 32 caracteres.
+- **Pendente:** Rodar backfill/backup/restore no container real da API, ampliar matriz por CLIENT/MANAGER/departamentos/perfis operacionais, validar upload/download real e concluir QA visual/corte.
+
 ## Atualizacao complementar 2026-05-26 09:23 -03:00
 
 - **Responsavel/IA:** Codex

@@ -1,5 +1,55 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-26 09:38
+
+### Contexto
+
+- Execucao real autenticada usando o `.env` da API, sem imprimir segredos.
+- Uso das variaveis `SAMA_BOOTSTRAP_ADMIN_USERNAME`/`SAMA_BOOTSTRAP_ADMIN_PASSWORD` apenas no processo do shell para validar o usuario bootstrap/DEV.
+- Diagnostico de conectividade do `DATABASE_URL` local.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- Backend: `portal-sama-api`.
+- Dominio publico: `https://portal.samacontabil.com.br`.
+- Banco no `.env`: host interno `portal-sama_portal-sama-database:3306`, nao acessivel a partir do Windows local.
+
+### Comandos executados
+
+```bash
+npm.cmd run ops:backfill:report -- --soft --json
+npm.cmd run ops:readiness -- --skip-clamav --storage-path .ai-tests/readiness-storage --soft --json
+npm.cmd run smoke:auth -- --soft --json
+npm.cmd run smoke:permissions -- --soft --json
+npm.cmd run test:e2e:real
+npm.cmd run homologation:real -- --soft --evidence-dir .ai-tests/homologation-real
+node --check scripts/validate-operational-readiness.js
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- `smoke:auth` passou com usuario bootstrap/DEV: CSRF, login, `/auth/me`, refresh, novo `/auth/me` e logout.
+- `smoke:permissions` passou com anonimos 401 e bootstrap/DEV 200 em `/auth/me`, `/users`, `/roles` e `/permissions`.
+- `test:e2e:real` passou com 1 teste real no Chromium.
+- `homologation:real` passou `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real`, gerando evidencia JSON sanitizada.
+- `ops:backfill:report` nao conectou localmente porque o `DATABASE_URL` usa hostname interno do EasyPanel.
+- `ops:readiness` apontou o mesmo bloqueio de banco local e passou a falhar em secrets menores que 32 caracteres.
+- Lint/build da API passaram apos o ajuste no readiness.
+
+### Pendencias
+
+- Executar `ops:backfill:report`, `ops:backup:create` e `ops:backup:verify` dentro do container real `portal-sama-api`.
+- Montar matriz oficial com CLIENT, MANAGER, departamentos e demais perfis reais, incluindo 403 esperados.
+- Validar upload/download real com token/storage e concluir QA visual/corte.
+
+### Observacao anti-alucinacao
+
+Nao houve backfill, backup, restore drill, upload/download real nem matriz multi-perfil nesta rodada. A evidencia autenticada real cobre o usuario bootstrap/DEV.
+
 ## Execucao 2026-05-26 09:23
 
 ### Contexto

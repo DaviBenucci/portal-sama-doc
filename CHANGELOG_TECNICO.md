@@ -1,5 +1,49 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-26 09:38
+
+### Arquivos alterados
+
+- `portal-sama-api/scripts/validate-operational-readiness.js`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `SEGURANCA.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- `ops:readiness` passou a validar tamanho minimo de 32 caracteres para `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CSRF_SECRET` e `CERTIFICATE_ENCRYPTION_KEY` quando configurados.
+- Documentacao atualizada com a execucao real autenticada usando o usuario bootstrap/DEV e com o diagnostico de que `DATABASE_URL` aponta para hostname interno do EasyPanel.
+
+### Motivo da alteracao
+
+Fechar o maximo possivel da homologacao real com as credenciais disponiveis localmente e impedir que secrets curtos/placeholders passem como ambiente pronto.
+
+### Impacto esperado
+
+- Autenticacao, refresh cookie, Playwright real e matriz minima DEV/bootstrap deixam de ser apenas ferramentas disponiveis e passam a ter evidencia real.
+- Backfill/backup/restore ficam corretamente direcionados para execucao no container EasyPanel.
+- Readiness fica mais fiel ao schema de ambiente usado pela aplicacao.
+
+### Testes executados
+
+- `npm.cmd run smoke:auth -- --soft --json`: passou com usuario bootstrap/DEV.
+- `npm.cmd run smoke:permissions -- --soft --json`: passou com anonimos 401 e bootstrap/DEV 200 em rotas administrativas basicas.
+- `npm.cmd run test:e2e:real`: passou com 1 teste real.
+- `npm.cmd run homologation:real -- --soft --evidence-dir .ai-tests/homologation-real`: passou.
+- `npm.cmd run ops:backfill:report -- --soft --json`: bloqueou por hostname interno do EasyPanel, como esperado em execucao local.
+- `npm.cmd run ops:readiness -- --skip-clamav --storage-path .ai-tests/readiness-storage --soft --json`: retornou falhas controladas para banco interno e secrets curtos.
+- `node --check scripts/validate-operational-readiness.js`, `npm.cmd run lint` e `npm.cmd run build` na API: passaram.
+
+### Riscos ou pendencias
+
+- Ainda falta matriz oficial por multiplos perfis reais.
+- Ainda falta rodar backfill/backup/restore no container EasyPanel.
+- Ainda faltam upload/download real, QA final e plano de corte/desligamento do legado.
+
 ## 2026-05-26 09:23
 
 ### Arquivos alterados

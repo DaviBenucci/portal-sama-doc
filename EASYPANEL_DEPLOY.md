@@ -47,6 +47,8 @@ Atualizacao 2026-05-26 09:10 -03:00: o repo separado `portal-sama-api` agora exp
 
 Atualizacao 2026-05-26 09:23 -03:00: o repo separado `portal-sama-web` agora expoe `npm.cmd run homologation:real`, que executa `smoke:public`, `smoke:auth`, `smoke:permissions` e `test:e2e:real` em sequencia. Na execucao local sem credenciais, `smoke:public` passou e os checks autenticados foram bloqueados de forma sanitizada por ausencia das variaveis reais.
 
+Atualizacao 2026-05-26 09:38 -03:00: usando as variaveis de bootstrap admin do `.env` apenas no processo local, passaram `smoke:auth`, matriz minima `smoke:permissions`, `test:e2e:real` e `homologation:real` contra `https://portal.samacontabil.com.br`. O `DATABASE_URL` do `.env` aponta para hostname interno do EasyPanel, entao `ops:backfill:report`, backup e restore reais devem ser executados no container `portal-sama-api`.
+
 ---
 
 ## 2. Serviços recomendados
@@ -869,11 +871,12 @@ O check `backup-rollback` do readiness continua como warning enquanto essa resta
 - [x] Validar `/api-v2/health`.
 - [x] Rodar `npm.cmd run smoke:public` sem `--soft`.
 - [x] Disponibilizar `npm.cmd run smoke:auth` no repo separado do Web.
-- [ ] Rodar `npm.cmd run smoke:auth` com usuario real de homologacao.
+- [x] Rodar `npm.cmd run smoke:auth` com usuario real bootstrap/DEV.
 - [x] Disponibilizar `npm.cmd run test:e2e:real` no repo separado do Web.
-- [ ] Rodar `npm.cmd run test:e2e:real` com usuario real de homologacao.
+- [x] Rodar `npm.cmd run test:e2e:real` com usuario real bootstrap/DEV.
 - [x] Disponibilizar `npm.cmd run smoke:permissions` no repo separado do Web.
-- [ ] Rodar `npm.cmd run smoke:permissions` com usuarios reais por perfil.
+- [x] Rodar matriz minima `npm.cmd run smoke:permissions` com usuario real bootstrap/DEV.
+- [ ] Rodar `npm.cmd run smoke:permissions` com usuarios reais por todos os perfis oficiais.
 - [x] Disponibilizar `npm.cmd run homologation:real` no repo separado do Web.
 - [ ] Validar login por perfil real.
 - [ ] Validar permissões.
