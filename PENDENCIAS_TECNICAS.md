@@ -1,5 +1,13 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 10:40 -03:00
+
+- Corrigida a falha de reconhecimento de PDF real do Banco Inter no Integra-AI: parser agora reconhece layout `inter_pdf`.
+- `Saldo do dia` foi tratado como linha tecnica `balance_snapshot`, nao como transacao contabil; por isso nao deve aparecer para o usuario final, nao deve gerar regra e nao deve ser exportado no TXT.
+- O saldo diario pode ser usado futuramente como reconciliacao: conferir se o ultimo saldo acumulado do dia bate com o saldo informado pelo banco e gerar alerta tecnico se divergir.
+- Passaram parser direto no PDF real, `py_compile`, unit focado/lint/build da API.
+- Permanece pendente montar matriz de PDFs reais/sinteticos por banco, com fixtures sem dados sensiveis, para evoluir reconhecimento multi-banco com regressao automatizada.
+
 ## Atualizacao 2026-05-27 10:03 -03:00
 
 - A documentacao externa `analise_semantica_integra_ai_portal_sama.md` foi considerada coerente com o projeto: o parser Python ja aceita OFX, enquanto API/Web ainda restringiam a publicacao a PDF.

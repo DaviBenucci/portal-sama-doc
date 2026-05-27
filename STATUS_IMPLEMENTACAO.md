@@ -1,6 +1,15 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 10:40 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido reconhecimento de PDF do Banco Inter no parser do Integra-AI, incluindo tratamento correto de `Saldo do dia`.
+- **Backend/parser:** `parse_statement.py` ganhou layout `inter_pdf`, com leitura de datas longas em portugues, transacoes agrupadas pela data corrente, descricoes quebradas em multiplas linhas e valores com `R$`/`-R$`.
+- **Saldo diario:** Linhas `Saldo do dia` sao classificadas como `row_kind=balance_snapshot` e `ignore_reason=daily_balance`; servem para reconciliacao/diagnostico, mas nao sao persistidas como linhas contabeis pela API, nao aparecem para o usuario final e nao entram no TXT.
+- **Validacao:** O PDF real do Banco Inter passou no parser com 31 transacoes e 15 saldos tecnicos. Passaram `python -m py_compile services/integra_ai_parser/parse_statement.py`, `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` na API.
+- **Pendente:** Validar outros PDFs reais de bancos diferentes e ampliar a matriz de fixtures/layouts para cobrir variacoes de PDF antes de desligar o legado.
+
 ## Atualizacao complementar 2026-05-27 10:03 -03:00
 
 - **Responsavel/IA:** Codex

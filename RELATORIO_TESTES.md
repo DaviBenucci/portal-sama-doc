@@ -1,5 +1,44 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 10:40
+
+### Contexto
+
+- Falha reproduzida em PDF real do Banco Inter.
+- Parser `inter_pdf` implementado para datas longas, transacoes sem data repetida e `Saldo do dia`.
+- Saldo diario classificado como linha tecnica, fora da persistencia final de lancamentos.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend/parser: `portal-sama-api`.
+- Arquivo validado: PDF real informado pelo usuario em unidade local.
+
+### Comandos executados
+
+```bash
+python services\integra_ai_parser\parse_statement.py --input "<PDF Inter real>" --ext pdf --bank-key inter --debug
+python -m py_compile services\integra_ai_parser\parse_statement.py
+npm.cmd test -- accounting.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- Parser direto no PDF real: `layout_key=inter_pdf`, banco/agencia/conta/periodo reconhecidos, 31 transacoes e 15 saldos tecnicos.
+- API: unit focado passou com 7 testes; lint e build passaram.
+
+### Pendencias
+
+- Criar fixtures anonimizadas/sinteticas de Banco Inter e de outros bancos para regressao automatizada do parser PDF.
+- Validar importacao ponta a ponta pela API/Web com storage/MySQL reais em homologacao.
+
+### Observacao anti-alucinacao
+
+O PDF real foi usado somente localmente para reproduzir e validar o parser. Os detalhes financeiros nao devem ser publicados em documentacao ou logs compartilhados.
+
 ## Execucao 2026-05-27 10:03
 
 ### Contexto

@@ -1,5 +1,43 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 10:40
+
+### Arquivos alterados
+
+- `portal-sama-api/services/integra_ai_parser/parse_statement.py`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
+- `paginas/contabil-integra-ai.md`
+
+### O que mudou
+
+- Criado layout `inter_pdf` para Banco Inter.
+- O parser agora reconhece datas longas em portugues, mantem a data corrente para transacoes seguintes, junta descricoes em multiplas linhas e entende valores `R$`/`-R$`.
+- `Saldo do dia` e classificado como `balance_snapshot`/`daily_balance`, ficando fora das linhas contabeis exibidas/exportadas.
+
+### Motivo da alteracao
+
+O PDF real do Banco Inter retornava banco e periodo, mas nenhuma linha de transacao, porque o layout nao segue o padrao generico com data em cada lancamento.
+
+### Impacto esperado
+
+- PDFs do Banco Inter com esse layout passam a gerar transacoes validas.
+- Saldos diarios podem apoiar reconciliacao futura sem poluir a tela final, regras ou TXT Dominio.
+
+### Testes executados
+
+- Parser direto no PDF real: passou, com 31 transacoes e 15 saldos tecnicos.
+- `python -m py_compile services/integra_ai_parser/parse_statement.py`: passou.
+- `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` em `portal-sama-api`: passaram.
+
+### Riscos ou pendencias
+
+- Ainda falta matriz automatizada de fixtures PDF por banco.
+- Outros layouts do Banco Inter ou de bancos diferentes podem exigir adaptadores especificos.
+
 ## 2026-05-27 10:03
 
 ### Arquivos alterados

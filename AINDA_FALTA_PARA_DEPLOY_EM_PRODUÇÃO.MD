@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 10:03 -03:00
+Ultima atualizacao: 2026-05-27 10:40 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,7 +45,7 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 10:03 -03:00:
+Estimativa operacional em 2026-05-27 10:40 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
@@ -73,6 +73,18 @@ Estimativa operacional em 2026-05-27 10:03 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2 e agora importacao OFX opt-in atras de feature flag, mas ainda exige validacao funcional real/backfills e demais validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-27 10:40 -03:00
+
+Foi reproduzida falha com PDF real do Banco Inter (`Extrato Inter dezembro 25.pdf` em unidade local). O parser detectava banco/periodo, mas retornava `rows: []` porque o layout do Inter usa data longa com `Saldo do dia` e lista transacoes abaixo sem repetir a data.
+
+- `portal-sama-api/services/integra_ai_parser/parse_statement.py` ganhou parser `inter_pdf`.
+- O parser reconhece datas como `1 de Dezembro de 2025`, carrega a data atual ate a proxima data, junta descricoes quebradas em multiplas linhas e interpreta valores com `R$`/`-R$`.
+- `Saldo do dia` agora entra apenas como `row_kind=balance_snapshot` e `ignore_reason=daily_balance`.
+- O fluxo contabil continua persistindo apenas `row_kind=transaction`; portanto saldo diario nao aparece para o usuario final, nao vira regra e nao entra no TXT Dominio.
+- Validacao local no PDF real: parser retornou 31 transacoes e 15 saldos tecnicos. Passaram `python -m py_compile`, `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` na API.
+
+Decisao: saldo do dia deve ser guardado como dado tecnico para reconciliacao/diagnostico, nao como lancamento contabil. Pode servir futuramente para alertar divergencia entre saldo final do dia e ultimo saldo acumulado lido, mas nao deve ser exibido na etapa final nem exportado.
 
 ## Atualizacao operacional de 2026-05-27 10:03 -03:00
 

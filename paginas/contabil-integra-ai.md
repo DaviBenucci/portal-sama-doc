@@ -28,6 +28,15 @@
 - **Sem migration:** a implementacao reutiliza as tabelas operacionais existentes e o campo `source_type`.
 - **Pendente real:** validar OFX/PDF com arquivos reais, usuario contabil, parser Python no container, MySQL/storage reais, ClamAV strict e homologacao HTTPS.
 
+### Atualizacao de migracao 2026-05-27 10:40 -03:00
+
+- **Banco Inter PDF:** implementado layout `inter_pdf` no parser Python.
+- **Formato reconhecido:** datas longas em portugues (`1 de Dezembro de 2025`), transacoes abaixo da data sem repeticao de data, descricoes quebradas em multiplas linhas e valores com `R$`/`-R$`.
+- **Saldo do dia:** classificado como `row_kind=balance_snapshot` e `ignore_reason=daily_balance`.
+- **Regra de exibicao:** saldo diario nao deve aparecer para o usuario final, nao deve virar regra contabil e nao deve entrar no TXT Dominio. Ele fica apenas no payload tecnico para diagnostico/reconciliacao.
+- **Uso recomendado do saldo:** usar futuramente para conferir se o ultimo saldo acumulado do dia bate com o saldo final informado pelo banco; em caso de divergencia, gerar alerta tecnico, nao lancamento.
+- **Validacao local:** PDF real do Banco Inter retornou 31 transacoes e 15 saldos tecnicos; unit/lint/build da API passaram.
+
 ---
 
 ## 2. Objetivo da página
@@ -462,6 +471,7 @@ Estratégia de refatoração:
 - Usuário sem permissão não visualiza nem executa ações críticas.
 - Atualizacao 2026-05-27 08:31: `portal-sama-web/tests/e2e/smoke.spec.ts` cobre localmente `/contabil/integra-ai` com API mockada, navegando para pagina 2 das regras, pesquisando conta por nome e validando autosave de conta editavel por selecao/blur. Ainda falta repetir com job real e usuario contabil em homologacao.
 - Atualizacao 2026-05-27 10:03: o mesmo smoke valida que a tela reconhece `ofx_import=true` e publica `.ofx` no `accept`; API unit cobre OFX habilitado/desabilitado na validacao de upload.
+- Atualizacao 2026-05-27 10:40: parser direto no PDF real do Banco Inter passou com transacoes reconhecidas e saldos diarios filtrados como linhas tecnicas.
 
 ### Testes de segurança
 
