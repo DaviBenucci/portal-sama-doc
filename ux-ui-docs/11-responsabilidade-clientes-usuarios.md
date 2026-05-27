@@ -1,5 +1,7 @@
 # Responsabilidade de clientes por usuario — diagnostico do codigo atual e melhoria proposta
 
+Atualizacao 2026-05-27 16:44 -03:00: a recomendacao de backend avancou localmente. Alem da tabela e dos endpoints de listar/criar/editar/encerrar, a API v2 agora possui `POST /api-v2/client-assignments/transfer` para transferencia normalizada e auditada. A analise historica abaixo continua valida para fluxos legados que ainda leem `clients.metadata` e para as telas que ainda nao foram conectadas a `client_department_assignments`.
+
 ## 1. Pergunta analisada
 
 Como o Portal Sama define que um cliente esta sob responsabilidade de um usuario, seja colaborador ou gestor?
@@ -562,7 +564,9 @@ POST /api-v2/client-assignments/:id/end
 POST /api-v2/client-assignments/transfer
 ```
 
-Esse endpoint pode substituir gradualmente a logica atual baseada em `TransferSession` + JSON.
+Status local em 2026-05-27 16:44: endpoint backend implementado. Ele transfere uma ou mais responsabilidades ativas, marca o vinculo anterior como `TRANSFERRED`, cria novo vinculo `ACTIVE`, valida responsavel/departamento/escopo e registra auditoria.
+
+Esse endpoint deve substituir gradualmente a logica atual baseada em `TransferSession` + JSON, depois de UI, backfill e validacao real.
 
 ---
 
@@ -730,6 +734,7 @@ GET /api-v2/clients/:clientId/assignments
 POST /api-v2/clients/:clientId/assignments
 PATCH /api-v2/client-assignments/:id
 POST /api-v2/client-assignments/:id/end
+POST /api-v2/client-assignments/transfer
 ```
 
 O que ja foi coberto:
@@ -739,7 +744,8 @@ O que ja foi coberto:
 - responsavel e gestor precisam ser usuarios internos ativos;
 - responsavel operacional precisa pertencer ao departamento selecionado;
 - dois PRIMARY ativos para o mesmo cliente/departamento sao bloqueados em regra de aplicacao;
-- criacao, atualizacao e encerramento registram auditoria;
+- criacao, atualizacao, encerramento e transferencia registram auditoria;
+- transferencia normalizada encerra o vinculo anterior como TRANSFERRED e cria novo vinculo ACTIVE;
 - RBAC inclui client_assignments.read/create/update/transfer/end/audit.
 ```
 
@@ -749,8 +755,7 @@ O que segue pendente:
 - aplicar migration/seed no MySQL real;
 - criar UI no cadastro/painel do cliente;
 - carregar carteira real no detalhe do colaborador;
-- migrar gestor, departamentos e transferencias para priorizar a tabela nova;
-- criar endpoint especifico de transferencia normalizada;
+- migrar gestor, departamentos e telas de transferencias para priorizar a tabela nova;
 - executar backfill de clients.metadata para client_department_assignments;
 - manter fallback temporario para metadata ate a migracao ser conferida.
 ```

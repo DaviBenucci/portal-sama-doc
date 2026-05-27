@@ -1,5 +1,56 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 16:44
+
+### Contexto
+
+- Implementacao do endpoint backend de transferencia normalizada de responsabilidades de clientes.
+- A responsabilidade atual passa para `TRANSFERRED` e uma nova responsabilidade `ACTIVE` e criada para o responsavel de destino.
+
+### Comandos executados ate esta etapa
+
+```bash
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd test -- client-assignments.service.spec.ts rbac/default-rbac.spec.ts departments/department-catalog.service.spec.ts --runInBand
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:validate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run build
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral:** Passou apos ajuste de lint.
+- API focada: 3 suites, 11 testes.
+- Prisma schema validado.
+- API lint passou.
+- API build passou.
+
+### Falhas encontradas
+
+- Uma execucao de lint apontou tipagem redundante `unknown | null` no tipo auxiliar de transacao do `ClientAssignmentsService`.
+
+### Acoes corretivas realizadas
+
+- O tipo auxiliar foi ajustado para retorno estrutural `object | null`, mantendo compatibilidade com o delegate Prisma e removendo a redundancia.
+- Lint, build e testes focados foram reexecutados com sucesso.
+
+### Cobertura ajustada
+
+- Transferencia de responsabilidade ativa para novo responsavel.
+- Encerramento da responsabilidade anterior com status `TRANSFERRED`.
+- Criacao de nova responsabilidade `ACTIVE`.
+- Metadata com origem da transferencia, responsavel anterior, responsavel destino e motivo.
+- Auditoria `client_assignments.transfer`.
+
+### Pendencias
+
+- Validar o endpoint `POST /api-v2/client-assignments/transfer` no EasyPanel com MySQL real, usuario real e CSRF real.
+- Criar UI de transferencia/carteira.
+- Executar backfill de `clients.metadata` para `client_department_assignments`.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, MySQL real ou usuario real nesta rodada. A validacao foi local com `DATABASE_URL` dummy e API local.
+
 ## Execucao 2026-05-27 16:31
 
 ### Contexto

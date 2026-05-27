@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 16:31 -03:00
+Ultima atualizacao: 2026-05-27 16:44 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -47,13 +47,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 16:31 -03:00:
+Estimativa operacional em 2026-05-27 16:44 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
 | Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
-| Pronto para producao sem depender do legado | 87% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local tem leiaute Dominio unico e validavel, e a primeira fundacao backend para responsabilidades normalizadas de clientes foi implementada localmente. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes, UI/fluxos reais de carteiras e desligamento seguro do legado. |
-| Falta para producao | 13% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, completar UI/migracao de responsabilidades de clientes, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
+| Pronto para producao sem depender do legado | 88% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local tem leiaute Dominio unico e validavel, e a fundacao backend para responsabilidades normalizadas de clientes agora inclui transferencia auditada. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes, UI/fluxos reais de carteiras e desligamento seguro do legado. |
+| Falta para producao | 12% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, completar UI/migracao de responsabilidades de clientes, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
@@ -76,7 +76,30 @@ Estimativa operacional em 2026-05-27 16:31 -03:00:
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Fase futura documentada | `integracao_acessorias_entregas_vencimentos.md` define a integracao com Acessorias como pos-migracao base. Nao deve bloquear o corte base se ficar formalmente fora do escopo, mas precisa entrar no backlog com dependencias, API do Acessorias, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` tambem foi criada localmente. Falta aplicar migrations/seeds no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, transferencias normalizadas, solicitacoes globais e permissoes guiadas. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` agora tambem cobre transferencia normalizada auditada. Falta aplicar migrations/seeds no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-05-27 16:44 -03:00
+
+Foi implementada a segunda fatia backend de responsabilidade normalizada de clientes: transferencia auditada entre responsaveis.
+
+- criado DTO `TransferClientAssignmentDto`;
+- criado endpoint protegido `POST /api-v2/client-assignments/transfer`;
+- a permissao exigida e `client_assignments.transfer`;
+- a transferencia aceita uma ou mais responsabilidades ativas;
+- a responsabilidade atual e encerrada como `TRANSFERRED`, preservando historico e metadata da transferencia;
+- a nova responsabilidade e criada como `ACTIVE`, mantendo cliente, departamento e tipo, mas apontando para o responsavel de destino;
+- gestor pode ser preservado, trocado ou removido conforme payload;
+- a API valida escopo, status ativo, departamento controlado, responsavel interno ativo e ausencia de duplicidade `PRIMARY` ativa;
+- cada nova responsabilidade transferida registra auditoria `client_assignments.transfer`.
+
+Validacao local:
+
+- testes focados `client-assignments.service`, `default-rbac` e `department-catalog.service` passaram;
+- `npm.cmd run prisma:validate` passou;
+- `npm.cmd run lint` passou;
+- `npm.cmd run build` passou.
+
+Pendencia real remanescente: aplicar migrations/seeds no MySQL real, validar `POST /api-v2/client-assignments/transfer` no EasyPanel com usuario real e CSRF real, criar UI de transferencia/carteira e planejar backfill de `clients.metadata` para `client_department_assignments`.
 
 ## Atualizacao operacional de 2026-05-27 16:31 -03:00
 
@@ -850,10 +873,11 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 - [x] Trocar departamento livre por select no cadastro/edicao de colaboradores nas telas React principais.
 - [ ] Aplicar migration/seed de departamentos no MySQL real e validar `/api-v2/departments` no EasyPanel.
 - [ ] Expandir departamentos controlados para clientes/responsabilidades, transferencias, gestor/workspace e demais telas com departamento.
+- [x] Implementar endpoint backend de transferencia normalizada de responsabilidades de clientes.
 - [ ] Validar solicitacoes de acesso disponiveis a todos os usuarios autenticados, com aprovacao/execucao conforme perfil e escopo.
 - [ ] Validar roles/permissoes com nome amigavel, descricao, agrupamento por modulo/acao, risco, formulario guiado e confirmacao para permissoes criticas.
 - [ ] Validar auditoria para alteracoes em usuarios, roles, permissoes, departamentos e solicitacoes.
-- [ ] Evoluir responsabilidade de clientes para entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
+- [ ] Evoluir responsabilidade de clientes para uso operacional completo da entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
 - [ ] Validar cadastro de cliente com responsavel operacional e gestor por departamento, painel do cliente com guia Equipe/Responsaveis e transferencia de carteira auditada.
 
 ### Testes e QA
@@ -893,7 +917,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 9. Backup operacional foi instrumentalizado com geracao, verificacao e restore drill protegido, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado em alvo isolado real; retencao de logs segue pendente.
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
-12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, mas ainda faltam validacao real, clientes/responsabilidades, solicitacoes globais, permissoes guiadas/auditadas e responsabilidade normalizada fora de `clients.metadata`.
+12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
 13. Acessorias/Entregas/Vencimentos precisa ficar formalmente fora do escopo do corte base ou entrar em backlog futuro aprovado; nao iniciar antes das dependencias estruturais documentadas.
 
 ## Criterio para dizer "pronto para producao"

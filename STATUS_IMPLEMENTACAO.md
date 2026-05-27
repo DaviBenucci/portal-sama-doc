@@ -1,6 +1,17 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 16:44 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Segunda fatia backend de responsabilidades normalizadas de clientes implementada: transferencia auditada de responsabilidades ativas entre responsaveis.
+- **Backend/API v2:** criado `TransferClientAssignmentDto` e endpoint `POST /api-v2/client-assignments/transfer`, protegido por CSRF e permissao `client_assignments.transfer`.
+- **Regras de negocio:** a transferencia valida escopo, responsabilidade ativa, departamento controlado, responsavel interno ativo, compatibilidade do responsavel com o departamento e bloqueio de duplicidade `PRIMARY` ativa; a responsabilidade anterior vira `TRANSFERRED` e uma nova responsabilidade `ACTIVE` e criada com historico.
+- **RBAC/auditoria:** a permissao ja existente `client_assignments.transfer` passou a proteger uma rota real; cada transferencia registra `client_assignments.transfer` em auditoria centralizada.
+- **Testes/validacao:** passaram testes focados de client assignments/RBAC/catalogo, `prisma:validate`, lint e build da API.
+- **Pendente:** aplicar migrations/seeds no MySQL real, validar o endpoint com usuario real/CSRF real no EasyPanel, criar UI de transferencia/carteira e executar backfill gradual de `clients.metadata`.
+
+
 ## Atualizacao complementar 2026-05-27 16:31 -03:00
 
 - **Responsavel/IA:** Codex

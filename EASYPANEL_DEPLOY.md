@@ -55,6 +55,8 @@ Atualizacao 2026-05-27 10:03 -03:00: Integra-AI passou a suportar importacao OFX
 
 Atualizacao 2026-05-27 16:31 -03:00: a API recebeu a migration `20260527162000_add_client_department_assignments` e o modulo `ClientAssignmentsModule`. Antes de validar responsabilidades de clientes no EasyPanel, executar `npm run prisma:migrate:deploy` e `npm run prisma:seed` no container da API, garantindo que `departments` e `client_department_assignments` existam e que as permissoes `client_assignments.*` estejam persistidas no RBAC real.
 
+Atualizacao 2026-05-27 16:44 -03:00: o modulo `ClientAssignmentsModule` agora tambem possui `POST /api-v2/client-assignments/transfer`, protegido por `client_assignments.transfer` e CSRF. A validacao real no EasyPanel deve incluir leitura/criacao/encerramento e transferencia com usuario ADMIN/DEV ou gestor autorizado, confirmando auditoria `client_assignments.transfer`.
+
 ---
 
 ## 2. Serviços recomendados

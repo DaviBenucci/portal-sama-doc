@@ -1,5 +1,47 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 16:44
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/client-assignments/client-assignments.controller.ts`
+- `portal-sama-api/src/modules/client-assignments/client-assignments.service.ts`
+- `portal-sama-api/src/modules/client-assignments/client-assignments.service.spec.ts`
+- `portal-sama-api/src/modules/client-assignments/client-assignments.types.ts`
+- `portal-sama-api/src/modules/client-assignments/dto/transfer-client-assignment.dto.ts`
+- Documentacao de status, pendencias, testes, UX, deploy e producao.
+
+### O que mudou
+
+- Criado endpoint `POST /api-v2/client-assignments/transfer` para transferencia normalizada de responsabilidades.
+- Criado DTO com aliases compativeis para `assignmentId`, lista de responsabilidades, responsavel de destino, gestor, data efetiva, motivo e metadata.
+- A transferencia encerra o vinculo atual como `TRANSFERRED` e cria novo vinculo `ACTIVE`, preservando historico e metadata.
+- O backend valida escopo, responsabilidade ativa, departamento controlado, responsavel interno ativo, compatibilidade de departamento e duplicidade de `PRIMARY` ativo.
+- A auditoria registra `client_assignments.transfer` por responsabilidade transferida.
+
+### Motivo da alteracao
+
+Fechar a pendencia imediata deixada pela fundacao de `client_department_assignments`: permitir transferencia de carteira pela entidade normalizada, sem depender da mutacao em JSON de `clients.metadata`.
+
+### Impacto esperado
+
+- Backend ja possui rota real para transferencia auditada de responsabilidades.
+- O fluxo legado de transferencias por metadata ainda nao foi removido.
+- A UI de carteira/transferencia ainda precisa ser criada ou conectada ao novo endpoint.
+
+### Testes executados
+
+- `npm.cmd test -- client-assignments.service.spec.ts rbac/default-rbac.spec.ts departments/department-catalog.service.spec.ts --runInBand` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou apos ajuste de tipo.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com MySQL real, usuario real, CSRF real e permissao persistida via seed.
+- Falta UI de transferencia/carteira e backfill gradual de `clients.metadata`.
+- Falta decidir quando o modulo legado de transferencias deixara de alterar metadata diretamente.
+
 ## 2026-05-27 16:31
 
 ### Arquivos alterados

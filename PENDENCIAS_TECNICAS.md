@@ -1,5 +1,15 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 16:44 -03:00
+
+- Implementada a transferencia normalizada de responsabilidades de clientes na API v2.
+- Criado DTO `TransferClientAssignmentDto` e endpoint `POST /api-v2/client-assignments/transfer`, protegido por CSRF e permissao `client_assignments.transfer`.
+- A transferencia encerra a responsabilidade atual como `TRANSFERRED` e cria nova responsabilidade `ACTIVE`, preservando cliente, departamento, tipo, historico e metadata da operacao.
+- O endpoint aceita transferencia de uma ou mais responsabilidades ativas, valida escopo do ator, responsavel interno ativo, departamento controlado, compatibilidade do responsavel com o departamento e duplicidade `PRIMARY` ativa.
+- A auditoria registra `client_assignments.transfer` para cada nova responsabilidade criada.
+- Passaram testes focados de client assignments/RBAC/catalogo, `prisma:validate`, lint e build da API.
+- Permanece pendente aplicar migrations/seeds no MySQL real, validar com usuario real/CSRF real, criar UI de transferencia/carteira e executar backfill gradual de `clients.metadata`.
+
 ## Atualizacao 2026-05-27 16:31 -03:00
 
 - Implementada a primeira fundacao backend de responsabilidades normalizadas de clientes.
