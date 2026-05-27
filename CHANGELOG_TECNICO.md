@@ -1,5 +1,93 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 16:11
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/collaborators/collaborators.service.ts`
+- `portal-sama-api/src/modules/collaborators/collaborators.module.ts`
+- `portal-sama-api/src/modules/collaborators/collaborators.service.spec.ts`
+- `portal-sama-web/src/pages/dev/DevCollaboratorsPage.tsx`
+- `portal-sama-web/src/pages/dev/DevNewCollaboratorPage.tsx`
+- `portal-sama-web/src/pages/collaborators/CollaboratorsOverviewPage.tsx`
+- Documentacao de status, pendencias, testes e producao.
+
+### O que mudou
+
+- `CollaboratorsService` passou a usar `DepartmentCatalogService` para validar departamentos em criacao, edicao e filtro.
+- Departamento inexistente/inativo em colaborador agora falha com `DEPARTMENT_NOT_FOUND` antes de gravar dados.
+- As telas `/dev/colaboradores`, `/dev/colaboradores/novo` e `/colaboradores/visao-geral` carregam o catalogo de departamentos e usam `select` nos campos de departamento.
+
+### Motivo da alteracao
+
+Dar continuidade a pendencia documentada de UX/governanca: departamento nao deve ser campo livre tambem nos fluxos de colaboradores.
+
+### Impacto esperado
+
+- Reduz duplicidade e erro operacional em colaboradores.
+- Mantem usuario e colaborador alinhados ao mesmo catalogo controlado.
+- Ainda nao normaliza responsabilidades de clientes; essa etapa continua separada.
+
+### Testes executados
+
+- `npm.cmd test -- collaborators.service.spec.ts users.service.spec.ts departments/department-catalog.service.spec.ts rbac/default-rbac.spec.ts --runInBand` em `portal-sama-api`: passou apos correcao.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com MySQL real apos migration/seed e deploy.
+- Clientes/responsabilidades, transferencias, manager workspace e demais fluxos departamentais ainda dependem de normalizacao adicional.
+
+## 2026-05-27 15:35
+
+### Arquivos alterados
+
+- `portal-sama-api/prisma/schema.prisma`
+- `portal-sama-api/prisma/migrations/20260527153000_add_controlled_departments/migration.sql`
+- `portal-sama-api/prisma/seed.ts`
+- `portal-sama-api/src/modules/departments/department-catalog.service.ts`
+- `portal-sama-api/src/modules/departments/departments.controller.ts`
+- `portal-sama-api/src/modules/departments/departments.module.ts`
+- `portal-sama-api/src/modules/users/users.service.ts`
+- `portal-sama-api/src/modules/users/users.module.ts`
+- `portal-sama-api/src/modules/rbac/default-rbac.ts`
+- `portal-sama-web/src/pages/dev/DevAdminPage.tsx`
+- `portal-sama-web/src/services/departments.service.ts`
+- `portal-sama-web/src/types/departments.ts`
+- Documentacao de status, pendencias, testes e deploy/producao.
+
+### O que mudou
+
+- Criado catalogo controlado de departamentos com chave tecnica, nome, descricao, ativo e ordem.
+- Exposto `GET /api-v2/departments` protegido por `departments.read`.
+- `UsersService` passou a resolver `mainDepartment` pelo catalogo controlado, impedindo valor livre inexistente/inativo.
+- Seed RBAC passou a incluir `departments.read` e `departments.manage`.
+- `/dev` usa `select` de departamentos carregado da API no filtro, cadastro e edicao de usuarios.
+
+### Motivo da alteracao
+
+Fechar a primeira pendencia de governanca UX/UI: departamento no cadastro de usuario nao pode ser texto livre e precisa vir de lista controlada pelo backend.
+
+### Testes executados
+
+- `npm.cmd run prisma:generate` em `portal-sama-api`: passou.
+- `npm.cmd test -- users.service.spec.ts departments/department-catalog.service.spec.ts rbac/default-rbac.spec.ts --runInBand` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Ainda falta aplicar migration/seed no MySQL real do EasyPanel.
+- Ainda falta validar `/dev` com usuario ADMIN/DEV real apos deploy.
+- Colaboradores, clientes/responsabilidades e demais telas com departamento ainda precisam migrar para o mesmo catalogo.
+
 ## 2026-05-27 14:06
 
 ### Arquivos alterados

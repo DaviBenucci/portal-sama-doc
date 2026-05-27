@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 14:06 -03:00
+Ultima atualizacao: 2026-05-27 16:11 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -37,21 +37,23 @@ Antes de atualizar este documento, a IA/desenvolvedor deve:
 4. Ler `EASYPANEL_DEPLOY.md`.
 5. Ler `RELATORIO_TESTES.md`.
 6. Ler `CHANGELOG_TECNICO.md`.
-7. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
-8. Verificar o estado real do Git e dos arquivos existentes.
-9. Atualizar este documento com data/hora, percentual e pendencias reais.
+7. Ler `integracao_acessorias_entregas_vencimentos.md` quando a tarefa envolver entregas, vencimentos, planilhas departamentais, notificacoes ou integracoes externas.
+8. Ler `ux-ui-docs/README.md` e `ux-ui-docs/09-checklist-aceite.md` quando a tarefa envolver UX/UI, navegacao, configuracoes, solicitacoes, departamentos, permissoes ou responsabilidades de clientes.
+9. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
+10. Verificar o estado real do Git e dos arquivos existentes.
+11. Atualizar este documento com data/hora, percentual e pendencias reais.
 
 Se uma porcentagem for informada, ela deve ser marcada como estimativa operacional, nao como metrica matematica exata.
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 14:06 -03:00:
+Estimativa operacional em 2026-05-27 16:11 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
 | Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
-| Pronto para producao sem depender do legado | 86% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local agora tem leiaute Dominio unico e validavel, mas permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes e desligamento seguro do legado. |
-| Falta para producao | 14% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real e plano de corte/desligamento do legado. |
+| Pronto para producao sem depender do legado | 86% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local agora tem leiaute Dominio unico e validavel, e as trilhas de Acessorias e UX/UI foram consolidadas como pendencias documentadas. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes e desligamento seguro do legado. |
+| Falta para producao | 14% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
@@ -73,6 +75,72 @@ Estimativa operacional em 2026-05-27 14:06 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
+| Acessorias, entregas e vencimentos | Fase futura documentada | `integracao_acessorias_entregas_vencimentos.md` define a integracao com Acessorias como pos-migracao base. Nao deve bloquear o corte base se ficar formalmente fora do escopo, mas precisa entrar no backlog com dependencias, API do Acessorias, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; falta aplicar migration/seed no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar clientes/responsabilidades, solicitacoes globais, permissoes guiadas e responsabilidade normalizada. |
+
+## Atualizacao operacional de 2026-05-27 16:11 -03:00
+
+Foi implementada a segunda pendencia incremental de governanca operacional/UX:
+
+- `CollaboratorsService` passou a validar `mainDepartment`/`departamento` contra o catalogo controlado em cadastro, edicao e filtro;
+- departamento invalido/inativo em colaborador retorna `DEPARTMENT_NOT_FOUND` antes de gravar dados;
+- `/dev/colaboradores`, `/dev/colaboradores/novo` e `/colaboradores/visao-geral` usam `select` carregado de `GET /api-v2/departments`;
+- a validacao de colaborador foi alinhada a mesma regra ja aplicada a usuarios DEV/Admin.
+
+Validacao local:
+
+- a primeira execucao focada da API falhou por ordem de validacao em `CollaboratorsService.create`;
+- a ordem foi corrigida para validar departamento antes de resolver roles;
+- testes focados `collaborators.service`, `users.service`, `department-catalog.service` e `default-rbac` passaram;
+- `npm.cmd run prisma:validate`, `npm.cmd run lint` e `npm.cmd run build` na API passaram;
+- `npm.cmd run build` e `npm.cmd run lint` no Web passaram.
+
+Percentuais operacionais permanecem inalterados: a mudanca reduz risco local de UX/governanca, mas ainda falta publicar, aplicar migration/seed e validar com usuarios reais no EasyPanel.
+
+Pendencia real remanescente: aplicar migration/seed de departamentos no MySQL real, validar usuarios e colaboradores com usuario ADMIN/DEV real, e evoluir clientes/responsabilidades para entidade propria cliente x departamento x usuario/gestor.
+
+## Atualizacao operacional de 2026-05-27 15:35 -03:00
+
+Foi implementada a primeira pendencia de governanca operacional/UX:
+
+- criado catalogo controlado de departamentos no backend (`Department`/`departments`);
+- criada migration `20260527153000_add_controlled_departments`;
+- `prisma:seed` passa a popular departamentos padrao;
+- `GET /api-v2/departments` lista o catalogo protegido por `departments.read`;
+- RBAC ganhou `departments.read` e `departments.manage`;
+- `UsersService` valida `mainDepartment` contra o catalogo e rejeita valores livres inexistentes/inativos;
+- a tela `/dev` usa `select` carregado da API para filtro, criacao e edicao de usuarios.
+
+Validacao local:
+
+- `npm.cmd run prisma:generate` na API passou;
+- testes focados `users.service`, `department-catalog.service` e `default-rbac` passaram;
+- `npm.cmd run prisma:validate`, `npm.cmd run lint` e `npm.cmd run build` na API passaram;
+- `npm.cmd run build` e `npm.cmd run lint` no Web passaram.
+
+Pendencia real remanescente: aplicar migration/seed no MySQL real do EasyPanel, validar `/api-v2/departments` e o formulario `/dev` com usuario ADMIN/DEV real, e expandir a mesma governanca para colaboradores, clientes/responsabilidades e demais telas com departamento.
+
+## Atualizacao operacional de 2026-05-27 15:19 -03:00
+
+Foi feita uma consolidacao documental das pendencias ainda abertas em `portal-sama-docs`, incluindo explicitamente:
+
+- `integracao_acessorias_entregas_vencimentos.md`;
+- `ux-ui-docs/README.md`;
+- `ux-ui-docs/09-checklist-aceite.md`;
+- `ux-ui-docs/10-departamentos-solicitacoes-permissoes.md`;
+- `ux-ui-docs/11-responsabilidade-clientes-usuarios.md`.
+
+Leitura consolidada:
+
+- Acessorias/Entregas/Vencimentos esta planejado como fase futura de alta prioridade, posterior a migracao base NestJS/React, RBAC, auditoria, notificacoes, planilhas departamentais, modulo base de integracoes e testes minimos.
+- UX/UI nao substitui QA funcional, mas e o ultimo gate de experiencia antes de liberar usuarios: navegacao, Home por perfil, mobile, documentos, configuracoes, seguranca visivel, solicitacoes, departamentos, roles/permissoes e responsabilidades precisam ser aceitos.
+- Responsabilidade de clientes por usuario ainda nao deve depender exclusivamente de `clients.metadata`; a trilha recomendada e criar entidade propria cliente x departamento x usuario/gestor, com historico e auditoria.
+
+Decisao operacional:
+
+- Acessorias nao entra como requisito de corte da stack base se for formalmente mantido fora do escopo do deploy inicial.
+- UX/UI entra como pendencia de aceite antes de liberar uso amplo aos usuarios.
+- Departamentos, solicitacoes, permissoes e responsabilidade de clientes entram como trilha funcional/seguranca porque afetam escopo, carteira, visibilidade e auditoria.
 
 ## Atualizacao operacional de 2026-05-27 14:06 -03:00
 
@@ -424,6 +492,7 @@ Incluir:
 *.md
 paginas/
 design/
+ux-ui-docs/
 README.md especifico do repositorio de documentacao
 .gitignore
 ```
@@ -446,6 +515,8 @@ INVENTARIO_BANCO_DADOS.md
 INVENTARIO_ENDPOINTS.md
 MATRIZ_MIGRACAO_PHP_PARA_NESTJS.md
 MATRIZ_MIGRACAO_HTML_PARA_REACT.md
+integracao_acessorias_entregas_vencimentos.md
+ux-ui-docs/
 paginas/
 design/
 ```
@@ -624,9 +695,11 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 34. [x] Rodar Playwright contra homologacao real com usuario real bootstrap/DEV.
 35. [x] Rodar matriz minima `smoke:permissions` com usuario real bootstrap/DEV.
 36. Rodar `npm.cmd run smoke:permissions` com usuarios reais por todos os perfis oficiais.
-37. Fazer QA visual desktop/mobile.
-38. Rodar `npm run ops:backup:create`, `npm run ops:backup:verify` e `npm run ops:restore:drill` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill real.
-39. Aprovar corte para producao.
+37. Classificar formalmente Acessorias/Entregas/Vencimentos como fase futura fora do corte base ou abrir backlog aprovado para implementacao posterior.
+38. Executar aceite UX/UI com base em `ux-ui-docs/09-checklist-aceite.md`.
+39. Fazer QA visual desktop/mobile.
+40. Rodar `npm run ops:backup:create`, `npm run ops:backup:verify` e `npm run ops:restore:drill` no EasyPanel, copiar artefatos para fora do container e validar rollback/restore drill real.
+41. Aprovar corte para producao.
 
 ## Checklist do que falta para producao
 
@@ -704,6 +777,61 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Validar gestor/calendario/transferencias.
 - [ ] Migrar ou bloquear corretamente mutacoes ainda legadas do Integra-AI.
 
+### Integra-AI, Dominio e arquivos contabeis
+
+- [ ] Publicar Web/API atualizados com download TXT autenticado e leiaute Dominio vigente.
+- [ ] Validar fluxo completo com usuario contabil real, permissao `accounting.integra_ai.download`, job real, MySQL real e storage real.
+- [ ] Importar TXT real no Dominio usando `Lancamentos Contabeis em Lote`.
+- [ ] Salvar evidencia sanitizada da importacao Dominio.
+- [ ] Congelar golden file aprovado do TXT Dominio.
+- [ ] Validar parser com PDFs reais/sanitizados de bancos prioritarios.
+- [ ] Manter `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false` em producao ate haver homologacao controlada.
+- [ ] Se OFX for liberado, validar OFX real em homologacao com parser Python no container, ClamAV strict, storage privado e auditoria.
+- [ ] Confirmar que mutacoes legadas do Integra-AI foram migradas para API v2 ou formalmente bloqueadas antes do desligamento do PHP.
+
+### Acessorias, entregas e vencimentos
+
+Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. Esta funcionalidade e fase futura; nao deve bloquear o corte base se ficar formalmente fora do escopo inicial.
+
+- [ ] Registrar Acessorias/Entregas/Vencimentos como backlog futuro pos-migracao base.
+- [ ] Confirmar dependencias antes de iniciar: Auth, RBAC, auditoria, notificacoes, planilhas departamentais, modulo base de integracoes, Prisma/MySQL, frontend React, logs estruturados, tratamento global de erros e testes minimos.
+- [ ] Validar na API do Acessorias campos de baixa, vencimento, competencia, CNPJ/CPF, departamento, responsavel, ID unico e entregas canceladas/dispensadas.
+- [ ] Criar modulo `integrations/acessorias-deliveries` somente quando as dependencias estiverem prontas.
+- [ ] Implementar sincronizacao automatica e manual de entregas do Acessorias com auditoria.
+- [ ] Salvar entregas localmente, sync runs, divergencias e alertas.
+- [ ] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
+- [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas.
+- [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
+- [ ] Criar vencimentos oficiais a partir do Acessorias e vencimentos previstos apenas como fallback.
+- [ ] Implementar status visual `Acessorias`, divergencias e resolucao de alertas.
+- [ ] Implementar notificacoes D-7, D-3, D-1, D0 e D+1 quando o modulo de notificacoes estiver pronto.
+- [ ] Implementar motor de recorrencia inteligente sem substituir vencimento oficial.
+- [ ] Criar permissoes, perfis, auditoria e testes unitarios/integracao/E2E/seguranca do MVP Fiscal.
+
+### UX/UI e aceite de uso
+
+Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checklist-aceite.md` e o gate visual/experiencia antes de liberar uso amplo aos usuarios.
+
+- [ ] Rodar e marcar o checklist `ux-ui-docs/09-checklist-aceite.md`.
+- [ ] Validar sidebar desktop com hover/foco, agrupamento de rotas e ocultacao de itens sem permissao.
+- [ ] Validar mobile com botao hamburguer, drawer e ausencia de quebra/overflow.
+- [ ] Validar Home por perfil: colaborador com pendencias reais, gestor com carteira/atrasos/riscos e DEV/Admin com diagnostico tecnico.
+- [ ] Validar notificacoes no header: sino, badge, popover, pagina completa e filtros.
+- [ ] Validar clientes/documentos: Meus Clientes por vinculo, Todos os Clientes por permissao ampla, documentos no painel do cliente, status, auditoria e links publicos expiraveis.
+- [ ] Validar propostas, contratos, assinatura publica e entrada de cliente no fluxo completo.
+- [ ] Validar `/configuracoes`: minha conta, foto com validacao segura, troca de senha restrita quando aplicavel e auditoria.
+- [ ] Validar UX de seguranca: confirmacao em acoes sensiveis, upload com tipo/tamanho, SVG bloqueado para foto, erros sem detalhes internos e sem dados sensiveis em storage do navegador.
+- [x] Implementar catalogo controlado de departamentos no backend com chave tecnica unica.
+- [x] Trocar departamento livre por select no cadastro/edicao de usuarios DEV/Admin.
+- [x] Trocar departamento livre por select no cadastro/edicao de colaboradores nas telas React principais.
+- [ ] Aplicar migration/seed de departamentos no MySQL real e validar `/api-v2/departments` no EasyPanel.
+- [ ] Expandir departamentos controlados para clientes/responsabilidades, transferencias, gestor/workspace e demais telas com departamento.
+- [ ] Validar solicitacoes de acesso disponiveis a todos os usuarios autenticados, com aprovacao/execucao conforme perfil e escopo.
+- [ ] Validar roles/permissoes com nome amigavel, descricao, agrupamento por modulo/acao, risco, formulario guiado e confirmacao para permissoes criticas.
+- [ ] Validar auditoria para alteracoes em usuarios, roles, permissoes, departamentos e solicitacoes.
+- [ ] Evoluir responsabilidade de clientes para entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
+- [ ] Validar cadastro de cliente com responsavel operacional e gestor por departamento, painel do cliente com guia Equipe/Responsaveis e transferencia de carteira auditada.
+
 ### Testes e QA
 
 - [x] Rodar lint/build da API no repo separado.
@@ -722,7 +850,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [x] Disponibilizar verificador de artefatos de backup da API (`npm run ops:backup:verify`).
 - [x] Disponibilizar restore drill operacional da API (`npm run ops:restore:drill`).
 - [x] Criar Playwright contra homologacao real (`npm.cmd run test:e2e:real`).
-- [ ] Rodar Playwright contra homologacao real com usuario real.
+- [ ] Rodar Playwright contra homologacao real com todos os perfis criticos.
 - [ ] Testar fluxos por perfil real.
 - [ ] Fazer QA visual desktop.
 - [ ] Fazer QA visual mobile.
@@ -740,6 +868,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 8. Suite Playwright real passou com usuario bootstrap/DEV, mas precisa ser ampliada por perfis/fluxos e o QA visual final ainda nao foi concluido.
 9. Backup operacional foi instrumentalizado com geracao, verificacao e restore drill protegido, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado em alvo isolado real; retencao de logs segue pendente.
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
+11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
+12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, mas ainda faltam validacao real, clientes/responsabilidades, solicitacoes globais, permissoes guiadas/auditadas e responsabilidade normalizada fora de `clients.metadata`.
+13. Acessorias/Entregas/Vencimentos precisa ficar formalmente fora do escopo do corte base ou entrar em backlog futuro aprovado; nao iniciar antes das dependencias estruturais documentadas.
 
 ## Criterio para dizer "pronto para producao"
 
@@ -757,6 +888,8 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 - Fluxos criticos testados com dados reais.
 - Playwright real passando.
 - QA visual aprovado.
+- Checklist UX/UI aceito para liberar uso amplo aos usuarios.
+- Acessorias/Entregas/Vencimentos formalmente classificado como fase futura fora do corte base ou implementado e homologado.
 - Plano de rollback documentado.
 - Dependencias do legado removidas ou formalmente bloqueadas.
 
@@ -765,7 +898,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> carregar credenciais no shell -> rodar homologation:real -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> QA visual final -> desligamento seguro do legado
+registrar migrations/seed/bootstrap -> carregar credenciais no shell -> rodar homologation:real por perfis -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> homologar TXT Dominio -> aceitar UX/UI -> classificar Acessorias como fase futura -> desligamento seguro do legado
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

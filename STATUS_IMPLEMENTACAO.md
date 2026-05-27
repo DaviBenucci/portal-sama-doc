@@ -1,6 +1,26 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 16:11 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Segunda fatia de governanca de departamentos controlados implementada: colaboradores deixam de aceitar departamento livre nas rotas administrativas e telas React principais.
+- **Backend/API v2:** `CollaboratorsService` agora valida `mainDepartment`/`departamento` pelo `DepartmentCatalogService` em cadastro, edicao e filtro, rejeitando departamento inexistente/inativo com `DEPARTMENT_NOT_FOUND`.
+- **Frontend React:** `/dev/colaboradores`, `/dev/colaboradores/novo` e `/colaboradores/visao-geral` carregam `GET /api-v2/departments` e usam `select` para filtro, criacao e edicao de colaboradores.
+- **Testes/validacao:** passaram testes focados de colaboradores/usuarios/catalogo/RBAC, `prisma:validate`, lint/build da API, build/lint do Web. A primeira execucao focada falhou por ordem de validacao em `CollaboratorsService.create`; foi corrigida para validar departamento antes de resolver roles e reexecutada com sucesso.
+- **Pendente:** aplicar migration/seed no MySQL real do EasyPanel, publicar API/Web atualizados e validar usuarios/colaboradores no ambiente real; clientes/responsabilidades e demais fluxos departamentais ainda precisam migrar para entidade propria e catalogo controlado.
+
+
+## Atualizacao complementar 2026-05-27 15:35 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Primeira pendencia de governanca UX/UI implementada: departamento deixou de ser campo livre no cadastro/edicao de usuarios da area DEV/Admin.
+- **Backend/API v2:** criado catalogo controlado de departamentos em `Department`/`departments`, migration `20260527153000_add_controlled_departments`, seed operacional e endpoint `GET /api-v2/departments` protegido por `departments.read`.
+- **Usuarios/RBAC:** `UsersService` agora valida `mainDepartment` contra o catalogo controlado e rejeita departamento inexistente/inativo com `DEPARTMENT_NOT_FOUND`; RBAC ganhou `departments.read` e `departments.manage`.
+- **Frontend React:** `/dev` carrega o catalogo de departamentos e usa `select` no filtro, criacao e edicao de usuarios; o envio continua compativel com `mainDepartment` canonico.
+- **Testes/validacao:** passaram `prisma:generate`, testes focados de usuarios/catalogo/RBAC, `prisma:validate`, lint/build da API, build/lint do Web.
+- **Pendente:** aplicar migration/seed no MySQL real via `prisma migrate deploy`/`prisma:seed`, validar com usuario real ADMIN/DEV no EasyPanel e depois expandir a governanca para colaboradores, clientes, responsabilidades e demais telas com departamento.
+
 ## Atualizacao complementar 2026-05-27 14:06 -03:00
 
 - **Responsavel/IA:** Codex

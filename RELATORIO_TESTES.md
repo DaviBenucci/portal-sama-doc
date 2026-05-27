@@ -1,5 +1,94 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 16:11
+
+### Contexto
+
+- Continuidade da governanca de departamentos controlados.
+- Colaboradores passaram a validar departamento pelo catalogo da API e as telas React de colaboradores passaram a usar `select` em vez de texto livre.
+
+### Comandos executados ate esta etapa
+
+```bash
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd test -- collaborators.service.spec.ts users.service.spec.ts departments/department-catalog.service.spec.ts rbac/default-rbac.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:validate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run lint
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Passou apos correcao.
+- API focada: 4 suites, 18 testes.
+- Prisma schema validado.
+- API lint passou.
+- API build passou.
+- Web build passou.
+- Web lint passou.
+
+### Falhas encontradas
+
+- A primeira execucao focada da API falhou no teste de departamento invalido porque `CollaboratorsService.create` tentava resolver roles antes de validar o departamento controlado.
+
+### Acoes corretivas realizadas
+
+- A ordem de validacao foi ajustada para resolver `mainDepartment` pelo `DepartmentCatalogService` antes de consultar roles e gravar colaborador.
+- A bateria focada da API foi reexecutada e passou.
+
+### Pendencias
+
+- Validar a mesma governanca no EasyPanel apos aplicar migration/seed e publicar API/Web.
+- Migrar clientes/responsabilidades para entidade propria e catalogo controlado.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, MySQL real ou usuario real nesta rodada. A validacao foi local com `DATABASE_URL` dummy e API/Web locais.
+
+## Execucao 2026-05-27 15:35
+
+### Contexto
+
+- Implementacao da primeira pendencia de governanca de departamentos controlados.
+- Novo catalogo backend para departamentos e troca do campo livre por select em `/dev`.
+
+### Comandos executados ate esta etapa
+
+```bash
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:generate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd test -- users.service.spec.ts departments/department-catalog.service.spec.ts rbac/default-rbac.spec.ts --runInBand
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:validate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run lint
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run build
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- API focada: 3 suites, 11 testes.
+- Prisma Client gerado e schema validado.
+- API lint passou.
+- API build passou.
+- Web build passou.
+- Web lint passou.
+
+### Cobertura ajustada
+
+- Catalogo default de departamentos quando a tabela ainda esta vazia.
+- Resolucao de alias para departamento ativo.
+- Rejeicao de departamento inexistente/inativo.
+- Criacao de usuario gravando departamento canonico.
+- RBAC incluindo permissoes de departamentos.
+
+### Pendencias
+
+- Aplicar migration/seed no MySQL real do EasyPanel.
+- Validar endpoint `/api-v2/departments` e formulario `/dev` com usuario ADMIN/DEV real.
+- Expandir o catalogo controlado para colaboradores, clientes/responsabilidades e demais telas que ainda aceitam departamento como texto.
+
 ## Execucao 2026-05-27 14:06
 
 ### Contexto

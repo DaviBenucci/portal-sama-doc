@@ -1,5 +1,24 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 16:11 -03:00
+
+- Implementada a segunda fatia de governanca de departamentos controlados.
+- `CollaboratorsService` passou a validar `mainDepartment`/`departamento` pelo catalogo controlado em cadastro, edicao e filtro.
+- Departamentos invalidos/inativos em colaboradores agora retornam `DEPARTMENT_NOT_FOUND`, antes de gravar usuario ou metadata.
+- `/dev/colaboradores`, `/dev/colaboradores/novo` e `/colaboradores/visao-geral` trocaram campos livres de departamento por `select` carregado de `GET /api-v2/departments`.
+- Passaram testes focados de API, Prisma validate, lint/build da API e build/lint do Web.
+- Permanece pendente aplicar migration/seed no MySQL real, publicar API/Web e validar no EasyPanel; clientes/responsabilidades e demais fluxos departamentais continuam pendentes.
+
+## Atualizacao 2026-05-27 15:35 -03:00
+
+- Implementada a primeira fatia de governanca de departamentos controlados.
+- Criada a tabela/modelo `departments`, migration `20260527153000_add_controlled_departments`, seed do catalogo padrao e endpoint `GET /api-v2/departments`.
+- `UsersService` passou a validar `mainDepartment` contra o catalogo controlado, aceitando chaves/aliases conhecidos e rejeitando valores livres inexistentes/inativos.
+- A tela DEV/Admin trocou o campo livre de departamento por `select` carregado do backend no filtro, cadastro e edicao de usuarios.
+- RBAC ganhou `departments.read` e `departments.manage`.
+- Passaram testes focados de API, Prisma validate, lint/build da API e build/lint do Web.
+- Permanece pendente aplicar migration/seed no MySQL real e validar no EasyPanel com usuario ADMIN/DEV real; colaboradores, clientes/responsabilidades e demais telas ainda precisam ser migrados para o mesmo catalogo.
+
 ## Atualizacao 2026-05-27 14:06 -03:00
 
 - Corrigida a decisao do leiaute Dominio do Integra-AI para o fluxo atual.

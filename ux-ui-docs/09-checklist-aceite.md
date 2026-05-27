@@ -61,6 +61,7 @@
 - [ ] Departamento vem de lista controlada pelo backend.
 - [ ] Departamento possui chave tecnica unica.
 - [ ] Criacao/edicao de departamento e restrita a MASTER/Admin autorizado.
+- [ ] Departamento no cadastro/edicao de colaboradores usa lista controlada nas telas React principais.
 - [ ] Solicitacoes de Acesso aparecem para todos os usuarios autenticados.
 - [ ] Colaborador consegue criar solicitacao e enviar feedback.
 - [ ] Gestor consegue aprovar solicitacoes do proprio escopo.
