@@ -1,5 +1,52 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 12:16
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/accounting/integra-ai.engine.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.ts`
+- `portal-sama-api/src/modules/accounting/accounting.controller.ts`
+- `portal-sama-api/src/modules/accounting/dto/integra-ai-operation.dto.ts`
+- `portal-sama-api/src/modules/accounting/integra-ai.engine.spec.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.spec.ts`
+- `portal-sama-web/src/types/integra-ai.ts`
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- Documentacao de leiaute, status, pendencias, testes e pagina Integra-AI.
+
+### O que mudou
+
+- O fluxo principal do Integra-AI passou a usar somente `dominio_separador_0000_0451`.
+- O frontend removeu o seletor entre `Dominio 01/02/03/99` e `Dominio 0000/0451` e exibe apenas o leiaute oficial.
+- O backend gera exclusivamente registros `0000` e `0451`, valida a estrutura do TXT e rejeita `export_strategy` divergente.
+- O layout legado `01/02/03/99` deixou de existir no gerador principal; sua chave permanece apenas como marcador deprecated para bloqueio/regressao.
+- Auditoria e download receberam metadata de leiaute/status/hash e headers anti-cache adicionais.
+
+### Motivo da alteracao
+
+A documentacao raiz `leiaute_dominio_integra_ai.md` definiu que o Portal Sama deve eliminar a ambiguidade entre dois leiautes Dominio e adotar o leiaute oficial com separador `0000/0451`, evitando erros de importacao no Dominio Contabilidade Fiscal.
+
+### Impacto esperado
+
+- Usuarios nao conseguem mais escolher um leiaute Dominio incorreto pelo fluxo principal.
+- Arquivos incompletos, com linha curta, registro legado ou campos obrigatorios ausentes sao bloqueados antes da exportacao.
+- A auditoria passa a indicar qual leiaute foi usado e o status da operacao.
+
+### Testes executados
+
+- `npm.cmd test -- --runInBand modules/accounting/integra-ai.engine.spec.ts modules/accounting/accounting.service.spec.ts` em `portal-sama-api`: passou.
+- `npm.cmd test -- --runInBand` em `portal-sama-api`: passou, 32 suites e 176 testes.
+- `npm.cmd run lint -- --max-warnings=0` em `portal-sama-api`: passou.
+- `npm.cmd run lint -- --max-warnings=0` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "Integra-AI"` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e` em `portal-sama-web`: passou, 11 testes e 1 skipped opt-in.
+
+### Riscos ou pendencias
+
+- Falta homologacao manual no Dominio Contabilidade Fiscal com TXT real e importador de separador `0000/0451`.
+- Ainda falta congelar golden file aprovado e validar com usuario contabil real, permissoes reais, banco e storage reais apos deploy.
+
 ## 2026-05-27 11:05
 
 ### Arquivos alterados

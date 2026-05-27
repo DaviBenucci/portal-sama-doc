@@ -1,5 +1,15 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 12:16 -03:00
+
+- O Integra-AI foi padronizado para somente um leiaute Dominio oficial no fluxo principal: `dominio_separador_0000_0451`.
+- O seletor conflitante de leiaute foi removido da tela; a etapa de plano exibe apenas `Dominio Sistemas com Separador - 0000/0451`.
+- O backend agora rejeita `export_strategy` legado/divergente e gera exclusivamente registros `0000` e `0451`.
+- A exportacao valida estrutura do arquivo, campos obrigatorios, historico sanitizado, valor positivo e ausencia de registros `01/02/03/99`.
+- Exportacao/download reforcaram auditoria, hash SHA-256, escopo por empresa/departamento quando disponivel, storage privado e headers anti-cache.
+- Passaram testes focados da API, suite completa da API, lint/build da API/Web, Prisma validate, Playwright focado de Integra-AI e Playwright local completo.
+- Permanece pendente homologar manualmente no Dominio Contabilidade Fiscal com TXT real, confirmar importador de separador `0000/0451`, salvar evidencia e congelar golden file.
+
 ## Atualizacao 2026-05-27 11:05 -03:00
 
 - Corrigido o download do TXT do Integra-AI no frontend React: a tela deixou de usar link direto para `/api-v2/accounting/integra-ai/jobs/:id/download` e passou a baixar via cliente Axios autenticado, preservando `Authorization: Bearer` do access token em memoria.

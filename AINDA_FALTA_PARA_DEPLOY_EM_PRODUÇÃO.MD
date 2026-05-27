@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 11:05 -03:00
+Ultima atualizacao: 2026-05-27 12:16 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,20 +45,20 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 11:05 -03:00:
+Estimativa operacional em 2026-05-27 12:16 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
 | Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
-| Pronto para producao sem depender do legado | 85% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O plano de rollback/restore drill foi instrumentalizado; permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads e desligamento seguro do legado. |
-| Falta para producao | 15% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download real de documentos, QA final e plano de corte/desligamento do legado. |
+| Pronto para producao sem depender do legado | 86% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local agora tem leiaute Dominio unico e validavel, mas permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes e desligamento seguro do legado. |
+| Falta para producao | 14% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
 | Area | Estado | Observacao |
 |---|---|---|
 | Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`; aliases publicos de documentos de onboarding foram implementados. Falta validar fluxos de negocio e permissoes com dados reais. |
-| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; smoke publico validou frontend/proxy/CORS/CSRF; `smoke:auth`, matriz minima DEV/bootstrap e `test:e2e:real` passaram em HTTPS com usuario real de bootstrap. Ha correcao local pendente de deploy para download TXT autenticado do Integra-AI e alinhamento da tela com a sidebar. Falta repetir por perfis operacionais e validar fluxos reais de negocio. |
+| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; smoke publico validou frontend/proxy/CORS/CSRF; `smoke:auth`, matriz minima DEV/bootstrap e `test:e2e:real` passaram em HTTPS com usuario real de bootstrap. Ha correcoes locais pendentes de deploy para download TXT autenticado do Integra-AI, alinhamento da tela com a sidebar e remocao do seletor de leiaute Dominio conflitante. Falta repetir por perfis operacionais e validar fluxos reais de negocio. |
 | Banco MySQL/Prisma | Operacional em homologacao | EasyPanel possui servico `portal-sama-database`; log mostra MySQL Community Server 9.7.0 pronto em `:3306`; readiness real confirmou database `SELECT 1` e 19 migrations Prisma aplicadas. Falta rodar relatorio de backfill e conferir dados por modulo. |
 | Primeiro admin/usuarios API v2 | Parcial operacional | Usuario(s) inicial(is) ja foram criados pelo operador e a aplicacao esta conectada ao banco real; falta registrar matriz de usuarios/perfis reais e validar permissoes por papel. |
 | EasyPanel | Deployado | Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` ativos. Readiness real passou com warning apenas de backup/rollback; falta restore drill e hardening operacional final. |
@@ -72,7 +72,34 @@ Estimativa operacional em 2026-05-27 11:05 -03:00:
 | Backups/rollback | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backup:create`, `npm run ops:backup:verify` e agora `npm run ops:restore:drill`, com dry-run, bloqueio de alvo igual ao banco/storage da aplicacao e confirmacao explicita para aplicar restore. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill real. |
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
-| Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2 e agora importacao OFX opt-in atras de feature flag, mas ainda exige validacao funcional real/backfills e demais validacoes reais antes de desligar PHP. |
+| Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-27 12:16 -03:00
+
+O Integra-AI foi padronizado localmente para somente um leiaute Dominio oficial no fluxo principal: `dominio_separador_0000_0451` (`Dominio Sistemas com Separador - 0000/0451`).
+
+Mudancas aplicadas:
+
+- frontend removeu o seletor entre `Dominio 01/02/03/99` e `Dominio 0000/0451`;
+- backend gera somente registros `0000` e `0451`;
+- API rejeita `export_strategy` divergente;
+- TXT e validado antes da exportacao;
+- exportacao/download registram leiaute, status e hash em auditoria;
+- download privado recebeu headers anti-cache adicionais.
+
+Validacao local:
+
+- testes focados e suite completa da API passaram;
+- lint/build da API e do Web passaram;
+- Prisma validate passou;
+- Playwright focado do Integra-AI e Playwright local completo passaram.
+
+Pendencia para producao:
+
+- homologar TXT real no Dominio Contabilidade Fiscal com importador de separador `0000/0451`;
+- salvar evidencia sanitizada;
+- congelar golden file aprovado;
+- publicar Web/API atualizados e repetir validacao com usuario contabil real.
 
 ## Atualizacao operacional de 2026-05-27 11:05 -03:00
 

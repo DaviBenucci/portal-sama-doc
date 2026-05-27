@@ -1,6 +1,18 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 12:16 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Padronizado o Integra-AI para um unico leiaute Dominio oficial no fluxo principal: `dominio_separador_0000_0451` (`Dominio Sistemas com Separador - 0000/0451`).
+- **Backend/API v2:** `integra-ai.engine.ts` centraliza a constante, normaliza configuracoes antigas, gera somente registros `0000`/`0451` e valida estrutura antes da exportacao. `UpdateIntegraAiSettingsDto` e `AccountingService` rejeitam `export_strategy` divergente.
+- **Seguranca/auditoria:** exportacao/download continuam protegidos por permissoes especificas, passam a verificar escopo de empresa/departamento quando cadastrado, registram leiaute/status/hash em auditoria e retornam download privado com headers `no-store`.
+- **Frontend React:** `/contabil/integra-ai` removeu o seletor de leiaute conflitante e exibe apenas o leiaute oficial na etapa de plano.
+- **Testes:** adicionados testes unitarios para geracao `0000/0451`, rejeicao de legado/incompleto, campos obrigatorios e escopo; Playwright valida ausencia do seletor antigo e download autenticado.
+- **Validacao:** Passaram testes focados da API, suite completa da API (`176` testes), lint da API/Web, build da API/Web, Prisma validate, Playwright focado do Integra-AI e Playwright local completo do Web.
+- **Pendente:** Homologar manualmente um TXT real no Dominio Contabilidade Fiscal usando o importador de separador `0000/0451` e congelar golden file aprovado.
+
+
 ## Atualizacao complementar 2026-05-27 11:05 -03:00
 
 - **Responsavel/IA:** Codex

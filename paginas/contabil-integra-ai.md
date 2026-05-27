@@ -47,6 +47,16 @@
 - **Validacao local:** `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run lint` e `git diff --check` passaram no Web.
 - **Pendente real:** validar apos deploy com usuario contabil, permissao `accounting.integra_ai.download`, job/TXT reais e auditoria de download.
 
+### Atualizacao de migracao 2026-05-27 12:16 -03:00
+
+- **Leiaute oficial:** o fluxo principal do Portal Sama passou a usar somente `dominio_separador_0000_0451` (`Dominio Sistemas com Separador - 0000/0451`).
+- **Frontend novo:** a etapa de plano nao mostra mais seletor entre `Dominio 01/02/03/99` e `Dominio 0000/0451`; exibe apenas o leiaute oficial e envia a constante canonica no salvamento.
+- **Backend novo:** `buildExportPreview` e `buildExport` geram exclusivamente registros `0000` e `0451`; `UpdateIntegraAiSettingsDto` e `AccountingService` rejeitam `export_strategy` divergente.
+- **Validacao TXT:** a API valida primeira linha `0000|`, exatamente um `0000`, linhas `0451` com 6 campos, campos numericos obrigatorios, valor maior que zero, historico sem separador/quebra de linha e ausencia de registros `01/02/03/99`.
+- **Seguranca:** exportacao/download exigem permissoes especificas, verificam escopo de empresa quando ha departamentos no cadastro, armazenam TXT em storage privado, retornam `no-store` no download e auditam leiaute/status/hash.
+- **Validacao local:** passaram testes unitarios focados da API, suite completa da API, lint/build da API/Web, Prisma validate, Playwright focado de Integra-AI e Playwright local completo.
+- **Pendente real:** importar TXT real no Dominio Contabilidade Fiscal com o importador de separador `0000/0451`, salvar evidencia e congelar golden file aprovado.
+
 ---
 
 ## 2. Objetivo da página

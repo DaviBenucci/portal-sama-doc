@@ -1,5 +1,65 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 12:16
+
+### Contexto
+
+- Padronizacao do Integra-AI para somente um leiaute Dominio oficial no fluxo principal.
+- Remocao do seletor conflitante no frontend.
+- Validacao backend do TXT `0000/0451`, rejeicao de layout legado e reforcos de seguranca/auditoria.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Frontend: `portal-sama-web`.
+- API real/EasyPanel: nao acessados nesta rodada.
+- API do Integra-AI no teste Playwright: mockada.
+
+### Comandos executados
+
+```bash
+npm.cmd test -- --runInBand modules/accounting/integra-ai.engine.spec.ts modules/accounting/accounting.service.spec.ts
+npm.cmd test -- --runInBand
+npm.cmd run lint -- --max-warnings=0
+npm.cmd run lint -- --max-warnings=0
+npm.cmd run test:e2e -- -g "Integra-AI"
+npm.cmd run test:e2e
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- API: 2 suites focadas passaram, 12 testes no total.
+- API completa: 32 suites passaram, 176 testes no total.
+- API lint passou sem warnings.
+- Web lint passou sem warnings.
+- Playwright focado do Integra-AI passou com 2 testes.
+- Playwright local completo passou com 11 testes e 1 teste real-auth skipped por ser opt-in.
+
+### Cobertura adicionada
+
+- Geracao valida do TXT oficial `0000/0451`.
+- Normalizacao de configuracao legada para leiaute oficial.
+- Rejeicao de registros legados `01/02/03/99` e linha `0451` incompleta.
+- Bloqueio por contas/historico obrigatorios ausentes.
+- Rejeicao de update com `export_strategy` legado.
+- Bloqueio de escopo de empresa/departamento.
+- Frontend sem combobox de leiaute e sem texto `Dominio 01/02/03/99`.
+- Download TXT autenticado preservado.
+
+### Falhas encontradas
+
+- A primeira execucao dos testes focados falhou porque um teste passava a chave legada para `sanitizeStep3` sem cast tecnico e porque a validacao de layout foi inserida por engano em `updateIntegraAiBank`. Ambos foram corrigidos antes da execucao verde.
+
+### Pendencias
+
+- Falta homologar manualmente em Dominio Contabilidade Fiscal com TXT real, importador de separador `0000/0451`, usuario contabil real, MySQL/storage reais e evidencia sanitizada.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, banco real, storage real nem sistema Dominio real nesta rodada. A validacao estrutural e automatizada/local; a homologacao no Dominio continua obrigatoria.
+
 ## Execucao 2026-05-27 11:05
 
 ### Contexto

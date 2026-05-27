@@ -1,5 +1,17 @@
 # Decisões de Arquitetura - Portal Sama
 
+## ADR-0032 - Leiaute Dominio oficial unico no Integra-AI
+
+- **Data:** 2026-05-27
+- **Status:** Aceita
+- **Contexto:** A documentacao `leiaute_dominio_integra_ai.md` identificou que o Integra-AI antigo mantinha dois leiautes Dominio (`01/02/03/99` e `0000/0451`), criando ambiguidade no frontend e risco de erro de importacao no Dominio Contabilidade Fiscal.
+- **Decisao:** O fluxo principal do Portal Sama deve usar somente `dominio_separador_0000_0451` (`Dominio Sistemas com Separador - 0000/0451`). O frontend nao deve oferecer seletor de leiaute; o backend deve gerar exclusivamente registros `0000` e `0451`, validar o TXT antes da exportacao e rejeitar `export_strategy` divergente.
+- **Alternativas consideradas:** Manter os dois leiautes ativos; manter `01/02/03/99` como default antigo; permitir selecao por usuario; aguardar homologacao manual antes de remover a ambiguidade da UI.
+- **Consequencias positivas:** Reduz erro operacional, alinha o Portal Sama a documentacao oficial de separador, simplifica preview/testes e melhora auditoria da exportacao.
+- **Consequencias negativas:** Se algum cliente ainda depender de importador customizado `01/02/03/99`, esse fluxo precisara ser tratado como legado tecnico fora do caminho principal e somente com homologacao formal.
+- **Arquivos impactados:** `portal-sama-api/src/modules/accounting/integra-ai.engine.ts`, `portal-sama-api/src/modules/accounting/accounting.service.ts`, `portal-sama-api/src/modules/accounting/dto/integra-ai-operation.dto.ts`, `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`, `portal-sama-web/src/types/integra-ai.ts`, `leiaute_dominio_integra_ai.md`.
+- **Referencias:** `leiaute_dominio_integra_ai.md`, `paginas/contabil-integra-ai.md`, `SEGURANCA.md`.
+
 ## ADR-0031 - Restore drill protegido em alvo isolado
 
 - **Data:** 2026-05-26
