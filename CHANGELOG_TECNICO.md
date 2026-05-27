@@ -1,5 +1,50 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 16:31
+
+### Arquivos alterados
+
+- `portal-sama-api/prisma/schema.prisma`
+- `portal-sama-api/prisma/migrations/20260527162000_add_client_department_assignments/migration.sql`
+- `portal-sama-api/src/app.module.ts`
+- `portal-sama-api/src/modules/client-assignments/*`
+- `portal-sama-api/src/modules/rbac/default-rbac.ts`
+- `portal-sama-api/src/modules/rbac/default-rbac.spec.ts`
+- Documentacao de status, pendencias, testes, deploy, UX e producao.
+
+### O que mudou
+
+- Criado modelo/tabela `client_department_assignments` para responsabilidades de clientes por departamento.
+- Criado `ClientAssignmentsModule` com endpoints para listar, criar, atualizar e encerrar responsabilidades.
+- A API valida departamento controlado, responsavel/gestor ativos, usuario interno e bloqueia dois `PRIMARY` ativos no mesmo cliente/departamento.
+- RBAC ganhou `client_assignments.read/create/update/transfer/end/audit`.
+- Criacao, atualizacao e encerramento passam a registrar auditoria em `audit_logs`.
+
+### Motivo da alteracao
+
+Dar continuidade a pendencia documentada de responsabilidade cliente x usuario, criando a primeira fonte relacional e auditavel para substituir gradualmente a dependencia operacional de `clients.metadata`.
+
+### Impacto esperado
+
+- Permite atribuir o primeiro responsavel de um cliente por departamento via API v2.
+- Abre caminho para carteira real no detalhe de colaborador/gestor e para migracao segura das transferencias.
+- Ainda nao altera as telas React nem remove fallback legado em `clients.metadata`.
+
+### Testes executados
+
+- `npm.cmd run prisma:format` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:generate` em `portal-sama-api`: passou.
+- `npm.cmd test -- client-assignments.service.spec.ts rbac/default-rbac.spec.ts departments/department-catalog.service.spec.ts --runInBand` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+
+### Riscos ou pendencias
+
+- Falta aplicar migrations/seeds no MySQL real do EasyPanel.
+- Falta validar endpoints com usuarios reais e matriz de permissoes.
+- Falta criar UI de responsabilidades e migrar leituras de carteira/departamentos/transferencias para priorizar a nova tabela.
+
 ## 2026-05-27 16:11
 
 ### Arquivos alterados

@@ -1,5 +1,19 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 16:31 -03:00
+
+- Implementada a primeira fundacao backend de responsabilidades normalizadas de clientes.
+- Criada migration `20260527162000_add_client_department_assignments` e modelo Prisma `ClientDepartmentAssignment` com cliente, departamento controlado, responsavel operacional, gestor opcional, tipo, status, periodo e auditoria.
+- Criado `ClientAssignmentsModule` com endpoints para listar, criar, atualizar e encerrar responsabilidades:
+  - `GET /api-v2/clients/:clientId/assignments`;
+  - `POST /api-v2/clients/:clientId/assignments`;
+  - `PATCH /api-v2/client-assignments/:id`;
+  - `POST /api-v2/client-assignments/:id/end`.
+- RBAC ganhou `client_assignments.read/create/update/transfer/end/audit`.
+- A API valida departamento pelo catalogo controlado, responsavel/gestor ativos, usuario interno e duplicidade de responsavel `PRIMARY` ativo por cliente/departamento.
+- Passaram `prisma:format`, `prisma:generate`, testes focados de client assignments/RBAC/catalogo, `prisma:validate`, lint e build da API.
+- Permanece pendente aplicar migrations/seeds no MySQL real, validar com usuarios reais, criar UI de responsabilidades e migrar leituras operacionais de `clients.metadata` para `client_department_assignments`.
+
 ## Atualizacao 2026-05-27 16:11 -03:00
 
 - Implementada a segunda fatia de governanca de departamentos controlados.

@@ -53,6 +53,8 @@ Atualizacao 2026-05-26 16:50 -03:00: o repo separado `portal-sama-api` agora exp
 
 Atualizacao 2026-05-27 10:03 -03:00: Integra-AI passou a suportar importacao OFX de forma opt-in. Manter `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false` em producao ate validar OFX real em homologacao; quando habilitado, a API expoe capability `ofx_import=true` e a tela React aceita `.ofx`. A imagem atual da API precisa manter `python3`, `py3-pip`, copia de `services/integra_ai_parser` e instalacao de `requirements.txt`.
 
+Atualizacao 2026-05-27 16:31 -03:00: a API recebeu a migration `20260527162000_add_client_department_assignments` e o modulo `ClientAssignmentsModule`. Antes de validar responsabilidades de clientes no EasyPanel, executar `npm run prisma:migrate:deploy` e `npm run prisma:seed` no container da API, garantindo que `departments` e `client_department_assignments` existam e que as permissoes `client_assignments.*` estejam persistidas no RBAC real.
+
 ---
 
 ## 2. Serviços recomendados

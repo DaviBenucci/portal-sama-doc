@@ -716,3 +716,41 @@ Regra final recomendada:
 Cliente nao deve pertencer genericamente a um usuario.
 Cliente deve ter responsabilidades por departamento, com responsavel operacional, gestor, status, periodo e auditoria.
 ```
+
+---
+
+## 15. Implementacao parcial em 2026-05-27 16:31
+
+Primeira fundacao backend implementada em `portal-sama-api`:
+
+```txt
+ClientAssignmentsModule
+client_department_assignments
+GET /api-v2/clients/:clientId/assignments
+POST /api-v2/clients/:clientId/assignments
+PATCH /api-v2/client-assignments/:id
+POST /api-v2/client-assignments/:id/end
+```
+
+O que ja foi coberto:
+
+```txt
+- departamento vem do catalogo controlado;
+- responsavel e gestor precisam ser usuarios internos ativos;
+- responsavel operacional precisa pertencer ao departamento selecionado;
+- dois PRIMARY ativos para o mesmo cliente/departamento sao bloqueados em regra de aplicacao;
+- criacao, atualizacao e encerramento registram auditoria;
+- RBAC inclui client_assignments.read/create/update/transfer/end/audit.
+```
+
+O que segue pendente:
+
+```txt
+- aplicar migration/seed no MySQL real;
+- criar UI no cadastro/painel do cliente;
+- carregar carteira real no detalhe do colaborador;
+- migrar gestor, departamentos e transferencias para priorizar a tabela nova;
+- criar endpoint especifico de transferencia normalizada;
+- executar backfill de clients.metadata para client_department_assignments;
+- manter fallback temporario para metadata ate a migracao ser conferida.
+```

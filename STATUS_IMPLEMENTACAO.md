@@ -1,6 +1,17 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 16:31 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Primeira fundacao backend para responsabilidade normalizada de clientes implementada, reduzindo a dependencia exclusiva de `clients.metadata` documentada em `ux-ui-docs/11-responsabilidade-clientes-usuarios.md`.
+- **Backend/API v2:** criado `ClientAssignmentsModule`, modelo Prisma `ClientDepartmentAssignment`, migration `20260527162000_add_client_department_assignments` e endpoints `GET/POST /api-v2/clients/:clientId/assignments`, `PATCH /api-v2/client-assignments/:id` e `POST /api-v2/client-assignments/:id/end`.
+- **Regras de negocio:** criacao/edicao validam departamento no catalogo controlado, responsavel/gestor ativos, usuario interno, escopo por departamento e bloqueio de dois vinculos `PRIMARY` ativos para o mesmo cliente/departamento.
+- **RBAC/auditoria:** adicionadas permissoes `client_assignments.read/create/update/transfer/end/audit`; criacao, atualizacao e encerramento registram auditoria centralizada.
+- **Testes/validacao:** passaram `prisma:format`, `prisma:generate`, testes focados de client assignments/RBAC/catalogo, `prisma:validate`, lint e build da API.
+- **Pendente:** aplicar migrations/seeds no MySQL real, validar endpoints com usuarios reais, criar UI de responsabilidades no cliente/colaborador/gestor e migrar gradualmente leituras de `clients.metadata` para a tabela nova.
+
+
 ## Atualizacao complementar 2026-05-27 16:11 -03:00
 
 - **Responsavel/IA:** Codex

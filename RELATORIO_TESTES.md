@@ -1,5 +1,50 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 16:31
+
+### Contexto
+
+- Implementacao da fundacao backend para responsabilidades normalizadas de clientes.
+- Novo modelo/tabela `client_department_assignments`, endpoints protegidos e RBAC `client_assignments.*`.
+
+### Comandos executados ate esta etapa
+
+```bash
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:format
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:generate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd test -- client-assignments.service.spec.ts rbac/default-rbac.spec.ts departments/department-catalog.service.spec.ts --runInBand
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:validate
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run lint
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- API focada: 3 suites, 10 testes.
+- Prisma Client gerado e schema validado.
+- API lint passou.
+- API build passou.
+
+### Cobertura ajustada
+
+- Criacao de responsabilidade `PRIMARY` com departamento controlado e auditoria.
+- Bloqueio de duplicidade de responsavel principal ativo no mesmo cliente/departamento.
+- Rejeicao de responsavel ativo fora do departamento selecionado.
+- Listagem com escopo por departamento para usuario nao admin.
+- Encerramento de responsabilidade com status `INACTIVE`, metadata de motivo e auditoria.
+- RBAC contendo permissoes `client_assignments.*`.
+
+### Pendencias
+
+- Aplicar migrations/seeds no MySQL real do EasyPanel.
+- Validar endpoints de responsabilidades com usuarios reais e matriz de permissoes.
+- Criar UI/migracao gradual para priorizar `client_department_assignments` antes do fallback em `clients.metadata`.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, MySQL real ou usuario real nesta rodada. A validacao foi local com `DATABASE_URL` dummy e API local.
+
 ## Execucao 2026-05-27 16:11
 
 ### Contexto

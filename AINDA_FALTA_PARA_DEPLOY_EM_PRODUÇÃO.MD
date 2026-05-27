@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 16:11 -03:00
+Ultima atualizacao: 2026-05-27 16:31 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -47,13 +47,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 16:11 -03:00:
+Estimativa operacional em 2026-05-27 16:31 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
 | Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
-| Pronto para producao sem depender do legado | 86% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local agora tem leiaute Dominio unico e validavel, e as trilhas de Acessorias e UX/UI foram consolidadas como pendencias documentadas. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes e desligamento seguro do legado. |
-| Falta para producao | 14% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
+| Pronto para producao sem depender do legado | 87% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local tem leiaute Dominio unico e validavel, e a primeira fundacao backend para responsabilidades normalizadas de clientes foi implementada localmente. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes, UI/fluxos reais de carteiras e desligamento seguro do legado. |
+| Falta para producao | 13% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, completar UI/migracao de responsabilidades de clientes, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
@@ -76,7 +76,31 @@ Estimativa operacional em 2026-05-27 16:11 -03:00:
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Fase futura documentada | `integracao_acessorias_entregas_vencimentos.md` define a integracao com Acessorias como pos-migracao base. Nao deve bloquear o corte base se ficar formalmente fora do escopo, mas precisa entrar no backlog com dependencias, API do Acessorias, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; falta aplicar migration/seed no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar clientes/responsabilidades, solicitacoes globais, permissoes guiadas e responsabilidade normalizada. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` tambem foi criada localmente. Falta aplicar migrations/seeds no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, transferencias normalizadas, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-05-27 16:31 -03:00
+
+Foi implementada a primeira fundacao backend para responsabilidade normalizada de clientes:
+
+- criado modelo Prisma `ClientDepartmentAssignment` e migration `20260527162000_add_client_department_assignments`;
+- criada tabela alvo `client_department_assignments`, vinculando cliente, departamento controlado, responsavel operacional, gestor opcional, tipo, status, periodo, criador/atualizador e metadata;
+- criado `ClientAssignmentsModule` com endpoints protegidos:
+  - `GET /api-v2/clients/:clientId/assignments`;
+  - `POST /api-v2/clients/:clientId/assignments`;
+  - `PATCH /api-v2/client-assignments/:id`;
+  - `POST /api-v2/client-assignments/:id/end`;
+- RBAC ganhou `client_assignments.read/create/update/transfer/end/audit`;
+- o backend valida departamento pelo catalogo controlado, responsavel/gestor ativos, usuario interno e bloqueio de dois responsaveis `PRIMARY` ativos para o mesmo cliente/departamento;
+- toda criacao, atualizacao e encerramento registra auditoria centralizada.
+
+Validacao local:
+
+- `npm.cmd run prisma:format` passou;
+- `npm.cmd run prisma:generate` passou;
+- testes focados `client-assignments.service`, `default-rbac` e `department-catalog.service` passaram;
+- `npm.cmd run prisma:validate`, `npm.cmd run lint` e `npm.cmd run build` na API passaram.
+
+Pendencia real remanescente: aplicar as migrations `20260527153000_add_controlled_departments` e `20260527162000_add_client_department_assignments` no MySQL real, rodar `prisma:seed`, validar os endpoints com usuarios reais e implementar a UI/migracao gradual que priorize a nova tabela antes do fallback em `clients.metadata`.
 
 ## Atualizacao operacional de 2026-05-27 16:11 -03:00
 
