@@ -1,5 +1,95 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 10:03
+
+### Arquivos alterados
+
+- `portal-sama-api/.env.example`
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/src/modules/accounting/accounting.controller.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.spec.ts`
+- `portal-sama-api/src/modules/accounting/accounting.types.ts`
+- `portal-sama-api/src/modules/accounting/integra-ai-parser.service.ts`
+- `portal-sama-api/src/modules/rbac/default-rbac.ts`
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `portal-sama-web/src/services/integra-ai.service.ts`
+- `portal-sama-web/src/types/integra-ai.ts`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- Documentacao de status, pendencias, testes, deploy, seguranca e matrizes.
+
+### O que mudou
+
+- A importacao OFX do Integra-AI foi liberada como recurso opt-in por `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED`.
+- A API passou a validar e armazenar PDF/OFX, chamar o parser com `--ext pdf|ofx`, persistir `source_type` dinamico e expor capabilities `pdf_import`/`ofx_import`.
+- O frontend passou a ajustar textos e `accept` do upload conforme capability, mantendo PDF como fluxo padrao.
+- A documentacao externa analisada foi incorporada sem migration de banco.
+
+### Motivo da alteracao
+
+O parser Python ja tinha suporte a OFX, mas API/Web publicavam apenas PDF. A mudanca reduz uma lacuna documentada sem abrir o recurso diretamente em producao.
+
+### Impacto esperado
+
+- Ambientes atuais continuam aceitando PDF.
+- Homologacao pode habilitar OFX por flag e testar bancos reais sem criar parser por banco.
+- Producao permanece protegida enquanto a flag ficar `false`.
+
+### Testes executados
+
+- `npm.cmd test -- accounting.service.spec.ts --runInBand` em `portal-sama-api`: passou, 7 testes.
+- `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` em `portal-sama-api`: passaram.
+- `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"` e `npm.cmd run test:e2e` em `portal-sama-web`: passaram.
+
+### Riscos ou pendencias
+
+- Falta validar com OFX real, parser Python no container, usuario contabil, MySQL/storage reais e ClamAV strict.
+- Manter `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false` em producao ate haver evidencia real.
+
+## 2026-05-27 08:31
+
+### Arquivos alterados
+
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- `portal-sama-web/playwright.config.ts`
+- `STATUS_IMPLEMENTACAO.md`
+- `PENDENCIAS_TECNICAS.md`
+- `RELATORIO_TESTES.md`
+- `CHANGELOG_TECNICO.md`
+- `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `MATRIZ_MIGRACAO_HTML_PARA_REACT.md`
+- `paginas/contabil-integra-ai.md`
+- `INVENTARIO_SEGURANCA.md`
+
+### O que mudou
+
+- Adicionados `aria-label` nos campos customizados de conta do Integra-AI para contas fixas do plano e conta editavel das regras.
+- Criado smoke Playwright local para `/contabil/integra-ai`, com API v2 mockada, cobrindo pagina 2 da tabela de regras, busca por nome de conta, selecao de sugestao e autosave por blur/codigo numerico.
+- Ajustado `playwright.config.ts` para nao executar testes do mesmo arquivo em paralelo, pois a suite local com Vite/GSAP/dynamic import apresentou falhas de concorrencia no Windows; a execucao padrao voltou a passar.
+
+### Motivo da alteracao
+
+Dar continuidade a pendencia parcial registrada em 2026-05-26 para Integra-AI, criando evidencia local repetivel antes da validacao real com job contabil e usuario de homologacao.
+
+### Impacto esperado
+
+- Reduz risco de regressao no autosave das regras contabeis em tabelas paginadas.
+- Melhora acessibilidade/testabilidade dos campos customizados de contas.
+- Deixa `npm.cmd run test:e2e` mais estavel no ambiente local.
+
+### Testes executados
+
+- `npm.cmd run test:e2e -- -g "Integra-AI"` em `portal-sama-web`: passou, 1 teste.
+- `npm.cmd run test:e2e` em `portal-sama-web`: passou, 10 testes e 1 skipped opt-in real.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- A validacao local usa API mockada; ainda falta homologar com job real do Integra-AI, usuario contabil, MySQL real e deploy publicado.
+- O Playwright real de autenticacao continua opt-in/skipped quando variaveis reais nao estao definidas.
+
 ## 2026-05-26 16:50
 
 ### Arquivos alterados

@@ -17,7 +17,16 @@
 - **Frontend novo:** `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`, rota `/contabil/integra-ai`, com workspace, filtros, jobs recentes, detalhe de job, resumo e preview seguro.
 - **Backend novo:** `portal-sama-api/src/modules/accounting/`, com `GET /api-v2/accounting/integra-ai/workspaces` e `GET /api-v2/accounting/integra-ai/jobs/:id`.
 - **Seguranca aplicada:** JWT, RBAC `accounting.integra_ai.read`, escopo contabil, SQL parametrizado, auditoria no detalhe de job, sem retorno de `source_path`, `txt_path`, payload bruto do parser ou conteudo TXT.
-- **Pendente no legado:** upload/parser de extrato, criacao de job, salvamento de etapas, regras contabeis, geracao e download TXT Dominio.
+- **Pendente no legado em 2026-05-21:** upload/parser de extrato, criacao de job, salvamento de etapas, regras contabeis, geracao e download TXT Dominio. Ver atualizacao de 2026-05-27: parte dessas mutacoes ja existe na API v2, mas ainda falta validacao real antes do corte.
+
+### Atualizacao de migracao 2026-05-27 10:03 -03:00
+
+- **Status:** Implementado parcialmente em React/API v2 para importacao PDF e OFX opt-in.
+- **Backend novo:** `POST /api-v2/accounting/integra-ai/import` valida PDF/OFX, armazena em storage privado, chama parser Python por extensao (`pdf`/`ofx`) e grava `source_type` dinamico.
+- **Feature flag:** OFX fica desligado por padrao em `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false`; a API so expoe `ofx_import=true` quando a permissao de importacao existe e a flag esta ativa.
+- **Frontend novo:** `IntegraAiPage.tsx` mostra `PDF/OFX` e aceita `.ofx` somente quando a capability `ofx_import` vem da API; ambientes antigos continuam com PDF.
+- **Sem migration:** a implementacao reutiliza as tabelas operacionais existentes e o campo `source_type`.
+- **Pendente real:** validar OFX/PDF com arquivos reais, usuario contabil, parser Python no container, MySQL/storage reais, ClamAV strict e homologacao HTTPS.
 
 ---
 
@@ -451,6 +460,8 @@ Estratégia de refatoração:
 
 - Usuário autorizado acessa a página e executa o fluxo principal.
 - Usuário sem permissão não visualiza nem executa ações críticas.
+- Atualizacao 2026-05-27 08:31: `portal-sama-web/tests/e2e/smoke.spec.ts` cobre localmente `/contabil/integra-ai` com API mockada, navegando para pagina 2 das regras, pesquisando conta por nome e validando autosave de conta editavel por selecao/blur. Ainda falta repetir com job real e usuario contabil em homologacao.
+- Atualizacao 2026-05-27 10:03: o mesmo smoke valida que a tela reconhece `ofx_import=true` e publica `.ofx` no `accept`; API unit cobre OFX habilitado/desabilitado na validacao de upload.
 
 ### Testes de segurança
 

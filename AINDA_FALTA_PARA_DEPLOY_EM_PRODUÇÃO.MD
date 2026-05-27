@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-26 16:50 -03:00
+Ultima atualizacao: 2026-05-27 10:03 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,7 +45,7 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-26 16:50 -03:00:
+Estimativa operacional em 2026-05-27 10:03 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
@@ -72,7 +72,30 @@ Estimativa operacional em 2026-05-26 16:50 -03:00:
 | Backups/rollback | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backup:create`, `npm run ops:backup:verify` e agora `npm run ops:restore:drill`, com dry-run, bloqueio de alvo igual ao banco/storage da aplicacao e confirmacao explicita para aplicar restore. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill real. |
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
-| Dependencia do legado | Parcial | Ainda ha pontos como Integra-AI mutacoes/backfills e validacoes reais antes de desligar PHP. |
+| Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2 e agora importacao OFX opt-in atras de feature flag, mas ainda exige validacao funcional real/backfills e demais validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-27 10:03 -03:00
+
+Foi analisada a documentacao externa `Downloads/docs/integra-ai/analise_semantica_integra_ai_portal_sama.md`. A recomendacao condiz com o estado do projeto: o parser Python ja suporta OFX, mas API/Web publicavam apenas PDF. A implementacao foi feita como rollout controlado:
+
+- `portal-sama-api` ganhou `parseFile({ ext })` no parser, validacao/storage genericos para PDF/OFX e capabilities `pdf_import`/`ofx_import`.
+- OFX fica desabilitado por padrao por `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false`; quando habilitado, a API valida extensao, MIME, assinatura OFX, tamanho, scanner/quarentena e audita `source_type=ofx`.
+- `portal-sama-web` ajustou `/contabil/integra-ai` para aceitar dinamicamente PDF ou OFX conforme capability, mantendo compatibilidade com ambientes antigos que so retornam `import_mutation`.
+- Nao houve migration de banco; o campo legado `source_type` passa a registrar `pdf` ou `ofx`.
+- Validacao local: `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` passaram na API; `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"` e `npm.cmd run test:e2e` passaram no Web.
+
+Pendencia real remanescente: habilitar a flag somente em homologacao controlada, importar OFX real com usuario contabil, parser Python do container, MySQL/storage reais, ClamAV strict e evidencia sanitizada. Percentuais operacionais permanecem inalterados, porque a mudanca reduz risco tecnico mas nao substitui homologacao real.
+
+## Atualizacao operacional de 2026-05-27 08:31 -03:00
+
+Nesta rodada foi reduzida uma pendencia local/parcial do fluxo Integra-AI no frontend:
+
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx` recebeu labels acessiveis nos campos customizados de contas.
+- `portal-sama-web/tests/e2e/smoke.spec.ts` ganhou smoke Playwright para `/contabil/integra-ai`, com API mockada, cobrindo job aberto, pagina 2 da tabela de regras, busca por nome de conta, selecao de sugestao e autosave por blur/codigo numerico.
+- `portal-sama-web/playwright.config.ts` passou a executar os smokes locais do mesmo arquivo em ordem para evitar concorrencia Vite/GSAP observada no Windows; `npm.cmd run test:e2e` voltou a passar no comando padrao.
+- Validacao local: `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run test:e2e`, `npm.cmd run lint` e `npm.cmd run build` passaram no Web.
+
+Pendencia real remanescente: validar o fluxo com job real do Integra-AI, usuario contabil, dados reais e MySQL real em homologacao apos deploy. Percentuais operacionais permanecem inalterados, porque esta rodada adiciona cobertura local e nao substitui a homologacao funcional real.
 
 ## Atualizacao operacional de 2026-05-26 16:50 -03:00
 

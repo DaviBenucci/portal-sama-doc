@@ -1,5 +1,22 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 10:03 -03:00
+
+- A documentacao externa `analise_semantica_integra_ai_portal_sama.md` foi considerada coerente com o projeto: o parser Python ja aceita OFX, enquanto API/Web ainda restringiam a publicacao a PDF.
+- Implementado rollout opt-in de OFX no Integra-AI: API valida PDF/OFX, grava em storage privado, chama `parseFile({ ext })`, preserva `source_type` como `pdf` ou `ofx` e expoe capabilities `pdf_import`/`ofx_import`.
+- `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false` e o default seguro; habilitar `true` somente em homologacao controlada depois de confirmar parser Python, storage, ClamAV e exemplos reais.
+- `/contabil/integra-ai` passou a mostrar e aceitar `.ofx` apenas quando a API retornar `ofx_import=true`; ambientes antigos continuam funcionando via `import_mutation`.
+- Passaram unit/lint/build/Prisma validate da API e lint/build/Playwright local do Web.
+- Permanece pendente validar OFX e PDF em homologacao real com usuario contabil, arquivos reais, MySQL/storage reais, parser no container e evidencia sanitizada.
+
+## Atualizacao 2026-05-27 08:31 -03:00
+
+- Reduzida a pendencia local do Integra-AI: `/contabil/integra-ai` agora possui smoke Playwright mockado cobrindo busca textual de contas por nome e autosave em regras contabeis paginadas.
+- `IntegraAiPage.tsx` recebeu labels acessiveis nos campos customizados de contas, facilitando navegacao assistiva e testes por papel/rotulo.
+- `playwright.config.ts` passou a rodar os smokes locais do mesmo arquivo em ordem, evitando falhas por concorrencia observadas com Vite/GSAP/dynamic import no Windows; `npm.cmd run test:e2e` voltou a passar no modo padrao.
+- Passaram `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run test:e2e`, `npm.cmd run lint` e `npm.cmd run build` no Web.
+- Permanece pendente validar o mesmo fluxo em homologacao real, com job real do Integra-AI, usuario contabil, MySQL real e evidencia sanitizada.
+
 ## Atualizacao 2026-05-26 16:50 -03:00
 
 - `portal-sama-api` agora possui `npm run ops:restore:drill`, com preflight/dry-run de restore e aplicacao opcional em banco/storage isolados.

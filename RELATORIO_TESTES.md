@@ -1,5 +1,110 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 10:03
+
+### Contexto
+
+- Implementacao da recomendacao semantica do Integra-AI para publicar OFX como importacao opt-in.
+- Backend passou a validar PDF/OFX, chamar parser por extensao e expor capabilities `pdf_import`/`ofx_import`.
+- Frontend passou a aceitar `.ofx` dinamicamente quando `ofx_import=true`.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Backend: `portal-sama-api`.
+- Frontend: `portal-sama-web`.
+- Banco/EasyPanel real: nao acessados nesta rodada.
+
+### Comandos executados
+
+```bash
+npm.cmd test -- accounting.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run prisma:validate
+npm.cmd run test:e2e -- -g "Integra-AI"
+npm.cmd run test:e2e
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- **API:** teste focado de `AccountingService` passou com 7 testes; lint, build e Prisma validate passaram.
+- **Web:** lint, build, Playwright focado de Integra-AI e Playwright local completo passaram.
+
+### Saida relevante
+
+```txt
+AccountingService: 7 passed.
+Integra-AI Playwright focado: 1 passed.
+npm.cmd run test:e2e: 10 passed, 1 skipped.
+```
+
+### Pendencias
+
+- Validar OFX real em homologacao com `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=true`, usuario contabil, arquivo real, parser Python do container, MySQL/storage reais e ClamAV strict.
+- Manter a flag desabilitada em producao ate haver evidencia operacional.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, banco real, storage real nem arquivo bancario real nesta rodada. A validacao foi local, com API mockada no Playwright e testes unitarios da API.
+
+## Execucao 2026-05-27 08:31
+
+### Contexto
+
+- Adicao de labels acessiveis nos campos customizados do Integra-AI.
+- Criacao de smoke Playwright local para busca de conta por nome e autosave em regras paginadas.
+- Ajuste de estabilidade do Playwright local para nao paralelizar testes do mesmo arquivo.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- Backend/API real: nao acessados nesta rodada.
+- API do Integra-AI no teste: mockada via Playwright.
+
+### Comandos executados
+
+```bash
+npm.cmd run test:e2e -- -g "Integra-AI"
+npm.cmd run test:e2e
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- **Resumo:** O smoke focado de Integra-AI passou; o E2E local padrao passou com 10 testes e 1 skipped opt-in real; lint e build do Web passaram.
+
+### Saida relevante
+
+```txt
+Integra-AI searches accounts by name and autosaves editable account on paginated rules: passou.
+npm.cmd run test:e2e: 10 passed, 1 skipped.
+```
+
+### Falhas encontradas
+
+- A primeira tentativa de `npm.cmd run test:e2e` com `fullyParallel=true` falhou em testes antigos de login/home por concorrencia no dev server/dynamic import do Vite/GSAP no Windows.
+- O problema foi reproduzido no modo padrao paralelo e nao apareceu em `--workers=1`.
+
+### Acoes corretivas realizadas
+
+- `playwright.config.ts` foi ajustado para `fullyParallel: false`.
+- Apos o ajuste, `npm.cmd run test:e2e` passou no comando padrao.
+- O lint foi repetido sozinho porque uma tentativa em paralelo com Playwright falhou por `test-results` ser limpo durante a varredura do ESLint.
+
+### Pendencias
+
+- Validar o fluxo de Integra-AI em homologacao real com job real, usuario contabil, MySQL real e evidencia sanitizada.
+- O teste real de autenticacao continua skipped quando `PORTAL_REAL_E2E=1` e credenciais reais nao estao definidos.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, MySQL real, usuario contabil real nem job real do Integra-AI nesta rodada. A cobertura adicionada e local, com API mockada.
+
 ## Execucao 2026-05-26 16:50
 
 ### Contexto

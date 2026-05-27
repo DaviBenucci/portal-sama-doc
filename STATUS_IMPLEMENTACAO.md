@@ -1,6 +1,26 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 10:03 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** A analise semantica externa do Integra-AI foi conferida contra docs/codigo e implementada parcialmente: importacao OFX foi publicada como capability opt-in, sem alterar schema de banco e mantendo PDF como padrao.
+- **Backend/API v2:** `IntegraAiParserService` passou a expor `parseFile({ ext })` para `pdf`/`ofx`; `AccountingService` agora valida e armazena extratos PDF/OFX, usa `source_type` dinamico, audita extensao/hash e expoe `pdf_import`/`ofx_import` no workspace. OFX permanece atras de `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false`.
+- **Frontend React:** `/contabil/integra-ai` passou a ajustar texto, label e `accept` do upload conforme capabilities, aceitando `.ofx` somente quando `ofx_import=true`; o service manteve compatibilidade com a rota atual `/accounting/integra-ai/import`.
+- **Configuracao/deploy:** `portal-sama-api/.env.example` e schema de env receberam `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED`; a documentacao de EasyPanel registra a flag e as variaveis do parser.
+- **Validacao:** Passaram `npm.cmd test -- accounting.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` na API; no Web passaram `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"` e `npm.cmd run test:e2e`.
+- **Pendente:** Habilitar OFX apenas em homologacao controlada e validar com arquivo real, usuario contabil, parser Python no container, MySQL/storage reais e ClamAV strict antes de considerar producao.
+
+## Atualizacao complementar 2026-05-27 08:31 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** A pendencia parcial de validacao local do Integra-AI foi reduzida com cobertura Playwright para busca textual de contas e autosave em regras paginadas.
+- **Frontend React:** `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx` agora expoe labels acessiveis nos campos customizados de contas do plano e de conta editavel das regras, preservando a UX atual e melhorando testabilidade/acessibilidade.
+- **Testes Web:** `portal-sama-web/tests/e2e/smoke.spec.ts` ganhou mock operacional de Integra-AI e smoke em `/contabil/integra-ai` que abre job, navega para pagina 2 das regras, busca conta por nome (`merc` -> Mercado Livre), seleciona sugestao e confirma autosave; tambem valida salvamento por blur com codigo numerico em outra regra da pagina 2.
+- **Estabilidade Playwright:** `portal-sama-web/playwright.config.ts` deixou de executar testes do mesmo arquivo em paralelo, porque a suite local com Vite/GSAP/mocks estava falhando por concorrencia de dev server/dynamic import no Windows. O comando padrao `npm.cmd run test:e2e` voltou a passar.
+- **Validacao:** Passaram `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run test:e2e`, `npm.cmd run lint` e `npm.cmd run build` no Web. O Playwright real continuou skipped por ser opt-in.
+- **Pendente:** Validar em homologacao real apos deploy, com job real e usuario contabil, confirmando busca por nome, autosave da conta ao selecionar sugestao/perder foco e persistencia contra MySQL real.
+
 ## Atualizacao complementar 2026-05-26 16:50 -03:00
 
 - **Responsavel/IA:** Codex

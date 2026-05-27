@@ -51,6 +51,8 @@ Atualizacao 2026-05-26 09:38 -03:00: usando as variaveis de bootstrap admin do `
 
 Atualizacao 2026-05-26 16:50 -03:00: o repo separado `portal-sama-api` agora expoe `npm run ops:restore:drill`, com preflight/dry-run de restore e aplicacao opcional em banco/storage isolados. O comando chama `ops:backup:verify`, bloqueia alvo igual a `DATABASE_URL`/`STORAGE_PRIVATE_PATH` e exige `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED` para executar restauracao real.
 
+Atualizacao 2026-05-27 10:03 -03:00: Integra-AI passou a suportar importacao OFX de forma opt-in. Manter `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false` em producao ate validar OFX real em homologacao; quando habilitado, a API expoe capability `ofx_import=true` e a tela React aceita `.ofx`. A imagem atual da API precisa manter `python3`, `py3-pip`, copia de `services/integra_ai_parser` e instalacao de `requirements.txt`.
+
 ---
 
 ## 2. Serviços recomendados
@@ -110,6 +112,11 @@ SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
 SAMA_UPLOAD_SCAN_ARGS=
 SAMA_UPLOAD_QUARANTINE_DIR=/var/private/portal-sama/uploads/_quarantine
 SAMA_CLAMAV_UPDATE_ON_START=false
+SAMA_INTEGRA_AI_PYTHON_BIN=python3
+SAMA_INTEGRA_AI_PARSER_PATH=
+SAMA_INTEGRA_AI_PARSER_TIMEOUT_SEC=180
+SAMA_INTEGRA_AI_HEADER_SUFFIX=0500000117
+SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false
 SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
 SAMA_MYSQL_DUMP_BIN=
 SAMA_MYSQL_CLIENT_BIN=
@@ -153,7 +160,7 @@ ENV NODE_ENV=production
 ENV PRISMA_MIGRATE_ON_START=false
 ENV SAMA_CLAMAV_UPDATE_ON_START=false
 ENV SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan
-RUN apk add --no-cache clamav mariadb-client \
+RUN apk add --no-cache clamav mariadb-client python3 py3-pip \
   && mkdir -p /var/lib/clamav /run/clamav /var/log/clamav \
   && chmod -R 755 /var/lib/clamav /run/clamav /var/log/clamav
 COPY package*.json ./
@@ -161,7 +168,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/services ./services
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+RUN python3 -m pip install --break-system-packages --no-cache-dir -r services/integra_ai_parser/requirements.txt
 EXPOSE 3000
 CMD ["sh", "-c", "if [ \"${SAMA_CLAMAV_UPDATE_ON_START:-false}\" = \"true\" ]; then freshclam || echo \"freshclam failed; continuing API start. Run npm run ops:clamav:update from the container before strict readiness.\"; fi; if [ -z \"${DATABASE_URL:-}\" ]; then echo \"DATABASE_URL is required. Configure it in the EasyPanel environment for portal-sama-api.\" >&2; exit 1; fi; if [ \"${PRISMA_MIGRATE_ON_START:-false}\" = \"true\" ]; then npx prisma migrate deploy; else echo \"Skipping Prisma migrations on startup. Run migrations from an EasyPanel one-off command after backup/baseline.\"; fi; exec node dist/src/main.js"]
 ```

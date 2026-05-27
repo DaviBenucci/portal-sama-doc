@@ -892,10 +892,12 @@ Atualizacao em 2026-05-18 15:35: `TiAccessPage.tsx` consome este endpoint para a
 - **Página/tela relacionada:** `Contabil/integra-ai.html`.
 - **Novo endpoint proposto:** `/api-v2/accounting/integra-ai/*`.
 - **Módulo NestJS alvo:** `AccountingModule`, `IntegraAiModule`, `JobsModule`.
-- **Status de migração:** Parcialmente implementado para leitura em `GET /api-v2/accounting/integra-ai/workspaces` e `GET /api-v2/accounting/integra-ai/jobs/:id`; mutacoes e download seguem no legado.
+- **Status de migração:** Parcialmente implementado em `/api-v2/accounting/integra-ai/*`: leitura de workspace/job, importacao PDF, importacao OFX opt-in por `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED`, dados bancarios, settings, regras, exportacao e download TXT ja existem na API v2; validacao real/homologacao ainda pendente antes de desligar o legado.
 - **Riscos de segurança:** Upload/processamento de arquivos contábeis, dados sensíveis, jobs sem escopo, download de TXT.
-- **Testes necessários:** Smoke do parser/exportador, permissoes por escopo contabil, upload invalido, auditoria de job, Playwright para leitura/sem permissao e validacao MySQL real.
+- **Testes necessários:** Smoke do parser/exportador, permissoes por escopo contabil, upload invalido PDF/OFX, auditoria de job, Playwright para leitura/sem permissao e validacao MySQL/storage reais.
 - **Observações:** Há smoke script `scripts/integra_ai_smoke_current_flow.php`. Em 2026-05-21 10:33, a primeira fatia NestJS passou a consultar workspace/jobs de modo read-only com RBAC `accounting.integra_ai.read`, SQL parametrizado, sanitizacao de `source_path`/`txt_path` e auditoria ao abrir detalhe.
+
+Atualizacao 2026-05-27 10:03: para Integra-AI, a API v2 ja possui mutacoes operacionais, importacao PDF e OFX opt-in por `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED`, capabilities `pdf_import`/`ofx_import`, exportacao e download. Ainda falta validacao real com parser/container, MySQL/storage reais e usuario contabil antes de desligar o legado.
 
 ## Endpoint atual: `/api/notifications.php`
 

@@ -107,6 +107,8 @@ Status em 2026-05-20 16:02: a exclusao de vencimentos do `CalendarModule` opera 
 
 Status em 2026-05-21 10:33: a primeira fatia read-only do Integra-AI foi criada sem nova migration Prisma. O `AccountingModule` consulta as tabelas legadas `sama_integra_ai_jobs`, `sama_integra_ai_job_rows`, `sama_integra_ai_profiles` e `sama_integra_ai_profile_settings` por SQL parametrizado via Prisma, somente para leitura e com sanitizacao de paths/payloads antes da resposta. A modelagem Prisma formal das tabelas `sama_integra_ai_*`, importacao/parser/exportacao e historico completo seguem pendentes para uma etapa com validacao MySQL/homologacao.
 
+Status em 2026-05-27 10:03: a importacao OFX opt-in do Integra-AI foi implementada sem nova migration Prisma. A API reutiliza as tabelas operacionais existentes e grava `source_type` como `pdf` ou `ofx`; `npm.cmd run prisma:validate` passou. Ainda falta validar persistencia em MySQL real e backfills antes do corte do legado.
+
 ### Documentos
 
 ```txt
