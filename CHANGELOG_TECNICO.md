@@ -1,5 +1,46 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 11:05
+
+### Arquivos alterados
+
+- `portal-sama-web/src/services/integra-ai.service.ts`
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`
+- `portal-sama-web/src/index.css`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- `portal-sama-web/eslint.config.js`
+- Documentacao de status, pendencias, testes e pagina Integra-AI.
+
+### O que mudou
+
+- O download TXT do Integra-AI deixou de usar link direto e passou a usar `api.get(..., { responseType: 'blob' })`, preservando o `Authorization` injetado pelo interceptor Axios.
+- A tela substituiu anchors de download por botoes com estado de carregamento, tratamento de erro e download por blob local.
+- A pagina `/contabil/integra-ai` recebeu alinhamento proprio para ficar ao lado da sidebar em viewport larga.
+- O smoke Playwright do Integra-AI passou a validar download autenticado e alinhamento da pagina com a sidebar.
+- ESLint passou a ignorar artefatos temporarios de Playwright.
+
+### Motivo da alteracao
+
+O usuario relatou `UNAUTHORIZED` ao baixar o TXT gerado. Como o access token da stack React fica em memoria, navegacao direta para a URL protegida nao envia o header `Authorization`, mesmo com a sessao ativa. Tambem foi relatado desalinhamento/sobreposicao visual da marca/titulo do Integra-AI com a sidebar.
+
+### Impacto esperado
+
+- O botao "Baixar" do TXT usa a mesma sessao autenticada das demais chamadas API v2.
+- O erro de token invalido por download direto deve desaparecer apos deploy do Web.
+- A pagina Integra-AI fica visualmente ancorada ao lado da sidebar.
+
+### Testes executados
+
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "Integra-AI"` em `portal-sama-web`: passou, 2 testes.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `git diff --check` em `portal-sama-web`: passou.
+
+### Riscos ou pendencias
+
+- Falta validar em homologacao real com usuario contabil, job real e TXT real apos deploy.
+- A validacao local usou API mockada; ela prova o header no request do browser, mas nao substitui auditoria real de download no backend.
+
 ## 2026-05-27 10:40
 
 ### Arquivos alterados

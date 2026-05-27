@@ -37,6 +37,16 @@
 - **Uso recomendado do saldo:** usar futuramente para conferir se o ultimo saldo acumulado do dia bate com o saldo final informado pelo banco; em caso de divergencia, gerar alerta tecnico, nao lancamento.
 - **Validacao local:** PDF real do Banco Inter retornou 31 transacoes e 15 saldos tecnicos; unit/lint/build da API passaram.
 
+### Atualizacao de migracao 2026-05-27 11:05 -03:00
+
+- **Download TXT React:** corrigido bug em que o botao/link de download podia retornar `UNAUTHORIZED` mesmo com a tela autenticada.
+- **Causa provavel:** o download era feito por link direto para `/api-v2/accounting/integra-ai/jobs/:id/download`; como o access token fica em memoria, a navegacao nao enviava o header `Authorization`.
+- **Frontend novo:** `IntegraAiPage.tsx` agora baixa o TXT por blob via `downloadIntegraAiTxt`, usando o mesmo cliente Axios autenticado das demais chamadas API v2.
+- **UX:** os downloads exibem estado de carregamento e erro controlado; o filename usa `Content-Disposition` quando disponivel.
+- **Layout:** a pagina recebeu alinhamento proprio para ficar ao lado da sidebar em viewport larga, com smoke Playwright cobrindo a folga.
+- **Validacao local:** `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run lint` e `git diff --check` passaram no Web.
+- **Pendente real:** validar apos deploy com usuario contabil, permissao `accounting.integra_ai.download`, job/TXT reais e auditoria de download.
+
 ---
 
 ## 2. Objetivo da página

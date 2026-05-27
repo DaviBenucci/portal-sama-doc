@@ -1,5 +1,55 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 11:05
+
+### Contexto
+
+- Correcao do download TXT do Integra-AI no Web.
+- O link direto para `/api-v2/accounting/integra-ai/jobs/:id/download` nao enviava `Authorization`, porque o access token fica apenas em memoria no cliente React.
+- Ajuste visual para manter a pagina Integra-AI alinhada ao lado da sidebar.
+
+### Ambiente
+
+- Sistema operacional local: Windows, PowerShell.
+- Frontend: `portal-sama-web`.
+- API real/EasyPanel: nao acessados nesta rodada.
+- API do Integra-AI no teste: mockada via Playwright.
+
+### Comandos executados
+
+```bash
+npm.cmd run build
+npm.cmd run test:e2e -- -g "Integra-AI"
+npm.cmd run lint
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- Build do Web passou.
+- Playwright focado do Integra-AI passou com 2 testes: busca/autosave em regras paginadas e download TXT autenticado por blob.
+- Lint passou apos adicionar `test-results` e `playwright-report` aos ignores do ESLint.
+- `git diff --check` passou.
+
+### Falhas encontradas
+
+- Uma tentativa de lint executada em paralelo com Playwright falhou com `ENOENT` ao varrer `test-results`, enquanto o Playwright limpava/criava essa pasta temporaria.
+
+### Acoes corretivas realizadas
+
+- `eslint.config.js` passou a ignorar `test-results` e `playwright-report`.
+- O smoke do Integra-AI agora valida que o request de download contem `Authorization: Bearer access-e2e`.
+- O smoke tambem valida que a pagina com viewport larga comeca apos a sidebar com folga controlada.
+
+### Pendencias
+
+- Validar em homologacao real apos deploy, com usuario contabil, job real, permissao `accounting.integra_ai.download`, arquivo TXT real e auditoria de download no backend.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra EasyPanel, MySQL real, storage real nem usuario contabil real nesta rodada. A cobertura adicionada e local e usa API mockada.
+
 ## Execucao 2026-05-27 10:40
 
 ### Contexto

@@ -1,5 +1,15 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 11:05 -03:00
+
+- Corrigido o download do TXT do Integra-AI no frontend React: a tela deixou de usar link direto para `/api-v2/accounting/integra-ai/jobs/:id/download` e passou a baixar via cliente Axios autenticado, preservando `Authorization: Bearer` do access token em memoria.
+- O erro observado pelo usuario (`UNAUTHORIZED`, "Sessao expirada ou token invalido.") era consistente com navegacao direta sem header de autorizacao, nao necessariamente com sessao expirada de fato.
+- A UI agora usa botoes de download com estado de carregamento, blob local e filename do `Content-Disposition` quando disponivel.
+- A pagina `/contabil/integra-ai` recebeu ajuste de alinhamento para ficar ao lado da sidebar; o smoke Playwright valida folga controlada em viewport larga.
+- `eslint.config.js` passou a ignorar `test-results` e `playwright-report`, evitando falha de lint quando Playwright limpa artefatos temporarios.
+- Passaram build, lint, Playwright focado de Integra-AI e `git diff --check` no Web.
+- Permanece pendente validar em homologacao real apos deploy, com usuario contabil, job real e TXT real, confirmando permissao `accounting.integra_ai.download` e auditoria de download no backend.
+
 ## Atualizacao 2026-05-27 10:40 -03:00
 
 - Corrigida a falha de reconhecimento de PDF real do Banco Inter no Integra-AI: parser agora reconhece layout `inter_pdf`.

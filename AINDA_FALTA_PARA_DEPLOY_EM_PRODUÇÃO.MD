@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 10:40 -03:00
+Ultima atualizacao: 2026-05-27 11:05 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,7 +45,7 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 10:40 -03:00:
+Estimativa operacional em 2026-05-27 11:05 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
@@ -58,7 +58,7 @@ Estimativa operacional em 2026-05-27 10:40 -03:00:
 | Area | Estado | Observacao |
 |---|---|---|
 | Backend `portal-sama-api` | Deployado e operacional | NestJS/API v2 esta rodando no EasyPanel; logs mostram `Nest application successfully started`; smoke publico confirmou `/api-v2/health` com `database=up` e `storage=up`; aliases publicos de documentos de onboarding foram implementados. Falta validar fluxos de negocio e permissoes com dados reais. |
-| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; smoke publico validou frontend/proxy/CORS/CSRF; `smoke:auth`, matriz minima DEV/bootstrap e `test:e2e:real` passaram em HTTPS com usuario real de bootstrap. Falta repetir por perfis operacionais e validar fluxos reais de negocio. |
+| Frontend `portal-sama-web` | Deployado e operacional | React/Vite esta publicado em `https://portal.samacontabil.com.br/`; smoke publico validou frontend/proxy/CORS/CSRF; `smoke:auth`, matriz minima DEV/bootstrap e `test:e2e:real` passaram em HTTPS com usuario real de bootstrap. Ha correcao local pendente de deploy para download TXT autenticado do Integra-AI e alinhamento da tela com a sidebar. Falta repetir por perfis operacionais e validar fluxos reais de negocio. |
 | Banco MySQL/Prisma | Operacional em homologacao | EasyPanel possui servico `portal-sama-database`; log mostra MySQL Community Server 9.7.0 pronto em `:3306`; readiness real confirmou database `SELECT 1` e 19 migrations Prisma aplicadas. Falta rodar relatorio de backfill e conferir dados por modulo. |
 | Primeiro admin/usuarios API v2 | Parcial operacional | Usuario(s) inicial(is) ja foram criados pelo operador e a aplicacao esta conectada ao banco real; falta registrar matriz de usuarios/perfis reais e validar permissoes por papel. |
 | EasyPanel | Deployado | Projeto `portal-sama` contem `portal-sama-api`, `portal-sama-database` e `portal-sama-web` ativos. Readiness real passou com warning apenas de backup/rollback; falta restore drill e hardening operacional final. |
@@ -71,8 +71,22 @@ Estimativa operacional em 2026-05-27 10:40 -03:00:
 | Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
 | Backups/rollback | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backup:create`, `npm run ops:backup:verify` e agora `npm run ops:restore:drill`, com dry-run, bloqueio de alvo igual ao banco/storage da aplicacao e confirmacao explicita para aplicar restore. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill real. |
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
-| QA visual | Parcial | Aplicacao publica esta acessivel; ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
+| QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2 e agora importacao OFX opt-in atras de feature flag, mas ainda exige validacao funcional real/backfills e demais validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-27 11:05 -03:00
+
+Foi corrigido no `portal-sama-web` o erro de download TXT do Integra-AI relatado como `UNAUTHORIZED`/`Sessao expirada ou token invalido`.
+
+- Causa tecnica provavel: a tela usava anchor/link direto para `/api-v2/accounting/integra-ai/jobs/:id/download`; como o access token da stack React fica em memoria, a navegacao direta nao enviava `Authorization: Bearer`.
+- `portal-sama-web/src/services/integra-ai.service.ts` agora baixa o TXT via `api.get(..., { responseType: 'blob' })`, reaproveitando o interceptor autenticado.
+- `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx` trocou os links por botoes de download com estado de carregamento, erro controlado e filename a partir do `Content-Disposition` quando disponivel.
+- A pagina recebeu classe `integra-ai-page` e CSS proprio para ficar alinhada ao lado da sidebar; o smoke Playwright valida que ela comeca apos a sidebar com folga controlada.
+- `portal-sama-web/tests/e2e/smoke.spec.ts` passou a cobrir o download TXT autenticado, conferindo `Authorization: Bearer access-e2e` no request mockado.
+- `eslint.config.js` passou a ignorar `test-results` e `playwright-report`, evitando falha local quando lint e Playwright manipulam artefatos temporarios.
+- Validacao local no Web: `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run lint` e `git diff --check` passaram.
+
+Pendencia real remanescente: publicar o novo build do Web e validar em homologacao real com usuario contabil, permissao `accounting.integra_ai.download`, job real, TXT real e auditoria de download. Percentuais operacionais permanecem inalterados, porque a correcao ainda nao foi validada no ambiente publicado.
 
 ## Atualizacao operacional de 2026-05-27 10:40 -03:00
 

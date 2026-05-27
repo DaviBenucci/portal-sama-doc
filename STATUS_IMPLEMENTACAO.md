@@ -1,6 +1,17 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 11:05 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigido o download do TXT Dominio no Integra-AI React, que podia retornar `UNAUTHORIZED` porque o link direto para `/api-v2/accounting/integra-ai/jobs/:id/download` nao carregava o access token mantido em memoria.
+- **Frontend React:** `portal-sama-web/src/services/integra-ai.service.ts` passou a baixar o TXT com `api.get(..., { responseType: 'blob' })`, reaproveitando o interceptor de `Authorization: Bearer`. `IntegraAiPage.tsx` trocou os anchors de download por botoes que disparam o blob autenticado, extraem filename do `Content-Disposition` quando disponivel e exibem erro controlado se o download falhar.
+- **Layout Integra-AI:** A pagina recebeu classe `integra-ai-page` e ajuste CSS para alinhar o conteudo ao lado da sidebar compacta/expandida, evitando a percepcao de sobreposicao/deslocamento da marca/titulo da tela em viewport larga.
+- **Testes Web:** O smoke Playwright do Integra-AI agora valida que a pagina inicia apos a sidebar com folga controlada e que o download gerado usa o cliente autenticado com `Bearer access-e2e`.
+- **Estabilidade local:** `eslint.config.js` passou a ignorar `test-results` e `playwright-report`, evitando falha intermitente quando lint e Playwright disputam a pasta temporaria.
+- **Validacao:** Passaram `npm.cmd run build`, `npm.cmd run test:e2e -- -g "Integra-AI"`, `npm.cmd run lint` e `git diff --check` no Web.
+- **Pendente:** Publicar o novo build do Web e validar em homologacao real com usuario contabil, job real e TXT real; esta rodada usou API mockada no Playwright local.
+
 ## Atualizacao complementar 2026-05-27 10:40 -03:00
 
 - **Responsavel/IA:** Codex
