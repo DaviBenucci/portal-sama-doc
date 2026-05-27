@@ -1,5 +1,14 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-27 14:06 -03:00
+
+- Corrigida a decisao do leiaute Dominio do Integra-AI para o fluxo atual.
+- O leiaute oficial agora e `dominio_importador_lancamentos_lote_01_02_03_99` (`Dominio Importador 01/02/03/99`).
+- `dominio_separador_0000_0451` nao deve ser usado no fluxo principal porque o conjunto `Lancamentos Contabeis em Lote` interpreta `0451|...` como registro fixo `04`.
+- Backend voltou a gerar arquivo sem pipes, iniciando com `01`, contendo pares `02`/`03` e finalizando com `99`.
+- Passaram testes focados da API, suite completa da API, lint/build/Prisma validate da API, lint/build do Web, Playwright focado de Integra-AI e Playwright local completo.
+- Permanece pendente a homologacao real no Dominio com evidencia sanitizada.
+
 ## Atualizacao 2026-05-27 12:16 -03:00
 
 - O Integra-AI foi padronizado para somente um leiaute Dominio oficial no fluxo principal: `dominio_separador_0000_0451`.

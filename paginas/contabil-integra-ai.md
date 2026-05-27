@@ -57,6 +57,16 @@
 - **Validacao local:** passaram testes unitarios focados da API, suite completa da API, lint/build da API/Web, Prisma validate, Playwright focado de Integra-AI e Playwright local completo.
 - **Pendente real:** importar TXT real no Dominio Contabilidade Fiscal com o importador de separador `0000/0451`, salvar evidencia e congelar golden file aprovado.
 
+### Atualizacao de migracao 2026-05-27 14:06 -03:00
+
+- **Retificacao de leiaute:** a evidencia do Dominio mostrou que o conjunto correto e `Lancamentos Contabeis em Lote`; nele, `0451|...` e lido como registro fixo `04 - Rateios Gerenciais`.
+- **Leiaute oficial corrigido:** `dominio_importador_lancamentos_lote_01_02_03_99` (`Dominio Importador 01/02/03/99`).
+- **Backend novo:** a exportacao gera registro `01`, pares `02`/`03` e trailer `99`, sem pipes, validando tamanhos fixos 54/150/664/100.
+- **Frontend novo:** a etapa de plano exibe `Dominio Importador 01/02/03/99`; o texto `Dominio Sistemas com Separador - 0000/0451` nao deve aparecer no fluxo principal.
+- **Como importar:** no Dominio Contabilidade Fiscal, usar o conjunto `Lancamentos Contabeis em Lote`.
+- **Validacao local:** passaram testes focados da API, suite completa da API, lint/build/Prisma validate da API, lint/build do Web, Playwright focado de Integra-AI e Playwright local completo.
+- **Pendente real:** importar TXT real gerado pelo Portal Sama nesse conjunto, salvar evidencia sanitizada e congelar golden file aprovado.
+
 ---
 
 ## 2. Objetivo da página

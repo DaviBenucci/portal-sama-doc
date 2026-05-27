@@ -1,5 +1,52 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-27 14:06
+
+### Contexto
+
+- Correcao do leiaute oficial do Integra-AI para `Dominio Importador 01/02/03/99`.
+- O Dominio estava lendo `0451|...` como registro fixo `04 - Rateios Gerenciais` dentro do conjunto `Lancamentos Contabeis em Lote`.
+
+### Comandos executados ate esta etapa
+
+```bash
+npm.cmd test -- --runInBand modules/accounting/integra-ai.engine.spec.ts modules/accounting/accounting.service.spec.ts
+npm.cmd test -- --runInBand
+npm.cmd run lint -- --max-warnings=0
+npm.cmd run build
+npm.cmd run prisma:validate
+npm.cmd run lint -- --max-warnings=0
+npm.cmd run build
+npm.cmd run test:e2e -- -g "Integra-AI"
+npm.cmd run test:e2e
+```
+
+### Resultado
+
+- **Status geral:** Passou.
+- API focada: 2 suites, 12 testes.
+- API completa: 32 suites, 176 testes.
+- API lint, build e Prisma validate passaram.
+- Web lint: passou sem warnings.
+- Web build passou.
+- Playwright Integra-AI passou com 2 testes.
+- Playwright local completo passou com 11 testes e 1 skipped opt-in.
+
+### Cobertura ajustada
+
+- TXT gerado sem pipe.
+- Primeira linha iniciando com `01`.
+- Par `02`/`03` para cada lancamento.
+- Registro `01` com 54 caracteres.
+- Registro `02` com 150 caracteres.
+- Registro `03` com 664 caracteres.
+- Registro `99` com 100 caracteres preenchidos com `9`.
+- Rejeicao de `0000/0451`.
+
+### Pendencias
+
+- Homologar arquivo real no Dominio usando `Lancamentos Contabeis em Lote`.
+
 ## Execucao 2026-05-27 12:16
 
 ### Contexto

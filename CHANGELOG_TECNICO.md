@@ -1,5 +1,42 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-27 14:06
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/accounting/integra-ai.engine.ts`
+- `portal-sama-api/src/modules/accounting/accounting.service.spec.ts`
+- `portal-sama-api/src/modules/accounting/integra-ai.engine.spec.ts`
+- `portal-sama-web/src/types/integra-ai.ts`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- Documentacao de leiaute, status, pendencias, testes, changelog, ADR e pagina Integra-AI.
+
+### O que mudou
+
+- O leiaute oficial do Integra-AI foi corrigido para `dominio_importador_lancamentos_lote_01_02_03_99`.
+- O backend voltou a gerar registros fixos `01`, pares `02`/`03` e trailer `99`.
+- A validacao automatica bloqueia pipes, `0000/0451`, tamanhos incorretos e pares `02/03` fora de ordem.
+- O frontend passou a exibir `Dominio Importador 01/02/03/99`.
+- A documentacao registra que `0000/0451` nao serve para o conjunto `Lancamentos Contabeis em Lote`.
+
+### Motivo da alteracao
+
+O erro real do Dominio mostrou que `0451|...` era lido como registro fixo `04 - Rateios Gerenciais`, deslocando sequencial, conta debito, conta credito e valor. Para o conjunto correto `Lancamentos Contabeis em Lote`, o arquivo deve ser fixo `01/02/03/99`.
+
+### Testes executados
+
+- `npm.cmd test -- --runInBand modules/accounting/integra-ai.engine.spec.ts modules/accounting/accounting.service.spec.ts` em `portal-sama-api`: passou.
+- `npm.cmd test -- --runInBand` em `portal-sama-api`: passou, 32 suites e 176 testes.
+- `npm.cmd run lint -- --max-warnings=0`, `npm.cmd run build` e `npm.cmd run prisma:validate` em `portal-sama-api`: passaram.
+- `npm.cmd run lint -- --max-warnings=0` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "Integra-AI"` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e` em `portal-sama-web`: passou, 11 testes e 1 skipped opt-in.
+
+### Riscos ou pendencias
+
+- Falta homologar TXT real no Dominio com `Lancamentos Contabeis em Lote`.
+
 ## 2026-05-27 12:16
 
 ### Arquivos alterados
@@ -20,7 +57,7 @@
 - O fluxo principal do Integra-AI passou a usar somente `dominio_separador_0000_0451`.
 - O frontend removeu o seletor entre `Dominio 01/02/03/99` e `Dominio 0000/0451` e exibe apenas o leiaute oficial.
 - O backend gera exclusivamente registros `0000` e `0451`, valida a estrutura do TXT e rejeita `export_strategy` divergente.
-- O layout legado `01/02/03/99` deixou de existir no gerador principal; sua chave permanece apenas como marcador deprecated para bloqueio/regressao.
+- Entrada substituida pela correcao de 14:06: `01/02/03/99` e o leiaute oficial do fluxo `Lancamentos Contabeis em Lote`.
 - Auditoria e download receberam metadata de leiaute/status/hash e headers anti-cache adicionais.
 
 ### Motivo da alteracao

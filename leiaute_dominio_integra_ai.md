@@ -5,6 +5,8 @@
 **Documento de referência externo:** Central de Soluções Domínio, solução `672`, “Leiaute: Importação Padrão - Leiaute Domínio Sistemas com Separador”  
 **Data da análise:** 2026-05-27
 
+> **Retificacao 2026-05-27 14:06 -03:00:** a evidencia nova do Dominio mostrou que o fluxo atual usa o conjunto `Lancamentos Contabeis em Lote`. Para esse conjunto, o leiaute oficial do Portal Sama e `dominio_importador_lancamentos_lote_01_02_03_99` (`Dominio Importador 01/02/03/99`). As secoes antigas que recomendavam `dominio_separador_0000_0451` ficam historicas e foram substituidas pela secao 14.
+
 ---
 
 ## 1. Objetivo
@@ -371,7 +373,7 @@ Se o escritório já tiver um **Conjunto de Dados / Importador customizado** hom
 4. exibir apenas “Domínio Importador 01/02/03/99” como leiaute ativo;
 5. bloquear qualquer alteração de tamanho de linha, encoding ou campos sem passar por homologação.
 
-Sem essa homologação formal, o leiaute `01/02/03/99` deve ficar apenas como legado técnico, não como opção de produção.
+Com a evidencia atual de importacao em `Lancamentos Contabeis em Lote`, o leiaute `01/02/03/99` deixa de ser excecao e passa a ser o leiaute oficial deste fluxo.
 
 ---
 
@@ -670,7 +672,7 @@ Dominio Sistemas com Separador - 0000/0451
 0451|CONTA_DEBITO|CONTA_CREDITO|VALOR|CODIGO_HISTORICO|DESCRICAO_HISTORICO
 ```
 
-- O gerador legado `01/02/03/99` saiu do fluxo principal. A chave antiga permanece apenas como marcador tecnico/deprecated para identificar payloads legados e testes de regressao.
+- Retificacao 14:06: esta decisao foi substituida. O leiaute `01/02/03/99` e o leiaute oficial do fluxo `Lancamentos Contabeis em Lote`.
 
 ### 13.2. Validacoes antes da exportacao
 
@@ -720,3 +722,96 @@ Foram adicionados/ajustados testes para:
 ### 13.6. Homologacao manual ainda obrigatoria
 
 Antes de considerar a exportacao pronta para producao, ainda e necessario importar um TXT real gerado pelo Portal Sama no Dominio Contabilidade Fiscal, confirmar que o importador selecionado e o de separador `0000/0451`, salvar evidencia do aceite e congelar um arquivo aprovado como golden file.
+
+---
+
+## 14. Retificacao operacional em 2026-05-27 14:06 -03:00
+
+Esta secao substitui a decisao anterior que apontava `dominio_separador_0000_0451` como leiaute principal.
+
+### 14.1. Evidencia nova
+
+O erro atual do Dominio mostra que o arquivo foi importado no conjunto correto:
+
+```text
+Lancamentos Contabeis em Lote
+```
+
+Nesse conjunto, o Dominio interpreta os dois primeiros caracteres da linha como tipo de registro fixo. Por isso uma linha com separador:
+
+```text
+0451|0010118|0011100|37279|0000000|Credito...
+```
+
+foi lida como registro `04 - Rateios Gerenciais`, deslocando os campos:
+
+- `51|0010` entrou como sequencial;
+- `118|001` entrou como conta debito;
+- `1100|37` entrou como conta credito;
+- `279|0000000|Cre` entrou como valor.
+
+Portanto, `0000/0451` nao serve para o fluxo atual de importacao usado pelo escritorio.
+
+### 14.2. Leiaute oficial corrigido
+
+Para o fluxo atual do Portal Sama / Integra-AI, o leiaute oficial passa a ser:
+
+```text
+dominio_importador_lancamentos_lote_01_02_03_99
+Dominio Importador 01/02/03/99
+```
+
+O leiaute `01/02/03/99` nao e deprecated neste fluxo. Ele e o leiaute oficial para importacao em `Lancamentos Contabeis em Lote`.
+
+O leiaute `dominio_separador_0000_0451` deve ficar fora do fluxo principal e nao deve ser aceito em `export_strategy` para a exportacao atual.
+
+### 14.3. Estrutura obrigatoria do TXT
+
+O TXT deve ser gerado sem pipes, com `CRLF`, em `Windows-1252`:
+
+```text
+01...cabecalho...
+02...data do lancamento...
+03...lancamento contabil...
+02...data do lancamento...
+03...lancamento contabil...
+9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+```
+
+Tamanhos obrigatorios:
+
+- registro `01`: 54 caracteres;
+- registro `02`: 150 caracteres;
+- registro `03`: 664 caracteres;
+- registro `99`: 100 caracteres preenchidos com `9`.
+
+Cada lancamento exportado gera um par `02`/`03`. O registro `02` contem sequencial, literal `X`, data `dd/mm/aaaa` e preenchimento. O registro `03` contem sequencial, conta debito, conta credito, valor em centavos, campo auxiliar de 7 caracteres, historico fixo de 512 caracteres e codigo historico de 7 caracteres.
+
+### 14.4. Como importar no Dominio
+
+No Dominio Contabilidade Fiscal, usar o conjunto:
+
+```text
+Lancamentos Contabeis em Lote
+```
+
+Nao selecionar importador de leiaute com separador para este arquivo. O arquivo correto deve iniciar com `01`, nao deve conter `|`, deve conter pares `02`/`03` e deve terminar com a linha `99` de 100 caracteres.
+
+### 14.5. Validacoes automatizadas obrigatorias
+
+O Portal Sama deve bloquear:
+
+- arquivo contendo `|`;
+- arquivo iniciando com `0000` ou contendo `0451`;
+- registro `01` diferente de 54 caracteres;
+- registro `02` diferente de 150 caracteres;
+- registro `03` diferente de 664 caracteres;
+- registro `99` diferente de 100 caracteres preenchidos com `9`;
+- pares `02`/`03` fora de ordem;
+- contas, valor ou codigo historico nao numericos;
+- valor zerado;
+- historico vazio.
+
+### 14.6. Homologacao ainda necessaria
+
+A correcao automatizada valida a estrutura do arquivo, mas ainda e necessario importar um TXT real no Dominio usando `Lancamentos Contabeis em Lote`, salvar evidencia sanitizada e congelar um golden file aprovado.

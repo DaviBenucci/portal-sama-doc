@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 12:16 -03:00
+Ultima atualizacao: 2026-05-27 14:06 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -45,7 +45,7 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 12:16 -03:00:
+Estimativa operacional em 2026-05-27 14:06 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
@@ -73,6 +73,35 @@ Estimativa operacional em 2026-05-27 12:16 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
+
+## Atualizacao operacional de 2026-05-27 14:06 -03:00
+
+Foi corrigida a decisao do leiaute Dominio do Integra-AI para o fluxo real do escritorio.
+
+Evidencia:
+
+- o arquivo esta sendo importado no conjunto correto `Lancamentos Contabeis em Lote`;
+- nesse conjunto, `0451|...` e interpretado como registro fixo `04 - Rateios Gerenciais`;
+- por isso os campos do arquivo com separador ficavam deslocados no Dominio.
+
+Decisao corrigida:
+
+- leiaute oficial do Portal Sama para o Integra-AI: `dominio_importador_lancamentos_lote_01_02_03_99`;
+- label: `Dominio Importador 01/02/03/99`;
+- nao usar `dominio_separador_0000_0451` no fluxo principal.
+
+Implementacao local:
+
+- backend gera TXT sem pipes, iniciando com `01`, contendo pares `02`/`03` e finalizando com `99`;
+- registros possuem tamanhos fixos esperados: 54, 150, 664 e 100 caracteres;
+- frontend exibe `Dominio Importador 01/02/03/99`;
+- passaram testes focados da API, suite completa da API, lint/build/Prisma validate da API, lint/build do Web, Playwright focado de Integra-AI e Playwright local completo.
+
+Pendencia para producao:
+
+- importar TXT real no Dominio usando `Lancamentos Contabeis em Lote`;
+- salvar evidencia sanitizada;
+- congelar golden file aprovado.
 
 ## Atualizacao operacional de 2026-05-27 12:16 -03:00
 

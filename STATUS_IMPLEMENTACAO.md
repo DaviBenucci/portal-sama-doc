@@ -1,6 +1,17 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-27 14:06 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Corrigida a decisao do leiaute Dominio do Integra-AI: o fluxo atual do Dominio usa o conjunto `Lancamentos Contabeis em Lote`, que espera registros fixos `01/02/03/99`, nao `0000/0451`.
+- **Causa do erro anterior:** o Dominio interpretava `0451|...` como registro fixo `04 - Rateios Gerenciais`, deslocando sequencial, contas e valor.
+- **Backend/API v2:** o leiaute oficial agora e `dominio_importador_lancamentos_lote_01_02_03_99`; o gerador monta registro `01`, pares `02`/`03` e trailer `99`, validando tamanhos 54/150/664/100 e ausencia de pipe.
+- **Frontend React:** a constante exibida na tela passou para `Dominio Importador 01/02/03/99`; `Dominio Sistemas com Separador - 0000/0451` nao aparece no fluxo principal.
+- **Testes:** os testes de engine agora validam TXT sem pipe, primeira linha `01`, pares `02`/`03`, ultima linha com 100 caracteres `9` e tamanhos fixos.
+- **Validacao:** Passaram testes focados da API, suite completa da API (`176` testes), lint/build/Prisma validate da API, lint/build do Web, Playwright focado do Integra-AI e Playwright local completo.
+- **Pendente:** importar TXT real no Dominio usando `Lancamentos Contabeis em Lote`, salvar evidencia sanitizada e congelar golden file aprovado.
+
 ## Atualizacao complementar 2026-05-27 12:16 -03:00
 
 - **Responsavel/IA:** Codex
