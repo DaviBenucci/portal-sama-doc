@@ -121,6 +121,8 @@ function ia_export_txt_encoding(): string {
 }
 ```
 
+Evidencia operacional posterior: o arquivo `032025 Dominio.txt`, aceito pelo Dominio no conjunto `Lancamentos Contabeis em Lote`, esta em **UTF-8 com BOM** (`EF BB BF`) e preserva os mesmos tamanhos logicos de linha. O Portal Sama novo deve gerar o TXT em UTF-8 com BOM para replicar o arquivo aprovado.
+
 A geração final concatenava as linhas com `CRLF`:
 
 ```text
@@ -721,7 +723,7 @@ Foram adicionados/ajustados testes para:
 
 ### 13.6. Homologacao manual ainda obrigatoria
 
-Antes de considerar a exportacao pronta para producao, ainda e necessario importar um TXT real gerado pelo Portal Sama no Dominio Contabilidade Fiscal, confirmar que o importador selecionado e o de separador `0000/0451`, salvar evidencia do aceite e congelar um arquivo aprovado como golden file.
+Antes de considerar a exportacao pronta para producao, ainda e necessario importar um TXT real gerado pelo Portal Sama no Dominio Contabilidade Fiscal, confirmar que o importador selecionado e `Lancamentos Contabeis em Lote`, salvar evidencia do aceite e congelar um arquivo aprovado como golden file.
 
 ---
 
@@ -767,7 +769,13 @@ O leiaute `dominio_separador_0000_0451` deve ficar fora do fluxo principal e nao
 
 ### 14.3. Estrutura obrigatoria do TXT
 
-O TXT deve ser gerado sem pipes, com `CRLF`, em `Windows-1252`:
+O TXT deve ser gerado sem pipes, com `CRLF`, em **UTF-8 com BOM**. O arquivo aceito `032025 Dominio.txt` inicia com os bytes `EF BB BF` e, apos o BOM, a primeira linha segue o registro `01` de 54 caracteres:
+
+```text
+0100003962468144300015301/03/202531/03/2025N0500000117
+```
+
+Estrutura:
 
 ```text
 01...cabecalho...
@@ -786,6 +794,8 @@ Tamanhos obrigatorios:
 - registro `99`: 100 caracteres preenchidos com `9`.
 
 Cada lancamento exportado gera um par `02`/`03`. O registro `02` contem sequencial, literal `X`, data `dd/mm/aaaa` e preenchimento. O registro `03` contem sequencial, conta debito, conta credito, valor em centavos, campo auxiliar de 7 caracteres, historico fixo de 512 caracteres e codigo historico de 7 caracteres.
+
+No golden sample aceito foram observados: 1 registro `01`, 328 registros `02`, 328 registros `03`, 1 registro `99`, todos com os tamanhos acima.
 
 ### 14.4. Como importar no Dominio
 
@@ -807,6 +817,7 @@ O Portal Sama deve bloquear:
 - registro `02` diferente de 150 caracteres;
 - registro `03` diferente de 664 caracteres;
 - registro `99` diferente de 100 caracteres preenchidos com `9`;
+- arquivo gerado para download/importacao sem BOM UTF-8;
 - pares `02`/`03` fora de ordem;
 - contas, valor ou codigo historico nao numericos;
 - valor zerado;
