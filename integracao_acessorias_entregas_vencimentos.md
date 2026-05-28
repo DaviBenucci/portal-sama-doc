@@ -18,7 +18,11 @@ A funcionalidade tem como objetivo transformar o Portal Sama em uma camada opera
 
 Esta funcionalidade **não deve ser implementada agora**. Ela deve ser planejada como uma fase futura, para ser executada somente após a conclusão do grande plano principal de migração, refatoração, segurança e estruturação do Portal Sama.
 
-Atualizacao 2026-05-28: foi aberta uma excecao limitada para a Home por perfil. O Portal Sama passou a consultar um resumo read-only do Acessorias via backend (`GET /api-v2/integrations/acessorias/home-summary`), usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no ambiente da API. Essa entrega nao substitui o MVP futuro descrito neste documento: ainda nao ha sincronizacao local, planilha Fiscal automatica, Central de Vencimentos, notificacoes por vencimento nem auditoria de sync runs.
+Atualizacao 2026-05-28: foi aberta uma excecao limitada para a Home por perfil. O Portal Sama passou a consultar um resumo read-only do Acessorias via backend (`GET /api-v2/integrations/acessorias/home-summary`), usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no ambiente da API. Essa entrega nao substitui o MVP futuro descrito neste documento: ainda nao havia, naquele momento, planilha Fiscal automatica, Central de Vencimentos, notificacoes por vencimento nem auditoria de sync runs.
+
+Atualizacao 2026-05-28: foi adicionada tambem uma fundacao backend para cadastro inicial/importacao controlada de empresas e colaboradores vindos do Acessorias. A API passa a expor `GET /api-v2/integrations/acessorias/registrations/preview` e `POST /api-v2/integrations/acessorias/registrations/sync`, usando `ACESSORIAS_CLIENTS_PATH` e `ACESSORIAS_COLLABORATORS_PATH`. Essa importacao nao transforma o Acessorias em fonte editavel bidirecional: o Portal Sama salva o vinculo externo em `metadata.acessorias`, permite edicoes locais normalmente e, por padrao, atualiza apenas metadata de registros ja existentes. Sobrescrever dados locais exige `overwriteLocal=true` em sincronizacao manual autorizada.
+
+Atualizacao 2026-05-28: foi criada a primeira base backend do MVP de entregas. A API passa a ter as tabelas `acessorias_deliveries` e `acessorias_delivery_sync_runs`, variavel `ACESSORIAS_DELIVERIES_PATH`, endpoint `POST /api-v2/integrations/acessorias/deliveries/sync` para sincronizacao manual auditada e endpoint `GET /api-v2/integrations/acessorias/deliveries` para listar entregas salvas localmente. Essa etapa ainda nao cria planilha Fiscal automatica, Central de Vencimentos, divergencias, alertas D-7/D-3/D-1/D0/D+1 ou scheduler automatico.
 
 ---
 
@@ -158,19 +162,28 @@ Se qualquer uma dessas dependências não existir, a IA ou desenvolvedor deve re
 
 ## 5. Escopo aprovado
 
-O escopo aprovado para esta fase futura é utilizar **somente o recurso de entregas do Acessórias**.
+O escopo aprovado para o MVP operacional amplo continua sendo utilizar **principalmente o recurso de entregas do Acessórias**.
+
+Como preparacao para as telas de `ux-ui-docs/`, fica aprovada uma excecao de cadastro inicial: o Portal Sama pode consultar empresas e colaboradores no Acessorias para criar ou vincular registros locais. Essa excecao existe para reduzir retrabalho de cadastro e melhorar a Home/carteiras, mas deve respeitar estas regras:
+
+- o token do Acessorias permanece somente no backend;
+- a importacao e manual/autorizada, com preview antes de aplicar;
+- empresas sao conciliadas por CNPJ e, quando existir, por ID externo;
+- colaboradores sao conciliados por usuario, e-mail e, quando existir, por ID externo;
+- registros importados ficam editaveis no Portal Sama;
+- alteracoes locais nao devem ser sobrescritas automaticamente;
+- sincronizacoes posteriores atualizam apenas `metadata.acessorias`, salvo quando um operador usar explicitamente `overwriteLocal=true`;
+- o Portal Sama nao altera dados no Acessorias.
 
 Não faz parte deste primeiro escopo:
 
-- sincronizar cadastro completo de clientes;
 - alterar status de clientes no Acessórias;
 - alterar responsáveis por departamento no Acessórias;
-- sincronizar colaboradores internos com o Acessórias;
 - integrar com Domínio;
 - integrar com Active Directory;
 - alterar dados no Acessórias a partir do Portal Sama.
 
-Esses pontos podem permanecer documentados como possibilidades futuras, mas o MVP deve focar na integração de entregas.
+Sincronizacao completa e bidirecional de cadastros permanece fora do escopo. A entrega atual cobre somente importacao/vinculo controlado e preserva o Portal Sama como camada local editavel.
 
 ---
 
@@ -911,6 +924,8 @@ Uso:
 - manual emergencial;
 - restrito a gestor/admin.
 
+Status implementado parcialmente em 2026-05-28: executa sincronizacao manual, salva/atualiza entregas por `external_id`, registra `acessorias_delivery_sync_runs` e auditoria `integrations.acessorias.deliveries.sync`. Scheduler automatico e conciliacao com planilha Fiscal permanecem pendentes.
+
 ### 21.2 Listar entregas sincronizadas
 
 ```txt
@@ -928,6 +943,8 @@ dueDateStart
 dueDateEnd
 responsibleId
 ```
+
+Status implementado parcialmente em 2026-05-28: lista entregas persistidas em `acessorias_deliveries`, com filtros basicos por departamento, status, competencia, responsavel e documento do cliente.
 
 ### 21.3 Divergências
 

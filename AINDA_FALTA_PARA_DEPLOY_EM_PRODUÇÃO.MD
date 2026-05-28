@@ -78,6 +78,52 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Acessorias, entregas e vencimentos | Parcial para Home; MVP futuro segue pendente | A Home local agora possui consulta read-only ao Acessorias via backend, usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente da API e sem expor token no Web. O MVP maior de sincronizacao, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria continua como trilha futura em `integracao_acessorias_entregas_vencimentos.md`. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
 
+## Atualizacao operacional de 2026-05-28 10:45 -03:00
+
+Foi implementada a fundacao backend para importacao controlada de empresas e colaboradores do Acessorias.
+
+- a API recebeu variaveis validadas `ACESSORIAS_CLIENTS_PATH` e `ACESSORIAS_COLLABORATORS_PATH`;
+- criado endpoint protegido `GET /api-v2/integrations/acessorias/registrations/preview`;
+- criado endpoint protegido `POST /api-v2/integrations/acessorias/registrations/sync`;
+- o preview mostra acao prevista por registro: criar, vincular metadata, sobrescrever manualmente ou ignorar;
+- empresas sao conciliadas por CNPJ e ID externo do Acessorias;
+- colaboradores sao conciliados por usuario, e-mail e ID externo do Acessorias;
+- registros importados recebem `metadata.acessorias` com `externalId`, `importedAt`, `editableInPortal=true` e payload bruto;
+- por padrao, registros existentes mantem os dados locais editaveis e recebem apenas atualizacao de metadata;
+- sobrescrita de dados locais exige `overwriteLocal=true` em sincronizacao manual com permissao `integrations.acessorias.registrations.sync`;
+- a sincronizacao registra auditoria centralizada e nao expoe token do Acessorias ao frontend.
+
+Validacao local:
+
+- `npm.cmd run build` passou na API.
+
+Pendencia real remanescente: validar no EasyPanel o contrato real dos endpoints de empresas/colaboradores do Acessorias, configurar `ACESSORIAS_CLIENTS_PATH`/`ACESSORIAS_COLLABORATORS_PATH`, rodar `prisma:seed` para disponibilizar as novas permissoes e criar UI seguindo `ux-ui-docs/`.
+
+## Atualizacao operacional de 2026-05-28 11:20 -03:00
+
+Foi implementada a primeira base backend persistente para entregas do Acessorias.
+
+- criado modelo Prisma e migration `20260528110000_add_acessorias_deliveries`;
+- criada tabela `acessorias_deliveries` para armazenar copia local das entregas;
+- criada tabela `acessorias_delivery_sync_runs` para registrar execucoes de sincronizacao;
+- a API recebeu variavel validada `ACESSORIAS_DELIVERIES_PATH`;
+- criado endpoint protegido `POST /api-v2/integrations/acessorias/deliveries/sync`;
+- criado endpoint protegido `GET /api-v2/integrations/acessorias/deliveries`;
+- a sincronizacao manual busca entregas no Acessorias, normaliza campos comuns, salva/atualiza por `external_id` e registra auditoria;
+- a listagem local aceita filtros por departamento, status, competencia, responsavel e documento do cliente;
+- RBAC ganhou `integrations.acessorias.deliveries.read` e `integrations.acessorias.deliveries.sync`.
+
+Validacao local:
+
+- `npm.cmd run prisma:generate` passou;
+- `npm.cmd run prisma:validate` passou;
+- `npm.cmd test -- integrations/acessorias/acessorias-deliveries.service.spec.ts --runInBand` passou;
+- `npm.cmd test -- integrations/acessorias/acessorias-registrations.service.spec.ts rbac/default-rbac.spec.ts --runInBand` passou;
+- `npm.cmd run build` passou;
+- `npm.cmd run lint` passou.
+
+Pendencia real remanescente: aplicar migration no MySQL real, rodar seed RBAC, configurar `ACESSORIAS_DELIVERIES_PATH`, validar contrato real de entregas do Acessorias no EasyPanel e depois implementar mapeamento para planilha Fiscal, divergencias, Central de Vencimentos, scheduler e notificacoes.
+
 ## Atualizacao operacional de 2026-05-28 10:06 -03:00
 
 Foi implementada a fatia local da Home por perfil usando dados do Acessorias pela API v2.
@@ -865,13 +911,19 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 
 - [x] Registrar Acessorias/Entregas/Vencimentos como backlog futuro pos-migracao base.
 - [x] Implementar consumo read-only do Acessorias para a Home por perfil via backend, usando variaveis do ambiente da API.
+- [x] Implementar preview/importacao controlada de empresas e colaboradores do Acessorias para registros locais editaveis no Portal Sama.
 - [ ] Validar em homologacao o contrato real da API do Acessorias consumido por `GET /api-v2/integrations/acessorias/home-summary`.
 - [ ] Configurar/confirmar `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no EasyPanel sem expor segredos.
+- [ ] Configurar/confirmar `ACESSORIAS_CLIENTS_PATH` e `ACESSORIAS_COLLABORATORS_PATH` no ambiente da API.
+- [ ] Validar em homologacao o contrato real de empresas/colaboradores do Acessorias para `registrations/preview` e `registrations/sync`.
+- [ ] Configurar/confirmar `ACESSORIAS_DELIVERIES_PATH` no ambiente da API.
 - [ ] Confirmar dependencias antes de iniciar: Auth, RBAC, auditoria, notificacoes, planilhas departamentais, modulo base de integracoes, Prisma/MySQL, frontend React, logs estruturados, tratamento global de erros e testes minimos.
 - [ ] Validar na API do Acessorias campos de baixa, vencimento, competencia, CNPJ/CPF, departamento, responsavel, ID unico e entregas canceladas/dispensadas.
-- [ ] Criar modulo `integrations/acessorias-deliveries` somente quando as dependencias estiverem prontas.
-- [ ] Implementar sincronizacao automatica e manual de entregas do Acessorias com auditoria.
-- [ ] Salvar entregas localmente, sync runs, divergencias e alertas.
+- [x] Criar base backend de entregas em `integrations/acessorias`, com persistencia local inicial.
+- [x] Implementar sincronizacao manual de entregas do Acessorias com auditoria.
+- [x] Salvar entregas localmente e registrar sync runs.
+- [ ] Implementar sincronizacao automatica agendada de entregas do Acessorias.
+- [ ] Salvar divergencias e alertas.
 - [ ] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
 - [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas.
 - [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
