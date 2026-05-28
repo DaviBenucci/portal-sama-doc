@@ -57,6 +57,8 @@ Atualizacao 2026-05-27 16:31 -03:00: a API recebeu a migration `20260527162000_a
 
 Atualizacao 2026-05-27 16:44 -03:00: o modulo `ClientAssignmentsModule` agora tambem possui `POST /api-v2/client-assignments/transfer`, protegido por `client_assignments.transfer` e CSRF. A validacao real no EasyPanel deve incluir leitura/criacao/encerramento e transferencia com usuario ADMIN/DEV ou gestor autorizado, confirmando auditoria `client_assignments.transfer`.
 
+Atualizacao 2026-05-28 10:06 -03:00: a Home por perfil agora consome resumo read-only do Acessorias por `GET /api-v2/integrations/acessorias/home-summary`. Configurar `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` somente no servico `portal-sama-api`; o frontend nao deve receber o token do Acessorias. Depois do deploy, validar a rota com usuario real e conferir se o contrato retornado pela API externa possui cliente, obrigacao, vencimento, baixa/status, departamento e responsavel.
+
 ---
 
 ## 2. Serviços recomendados
@@ -121,6 +123,12 @@ SAMA_INTEGRA_AI_PARSER_PATH=
 SAMA_INTEGRA_AI_PARSER_TIMEOUT_SEC=180
 SAMA_INTEGRA_AI_HEADER_SUFFIX=0500000117
 SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false
+ACESSORIAS_BASE_URL=https://url-do-acessorias.example/api/entregas
+ACESSORIAS_TOKEN=token_configurado_no_painel
+ACESSORIAS_HOME_PATH=
+ACESSORIAS_AUTH_HEADER=Authorization
+ACESSORIAS_AUTH_SCHEME=Bearer
+ACESSORIAS_TIMEOUT_SEC=30
 SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
 SAMA_MYSQL_DUMP_BIN=
 SAMA_MYSQL_CLIENT_BIN=

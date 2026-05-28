@@ -1,6 +1,6 @@
 # Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-27 16:44 -03:00
+Ultima atualizacao: 2026-05-28 10:06 -03:00
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -47,13 +47,13 @@ Se uma porcentagem for informada, ela deve ser marcada como estimativa operacion
 
 ## Percentual atual
 
-Estimativa operacional em 2026-05-27 16:44 -03:00:
+Estimativa operacional em 2026-05-28 10:06 -03:00:
 
 | Marco | Percentual | Leitura |
 |---|---:|---|
-| Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, mas ainda falta executar com artefatos reais. |
-| Pronto para producao sem depender do legado | 88% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local tem leiaute Dominio unico e validavel, e a fundacao backend para responsabilidades normalizadas de clientes agora inclui transferencia auditada. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes, UI/fluxos reais de carteiras e desligamento seguro do legado. |
-| Falta para producao | 12% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, completar UI/migracao de responsabilidades de clientes, classificacao formal do escopo Acessorias como fase futura e plano de corte/desligamento do legado. |
+| Pronto para iniciar/continuar homologacao da nova stack | 99% | Deploy publico, smoke real, banco, migrations, RBAC, usuarios privilegiados, storage e ClamAV strict ja foram validados no container real via readiness; tambem passaram smoke/auth real, Playwright real e matriz minima DEV/bootstrap contra HTTPS. O restore drill agora possui comando e plano operacional, e a Home local ja consome resumo read-only do Acessorias via API v2. Ainda falta executar restore com artefatos reais e validar a Home com o contrato real do Acessorias no EasyPanel. |
+| Pronto para producao sem depender do legado | 88% | A stack nova esta operacional no EasyPanel, o readiness real passou com warning apenas de backup/rollback, o fluxo publico de documentos de onboarding esta alinhado aos contratos documentados e ha evidencia real de login/refresh/logout, Playwright real e RBAC minimo DEV/bootstrap. O Integra-AI local tem leiaute Dominio unico e validavel; responsabilidades normalizadas incluem transferencia auditada; a Home por perfil deixou de depender de KPIs tecnicos genericos e passou a usar Acessorias por rota backend autenticada. Permanecem pendentes backfills/conferencias reais, matriz por multiplos perfis, restore drill real, QA final, validacao real de uploads/exportacoes, validacao do contrato real do Acessorias, UI/fluxos reais de carteiras e desligamento seguro do legado. |
+| Falta para producao | 12% | Principalmente execucao/conferencia real de backfills, evidencias funcionais por todos os perfis, backup externo verificado com restore testado, upload/download/exportacao real, QA final, homologacao do TXT Dominio real, aceite UX/UI, completar UI/migracao de responsabilidades de clientes, validar a Home com dados reais do Acessorias e plano de corte/desligamento do legado. |
 
 ## Estado atual resumido
 
@@ -75,8 +75,31 @@ Estimativa operacional em 2026-05-27 16:44 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
-| Acessorias, entregas e vencimentos | Fase futura documentada | `integracao_acessorias_entregas_vencimentos.md` define a integracao com Acessorias como pos-migracao base. Nao deve bloquear o corte base se ficar formalmente fora do escopo, mas precisa entrar no backlog com dependencias, API do Acessorias, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` agora tambem cobre transferencia normalizada auditada. Falta aplicar migrations/seeds no MySQL real, validar no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+| Acessorias, entregas e vencimentos | Parcial para Home; MVP futuro segue pendente | A Home local agora possui consulta read-only ao Acessorias via backend, usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente da API e sem expor token no Web. O MVP maior de sincronizacao, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria continua como trilha futura em `integracao_acessorias_entregas_vencimentos.md`. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-05-28 10:06 -03:00
+
+Foi implementada a fatia local da Home por perfil usando dados do Acessorias pela API v2.
+
+- a API recebeu variaveis validadas `ACESSORIAS_BASE_URL`, `ACESSORIAS_TOKEN`, `ACESSORIAS_HOME_PATH`, `ACESSORIAS_AUTH_HEADER`, `ACESSORIAS_AUTH_SCHEME` e `ACESSORIAS_TIMEOUT_SEC`;
+- criado modulo backend `AcessoriasHomeModule` com `GET /api-v2/integrations/acessorias/home-summary`;
+- a consulta e read-only, autenticada no Portal Sama e usa o token do Acessorias somente no backend;
+- o servico normaliza entregas/obrigacoes retornadas em formatos comuns (`data`, `items`, `entregas`, `deliveries`, `obrigacoes`, `results`) e calcula pendentes, proximas, atrasadas, baixadas e carteira por responsavel;
+- a Home React deixou de exibir KPIs tecnicos genericos para colaborador/gestor e passou a mostrar pendencias, vencimentos, atrasos, entregas baixadas e diagnostico da integracao conforme perfil;
+- quando a integracao nao estiver configurada ou estiver indisponivel, a Home retorna aviso controlado sem expor segredo nem quebrar a tela.
+
+Validacao local:
+
+- `npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts --runInBand` passou;
+- `npm.cmd run lint` passou na API;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run prisma:validate` passou na API com `DATABASE_URL` dummy;
+- `npm.cmd run lint` passou no Web;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run test:e2e -- -g "home"` passou no Web com 3 testes e 1 opt-in real skipped.
+
+Pendencia real remanescente: publicar API/Web no EasyPanel, configurar/confirmar as variaveis do Acessorias no ambiente da API, validar o contrato real retornado pela API do Acessorias, repetir a Home com usuarios reais por perfil e decidir se a rota read-only permanece no corte base ou se entra como pre-MVP da trilha Acessorias.
 
 ## Atualizacao operacional de 2026-05-27 16:44 -03:00
 
@@ -826,9 +849,9 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 ### Integra-AI, Dominio e arquivos contabeis
 
-- [ ] Publicar Web/API atualizados com download TXT autenticado e leiaute Dominio vigente.
+- [x] Publicar Web/API atualizados com download TXT autenticado e leiaute Dominio vigente.
 - [ ] Validar fluxo completo com usuario contabil real, permissao `accounting.integra_ai.download`, job real, MySQL real e storage real.
-- [ ] Importar TXT real no Dominio usando `Lancamentos Contabeis em Lote`.
+- [x] Importar TXT real no Dominio usando `Lancamentos Contabeis em Lote`.
 - [ ] Salvar evidencia sanitizada da importacao Dominio.
 - [ ] Congelar golden file aprovado do TXT Dominio.
 - [ ] Validar parser com PDFs reais/sanitizados de bancos prioritarios.
@@ -838,9 +861,12 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 ### Acessorias, entregas e vencimentos
 
-Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. Esta funcionalidade e fase futura; nao deve bloquear o corte base se ficar formalmente fora do escopo inicial.
+Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. O MVP amplo continua como fase futura; a excecao implementada nesta rodada e a consulta read-only do Acessorias para alimentar a Home por perfil.
 
-- [ ] Registrar Acessorias/Entregas/Vencimentos como backlog futuro pos-migracao base.
+- [x] Registrar Acessorias/Entregas/Vencimentos como backlog futuro pos-migracao base.
+- [x] Implementar consumo read-only do Acessorias para a Home por perfil via backend, usando variaveis do ambiente da API.
+- [ ] Validar em homologacao o contrato real da API do Acessorias consumido por `GET /api-v2/integrations/acessorias/home-summary`.
+- [ ] Configurar/confirmar `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no EasyPanel sem expor segredos.
 - [ ] Confirmar dependencias antes de iniciar: Auth, RBAC, auditoria, notificacoes, planilhas departamentais, modulo base de integracoes, Prisma/MySQL, frontend React, logs estruturados, tratamento global de erros e testes minimos.
 - [ ] Validar na API do Acessorias campos de baixa, vencimento, competencia, CNPJ/CPF, departamento, responsavel, ID unico e entregas canceladas/dispensadas.
 - [ ] Criar modulo `integrations/acessorias-deliveries` somente quando as dependencias estiverem prontas.
@@ -862,7 +888,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 - [ ] Rodar e marcar o checklist `ux-ui-docs/09-checklist-aceite.md`.
 - [ ] Validar sidebar desktop com hover/foco, agrupamento de rotas e ocultacao de itens sem permissao.
 - [ ] Validar mobile com botao hamburguer, drawer e ausencia de quebra/overflow.
-- [ ] Validar Home por perfil: colaborador com pendencias reais, gestor com carteira/atrasos/riscos e DEV/Admin com diagnostico tecnico.
+- [ ] Validar Home por perfil no EasyPanel: colaborador com pendencias reais do Acessorias, gestor com carteira/atrasos/riscos e DEV/Admin com diagnostico tecnico.
 - [ ] Validar notificacoes no header: sino, badge, popover, pagina completa e filtros.
 - [ ] Validar clientes/documentos: Meus Clientes por vinculo, Todos os Clientes por permissao ampla, documentos no painel do cliente, status, auditoria e links publicos expiraveis.
 - [ ] Validar propostas, contratos, assinatura publica e entrada de cliente no fluxo completo.
@@ -918,7 +944,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
 12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
-13. Acessorias/Entregas/Vencimentos precisa ficar formalmente fora do escopo do corte base ou entrar em backlog futuro aprovado; nao iniciar antes das dependencias estruturais documentadas.
+13. A Home agora possui uma leitura inicial do Acessorias, mas ainda falta validar o contrato real da API externa no EasyPanel e decidir se essa consulta read-only entra no corte base; o MVP amplo de Acessorias/Entregas/Vencimentos continua como backlog futuro aprovado.
 
 ## Criterio para dizer "pronto para producao"
 
@@ -946,7 +972,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> carregar credenciais no shell -> rodar homologation:real por perfis -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> homologar TXT Dominio -> aceitar UX/UI -> classificar Acessorias como fase futura -> desligamento seguro do legado
+registrar migrations/seed/bootstrap -> configurar/validar Acessorias no ambiente da API -> carregar credenciais no shell -> rodar homologation:real por perfis -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> homologar TXT Dominio -> aceitar UX/UI/Home por perfil -> manter MVP amplo de Acessorias como backlog futuro -> desligamento seguro do legado
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

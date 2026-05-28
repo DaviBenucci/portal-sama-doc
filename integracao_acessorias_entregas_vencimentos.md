@@ -18,6 +18,8 @@ A funcionalidade tem como objetivo transformar o Portal Sama em uma camada opera
 
 Esta funcionalidade **não deve ser implementada agora**. Ela deve ser planejada como uma fase futura, para ser executada somente após a conclusão do grande plano principal de migração, refatoração, segurança e estruturação do Portal Sama.
 
+Atualizacao 2026-05-28: foi aberta uma excecao limitada para a Home por perfil. O Portal Sama passou a consultar um resumo read-only do Acessorias via backend (`GET /api-v2/integrations/acessorias/home-summary`), usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no ambiente da API. Essa entrega nao substitui o MVP futuro descrito neste documento: ainda nao ha sincronizacao local, planilha Fiscal automatica, Central de Vencimentos, notificacoes por vencimento nem auditoria de sync runs.
+
 ---
 
 ## 2. Decisão de implementação
@@ -29,7 +31,7 @@ A integração de entregas do Acessórias, geração automática da planilha Fis
 ### 2.2 Status da funcionalidade
 
 ```txt
-Status: Planejada para fase futura
+Status: Planejada para fase futura, com excecao read-only ja criada para Home
 Prioridade: Alta 
 Momento de implementação: Pós-migração base TypeScript/NestJS/React
 Departamento inicial: Fiscal

@@ -1,6 +1,17 @@
 # Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-05-28 10:06 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Home por perfil passou a usar dados read-only do Acessorias via API v2, conforme variaveis existentes no `.env` da API.
+- **Backend/API v2:** criado `AcessoriasHomeModule` com `GET /api-v2/integrations/acessorias/home-summary`, protegido por JWT. A rota usa `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` somente no backend, com path/header/scheme/timeout configuraveis.
+- **Normalizacao:** o servico aceita payloads comuns do Acessorias (`data`, `items`, `entregas`, `deliveries`, `obrigacoes`, `results`), normaliza cliente, obrigacao, responsavel, departamento, competencia, vencimento, baixa e status.
+- **Frontend React:** `/home` agora monta cards e blocos por perfil com pendencias, vencimentos, atrasos, entregas baixadas, carteira por responsavel e diagnostico da integracao, mantendo atalhos por permissao.
+- **Testes/validacao:** passaram teste unitario focado da API, lint/build da API, `prisma:validate` com `DATABASE_URL` dummy, lint/build do Web e Playwright local focado em Home.
+- **Pendente:** publicar API/Web, validar contrato real da API do Acessorias no EasyPanel, repetir por usuarios reais de colaborador/gestor/admin e decidir o aceite UX/UI da Home.
+
+
 ## Atualizacao complementar 2026-05-27 16:44 -03:00
 
 - **Responsavel/IA:** Codex

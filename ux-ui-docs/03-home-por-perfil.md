@@ -4,6 +4,14 @@
 
 A Home deve ser um Painel do Dia. Ela precisa mostrar o resumo do que o usuario deve fazer.
 
+## Status de implementacao local - 2026-05-28
+
+- A Home React foi alterada para consumir `GET /api-v2/integrations/acessorias/home-summary`.
+- A API consulta o Acessorias usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente do backend.
+- O token do Acessorias nao vai para o navegador.
+- Colaborador, gestor e DEV/Admin possuem blocos diferentes, mantendo os atalhos conforme permissoes.
+- Ainda falta validar no EasyPanel com a API real do Acessorias e usuarios reais por perfil.
+
 ## Home - Colaborador
 
 ### Prioridade
@@ -11,14 +19,13 @@ Execucao diaria.
 
 ### Cards
 - Meus clientes;
-- Documentos pendentes;
+- Entregas pendentes;
 - Vencimentos proximos;
-- Tarefas abertas.
+- Atrasos.
 
 ### Blocos
 - minhas pendencias;
-- vencimentos do departamento;
-- ultimos clientes acessados;
+- entregue pelo Acessorias;
 - atalhos inteligentes.
 
 ### Wireframe
@@ -51,14 +58,13 @@ Com essas informações sendo obtidas pelo sistema do acessórias
 Acompanhamento e decisao.
 
 ### Cards
-- Colaboradores;
+- Responsaveis;
 - Clientes;
 - Atrasos;
-- Aprovacoes.
+- Riscos de vencimento.
 
 ### Blocos
 - gargalos operacionais;
-- transferencias pendentes;
 - carteira por colaborador;
 - ranking de criticidade.
 
@@ -97,15 +103,14 @@ Diagnostico e manutencao.
 
 ### Cards
 - Integracoes;
-- Erros;
-- Auditoria;
-- Usuarios.
+- Atrasos;
+- Pendencias;
+- Clientes.
 
 ### Blocos
-- logs recentes;
-- alertas de seguranca;
-- status tecnico;
-- parametros criticos.
+- diagnostico da integracao Acessorias;
+- atrasos e riscos;
+- status tecnico.
 
 ### Wireframe
 

@@ -1,5 +1,53 @@
 # Changelog Técnico - Portal Sama
 
+## 2026-05-28 10:06
+
+### Arquivos alterados
+
+- `portal-sama-api/.env.example`
+- `portal-sama-api/src/app.module.ts`
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/*`
+- `portal-sama-web/src/pages/home/HomePage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- Documentacao de status, pendencias, testes, deploy, UX e producao.
+
+### O que mudou
+
+- Criada rota backend `GET /api-v2/integrations/acessorias/home-summary` para resumo read-only da Home.
+- Adicionada configuracao segura do Acessorias por variaveis de ambiente da API, sem expor token no frontend.
+- O backend normaliza entregas/obrigacoes retornadas pela API externa e calcula totais por status, itens prioritarios e agrupamento por responsavel.
+- A Home React passou a exibir conteudo operacional por perfil: colaborador ve pendencias/vencimentos/entregas baixadas; gestor ve carteira por responsavel e gargalos; admin ve diagnostico tecnico da integracao.
+- O Playwright local da Home foi atualizado para mockar o resumo do Acessorias.
+
+### Motivo da alteracao
+
+Atender a decisao de UX de que a Home deve ser um Painel do Dia e que esses dados devem vir do sistema Acessorias configurado no `.env` da API, preservando segredo no backend.
+
+### Impacto esperado
+
+- A Home deixa de depender de contadores tecnicos genericos para os perfis operacionais.
+- O Portal Sama passa a ter uma primeira integracao read-only com Acessorias sem criar ainda o MVP amplo de sincronizacao, planilha Fiscal, Central de Vencimentos e notificacoes.
+- Se a integracao estiver sem configuracao ou indisponivel, a Home mostra aviso controlado e continua renderizando.
+
+### Testes executados
+
+- `npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts --runInBand` em `portal-sama-api`: passou.
+- `npm.cmd run lint` em `portal-sama-api`: passou.
+- `npm.cmd run build` em `portal-sama-api`: passou.
+- `npm.cmd run prisma:validate` em `portal-sama-api` com `DATABASE_URL` dummy: passou.
+- `npm.cmd run lint` em `portal-sama-web`: passou.
+- `npm.cmd run build` em `portal-sama-web`: passou.
+- `npm.cmd run test:e2e -- -g "home"` em `portal-sama-web`: passou com 3 testes e 1 skipped opt-in.
+
+### Riscos ou pendencias
+
+- Falta validar o contrato real da API do Acessorias no EasyPanel.
+- Falta confirmar `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` no ambiente da API publicado.
+- O MVP amplo de Acessorias/Entregas/Vencimentos permanece backlog futuro.
+
 ## 2026-05-27 16:44
 
 ### Arquivos alterados

@@ -1,5 +1,10 @@
 # 09 - Checklist de Aceite
 
+## Status parcial - 2026-05-28
+
+- Home por perfil foi implementada localmente com dados read-only do Acessorias via API v2.
+- O aceite continua pendente ate validar no EasyPanel com dados reais do Acessorias e usuarios reais por perfil.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

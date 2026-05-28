@@ -1,5 +1,15 @@
 # Pendências Técnicas - Portal Sama
 
+## Atualizacao 2026-05-28 10:06 -03:00
+
+- Implementada a consulta read-only do Acessorias para alimentar a Home por perfil.
+- Criado modulo backend `AcessoriasHomeModule` e rota `GET /api-v2/integrations/acessorias/home-summary`.
+- Adicionadas ao schema/env da API as variaveis `ACESSORIAS_BASE_URL`, `ACESSORIAS_TOKEN`, `ACESSORIAS_HOME_PATH`, `ACESSORIAS_AUTH_HEADER`, `ACESSORIAS_AUTH_SCHEME` e `ACESSORIAS_TIMEOUT_SEC`.
+- O token do Acessorias permanece somente no backend; o Web consome apenas a rota autenticada do Portal Sama.
+- A Home React passou a exibir prioridades operacionais por perfil com base em entregas/obrigacoes: pendentes, proximas, atrasadas, baixadas e carteira por responsavel.
+- Passaram teste unitario focado da API, lint/build da API, Prisma validate, lint/build do Web e Playwright local focado em Home.
+- Permanece pendente validar o contrato real do Acessorias em homologacao, configurar variaveis no EasyPanel, repetir com usuarios reais e manter o MVP amplo de sincronizacao/planilha/notificacoes como backlog futuro.
+
 ## Atualizacao 2026-05-27 16:44 -03:00
 
 - Implementada a transferencia normalizada de responsabilidades de clientes na API v2.

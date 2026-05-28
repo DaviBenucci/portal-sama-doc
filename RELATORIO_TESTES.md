@@ -1,5 +1,57 @@
 # Relatório de Testes - Portal Sama
 
+## Execucao 2026-05-28 10:06
+
+### Contexto
+
+- Implementacao da Home por perfil usando resumo read-only do Acessorias via API v2.
+- Validacao local da rota `GET /api-v2/integrations/acessorias/home-summary` e da tela `/home`.
+
+### Comandos executados ate esta etapa
+
+```bash
+npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+$env:DATABASE_URL='mysql://user:pass@localhost:3306/portal_sama_dummy'; npm.cmd run prisma:validate
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e -- -g "home"
+```
+
+### Resultado
+
+- **Status geral:** Passou apos ajustes de normalizacao/teste.
+- API focada: 1 suite, 2 testes.
+- API lint passou.
+- API build passou.
+- Prisma schema validado com `DATABASE_URL` dummy.
+- Web lint passou.
+- Web build passou.
+- Playwright Home passou com 3 testes e 1 teste real-auth skipped por ser opt-in.
+
+### Falhas encontradas
+
+- O primeiro teste do servico contou a mesma empresa duas vezes quando uma entrega vinha com CNPJ e outra vinha somente com nome.
+- O agrupamento por responsavel separava linhas com `responsavel_nome` e linhas somente com `responsavel_username`.
+- Uma assercao Playwright procurava o badge "Diagnostico tecnico" como heading.
+
+### Acoes corretivas realizadas
+
+- A deduplicacao de clientes passou a cruzar nome e documento quando o payload externo estiver incompleto.
+- O agrupamento por responsavel passou a priorizar username e aproveitar o nome completo quando aparecer em qualquer entrega.
+- O teste Playwright foi ajustado para validar o badge pelo texto visivel.
+
+### Pendencias
+
+- Validar a resposta real da API do Acessorias em homologacao.
+- Repetir a Home com usuarios reais de colaborador, gestor e admin.
+- Registrar evidencia sanitizada apos deploy no EasyPanel.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra a API real do Acessorias nem contra EasyPanel nesta rodada. A validacao foi local, com payload mockado no unitario/API e no Playwright.
+
 ## Execucao 2026-05-27 16:44
 
 ### Contexto
