@@ -5,6 +5,8 @@ Tela operacional padrao dos departamentos.
 
 Status parcial 2026-06-01 11:30: a planilha Fiscal em React ja exibe baixas vindas do Acessorias com status visual `Acessorias`, mostra divergencias abertas e possui acao protegida para aplicar entregas sincronizadas.
 
+Status parcial 2026-06-01 complementar: a tela passou a alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, com colunas proprias por departamento e aplicacao do Acessorias no departamento selecionado.
+
 ### Deve conter
 - resumo do departamento;
 - clientes;

@@ -1,6 +1,15 @@
 # [PENDENTE] Pendências Técnicas - Portal Sama
 
-Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado na planilha Fiscal/vencimentos).
+Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
+
+## Atualizacao 2026-06-01 multidepartamental
+
+- Implementada a continuidade multidepartamental das planilhas: Fiscal, Contabil, Pessoal, Financeiro e Legalizacao agora possuem colunas operacionais proprias em `/departamentos/modelo`.
+- Adicionadas rotas genericas de workspace departamental em `/api-v2/departments/workspace`, mantendo as rotas `/departments/fiscal/workspace` para compatibilidade.
+- Adicionado `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` para aplicar baixas do Acessorias no departamento ativo.
+- Corrigida a Home do Acessorias para usar `deliveries` como fallback e tratar `204 No Content` como retorno valido sem entregas.
+- Validacoes locais passaram: testes focados de Acessorias/Departamentos, TypeScript do Web, build/lint API e build/lint Web.
+- Permanece pendente validar dados reais no EasyPanel, revisar mapeamentos de obrigacoes por departamento, implementar revisao manual de divergencias e conectar vencimentos/notificacoes.
 
 ## Atualizacao 2026-06-01 11:30 -03:00
 

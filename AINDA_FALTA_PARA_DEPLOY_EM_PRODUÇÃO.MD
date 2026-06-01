@@ -145,6 +145,23 @@ Validacao local:
 
 Pendencia real remanescente: aplicar migration no MySQL real, rodar seed RBAC, configurar `ACESSORIAS_DELIVERIES_PATH`, validar contrato real de entregas do Acessorias no EasyPanel e depois implementar mapeamento para planilha Fiscal, divergencias, Central de Vencimentos, scheduler e notificacoes.
 
+## Atualizacao operacional de 2026-06-01 complementar
+
+Foi ampliada a aplicacao operacional do Acessorias para os departamentos usados na planilha modelo.
+
+- `/departamentos/modelo` agora alterna Fiscal, Contabil, Pessoal, Financeiro e Legalizacao;
+- adicionadas rotas genericas `/api-v2/departments/workspace*`;
+- criado endpoint protegido `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace`, mantendo `apply-to-fiscal` compativel;
+- a Home do Acessorias trata `204 No Content` como retorno valido sem entregas e exibe diagnostico sanitizado em falhas.
+
+Validacao parcial:
+
+- testes focados de Acessorias/Departamentos passaram com 4 suites e 16 testes;
+- `npx.cmd tsc --noEmit --pretty false` passou no Web;
+- build/lint da API e do Web passaram.
+
+Pendencia real remanescente: publicar API/Web, validar contrato real no EasyPanel, conferir mapeamentos reais por departamento e executar matriz de usuarios reais.
+
 ## Atualizacao operacional de 2026-06-01 11:30 -03:00
 
 Foi implementada a primeira aplicacao segura de baixas do Acessorias na planilha Fiscal.

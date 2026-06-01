@@ -1,6 +1,16 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-06-01 multidepartamental
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 2/Fase 3: Home do Acessorias corrigida para o contrato local que responde `204 No Content`, e planilhas departamentais ampliadas para Fiscal, Contabil, Pessoal, Financeiro e Legalizacao.
+- **Backend/API v2:** adicionadas rotas genericas `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell`, `PATCH /api-v2/departments/workspace/cell-status` e `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace`, mantendo rotas fiscais antigas compativeis.
+- **Acessorias/Home:** `home-summary` passa a usar `ACESSORIAS_HOME_PATH`, `ACESSORIAS_DELIVERIES_PATH` ou `deliveries`, trata corpo vazio como lista vazia disponivel e retorna diagnostico sanitizado quando houver erro.
+- **Frontend React:** `/departamentos/modelo` ganhou selecao por departamento, cards de Fiscal/Contabil/Pessoal/Financeiro/Legalizacao e aplica o Acessorias no departamento ativo.
+- **Validacao local:** passaram testes focados de Acessorias/Departamentos, TypeScript do Web, build/lint da API e build/lint do Web.
+- **Pendente:** validar contrato real no EasyPanel, revisar mapeamentos de nomes reais de obrigacoes/departamentos, criar revisao manual de divergencias e integrar vencimentos/notificacoes.
+
 ## Atualizacao complementar 2026-06-01 11:30 -03:00
 
 - **Responsavel/IA:** Codex

@@ -2,17 +2,41 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
-## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/apply-to-fiscal`
+## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/apply-to-workspace`
 
 - **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.
 - **Metodo:** POST.
-- **Finalidade:** Aplicar baixas `DELIVERED` do Acessorias na planilha Fiscal existente, usando mapeamentos confirmados para marcar celulas como `ACESSORIAS`.
+- **Finalidade:** Aplicar baixas `DELIVERED` do Acessorias na planilha operacional do departamento selecionado, usando mapeamentos confirmados para marcar celulas como `ACESSORIAS`.
 - **Pagina/tela relacionada:** `/departamentos/modelo`.
 - **Modulo NestJS alvo:** `AcessoriasHomeModule`/integracao Acessorias.
-- **Status de migracao:** Implementado localmente em 2026-06-01; pendente de migration/deploy/validacao real.
+- **Status de migracao:** Implementado localmente em 2026-06-01; `apply-to-fiscal` permanece como rota compativel; pendente de migration/deploy/validacao real.
 - **Riscos de seguranca:** atualizacao indevida de planilha por mapeamento incorreto, cliente errado, competencia fechada ou status divergente.
-- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado e mes aberto; casos inseguros viram divergencia aberta.
+- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado, departamento selecionado e mes aberto; casos inseguros viram divergencia aberta.
 - **Testes necessarios:** dry-run e execucao real no EasyPanel, validacao de auditoria, status visual, divergencias e matriz de permissao.
+
+## Endpoint novo: `/api-v2/departments/workspace`
+
+- **Arquivo:** `portal-sama-api/src/modules/departments/departments.controller.ts`, `portal-sama-api/src/modules/departments/departments.service.ts`.
+- **Metodo:** GET.
+- **Finalidade:** Carregar workspace operacional de Fiscal, Contabil, Pessoal, Financeiro ou Legalizacao, conforme `dept_key` e escopo do usuario.
+- **Pagina/tela relacionada:** `/departamentos/modelo`.
+- **Modulo NestJS alvo:** `DepartmentsModule`.
+- **Status de migracao:** Implementado localmente; rotas `/api-v2/departments/fiscal/workspace*` seguem compativeis.
+- **Riscos de seguranca:** exposicao de carteira de outro departamento ou colaborador.
+- **Controles implementados:** JWT, permissao `departments.workspace.read`, escopo por departamento permitido, selecao de colaborador restrita a perfis de gestao.
+- **Testes necessarios:** validar com usuarios reais por departamento, dados reais de carteira e matriz de permissoes.
+
+## Endpoint novo: `/api-v2/departments/workspace/cycle-cell` e `/api-v2/departments/workspace/cell-status`
+
+- **Arquivo:** `portal-sama-api/src/modules/departments/departments.controller.ts`, `portal-sama-api/src/modules/departments/departments.service.ts`.
+- **Metodo:** POST e PATCH.
+- **Finalidade:** Alternar ou definir status de celula no workspace departamental ativo.
+- **Pagina/tela relacionada:** `/departamentos/modelo`.
+- **Modulo NestJS alvo:** `DepartmentsModule`.
+- **Status de migracao:** Implementado localmente; rotas fiscais antigas seguem compativeis.
+- **Riscos de seguranca:** alteracao de celula fora do departamento, mes fechado ou vencimento bloqueado.
+- **Controles implementados:** JWT, CSRF, permissao `departments.workspace.write`, papel operacional, escopo por departamento/colaborador, coluna valida do departamento e bloqueio por mes/vencimento.
+- **Testes necessarios:** validar em EasyPanel com usuario real, carteira real e auditoria persistida.
 
 ## Endpoint novo: `/api-v2/health`
 

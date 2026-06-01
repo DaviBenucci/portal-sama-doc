@@ -28,6 +28,8 @@ Atualizacao 2026-06-01: foi criada a camada backend de mapeamento entre entregas
 
 Atualizacao 2026-06-01 11:30: foi implementada a primeira aplicacao segura de mapeamentos confirmados na planilha Fiscal. A API passa a ter as tabelas `acessorias_fiscal_apply_runs` e `acessorias_fiscal_divergences`, alem do endpoint protegido `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`. A regra e conservadora: somente entrega `DELIVERED`, cliente identificado, competencia aberta, coluna Fiscal valida e mapeamento `CONFIRMED` com confianca minima geram status visual `ACESSORIAS` na celula. Qualquer caso inseguro cria divergencia aberta e nao altera a planilha. O Web em `/departamentos/modelo` exibe contadores, celulas `Acessorias` e divergencias por empresa/celula. Ainda falta validar com contrato real no EasyPanel, implementar revisao manual das divergencias, Central de Vencimentos, scheduler e notificacoes.
 
+Atualizacao 2026-06-01 complementar: a aplicacao deixou de ser apenas Fiscal no fluxo operacional. `/departamentos/modelo` agora permite selecionar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao; cada departamento tem colunas proprias e metadados separados no cliente. A API adicionou `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` e rotas genericas `/api-v2/departments/workspace*`, mantendo as rotas antigas como compatibilidade. A Home do Acessorias tambem foi ajustada para usar `deliveries` como fallback, tratar `204 No Content` como retorno valido sem entregas e exibir diagnostico sanitizado sem expor segredo.
+
 ---
 
 ## 2. Decisão de implementação
@@ -42,7 +44,7 @@ A integração de entregas do Acessórias, geração automática da planilha Fis
 Status: Planejada para fase futura, com excecao read-only ja criada para Home
 Prioridade: Alta 
 Momento de implementação: Pós-migração base TypeScript/NestJS/React
-Departamento inicial: Fiscal
+Departamentos operacionais iniciais: Fiscal, Contabil, Pessoal, Financeiro e Legalizacao
 ```
 
 ### 2.3 Motivo para não implementar agora

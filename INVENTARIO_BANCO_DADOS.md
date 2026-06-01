@@ -25,7 +25,7 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 
 - **Status:** Criados no schema alvo em 2026-06-01 pela migration `20260601113000_add_acessorias_fiscal_application`; banco real ponto a validar.
 - **Origem:** Prisma/MySQL alvo.
-- **Finalidade:** registrar execucoes de aplicacao de baixas do Acessorias na planilha Fiscal e persistir divergencias abertas quando a aplicacao automatica nao for segura.
+- **Finalidade:** registrar execucoes de aplicacao de baixas do Acessorias nas planilhas departamentais e persistir divergencias abertas quando a aplicacao automatica nao for segura. Os nomes dos modelos/tabelas mantem `Fiscal` por compatibilidade da primeira migration, mas o campo `department` diferencia Fiscal, Contabil, Pessoal, Financeiro e Legalizacao.
 - **Campos principais:** `AcessoriasFiscalApplyRun.id`, `monthKey`, `department`, `status`, `deliveriesScanned`, `cellsApplied`, `divergencesCreated`, `skipped`; `AcessoriasFiscalDivergence.dedupeKey`, `deliveryId`, `externalId`, `clientId`, `clientDocument`, `obligationName`, `monthKey`, `sheetColumnKey`, `reason`, `status`.
 - **Indices:** run por `monthKey/department`, `status` e `startedAt`; divergencia por `dedupeKey` unico, `monthKey/status`, `clientId/status`, `deliveryId`, `reason/status` e `sheetColumnKey`.
 - **Dados sensiveis:** nomes/documentos de clientes e metadados operacionais de divergencia; nao registrar token do Acessorias.

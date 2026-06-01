@@ -89,7 +89,15 @@ Criterio de saida:
 
 ## Fase 2 - Contrato real do Acessorias
 
+Estado: diagnostico local melhorado; contrato real no EasyPanel ainda pendente.
+
 Objetivo: validar a integracao externa antes de expandir automacoes internas.
+
+Ja feito localmente:
+
+- `GET /api-v2/integrations/acessorias/home-summary` agora usa `ACESSORIAS_HOME_PATH`, depois `ACESSORIAS_DELIVERIES_PATH`, depois `deliveries` como fallback seguro.
+- Resposta externa `204 No Content` ou corpo vazio passa a ser tratada como resumo disponivel sem entregas, em vez de indisponibilidade.
+- A Home recebe diagnostico sanitizado de erro externo, sem expor token, URL completa ou payload.
 
 Implementar/validar em ordem:
 
@@ -117,22 +125,24 @@ Criterio de saida:
 - Entregas reais ficam persistidas localmente.
 - Home por perfil funciona com dados reais do Acessorias no EasyPanel.
 
-## Fase 3 - Acessorias aplicado na planilha Fiscal e vencimentos
+## Fase 3 - Acessorias aplicado nas planilhas departamentais e vencimentos
 
-Estado: primeira aplicacao local implementada; validacao real e revisao manual ainda pendentes.
+Estado: aplicacao local multidepartamental implementada; validacao real e revisao manual ainda pendentes.
 
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
 
 Ja feito localmente:
 
-- `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` aplica entregas `DELIVERED` com mapeamento confirmado na planilha Fiscal existente.
+- `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` aplica entregas `DELIVERED` com mapeamento confirmado na planilha operacional selecionada; `apply-to-fiscal` permanece como rota compativel.
 - Celulas aplicadas recebem status visual `ACESSORIAS`.
 - Casos inseguros geram divergencias persistidas em `acessorias_fiscal_divergences`.
 - `/departamentos/modelo` exibe contadores, marcador de celula e divergencias abertas.
+- `/departamentos/modelo` agora permite alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, com colunas operacionais proprias por departamento.
+- `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status` foram adicionados como rotas genericas, mantendo as rotas fiscais antigas compativeis.
 
 Implementar em ordem:
 
-1. [local concluido; real pendente] Aplicar mapeamentos confirmados na planilha Fiscal.
+1. [local concluido; real pendente] Aplicar mapeamentos confirmados nas planilhas Fiscal, Contabil, Pessoal, Financeiro e Legalizacao.
 2. [local concluido; real pendente] Marcar celulas preenchidas pelo Acessorias com status visual proprio.
 3. [local concluido; revisao pendente] Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
 4. Permitir revisao manual das divergencias.
@@ -154,7 +164,7 @@ Documentos que devem ser atualizados:
 
 Criterio de saida:
 
-- Planilha Fiscal reflete entregas do Acessorias sem sobrescrever casos duvidosos.
+- Planilhas departamentais refletem entregas do Acessorias sem sobrescrever casos duvidosos.
 - Divergencias existem e podem ser tratadas.
 - Vencimentos e notificacoes deixam de depender somente do legado/manual.
 
@@ -310,7 +320,7 @@ Criterio de saida:
 
 1. Fase 1: migrations/seed/restore drill/matriz real.
 2. Fase 2: contrato real do Acessorias.
-3. Fase 3: Acessorias aplicado na planilha Fiscal.
+3. Fase 3: Acessorias aplicado nas planilhas departamentais.
 4. Fase 4: responsabilidades/carteiras normalizadas na UI.
 5. Fase 5: UX/UI estrutural e configuracoes.
 6. Fase 6: fechamento modulo a modulo.

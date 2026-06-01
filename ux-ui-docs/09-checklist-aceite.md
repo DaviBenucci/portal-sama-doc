@@ -10,6 +10,12 @@
 - Planilha Fiscal passou a exibir status visual `Acessorias`, contadores de baixas sincronizadas e divergencias abertas por empresa/celula.
 - O aceite continua pendente ate aplicar migration, publicar no EasyPanel e validar com entregas reais do Acessorias.
 
+## Status parcial - 2026-06-01 complementar
+
+- `/departamentos/modelo` passou a alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao com cards de departamento e colunas proprias.
+- A Home do Acessorias passou a diferenciar indisponibilidade real de retorno vazio (`204 No Content`), exibindo diagnostico sanitizado quando houver falha.
+- O aceite continua pendente ate validar dados reais, responsaveis reais e mapeamentos reais de obrigacoes no EasyPanel.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

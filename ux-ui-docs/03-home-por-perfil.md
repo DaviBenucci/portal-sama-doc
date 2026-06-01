@@ -10,6 +10,7 @@ A Home deve ser um Painel do Dia. Ela precisa mostrar o resumo do que o usuario 
 - A API consulta o Acessorias usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente do backend.
 - O token do Acessorias nao vai para o navegador.
 - Colaborador, gestor e DEV/Admin possuem blocos diferentes, mantendo os atalhos conforme permissoes.
+- Atualizacao complementar 2026-06-01: retorno externo `204 No Content`/corpo vazio e tratado como resumo disponivel sem entregas; falhas retornam diagnostico sanitizado para o painel admin.
 - Ainda falta validar no EasyPanel com a API real do Acessorias e usuarios reais por perfil.
 
 ## Home - Colaborador

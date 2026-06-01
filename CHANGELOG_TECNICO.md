@@ -1,5 +1,39 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 complementar
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/departments/*`
+- `portal-sama-api/src/modules/integrations/acessorias/*`
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/.env.example`
+- `portal-sama-web/src/pages/departments/DepartmentModelPage.tsx`
+- `portal-sama-web/src/pages/home/HomePage.tsx`
+- `portal-sama-web/src/services/*`
+- `portal-sama-web/src/types/*`
+- Documentacao de ordem, testes, endpoints, UX e Acessorias.
+
+### O que mudou
+
+- `/departamentos/modelo` passou a alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao com colunas operacionais proprias.
+- Foram adicionadas rotas genericas `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status`.
+- `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` aplica baixas do Acessorias no departamento selecionado; a rota `apply-to-fiscal` segue compativel.
+- A Home do Acessorias agora usa `deliveries` como fallback de path, nao envia query contextual por padrao, trata `204 No Content` como consulta disponivel sem entregas e exibe diagnostico sanitizado.
+
+### Testes executados
+
+- `npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-fiscal-application.service.spec.ts integrations/acessorias/acessorias-delivery-column-mappings.service.spec.ts departments/departments.service.spec.ts --runInBand`.
+- `npx.cmd tsc --noEmit --pretty false` no Web.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+- Checagem operacional segura do Acessorias local sem imprimir token, URL completa ou payload.
+
+### Riscos ou pendencias
+
+- Ainda falta validar no EasyPanel com contrato real, usuarios reais e dados reais.
+- Revisao manual de divergencias, Central de Vencimentos, scheduler e notificacoes continuam pendentes.
+
 ## 2026-06-01 11:30
 
 ### Arquivos alterados

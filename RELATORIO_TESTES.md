@@ -1,5 +1,39 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 complementar
+
+### Contexto
+
+- Continuidade da Fase 2/Fase 3: corrigir consulta da Home do Acessorias e ampliar `/departamentos/modelo` para Fiscal, Contabil, Pessoal, Financeiro e Legalizacao.
+- Escopo local: rotas genericas de workspace departamental, colunas por departamento, aplicacao do Acessorias na planilha selecionada e diagnostico sanitizado da Home.
+
+### Comandos executados ate esta etapa
+
+```bash
+npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-fiscal-application.service.spec.ts integrations/acessorias/acessorias-delivery-column-mappings.service.spec.ts departments/departments.service.spec.ts --runInBand
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 4 suites, 16 testes.
+- Web TypeScript: passou sem erros.
+- API build e lint passaram.
+- Web build e lint passaram.
+- Checagem operacional segura do `.env` local confirmou `ACESSORIAS_BASE_URL`/token configurados e resposta `204 No Content` no caminho `deliveries`; o codigo foi ajustado para tratar isso como consulta disponivel sem entregas.
+
+### Pendencias
+
+- Validar no EasyPanel com contrato real e usuario real.
+- Confirmar se os nomes reais dos departamentos/obrigacoes do Acessorias exigem novos aliases de mapeamento.
+
+### Observacao anti-alucinacao
+
+Nao foi impresso token, URL completa nem payload do Acessorias. A checagem externa local registrou apenas status HTTP, caminho logico, tipo de conteudo e tamanho.
+
 ## Execucao 2026-06-01 11:30
 
 ### Contexto
