@@ -1,8 +1,10 @@
-# Plano de Rollback e Restore Drill - Portal Sama
+# [PARCIAL] Plano de Rollback e Restore Drill - Portal Sama
 
 Ultima atualizacao: 2026-05-26 16:50 -03:00
 Responsavel/IA: Codex
 Status: plano operacional criado; restore real ainda pendente
+
+Atualizacao 2026-06-01 09:30 -03:00: `portal-sama-api` ganhou `npm run ops:phase1`, um orquestrador da Fase 1 que executa migrations, seed, readiness, backup, verificacao e restore drill em sequencia, gerando evidencia JSON. O restore real em alvo isolado continua dependendo de `--apply-database`, `--apply-storage` e `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED`.
 
 ## Objetivo
 

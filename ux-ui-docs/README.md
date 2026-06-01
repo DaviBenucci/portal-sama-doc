@@ -1,4 +1,4 @@
-# Portal Sama - Docs UX/UI e Configuracoes
+# [PARCIAL] Portal Sama - Docs UX/UI e Configuracoes
 
 Pacote de documentacao em Markdown para orientar a melhoria das telas do Portal Sama.
 

@@ -1,4 +1,4 @@
-# Painel do Cliente
+# [PARCIAL] Painel do Cliente
 
 ## 1. Identificação da página
 

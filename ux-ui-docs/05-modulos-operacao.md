@@ -1,4 +1,4 @@
-# 05 - Modulos de Operacao
+# [PARCIAL] 05 - Modulos de Operacao
 
 ## Modelo Dpto
 Tela operacional padrao dos departamentos.

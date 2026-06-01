@@ -1,4 +1,4 @@
-# Acesso T.I
+# [PARCIAL] Acesso T.I
 
 ## 1. Identificação da página
 

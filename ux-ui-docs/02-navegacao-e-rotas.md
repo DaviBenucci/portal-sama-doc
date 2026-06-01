@@ -1,4 +1,4 @@
-# 02 - Navegacao e Rotas
+# [PARCIAL] 02 - Navegacao e Rotas
 
 ## Estrutura recomendada da sidebar
 

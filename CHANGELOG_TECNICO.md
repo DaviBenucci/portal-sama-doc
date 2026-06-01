@@ -1,4 +1,35 @@
-# Changelog Técnico - Portal Sama
+# [PARCIAL] Changelog Técnico - Portal Sama
+
+## 2026-06-01 09:30
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/run-operational-phase1.js`
+- `portal-sama-api/README.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `portal-sama-docs/EASYPANEL_DEPLOY.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/PLANO_ROLLBACK_RESTORE_DRILL.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+
+### O que mudou
+
+- Adicionado `npm run ops:phase1` para orquestrar a Fase 1 operacional no container da API.
+- O comando encadeia migrations, seed, readiness, backup, verificacao e restore drill.
+- Restore real continua exigindo alvo isolado e frase de confirmacao.
+
+### Testes executados
+
+- `node --check scripts/run-operational-phase1.js`
+- `npm.cmd run ops:phase1 -- --help`
+- `npm.cmd run ops:phase1 -- --skip-migrate --skip-seed --skip-readiness --skip-backup --skip-restore --no-evidence --json`
+
+### Riscos ou pendencias
+
+- A execucao real no EasyPanel ainda precisa ser feita com banco/storage reais e alvo isolado de restore.
+- A homologacao real do Web com matriz completa de perfis segue pendente.
 
 ## 2026-05-28 10:06
 

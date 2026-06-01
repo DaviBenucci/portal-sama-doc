@@ -1,4 +1,4 @@
-# Referências técnicas oficiais
+# [CONCLUIDO] Referências técnicas oficiais
 
 Este arquivo reúne referências oficiais para as tecnologias recomendadas na nova arquitetura do Portal Sama.
 

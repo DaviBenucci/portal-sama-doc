@@ -1,4 +1,4 @@
-# Aprovação de Proposta pelo Cliente
+# [PARCIAL] Aprovação de Proposta pelo Cliente
 
 ## 1. Identificação da página
 

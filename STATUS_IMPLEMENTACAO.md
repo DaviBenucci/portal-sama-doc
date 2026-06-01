@@ -1,4 +1,15 @@
-# Status de Implementação - Portal Sama
+# [PARCIAL] Status de Implementação - Portal Sama
+
+
+## Atualizacao complementar 2026-06-01 09:30 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Criado orquestrador operacional para dar continuidade a Fase 1 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`.
+- **Backend/operacao:** `portal-sama-api` ganhou `scripts/run-operational-phase1.js` e `npm run ops:phase1`.
+- **Sequencia coberta:** migrations, seed RBAC/catalogo, readiness, backup operacional, verificacao de backup e restore drill.
+- **Seguranca operacional:** restore real exige alvo isolado e confirmacao `RESTORE_DRILL_TARGET_IS_ISOLATED`; por padrao, o restore drill permanece seco quando nao ha `--apply-database`/`--apply-storage`.
+- **Validacao:** passaram `node --check`, `npm.cmd run ops:phase1 -- --help` e execucao simulada com etapas puladas.
+- **Pendente:** executar no container real do EasyPanel com banco/storage/backup reais, registrar evidencia sanitizada e rodar homologacao real do Web com matriz de perfis.
 
 
 ## Atualizacao complementar 2026-05-28 10:06 -03:00

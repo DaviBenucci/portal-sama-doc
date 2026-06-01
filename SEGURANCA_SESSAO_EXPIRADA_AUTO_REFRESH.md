@@ -1,4 +1,4 @@
-# Documentação técnica — Sessão expirada mesmo com o usuário usando o Portal Sama
+# [CONCLUIDO] Documentação técnica — Sessão expirada mesmo com o usuário usando o Portal Sama
 
 ## Status da correcao - 2026-06-01
 

@@ -1,4 +1,38 @@
-# Relatório de Testes - Portal Sama
+# [PARCIAL] Relatório de Testes - Portal Sama
+
+## Execucao 2026-06-01 09:30
+
+### Contexto
+
+- Implementacao do orquestrador operacional `npm run ops:phase1` no `portal-sama-api`.
+- Objetivo: preparar a Fase 1 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md` para execucao reproduzivel no container real da API.
+
+### Comandos executados ate esta etapa
+
+```bash
+node --check scripts/run-operational-phase1.js
+npm.cmd run ops:phase1 -- --help
+npm.cmd run ops:phase1 -- --skip-migrate --skip-seed --skip-readiness --skip-backup --skip-restore --no-evidence --json
+```
+
+### Resultado
+
+- **Status geral:** passou em validacao local segura.
+- O script foi validado sintaticamente.
+- O help do comando foi exibido corretamente.
+- A execucao simulada com todas as etapas puladas retornou JSON controlado e nao tocou banco, storage, backup ou restore.
+
+### Pendencias
+
+- Executar `npm run ops:phase1` no container real do EasyPanel.
+- Informar alvo isolado de banco e storage para restore drill.
+- Copiar backup/evidencia JSON para fora do container.
+- Registrar evidencia real sanitizada neste relatorio e no plano de rollback.
+- Rodar `portal-sama-web` `npm run homologation:real` com matriz real de perfis.
+
+### Observacao anti-alucinacao
+
+Nao houve execucao contra MySQL real, EasyPanel, storage real ou restore real nesta rodada. Foi implementado e validado o orquestrador local/container; a Fase 1 operacional continua pendente ate execucao real.
 
 ## Execucao 2026-05-28 10:06
 

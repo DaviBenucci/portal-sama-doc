@@ -1,4 +1,4 @@
-# Painel de Informações
+# [PARCIAL] Painel de Informações
 
 ## 1. Identificação da página
 

@@ -1,4 +1,4 @@
-# Arquitetura alvo com TypeScript, NestJS, MySQL e EasyPanel
+# [PARCIAL] Arquitetura alvo com TypeScript, NestJS, MySQL e EasyPanel
 
 ## 1. Objetivo
 

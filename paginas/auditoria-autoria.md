@@ -1,4 +1,4 @@
-# Autoria e Auditoria
+# [PARCIAL] Autoria e Auditoria
 
 > Atualizacao 2026-05-20 17:24: `/auditoria` ganhou exportacao CSV via `GET /api-v2/audit/logs/export.csv`, reaproveitando filtros da listagem, limite de 1000 linhas, protecao contra CSV injection e registro auditavel da propria exportacao. Backup/restauracao seguem fora desta fatia ate existir contrato seguro separado.
 

@@ -1,4 +1,14 @@
-# Pendências Técnicas - Portal Sama
+# [PENDENTE] Pendências Técnicas - Portal Sama
+
+Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado na planilha Fiscal/vencimentos).
+
+## Atualizacao 2026-06-01 09:30 -03:00
+
+- Implementado no `portal-sama-api` o comando `npm run ops:phase1`, que orquestra a Fase 1 operacional: migrations, seed, readiness, backup, verificacao e restore drill.
+- O comando gera evidencia JSON em `.ai-tests/phase1-operational` por padrao.
+- Restore real permanece bloqueado ate informar alvo isolado e `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED`.
+- Validacoes locais passaram com `node --check`, `--help` e execucao simulada com etapas puladas.
+- Permanece pendente executar o comando no container real do EasyPanel, copiar evidencias/artefatos para fora do container e repetir a homologacao real do Web com matriz de perfis.
 
 ## Atualizacao 2026-05-28 10:06 -03:00
 

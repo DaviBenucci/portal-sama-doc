@@ -1,4 +1,4 @@
-# Documentação técnica — Leiaute Domínio no Integra-AI
+# [CONCLUIDO] Documentação técnica — Leiaute Domínio no Integra-AI
 
 **Projeto:** Portal Sama / Integra-AI  
 **Arquivo analisado:** `Integra-AI-ANTIGO.zip`  

@@ -1,4 +1,4 @@
-# Portal Sama — Handoff para integração no Codex
+# [CONCLUIDO] Portal Sama — Handoff para integração no Codex
 
 ## Objetivo
 

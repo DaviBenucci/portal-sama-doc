@@ -1,4 +1,4 @@
-# 07 - Configuracoes e Seguranca
+# [PARCIAL] 07 - Configuracoes e Seguranca
 
 ## Rota
 Criar base para `/configuracoes`.

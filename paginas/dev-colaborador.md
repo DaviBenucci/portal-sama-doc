@@ -1,4 +1,4 @@
-# Administração de Colaborador
+# [PARCIAL] Administração de Colaborador
 
 ## 1. Identificação da página
 

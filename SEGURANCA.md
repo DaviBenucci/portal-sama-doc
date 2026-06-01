@@ -1,4 +1,4 @@
-# Segurança do Portal Sama — versão atualizada para TypeScript/NestJS
+# [PARCIAL] Segurança do Portal Sama — versão atualizada para TypeScript/NestJS
 
 ## 1. Visão geral
 

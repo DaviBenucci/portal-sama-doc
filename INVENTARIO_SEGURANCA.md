@@ -1,4 +1,4 @@
-# Inventário de Segurança - Portal Sama
+# [PARCIAL] Inventário de Segurança - Portal Sama
 
 Status: inventário em andamento. Inventário baseado em `docs/SEGURANCA.md`, `.htaccess`, `Dockerfile`, `api/auth.php`, `api/security_lib.php`, `api/client_documents_lib.php`, `api/public_token_lib.php` e endpoints críticos. Testes unitários/e2e parciais foram executados para Auth/CSRF/Audit/RBAC/Documents no NestJS; testes completos de segurança, MySQL real e PHP legado seguem pendentes.
 

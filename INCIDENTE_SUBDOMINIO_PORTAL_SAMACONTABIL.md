@@ -1,4 +1,4 @@
-# Incidente - subdominio `portal.samacontabil.com.br`
+# [CONCLUIDO] Incidente - subdominio `portal.samacontabil.com.br`
 
 Data do registro: 2026-05-13 15:18 -03:00
 

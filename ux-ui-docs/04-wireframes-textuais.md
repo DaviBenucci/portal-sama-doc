@@ -1,4 +1,4 @@
-# 04 - Wireframes Textuais
+# [PARCIAL] 04 - Wireframes Textuais
 
 ## Layout desktop autenticado
 

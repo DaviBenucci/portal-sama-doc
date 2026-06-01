@@ -1,4 +1,4 @@
-# Entrada de Cliente
+# [PARCIAL] Entrada de Cliente
 
 ## 1. Identificação da página
 

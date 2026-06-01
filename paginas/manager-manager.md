@@ -1,4 +1,4 @@
-# Vencimentos do Gestor
+# [PARCIAL] Vencimentos do Gestor
 
 > Atualizacao 2026-05-20 11:20: primeira fatia de historico operacional criada em `/manager/historico`, consumindo `GET /api-v2/managers/history` e `GET /api-v2/managers/history/:companyId/timeline` do `ManagersModule`. A tela e somente leitura nesta etapa; escrita/edicao, validacao com MySQL real, usuarios reais por departamento e Playwright seguem pendentes.
 > Atualizacao 2026-05-20 11:45: `/manager/historico` passou a criar/editar historico por `POST/PATCH /api-v2/managers/history` e salvar vida da empresa por `POST /api-v2/managers/company-life`, com `manager_history.write`, CSRF, escopo por departamento e auditoria. Validacao MySQL/usuarios reais/Playwright segue pendente.

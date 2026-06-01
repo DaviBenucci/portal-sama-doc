@@ -1,4 +1,4 @@
-# Banco de dados — MySQL relacional com Prisma ORM
+# [PARCIAL] Banco de dados — MySQL relacional com Prisma ORM
 
 ## 1. Decisão
 

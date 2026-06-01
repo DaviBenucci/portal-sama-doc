@@ -1,4 +1,4 @@
-# Guia detalhado de implementação — migração para TypeScript, NestJS, React, MySQL e EasyPanel
+# [PARCIAL] Guia detalhado de implementação — migração para TypeScript, NestJS, React, MySQL e EasyPanel
 
 ## 1. Objetivo deste guia
 

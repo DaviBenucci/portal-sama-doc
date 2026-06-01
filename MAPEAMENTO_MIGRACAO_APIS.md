@@ -1,4 +1,4 @@
-# Mapeamento de migração dos endpoints PHP para NestJS
+# [PARCIAL] Mapeamento de migração dos endpoints PHP para NestJS
 
 ## 1. Objetivo
 

@@ -1,4 +1,4 @@
-# Ainda Falta Para Deploy Em Producao - Portal Sama
+# [PENDENTE] Ainda Falta Para Deploy Em Producao - Portal Sama
 
 Ultima atualizacao: 2026-05-28 10:06 -03:00
 Responsavel/IA: Codex
@@ -32,16 +32,17 @@ Este arquivo deve ser lido e atualizado em todo ciclo que envolva:
 Antes de atualizar este documento, a IA/desenvolvedor deve:
 
 1. Ler `INSTRUÇÕEDS_AI.MD`.
-2. Ler `STATUS_IMPLEMENTACAO.md`.
-3. Ler `PENDENCIAS_TECNICAS.md`.
-4. Ler `EASYPANEL_DEPLOY.md`.
-5. Ler `RELATORIO_TESTES.md`.
-6. Ler `CHANGELOG_TECNICO.md`.
-7. Ler `integracao_acessorias_entregas_vencimentos.md` quando a tarefa envolver entregas, vencimentos, planilhas departamentais, notificacoes ou integracoes externas.
-8. Ler `ux-ui-docs/README.md` e `ux-ui-docs/09-checklist-aceite.md` quando a tarefa envolver UX/UI, navegacao, configuracoes, solicitacoes, departamentos, permissoes ou responsabilidades de clientes.
-9. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
-10. Verificar o estado real do Git e dos arquivos existentes.
-11. Atualizar este documento com data/hora, percentual e pendencias reais.
+2. Ler `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`.
+3. Ler `STATUS_IMPLEMENTACAO.md`.
+4. Ler `PENDENCIAS_TECNICAS.md`.
+5. Ler `EASYPANEL_DEPLOY.md`.
+6. Ler `RELATORIO_TESTES.md`.
+7. Ler `CHANGELOG_TECNICO.md`.
+8. Ler `integracao_acessorias_entregas_vencimentos.md` quando a tarefa envolver entregas, vencimentos, planilhas departamentais, notificacoes ou integracoes externas.
+9. Ler `ux-ui-docs/README.md` e `ux-ui-docs/09-checklist-aceite.md` quando a tarefa envolver UX/UI, navegacao, configuracoes, solicitacoes, departamentos, permissoes ou responsabilidades de clientes.
+10. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
+11. Verificar o estado real do Git e dos arquivos existentes.
+12. Atualizar este documento com data/hora, percentual e pendencias reais.
 
 Se uma porcentagem for informada, ela deve ser marcada como estimativa operacional, nao como metrica matematica exata.
 
@@ -77,6 +78,26 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Parcial para Home; MVP futuro segue pendente | A Home local agora possui consulta read-only ao Acessorias via backend, usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente da API e sem expor token no Web. O MVP maior de sincronizacao, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria continua como trilha futura em `integracao_acessorias_entregas_vencimentos.md`. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-01 09:30 -03:00
+
+Foi implementado no `portal-sama-api` o orquestrador local/container da Fase 1 da ordem operacional:
+
+- criado script `scripts/run-operational-phase1.js`;
+- criado comando `npm run ops:phase1`;
+- a sequencia executa `prisma:migrate:deploy`, `prisma:seed`, `ops:readiness`, backup operacional, verificacao do backup e restore drill;
+- o comando aceita evidencia JSON em `.ai-tests/phase1-operational`;
+- restore real continua protegido por alvo isolado e confirmacao explicita `RESTORE_DRILL_TARGET_IS_ISOLATED`;
+- tambem pode rodar `ops:backfill:report` com `--include-backfill-report`;
+- o modo de teste local com todas as etapas puladas foi validado sem tocar banco, storage ou restore real.
+
+Validacao local:
+
+- `node --check scripts/run-operational-phase1.js` passou;
+- `npm.cmd run ops:phase1 -- --help` passou;
+- `npm.cmd run ops:phase1 -- --skip-migrate --skip-seed --skip-readiness --skip-backup --skip-restore --no-evidence --json` passou.
+
+Pendencia real remanescente: executar `npm run ops:phase1` no container real da API no EasyPanel com `DATABASE_URL`, `STORAGE_PRIVATE_PATH`, alvo de banco isolado, alvo de storage isolado e backup fora do volume principal; depois registrar evidencia sanitizada e rodar `portal-sama-web` `npm run homologation:real` com matriz real de perfis.
 
 ## Atualizacao operacional de 2026-05-28 10:45 -03:00
 

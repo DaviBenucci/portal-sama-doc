@@ -1,4 +1,4 @@
-# 09 - Checklist de Aceite
+# [PENDENTE] 09 - Checklist de Aceite
 
 ## Status parcial - 2026-05-28
 

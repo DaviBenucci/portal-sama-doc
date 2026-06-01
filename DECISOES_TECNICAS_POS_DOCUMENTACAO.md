@@ -1,4 +1,4 @@
-# Decisões técnicas pós-documentação
+# [CONCLUIDO] Decisões técnicas pós-documentação
 
 ## 1. Contexto
 

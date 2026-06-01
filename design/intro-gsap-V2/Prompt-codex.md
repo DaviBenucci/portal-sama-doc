@@ -1,4 +1,4 @@
-# Portal Sama — Documentação para Codex implementar a intro web
+# [CONCLUIDO] Portal Sama — Documentação para Codex implementar a intro web
 
 ## 1. Papel do Codex
 

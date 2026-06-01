@@ -1,4 +1,4 @@
-# Roadmap de Refatoração do Portal Sama — TypeScript, NestJS, React, MySQL e EasyPanel
+# [PARCIAL] Roadmap de Refatoração do Portal Sama — TypeScript, NestJS, React, MySQL e EasyPanel
 
 ## 1. Visão geral
 

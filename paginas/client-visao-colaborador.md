@@ -1,4 +1,4 @@
-# Visão do Colaborador
+# [PARCIAL] Visão do Colaborador
 
 ## 1. Identificação da página
 

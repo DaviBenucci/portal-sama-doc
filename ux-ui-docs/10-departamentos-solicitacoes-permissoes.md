@@ -1,4 +1,4 @@
-# 10 - Departamentos, Solicitacoes e Permissoes
+# [PARCIAL] 10 - Departamentos, Solicitacoes e Permissoes
 
 ## 1. Objetivo
 

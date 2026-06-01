@@ -1,4 +1,4 @@
-# Portal Sama — Documentação técnica da intro animada web
+# [CONCLUIDO] Portal Sama — Documentação técnica da intro animada web
 
 ## 1. Objetivo
 

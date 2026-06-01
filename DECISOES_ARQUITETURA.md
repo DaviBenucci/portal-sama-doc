@@ -1,4 +1,4 @@
-# Decisões de Arquitetura - Portal Sama
+# [CONCLUIDO] Decisões de Arquitetura - Portal Sama
 
 ## ADR-0033 - Integra-AI usa Dominio Importador 01/02/03/99 para Lancamentos em Lote
 

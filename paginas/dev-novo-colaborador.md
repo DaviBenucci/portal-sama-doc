@@ -1,4 +1,4 @@
-# Cadastro de Novo Colaborador
+# [PARCIAL] Cadastro de Novo Colaborador
 
 ## 1. Identificação da página
 

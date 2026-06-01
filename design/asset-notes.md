@@ -1,4 +1,4 @@
-# Portal Sama — Asset notes v1.0
+# [CONCLUIDO] Portal Sama — Asset notes v1.0
 
 Pacote produzido seguindo a documentação original e a direção visual aprovada após ajuste da logo.
 

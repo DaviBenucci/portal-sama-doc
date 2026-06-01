@@ -1,4 +1,4 @@
-# Portal Sama — Refatoração completa da intro com GSAP, manifesto e segurança
+# [CONCLUIDO] Portal Sama — Refatoração completa da intro com GSAP, manifesto e segurança
 
 ## 1. Decisão técnica
 

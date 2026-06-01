@@ -1,4 +1,4 @@
-# Integração Acessórias — Entregas, Planilha Fiscal, Vencimentos e Notificações
+# [PARCIAL] Integração Acessórias — Entregas, Planilha Fiscal, Vencimentos e Notificações
 
 ## 1. Visão geral
 

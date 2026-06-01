@@ -1,4 +1,4 @@
-# Matriz de Migração PHP para NestJS
+# [PARCIAL] Matriz de Migração PHP para NestJS
 
 Status desta matriz: auditoria em andamento baseada em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos arquivos reais em `api/`. A fundação `portal-sama-api`, o endpoint técnico `/api-v2/health`, a base `/api-v2/auth/*`, auditoria/RBAC iniciais e parte de `DocumentsModule` foram criados; nenhum endpoint PHP foi desligado ainda.
 

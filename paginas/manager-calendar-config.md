@@ -1,4 +1,4 @@
-# Configuração de Vencimentos
+# [PARCIAL] Configuração de Vencimentos
 
 > Atualizacao 2026-05-20 16:02: o dominio de calendario do gestor passou a contar tambem com `DELETE /api-v2/calendar/entries/:id` para exclusao auditavel de vencimentos a partir do dashboard `/manager`, complementando `GET/POST /api-v2/calendar/config`, `/month` e `/day`. A tela de configuracao segue responsavel por criar/substituir regras.
 

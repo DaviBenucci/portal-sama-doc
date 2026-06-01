@@ -1,4 +1,4 @@
-# Inventário de Endpoints - Portal Sama
+# [PARCIAL] Inventário de Endpoints - Portal Sama
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 

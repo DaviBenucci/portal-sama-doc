@@ -1,4 +1,4 @@
-# Planilhas Padrão do Departamento
+# [PARCIAL] Planilhas Padrão do Departamento
 
 ## 1. Identificação da página
 

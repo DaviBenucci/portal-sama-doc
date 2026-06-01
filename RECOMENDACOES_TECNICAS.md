@@ -1,4 +1,4 @@
-# Recomendações técnicas atualizadas para evolução do Portal Sama
+# [PARCIAL] Recomendações técnicas atualizadas para evolução do Portal Sama
 
 ## 1. Decisão técnica atualizada
 

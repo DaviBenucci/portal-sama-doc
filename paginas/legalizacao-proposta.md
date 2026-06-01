@@ -1,4 +1,4 @@
-# Editor de Proposta
+# [PARCIAL] Editor de Proposta
 
 ## 1. Identificação da página
 

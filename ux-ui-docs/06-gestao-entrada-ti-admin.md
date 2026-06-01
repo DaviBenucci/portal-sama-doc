@@ -1,4 +1,4 @@
-# 06 - Gestao, Entrada de Cliente, T.I e Admin
+# [PARCIAL] 06 - Gestao, Entrada de Cliente, T.I e Admin
 
 ## Painel do Gestor
 

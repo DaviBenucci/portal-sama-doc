@@ -1,4 +1,4 @@
-# Integra-AI Contábil
+# [PARCIAL] Integra-AI Contábil
 
 ## 1. Identificação da página
 

@@ -1,4 +1,4 @@
-# Gestão do Colaborador pelo Gestor
+# [PARCIAL] Gestão do Colaborador pelo Gestor
 
 > Atualizacao 2026-05-19 15:53: primeira fatia React criada em `/manager/colaboradores` com `ManagerCollaboratorsPage.tsx`, consumindo `GET /api-v2/transfers/dashboard` para consulta de carteira por colaborador. Transferencias continuam operadas em `/manager/transferencias`; faltam validacao com MySQL real, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 

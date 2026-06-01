@@ -1,4 +1,4 @@
-# 08 - Prompt para Codex
+# [PARCIAL] 08 - Prompt para Codex
 
 ```md
 Voce esta trabalhando no projeto Portal Sama, composto por `portal-sama-web`, `portal-sama-api` e `portal-sama-docs`.

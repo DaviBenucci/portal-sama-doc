@@ -1,15 +1,22 @@
-# Portal Sama Docs
+# [PARCIAL] Portal Sama Docs
 
 Este repositorio e a fonte oficial de documentacao do Portal Sama.
+
+## Legenda de status
+
+- `[CONCLUIDO]`: decisao, incidente, bug ou pacote documentado ja refletido no codigo atual, ou documento historico sem acao tecnica aberta.
+- `[PARCIAL]`: ha implementacao/base no codigo, mas ainda faltam validacao real, backfill, aceite, UI complementar ou corte do legado.
+- `[PENDENTE]`: documento-gate ou backlog com bloqueio principal ainda aberto.
 
 Antes de alterar `portal-sama-api` ou `portal-sama-web`, leia primeiro:
 
 1. `INSTRUÇÕEDS_AI.MD`
-2. `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
-3. `STATUS_IMPLEMENTACAO.md`
-4. `PENDENCIAS_TECNICAS.md`
-5. `EASYPANEL_DEPLOY.md`
-6. `ux-ui-docs/README.md`
+2. `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+3. `AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+4. `STATUS_IMPLEMENTACAO.md`
+5. `PENDENCIAS_TECNICAS.md`
+6. `EASYPANEL_DEPLOY.md`
+7. `ux-ui-docs/README.md`
 
 ## Referencia obrigatoria de UX/UI
 

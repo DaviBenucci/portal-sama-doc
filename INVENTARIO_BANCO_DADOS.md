@@ -1,4 +1,4 @@
-# Inventário de Banco de Dados - Portal Sama
+# [PARCIAL] Inventário de Banco de Dados - Portal Sama
 
 Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal-sama-api/prisma/schema.prisma` e na migration inicial `portal-sama-api/prisma/migrations/20260512172700_init_current_schema`. O banco MySQL legado real ainda não foi comparado nesta etapa.
 

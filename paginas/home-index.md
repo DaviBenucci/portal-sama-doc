@@ -1,4 +1,4 @@
-# Redirecionamento para Início
+# [PARCIAL] Redirecionamento para Início
 
 ## 1. Identificação da página
 

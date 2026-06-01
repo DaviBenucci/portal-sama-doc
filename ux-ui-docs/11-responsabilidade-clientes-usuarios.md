@@ -1,4 +1,4 @@
-# Responsabilidade de clientes por usuario — diagnostico do codigo atual e melhoria proposta
+# [PARCIAL] Responsabilidade de clientes por usuario — diagnostico do codigo atual e melhoria proposta
 
 Atualizacao 2026-05-27 16:44 -03:00: a recomendacao de backend avancou localmente. Alem da tabela e dos endpoints de listar/criar/editar/encerrar, a API v2 agora possui `POST /api-v2/client-assignments/transfer` para transferencia normalizada e auditada. A analise historica abaixo continua valida para fluxos legados que ainda leem `clients.metadata` e para as telas que ainda nao foram conectadas a `client_department_assignments`.
 

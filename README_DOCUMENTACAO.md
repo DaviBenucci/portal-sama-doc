@@ -1,4 +1,4 @@
-# Documentação Técnica Atualizada do Portal Sama
+# [PARCIAL] Documentação Técnica Atualizada do Portal Sama
 
 ## Visão geral
 
@@ -26,6 +26,7 @@ Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter
 | [`GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md) | Guia detalhado, com etapas, comandos, exemplos de código e referências aos arquivos atuais. |
 | [`BANCO_DADOS_MYSQL_PRISMA.md`](BANCO_DADOS_MYSQL_PRISMA.md) | Detalha a escolha por banco relacional, MySQL 8, Prisma e modelagem inicial. |
 | [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md) | Explica como implantar a nova stack no EasyPanel/VPS. |
+| [`ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`](ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md) | Define a sequencia de implementacao para concluir documentos pendentes e parciais sem perder escopo. |
 | [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD) | Painel obrigatorio do que falta para homologacao/producao, separacao Bitbucket/EasyPanel, percentual de prontidao e pendencias reais. |
 | [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md) | Mapeia endpoints PHP atuais para módulos e rotas NestJS futuras. |
 | [`REFERENCIAS_TECNICAS.md`](REFERENCIAS_TECNICAS.md) | Lista referências oficiais das tecnologias recomendadas. |
@@ -42,11 +43,12 @@ Observacao operacional: a topologia oficial para Bitbucket/EasyPanel passa a ter
 5. [`ux-ui-docs/README.md`](ux-ui-docs/README.md)
 6. [`BANCO_DADOS_MYSQL_PRISMA.md`](BANCO_DADOS_MYSQL_PRISMA.md)
 7. [`GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md)
-8. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
-9. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
-10. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
-11. [`ROADMAP_REFATORACAO.md`](ROADMAP_REFATORACAO.md)
-12. Documentos individuais em [`paginas/`](paginas/)
+8. [`ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`](ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md)
+9. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
+10. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
+11. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
+12. [`ROADMAP_REFATORACAO.md`](ROADMAP_REFATORACAO.md)
+13. Documentos individuais em [`paginas/`](paginas/)
 
 ---
 
@@ -190,10 +192,11 @@ Para começar a implementação, use diretamente:
 
 1. [`GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md`](GUIA_IMPLEMENTACAO_TYPESCRIPT_NESTJS.md)
 2. [`BANCO_DADOS_MYSQL_PRISMA.md`](BANCO_DADOS_MYSQL_PRISMA.md)
-3. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
-4. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
-5. [`SEGURANCA.md`](SEGURANCA.md)
-6. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
+3. [`ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`](ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md)
+4. [`EASYPANEL_DEPLOY.md`](EASYPANEL_DEPLOY.md)
+5. [`AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`](AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD)
+6. [`SEGURANCA.md`](SEGURANCA.md)
+7. [`MAPEAMENTO_MIGRACAO_APIS.md`](MAPEAMENTO_MIGRACAO_APIS.md)
 
 ## Topologia oficial de repositorios
 

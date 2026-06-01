@@ -1,4 +1,4 @@
-# Área DEV - Administração
+# [PARCIAL] Área DEV - Administração
 
 ## 1. Identificação da página
 

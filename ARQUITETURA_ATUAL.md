@@ -1,4 +1,4 @@
-# Arquitetura Atual do Portal Sama
+# [CONCLUIDO] Arquitetura Atual do Portal Sama
 
 ## Descrição da arquitetura atual
 

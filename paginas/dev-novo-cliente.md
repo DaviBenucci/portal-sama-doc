@@ -1,4 +1,4 @@
-# Cadastro de Novo Cliente
+# [PARCIAL] Cadastro de Novo Cliente
 
 ## 1. Identificação da página
 

@@ -1,4 +1,4 @@
-# Transferências de Empresas
+# [PARCIAL] Transferências de Empresas
 
 > Atualizacao 2026-05-19 15:33: primeira fatia React criada em `/manager/transferencias` com `ManagerTransfersPage.tsx`, consumindo `TransfersModule` para dashboard, criacao e retorno manual. Ainda faltam validacao com MySQL real, seed `transfers.*`, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 

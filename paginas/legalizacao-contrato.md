@@ -1,4 +1,4 @@
-# Editor de Contrato
+# [PARCIAL] Editor de Contrato
 
 ## 1. Identificação da página
 

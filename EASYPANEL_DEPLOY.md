@@ -1,4 +1,4 @@
-# Deploy da nova stack no EasyPanel
+# [PARCIAL] Deploy da nova stack no EasyPanel
 
 ## 1. Objetivo
 
@@ -58,6 +58,8 @@ Atualizacao 2026-05-27 16:31 -03:00: a API recebeu a migration `20260527162000_a
 Atualizacao 2026-05-27 16:44 -03:00: o modulo `ClientAssignmentsModule` agora tambem possui `POST /api-v2/client-assignments/transfer`, protegido por `client_assignments.transfer` e CSRF. A validacao real no EasyPanel deve incluir leitura/criacao/encerramento e transferencia com usuario ADMIN/DEV ou gestor autorizado, confirmando auditoria `client_assignments.transfer`.
 
 Atualizacao 2026-05-28 10:06 -03:00: a Home por perfil agora consome resumo read-only do Acessorias por `GET /api-v2/integrations/acessorias/home-summary`. Configurar `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` somente no servico `portal-sama-api`; o frontend nao deve receber o token do Acessorias. Depois do deploy, validar a rota com usuario real e conferir se o contrato retornado pela API externa possui cliente, obrigacao, vencimento, baixa/status, departamento e responsavel.
+
+Atualizacao 2026-06-01 09:30 -03:00: o repo `portal-sama-api` agora expoe `npm run ops:phase1`, que orquestra no container da API a sequencia da Fase 1 definida em `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`: `prisma:migrate:deploy`, `prisma:seed`, `ops:readiness`, `ops:backup:create`, `ops:backup:verify` e `ops:restore:drill`. O restore real continua exigindo banco/storage isolados e `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED`; sem `--apply-database`/`--apply-storage`, o restore drill fica em modo seco.
 
 ---
 

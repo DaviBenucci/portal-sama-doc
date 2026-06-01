@@ -1,4 +1,4 @@
-# Contratos e Propostas
+# [PARCIAL] Contratos e Propostas
 
 ## 1. Identificação da página
 
