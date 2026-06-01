@@ -1,5 +1,16 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-01 contrato oficial Acessorias
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 2/Fase 3: contrato oficial do Acessorias conferido e backend ajustado para `deliveries/ListAll`/`companies/ListAll`.
+- **Backend/API v2:** Home e sync de entregas agora montam `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina`, paginam `ListAll`, achatam `empresa -> Entregas[]` e usam `Config.EntID` como ID externo preferencial.
+- **Cadastros Acessorias:** empresas usam campos reais como `ID`, `Identificador`, `Razao`, `Fantasia`, `Status`, `UF`, `Regime` e `GrupoDeEmpresas`; responsaveis sao extraidos de `Departamentos[].RespNome/RespEmail` quando `ACESSORIAS_COLLABORATORS_PATH` esta vazio.
+- **EasyPanel/env:** `.env` local da API foi corrigida para `ACESSORIAS_HOME_PATH=deliveries/ListAll`; `COOKIE_SECURE` efetivo e paths de storage tambem foram ajustados para o cenario HTTPS/container.
+- **Documentacao:** criado `integracao_acessorias_paths_importacao_dev.md` e a Fase 2/3 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md` foi atualizada.
+- **Validacao local:** passaram 3 suites focadas de Acessorias com 14 testes, alem de build/lint da API e `git diff --check`.
+- **Pendente:** validar contra dados reais no EasyPanel e confirmar com o fornecedor se existe endpoint oficial para colaboradores/usuarios.
+
 
 ## Atualizacao complementar 2026-06-01 multidepartamental
 

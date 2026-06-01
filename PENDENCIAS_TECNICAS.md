@@ -2,6 +2,14 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
 
+## Atualizacao 2026-06-01 contrato oficial Acessorias
+
+- Backend local alinhado ao contrato oficial: `deliveries/ListAll` com datas/status/config/paginacao, `companies/ListAll` com parametros de enriquecimento e normalizacao do formato `empresa -> Entregas[]`.
+- `departments/ListAll` ficou documentado como fonte de departamentos, nao de colaboradores; responsaveis sao extraidos de `Departamentos[].RespNome/RespEmail` enquanto nao houver endpoint oficial.
+- `.env` local da API e `.env.example` foram ajustados para os paths recomendados; Web segue sem token Acessorias.
+- Validacoes locais passaram: 3 suites focadas de Acessorias, 14 testes, build/lint da API e `git diff --check`.
+- Permanece pendente validar payload real no EasyPanel, rodar preview/sync com usuario autorizado e registrar evidencia sanitizada.
+
 ## Atualizacao 2026-06-01 multidepartamental
 
 - Implementada a continuidade multidepartamental das planilhas: Fiscal, Contabil, Pessoal, Financeiro e Legalizacao agora possuem colunas operacionais proprias em `/departamentos/modelo`.

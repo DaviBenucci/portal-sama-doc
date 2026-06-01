@@ -30,6 +30,8 @@ Atualizacao 2026-06-01 11:30: foi implementada a primeira aplicacao segura de ma
 
 Atualizacao 2026-06-01 complementar: a aplicacao deixou de ser apenas Fiscal no fluxo operacional. `/departamentos/modelo` agora permite selecionar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao; cada departamento tem colunas proprias e metadados separados no cliente. A API adicionou `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` e rotas genericas `/api-v2/departments/workspace*`, mantendo as rotas antigas como compatibilidade. A Home do Acessorias tambem foi ajustada para usar `deliveries` como fallback, tratar `204 No Content` como retorno valido sem entregas e exibir diagnostico sanitizado sem expor segredo.
 
+Atualizacao 2026-06-01 contrato oficial: a validacao em `integracao_acessorias_paths_importacao_dev.md` confirmou que Home e entregas devem usar `deliveries/ListAll` com `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina`; empresas devem usar `companies/ListAll` com paginacao; e `departments/ListAll` nao deve ser usado como fonte de colaboradores. O backend local foi ajustado para achatar `empresa -> Entregas[]`, normalizar campos reais e extrair responsaveis a partir dos departamentos das empresas quando nao houver endpoint oficial de colaboradores.
+
 ---
 
 ## 2. Decisão de implementação

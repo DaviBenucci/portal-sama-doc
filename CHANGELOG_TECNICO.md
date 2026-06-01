@@ -1,5 +1,38 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 contrato oficial Acessorias
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts`
+- `portal-sama-api/.env`
+- `portal-sama-api/.env.example`
+- `portal-sama-web/.env.example`
+- `portal-sama-docs/integracao_acessorias_paths_importacao_dev.md`
+- Documentacao de ordem, status e Acessorias.
+
+### O que mudou
+
+- Home e entregas passaram a usar `deliveries/ListAll` com `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina`.
+- O backend pagina `ListAll`, normaliza o retorno real `empresa -> Entregas[]` e usa `Config.EntID` como `external_id` preferencial.
+- Empresas passaram a usar `companies/ListAll` com parametros de enriquecimento e paginacao.
+- `departments/ListAll` ficou explicitamente bloqueado como fonte direta de colaboradores; responsaveis sao extraidos de `Departamentos[].RespNome/RespEmail` quando nao ha endpoint oficial.
+- `.env.example` da API recebeu os paths reais recomendados; `.env.example` do Web declara que token/config Acessorias ficam somente no backend.
+
+### Testes executados
+
+- `npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-deliveries.service.spec.ts integrations/acessorias/acessorias-registrations.service.spec.ts --runInBand`.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `git diff --check` em API/Web/Docs.
+
+### Riscos ou pendencias
+
+- Falta validar payload real no EasyPanel com token e dados reais.
+- Falta confirmar com o fornecedor se existe endpoint oficial de colaboradores/usuarios.
+- A `.env` da API ainda tem chaves duplicadas historicas; os valores efetivos revisados estao corretos para Acessorias/cookies/storage, mas a limpeza completa deve ser feita em rodada propria.
+
 ## 2026-06-01 complementar
 
 ### Arquivos alterados

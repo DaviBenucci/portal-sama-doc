@@ -1,5 +1,35 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 contrato oficial Acessorias
+
+### Contexto
+
+- Continuidade da Fase 2/Fase 3: alinhar Home, entregas, empresas e responsaveis ao contrato oficial do Acessorias.
+- Escopo local: paths `deliveries/ListAll` e `companies/ListAll`, query params obrigatorios, paginacao, normalizacao de `empresa -> Entregas[]`, clientes reais e responsaveis extraidos de departamentos.
+
+### Comando executado
+
+```bash
+npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-deliveries.service.spec.ts integrations/acessorias/acessorias-registrations.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+git diff --check
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 3 suites, 14 testes.
+- API build e lint passaram.
+- `git diff --check` passou em API/Web/Docs; em Docs houve apenas avisos de normalizacao CRLF/LF ja existentes na copia de trabalho.
+- A validacao foi feita com fixtures oficiais/sinteticas; nao houve chamada real ao Acessorias nesta etapa.
+
+### Pendencias
+
+- Validar no EasyPanel com token e dados reais.
+- Registrar evidencia sanitizada do payload real sem token, URL completa nem dados sensiveis.
+- Confirmar endpoint oficial de colaboradores/usuarios antes de preencher `ACESSORIAS_COLLABORATORS_PATH`.
+
 ## Execucao 2026-06-01 complementar
 
 ### Contexto

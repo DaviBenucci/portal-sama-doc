@@ -24,4 +24,8 @@ O pacote `ux-ui-docs/` e a referencia oficial para melhoria visual, organizacao 
 
 Depois da integracao com o Acessorias, toda rodada de melhoria de interface deve seguir `ux-ui-docs/09-checklist-aceite.md`. Esse QA de UI/UX sera a ultima verificacao antes de liberar o sistema para os usuarios utilizarem.
 
+## Referencia da integracao Acessorias
+
+Para Fase 2/Fase 3, use `integracao_acessorias_paths_importacao_dev.md` como contrato operacional curto de paths, `.env`, importacao DEV e regras de seguranca; o documento detalhado de negocio continua em `integracao_acessorias_entregas_vencimentos.md`.
+
 Depois de qualquer mudanca tecnica em API ou Web, atualize aqui os documentos de status, changelog, testes, pendencias, decisoes e deploy quando aplicavel.

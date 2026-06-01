@@ -95,22 +95,28 @@ Objetivo: validar a integracao externa antes de expandir automacoes internas.
 
 Ja feito localmente:
 
-- `GET /api-v2/integrations/acessorias/home-summary` agora usa `ACESSORIAS_HOME_PATH`, depois `ACESSORIAS_DELIVERIES_PATH`, depois `deliveries` como fallback seguro.
+- Contrato oficial em `https://api.acessorias.com/documentation` foi conferido para Authentication, Companies, Deliveries, Departments e Requests.
+- `GET /api-v2/integrations/acessorias/home-summary` agora usa `ACESSORIAS_HOME_PATH`, depois `ACESSORIAS_DELIVERIES_PATH`, depois `deliveries/ListAll` como fallback seguro.
+- Home e sincronizacao de entregas montam `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina` para `deliveries/ListAll`.
+- O backend achata o formato real `empresa -> Entregas[]` e normaliza campos reais como `Razao`, `Identificador`, `Nome`, `EntDtPrazo`, `EntDtEntrega` e `Config.EntID`.
+- `companies/ListAll` e usado com parametros de enriquecimento e paginacao; `departments/ListAll` nao e usado como fonte direta de colaboradores.
 - Resposta externa `204 No Content` ou corpo vazio passa a ser tratada como resumo disponivel sem entregas, em vez de indisponibilidade.
 - A Home recebe diagnostico sanitizado de erro externo, sem expor token, URL completa ou payload.
 
 Implementar/validar em ordem:
 
-1. Configurar `ACESSORIAS_BASE_URL`, `ACESSORIAS_TOKEN`, `ACESSORIAS_HOME_PATH`, `ACESSORIAS_CLIENTS_PATH`, `ACESSORIAS_COLLABORATORS_PATH` e `ACESSORIAS_DELIVERIES_PATH` no EasyPanel.
-2. Validar payload real de Home, empresas, colaboradores e entregas.
-3. Ajustar normalizadores se o contrato real divergir do previsto.
-4. Rodar preview de empresas/colaboradores.
-5. Sincronizar empresas e colaboradores preservando edicao local no Portal Sama.
-6. Sincronizar entregas e conferir deduplicacao por `external_id`.
-7. Validar auditoria e permissoes da integracao.
+1. Configurar no EasyPanel: `ACESSORIAS_BASE_URL=https://api.acessorias.com`, `ACESSORIAS_TOKEN`, `ACESSORIAS_HOME_PATH=deliveries/ListAll`, `ACESSORIAS_DELIVERIES_PATH=deliveries/ListAll`, `ACESSORIAS_CLIENTS_PATH=companies/ListAll` e `ACESSORIAS_COLLABORATORS_PATH=` vazio ate confirmacao oficial.
+2. Validar payload real de Home, empresas, responsaveis extraidos de departamentos e entregas.
+3. Confirmar com o fornecedor se existe endpoint oficial para colaboradores/usuarios; nao apontar `ACESSORIAS_COLLABORATORS_PATH` para `departments`.
+4. Ajustar normalizadores se o contrato real divergir do previsto.
+5. Rodar preview de empresas/responsaveis.
+6. Sincronizar empresas e responsaveis preservando edicao local no Portal Sama.
+7. Sincronizar entregas e conferir deduplicacao por `external_id`.
+8. Validar auditoria e permissoes da integracao.
 
 Documentos que devem ser atualizados:
 
+- `integracao_acessorias_paths_importacao_dev.md`
 - `integracao_acessorias_entregas_vencimentos.md`
 - `AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
 - `MAPEAMENTO_MIGRACAO_APIS.md`
@@ -121,7 +127,8 @@ Documentos que devem ser atualizados:
 
 Criterio de saida:
 
-- Empresas e colaboradores podem vir do Acessorias e continuar editaveis no Portal Sama.
+- Empresas podem vir do Acessorias e continuar editaveis no Portal Sama.
+- Responsaveis vindos de departamentos das empresas ficam importados com origem clara, sem prometer listagem completa de colaboradores ativos.
 - Entregas reais ficam persistidas localmente.
 - Home por perfil funciona com dados reais do Acessorias no EasyPanel.
 
@@ -153,6 +160,7 @@ Implementar em ordem:
 
 Documentos que devem ser atualizados:
 
+- `integracao_acessorias_paths_importacao_dev.md`
 - `integracao_acessorias_entregas_vencimentos.md`
 - `paginas/depto-modelo.md`
 - `paginas/manager-calendar-config.md`

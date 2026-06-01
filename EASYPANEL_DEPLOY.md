@@ -61,6 +61,8 @@ Atualizacao 2026-05-28 10:06 -03:00: a Home por perfil agora consome resumo read
 
 Atualizacao 2026-06-01 09:30 -03:00: o repo `portal-sama-api` agora expoe `npm run ops:phase1`, que orquestra no container da API a sequencia da Fase 1 definida em `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`: `prisma:migrate:deploy`, `prisma:seed`, `ops:readiness`, `ops:backup:create`, `ops:backup:verify` e `ops:restore:drill`. O restore real continua exigindo banco/storage isolados e `--confirm RESTORE_DRILL_TARGET_IS_ISOLATED`; sem `--apply-database`/`--apply-storage`, o restore drill fica em modo seco.
 
+Atualizacao 2026-06-01 contrato oficial Acessorias: no servico `portal-sama-api`, configurar `ACESSORIAS_HOME_PATH=deliveries/ListAll`, `ACESSORIAS_DELIVERIES_PATH=deliveries/ListAll`, `ACESSORIAS_CLIENTS_PATH=companies/ListAll` e manter `ACESSORIAS_COLLABORATORS_PATH=` vazio ate confirmacao oficial de endpoint de colaboradores. O Web nao deve receber token nem variaveis `VITE_ACESSORIAS_*`. A `.env` local da API foi ajustada para `COOKIE_SECURE=true` e paths efetivos de storage em `/var/private/portal-sama`.
+
 ---
 
 ## 2. Serviços recomendados
