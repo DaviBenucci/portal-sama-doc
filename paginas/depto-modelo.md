@@ -5,9 +5,11 @@
 ## Status de migracao React/API v2
 
 - **Atualizacao 2026-05-21 09:34 -03:00:** criada a rota React `/departamentos/modelo` com `DepartmentModelPage.tsx`, consumindo `GET /api-v2/departments/fiscal/workspace`.
+- **Atualizacao 2026-06-01 11:30 -03:00:** `/departamentos/modelo` passou a exibir status visual `Acessorias`, contadores de baixas sincronizadas, divergencias abertas por empresa/celula e acao protegida `Aplicar Acessorias`, consumindo `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`.
 - **Backend inicial:** `DepartmentsModule` cobre leitura do workspace Fiscal e mutacoes `POST /api-v2/departments/fiscal/workspace/cycle-cell` e `PATCH /api-v2/departments/fiscal/workspace/cell-status`.
+- **Backend Acessorias:** `AcessoriasFiscalApplicationService` aplica somente entregas `DELIVERED` com mapeamento confirmado e cria divergencias persistidas para casos inseguros.
 - **Seguranca aplicada:** JWT, RBAC `departments.workspace.read/write`, CSRF nas mutacoes, escopo por departamento Fiscal, bloqueio de mes/vencimento e auditoria nas alteracoes de celula.
-- **Pendencias:** validar com MySQL/homologacao e dados reais de `Client.metadata`, aplicar seed RBAC, criar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
+- **Pendencias:** aplicar migrations no MySQL real, validar com contrato real do Acessorias e dados reais de `Client.metadata`, criar revisao manual de divergencias, ampliar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
 
 - **Arquivo HTML:** `Depto/modelo.html`
 - **Módulo:** Departamento / Planilhas

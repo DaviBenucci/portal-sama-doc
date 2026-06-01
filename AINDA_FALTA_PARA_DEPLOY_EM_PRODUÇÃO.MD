@@ -145,6 +145,32 @@ Validacao local:
 
 Pendencia real remanescente: aplicar migration no MySQL real, rodar seed RBAC, configurar `ACESSORIAS_DELIVERIES_PATH`, validar contrato real de entregas do Acessorias no EasyPanel e depois implementar mapeamento para planilha Fiscal, divergencias, Central de Vencimentos, scheduler e notificacoes.
 
+## Atualizacao operacional de 2026-06-01 11:30 -03:00
+
+Foi implementada a primeira aplicacao segura de baixas do Acessorias na planilha Fiscal.
+
+- criado modelo Prisma e migration `20260601113000_add_acessorias_fiscal_application`;
+- criadas tabelas `acessorias_fiscal_apply_runs` e `acessorias_fiscal_divergences`;
+- criado endpoint protegido `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`;
+- o endpoint exige `integrations.acessorias.deliveries.manage` e `departments.workspace.write`;
+- a aplicacao marca celula como `ACESSORIAS` apenas quando entrega local esta `DELIVERED`, cliente foi identificado, competencia esta aberta, coluna Fiscal e valida e mapeamento esta `CONFIRMED` com confianca minima;
+- mapeamento ausente, baixa confianca, cliente nao encontrado, status conflitante, Acessorias pendente contra Portal concluido ou mes fechado geram divergencia aberta sem alterar a planilha;
+- `/departamentos/modelo` passou a exibir contador de baixas Acessorias, divergencias abertas, marcador visual na celula e botao protegido `Aplicar Acessorias`.
+
+Validacao local:
+
+- `npm.cmd run prisma:generate` passou na API;
+- `npm.cmd run prisma:format` passou na API;
+- `npm.cmd run prisma:validate` passou na API;
+- testes focados de Acessorias/Departamentos/RBAC passaram com 4 suites e 12 testes;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run lint` passou na API;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web;
+- `git diff --check` passou em API/Web.
+
+Pendencia real remanescente: aplicar migrations no MySQL real, publicar API/Web, validar contrato real do Acessorias no EasyPanel, executar dry-run/execucao real do endpoint com usuario autorizado e conferir auditoria, celulas `ACESSORIAS` e divergencias abertas com dados reais.
+
 ## Atualizacao operacional de 2026-06-01 10:00 -03:00
 
 Foram implementadas duas pendencias desta rodada: correcao do auto-refresh de sessao no Web e base backend de mapeamento Acessorias -> planilha Fiscal.
@@ -180,7 +206,7 @@ Validacao local:
 - `npm.cmd run lint` passou na API;
 - testes focados de Acessorias/RBAC passaram com 5 suites e 16 testes.
 
-Pendencia real remanescente: aplicar migrations no MySQL real, rodar seed RBAC, validar no EasyPanel o auto-refresh aguardando vencimento real do access token, validar contrato real do Acessorias e implementar a proxima etapa: aplicar mapeamentos confirmados na planilha Fiscal com status visual `Acessorias` e divergencias para casos nao seguros.
+Pendencia real remanescente: aplicar migrations no MySQL real, rodar seed RBAC, validar no EasyPanel o auto-refresh aguardando vencimento real do access token, validar contrato real do Acessorias e publicar/validar a aplicacao de mapeamentos confirmados na planilha Fiscal com dados reais.
 
 ## Atualizacao operacional de 2026-05-28 10:06 -03:00
 
@@ -981,12 +1007,13 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [x] Implementar sincronizacao manual de entregas do Acessorias com auditoria.
 - [x] Salvar entregas localmente e registrar sync runs.
 - [ ] Implementar sincronizacao automatica agendada de entregas do Acessorias.
-- [ ] Salvar divergencias e alertas.
+- [x] Salvar divergencias iniciais da aplicacao Fiscal em `acessorias_fiscal_divergences`.
 - [x] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
-- [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas.
+- [x] Aplicar baixas confirmadas do Acessorias na planilha Fiscal existente com status visual `ACESSORIAS`.
+- [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas quando a planilha ainda nao existir.
 - [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
 - [ ] Criar vencimentos oficiais a partir do Acessorias e vencimentos previstos apenas como fallback.
-- [ ] Implementar status visual `Acessorias`, divergencias e resolucao de alertas.
+- [ ] Implementar resolucao/revisao manual de divergencias e alertas.
 - [ ] Implementar notificacoes D-7, D-3, D-1, D0 e D+1 quando o modulo de notificacoes estiver pronto.
 - [ ] Implementar motor de recorrencia inteligente sem substituir vencimento oficial.
 - [ ] Criar permissoes, perfis, auditoria e testes unitarios/integracao/E2E/seguranca do MVP Fiscal.

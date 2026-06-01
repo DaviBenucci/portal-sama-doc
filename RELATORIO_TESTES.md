@@ -1,5 +1,45 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 11:30
+
+### Contexto
+
+- Implementacao da primeira aplicacao segura de entregas baixadas do Acessorias na planilha Fiscal.
+- Escopo local: API v2 cria runs e divergencias, Web exibe status visual `Acessorias` e divergencias abertas no workspace Fiscal.
+
+### Comandos executados ate esta etapa
+
+```bash
+npm.cmd run prisma:generate
+npm.cmd run prisma:format
+npm.cmd run prisma:validate
+npm.cmd test -- integrations/acessorias/acessorias-fiscal-application.service.spec.ts integrations/acessorias/acessorias-delivery-column-mappings.service.spec.ts departments/departments.service.spec.ts rbac/default-rbac.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+git diff --check
+```
+
+### Resultado
+
+- **Status geral:** passou em validacao local.
+- API focada: 4 suites, 12 testes.
+- Prisma generate/format/validate passaram.
+- API build e lint passaram.
+- Web build e lint passaram.
+- `git diff --check` passou em API e Web.
+
+### Pendencias
+
+- Aplicar migration `20260601113000_add_acessorias_fiscal_application` no MySQL real.
+- Rodar seed RBAC quando necessario e publicar API/Web.
+- Validar com entregas reais do Acessorias no EasyPanel.
+- Executar `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` em dry-run e depois real com usuario autorizado.
+- Conferir celulas `Acessorias`, divergencias abertas e auditoria no banco real.
+
+### Observacao anti-alucinacao
+
+Nao houve teste contra API real do Acessorias nem EasyPanel nesta rodada. A validacao foi local, com fixtures/mocks e schema Prisma.
+
 ## Execucao 2026-06-01 09:30
 
 ### Contexto

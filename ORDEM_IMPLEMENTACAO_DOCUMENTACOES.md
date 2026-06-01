@@ -119,13 +119,22 @@ Criterio de saida:
 
 ## Fase 3 - Acessorias aplicado na planilha Fiscal e vencimentos
 
+Estado: primeira aplicacao local implementada; validacao real e revisao manual ainda pendentes.
+
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
+
+Ja feito localmente:
+
+- `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` aplica entregas `DELIVERED` com mapeamento confirmado na planilha Fiscal existente.
+- Celulas aplicadas recebem status visual `ACESSORIAS`.
+- Casos inseguros geram divergencias persistidas em `acessorias_fiscal_divergences`.
+- `/departamentos/modelo` exibe contadores, marcador de celula e divergencias abertas.
 
 Implementar em ordem:
 
-1. Aplicar mapeamentos confirmados na planilha Fiscal.
-2. Marcar celulas preenchidas pelo Acessorias com status visual proprio.
-3. Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
+1. [local concluido; real pendente] Aplicar mapeamentos confirmados na planilha Fiscal.
+2. [local concluido; real pendente] Marcar celulas preenchidas pelo Acessorias com status visual proprio.
+3. [local concluido; revisao pendente] Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
 4. Permitir revisao manual das divergencias.
 5. Conectar entregas/vencimentos ao calendario operacional.
 6. Criar Central de Vencimentos baseada nas entregas sincronizadas.

@@ -26,6 +26,8 @@ Atualizacao 2026-05-28: foi criada a primeira base backend do MVP de entregas. A
 
 Atualizacao 2026-06-01: foi criada a camada backend de mapeamento entre entregas do Acessorias e colunas da planilha Fiscal. A API passa a ter a tabela `acessorias_delivery_column_mappings`, endpoint `GET /api-v2/integrations/acessorias/delivery-column-mappings`, endpoint `GET /api-v2/integrations/acessorias/delivery-column-mappings/suggestions`, `POST /api-v2/integrations/acessorias/delivery-column-mappings` e `PATCH /api-v2/integrations/acessorias/delivery-column-mappings/:id`. Essa etapa permite confirmar mapeamentos com auditoria, mas ainda nao atualiza automaticamente celulas da planilha Fiscal.
 
+Atualizacao 2026-06-01 11:30: foi implementada a primeira aplicacao segura de mapeamentos confirmados na planilha Fiscal. A API passa a ter as tabelas `acessorias_fiscal_apply_runs` e `acessorias_fiscal_divergences`, alem do endpoint protegido `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`. A regra e conservadora: somente entrega `DELIVERED`, cliente identificado, competencia aberta, coluna Fiscal valida e mapeamento `CONFIRMED` com confianca minima geram status visual `ACESSORIAS` na celula. Qualquer caso inseguro cria divergencia aberta e nao altera a planilha. O Web em `/departamentos/modelo` exibe contadores, celulas `Acessorias` e divergencias por empresa/celula. Ainda falta validar com contrato real no EasyPanel, implementar revisao manual das divergencias, Central de Vencimentos, scheduler e notificacoes.
+
 ---
 
 ## 2. Decisão de implementação
@@ -434,7 +436,7 @@ Exemplo:
 | EFD CONTRIBUIÇÕES | Fiscal | EFD Contribuições | Confirmado |
 | GIA | Fiscal | Não mapeado | Revisar |
 
-Status implementado parcialmente em 2026-06-01: mapeamentos podem ser listados, sugeridos com base nas entregas locais, criados/atualizados com permissao `integrations.acessorias.deliveries.manage` e auditados. Apenas mapeamentos confirmados devem ser usados em uma etapa futura para atualizar celulas automaticamente.
+Status implementado parcialmente em 2026-06-01: mapeamentos podem ser listados, sugeridos com base nas entregas locais, criados/atualizados com permissao `integrations.acessorias.deliveries.manage` e auditados. A etapa de 2026-06-01 11:30 passou a usar somente mapeamentos confirmados para aplicar baixas `DELIVERED` na planilha Fiscal com status `ACESSORIAS`; mapeamentos ausentes, baixa confianca, cliente nao encontrado, conflito de status ou mes fechado geram divergencia aberta.
 
 ---
 
@@ -955,6 +957,8 @@ Status implementado parcialmente em 2026-05-28: lista entregas persistidas em `a
 ```txt
 GET /api-v2/integrations/acessorias/deliveries/divergences
 ```
+
+Status implementado parcialmente em 2026-06-01 11:30: divergencias passaram a ser persistidas em `acessorias_fiscal_divergences` durante `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` e exibidas no workspace Fiscal. O endpoint dedicado de listagem/resolucao ainda nao foi criado; a revisao manual continua pendente.
 
 ### 21.4 Resolver alerta
 

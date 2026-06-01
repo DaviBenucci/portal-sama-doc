@@ -2,6 +2,15 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado na planilha Fiscal/vencimentos).
 
+## Atualizacao 2026-06-01 11:30 -03:00
+
+- Implementada a primeira aplicacao segura de entregas baixadas do Acessorias na planilha Fiscal.
+- `portal-sama-api` ganhou migration `20260601113000_add_acessorias_fiscal_application`, tabelas `acessorias_fiscal_apply_runs` e `acessorias_fiscal_divergences`, e endpoint `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`.
+- A aplicacao so marca celula como `ACESSORIAS` quando ha mapeamento confirmado, cliente identificado, competencia aberta e entrega `DELIVERED`; conflitos, falta de cliente, mapeamento ausente/baixo ou mes fechado viram divergencia.
+- `/departamentos/modelo` passou a exibir status visual `Acessorias`, contadores de baixas sincronizadas e divergencias abertas por empresa/celula.
+- Validacoes locais passaram: Prisma generate/format/validate, testes focados de API, build/lint API, build/lint Web e `git diff --check`.
+- Permanece pendente aplicar migrations no MySQL real, validar com contrato real do Acessorias, executar dry-run/real no EasyPanel e implementar revisao manual das divergencias.
+
 ## Atualizacao 2026-06-01 09:30 -03:00
 
 - Implementado no `portal-sama-api` o comando `npm run ops:phase1`, que orquestra a Fase 1 operacional: migrations, seed, readiness, backup, verificacao e restore drill.

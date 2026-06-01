@@ -2,6 +2,18 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
+## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/apply-to-fiscal`
+
+- **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.
+- **Metodo:** POST.
+- **Finalidade:** Aplicar baixas `DELIVERED` do Acessorias na planilha Fiscal existente, usando mapeamentos confirmados para marcar celulas como `ACESSORIAS`.
+- **Pagina/tela relacionada:** `/departamentos/modelo`.
+- **Modulo NestJS alvo:** `AcessoriasHomeModule`/integracao Acessorias.
+- **Status de migracao:** Implementado localmente em 2026-06-01; pendente de migration/deploy/validacao real.
+- **Riscos de seguranca:** atualizacao indevida de planilha por mapeamento incorreto, cliente errado, competencia fechada ou status divergente.
+- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado e mes aberto; casos inseguros viram divergencia aberta.
+- **Testes necessarios:** dry-run e execucao real no EasyPanel, validacao de auditoria, status visual, divergencias e matriz de permissao.
+
 ## Endpoint novo: `/api-v2/health`
 
 - **Arquivo:** `portal-sama-api/src/modules/health/health.controller.ts`

@@ -1,5 +1,39 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 11:30
+
+### Arquivos alterados
+
+- `portal-sama-api/prisma/schema.prisma`
+- `portal-sama-api/prisma/migrations/20260601113000_add_acessorias_fiscal_application/migration.sql`
+- `portal-sama-api/src/modules/integrations/acessorias/*`
+- `portal-sama-api/src/modules/departments/*`
+- `portal-sama-web/src/pages/departments/DepartmentModelPage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- `portal-sama-web/src/types/departments.ts`
+- Documentacao de status, pendencias, testes, endpoints, banco, UX e Acessorias.
+
+### O que mudou
+
+- Criadas runs e divergencias persistidas para aplicacao de baixas do Acessorias na planilha Fiscal.
+- Adicionado `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`.
+- Celulas seguras passam a receber status `ACESSORIAS`; casos inseguros viram divergencia aberta.
+- `/departamentos/modelo` mostra contadores, marcador visual e divergencias abertas, com botao protegido `Aplicar Acessorias`.
+
+### Testes executados
+
+- `npm.cmd run prisma:generate`, `prisma:format` e `prisma:validate` na API.
+- `npm.cmd test -- integrations/acessorias/acessorias-fiscal-application.service.spec.ts integrations/acessorias/acessorias-delivery-column-mappings.service.spec.ts departments/departments.service.spec.ts rbac/default-rbac.spec.ts --runInBand`.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+- `git diff --check` em API/Web.
+
+### Riscos ou pendencias
+
+- Migration, contrato real do Acessorias e aplicacao real ainda precisam ser validados no EasyPanel.
+- Revisao manual de divergencias, Central de Vencimentos, scheduler e notificacoes continuam pendentes.
+
 ## 2026-06-01 09:30
 
 ### Arquivos alterados

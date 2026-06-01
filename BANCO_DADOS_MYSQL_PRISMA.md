@@ -101,6 +101,8 @@ Status em 2026-05-19 12:16: a primeira fatia de transferencias foi modelada no P
 
 Status em 2026-05-20 11:45: historico operacional do gestor usa os modelos Prisma `CompanyHistoryEntry` e `CompanyLifeEntry`, mapeados para `sama_company_history_entries` e `sama_company_life_entries`. As novas mutacoes do `ManagersModule` gravam nessas tabelas preservando `topics_json`, datas ISO em string e `data_json` com metadados de ator/acao; validacao MySQL/homologacao e backfill real continuam pendentes.
 
+Status em 2026-06-01 11:30: a aplicacao de entregas do Acessorias na planilha Fiscal foi modelada com `AcessoriasFiscalApplyRun` e `AcessoriasFiscalDivergence`, usando as tabelas `acessorias_fiscal_apply_runs` e `acessorias_fiscal_divergences`. A migration `20260601113000_add_acessorias_fiscal_application` passou em `prisma:format`/`prisma:validate`; aplicacao no MySQL real e conferencia com dados reais continuam pendentes.
+
 Status em 2026-05-20 12:30: o overview do gestor passou a ler `sama_user_presence` pelo modelo Prisma `UserPresence`, com migration `20260520123000_add_user_presence_model`. A tabela continua sendo alimentada pelos pings/streams legados ate existir contrato v2 proprio de presenca; validacao em MySQL/homologacao segue pendente.
 
 Status em 2026-05-20 16:02: a exclusao de vencimentos do `CalendarModule` opera sobre os modelos ja mapeados `CalendarRule`, `CalendarRuleCompany` e `CalendarDueNotified`, removendo o vinculo empresa-regra, limpando notificacoes por regra/empresa/departamento e excluindo a regra quando ela fica sem vinculos. Nao houve nova migration nesta fatia; validacao com MySQL/homologacao segue pendente.

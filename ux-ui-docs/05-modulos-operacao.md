@@ -3,6 +3,8 @@
 ## Modelo Dpto
 Tela operacional padrao dos departamentos.
 
+Status parcial 2026-06-01 11:30: a planilha Fiscal em React ja exibe baixas vindas do Acessorias com status visual `Acessorias`, mostra divergencias abertas e possui acao protegida para aplicar entregas sincronizadas.
+
 ### Deve conter
 - resumo do departamento;
 - clientes;

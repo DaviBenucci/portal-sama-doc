@@ -5,6 +5,11 @@
 - Home por perfil foi implementada localmente com dados read-only do Acessorias via API v2.
 - O aceite continua pendente ate validar no EasyPanel com dados reais do Acessorias e usuarios reais por perfil.
 
+## Status parcial - 2026-06-01 11:30
+
+- Planilha Fiscal passou a exibir status visual `Acessorias`, contadores de baixas sincronizadas e divergencias abertas por empresa/celula.
+- O aceite continua pendente ate aplicar migration, publicar no EasyPanel e validar com entregas reais do Acessorias.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

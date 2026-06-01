@@ -1,6 +1,17 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
 
+## Atualizacao complementar 2026-06-01 11:30 -03:00
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Implementada a primeira fatia da Fase 3 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`: aplicacao segura de baixas do Acessorias na planilha Fiscal.
+- **Backend/API v2:** criada migration `20260601113000_add_acessorias_fiscal_application`, modelos `AcessoriasFiscalApplyRun` e `AcessoriasFiscalDivergence`, servico `AcessoriasFiscalApplicationService` e endpoint `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`.
+- **Regras de seguranca:** somente entregas `DELIVERED`, com cliente identificado, competencia aberta, coluna Fiscal valida e mapeamento `CONFIRMED` com confianca minima aplicam status `ACESSORIAS`; casos inseguros viram divergencia aberta e nao alteram a planilha.
+- **Frontend React:** `/departamentos/modelo` exibe contadores de `Acessorias` e divergencias, marca celulas sincronizadas, mostra divergencias por empresa/celula e oferece acao protegida `Aplicar Acessorias`.
+- **Validacao:** passaram Prisma generate/format/validate, testes focados de Acessorias/Departamentos/RBAC, build/lint da API, build/lint do Web e `git diff --check`.
+- **Pendente:** aplicar migrations no MySQL real, validar contrato real do Acessorias no EasyPanel, executar dry-run/execucao real com usuario autorizado, conferir auditoria e evoluir revisao manual/central de vencimentos/scheduler.
+
+
 ## Atualizacao complementar 2026-06-01 09:30 -03:00
 
 - **Responsavel/IA:** Codex

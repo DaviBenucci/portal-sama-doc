@@ -21,6 +21,17 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 - **Regras de retenção:** ponto a validar.
 - **Migrations relacionadas:** `20260512172700_init_current_schema` criada e validada em MySQL descartável com `prisma migrate deploy`; migrations incrementais existem para certificados, propostas, contratos, solicitacoes de acesso, clientes e colaboradores. Em 2026-05-13 14:43, o MySQL local `portal_sama` estava baselined, `20260513124500_add_collaborator_profile_to_users` foi aplicada por `prisma:migrate:deploy`, `prisma:migrate:status` passou e `prisma migrate diff` nao encontrou diferencas. Homologacao/producao ainda exigem procedimento com backup.
 
+## Modelos Prisma: `AcessoriasFiscalApplyRun` e `AcessoriasFiscalDivergence`
+
+- **Status:** Criados no schema alvo em 2026-06-01 pela migration `20260601113000_add_acessorias_fiscal_application`; banco real ponto a validar.
+- **Origem:** Prisma/MySQL alvo.
+- **Finalidade:** registrar execucoes de aplicacao de baixas do Acessorias na planilha Fiscal e persistir divergencias abertas quando a aplicacao automatica nao for segura.
+- **Campos principais:** `AcessoriasFiscalApplyRun.id`, `monthKey`, `department`, `status`, `deliveriesScanned`, `cellsApplied`, `divergencesCreated`, `skipped`; `AcessoriasFiscalDivergence.dedupeKey`, `deliveryId`, `externalId`, `clientId`, `clientDocument`, `obligationName`, `monthKey`, `sheetColumnKey`, `reason`, `status`.
+- **Indices:** run por `monthKey/department`, `status` e `startedAt`; divergencia por `dedupeKey` unico, `monthKey/status`, `clientId/status`, `deliveryId`, `reason/status` e `sheetColumnKey`.
+- **Dados sensiveis:** nomes/documentos de clientes e metadados operacionais de divergencia; nao registrar token do Acessorias.
+- **Regras de retencao:** ponto a validar; divergencias devem ser resolvidas/ignoradas com auditoria em etapa futura.
+- **Migrations relacionadas:** `20260601113000_add_acessorias_fiscal_application`.
+
 ## Modelo Prisma: `User`
 
 - **Status:** Expandido no schema alvo e usado por `UsersModule`, `AuthModule` e `CollaboratorsModule`; migration de campos funcionais aplicada no MySQL local em 2026-05-13 14:43.
