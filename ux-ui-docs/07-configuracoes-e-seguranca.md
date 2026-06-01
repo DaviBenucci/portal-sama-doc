@@ -44,6 +44,16 @@ O usuario pode alterar a foto de perfil.
 - MFA futuro;
 - politica de senha em leitura.
 
+### Sessao expirada e auto-refresh
+
+Implementado em 2026-06-01 no Web:
+
+- renovar access token automaticamente antes de chamadas protegidas quando o token nao estiver fresco;
+- repetir uma unica vez a requisicao original apos `401`, se o refresh token ainda estiver valido;
+- impedir refresh paralelo durante rotacao do cookie HTTP-only;
+- manter CSRF e `withCredentials`;
+- nao aumentar a duracao do access token como solucao principal.
+
 ## Troca de senha
 
 Regra definida:

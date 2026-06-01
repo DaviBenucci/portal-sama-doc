@@ -124,6 +124,43 @@ Validacao local:
 
 Pendencia real remanescente: aplicar migration no MySQL real, rodar seed RBAC, configurar `ACESSORIAS_DELIVERIES_PATH`, validar contrato real de entregas do Acessorias no EasyPanel e depois implementar mapeamento para planilha Fiscal, divergencias, Central de Vencimentos, scheduler e notificacoes.
 
+## Atualizacao operacional de 2026-06-01 10:00 -03:00
+
+Foram implementadas duas pendencias desta rodada: correcao do auto-refresh de sessao no Web e base backend de mapeamento Acessorias -> planilha Fiscal.
+
+Sessao/seguranca:
+
+- `portal-sama-web/src/services/api.ts` passou a renovar access token antes de chamadas protegidas quando o token nao esta fresco;
+- `api.ts` passou a tratar `401` com retry unico da requisicao original;
+- o refresh usa promessa compartilhada para evitar corrida com rotacao de refresh token;
+- endpoints `/auth/csrf`, `/auth/login`, `/auth/refresh`, `/auth/logout` e `/auth/forgot-password` ficam fora do auto-refresh;
+- `withCredentials` e CSRF permanecem ativos.
+
+Acessorias:
+
+- criado modelo Prisma e migration `20260601100000_add_acessorias_delivery_column_mappings`;
+- criada tabela `acessorias_delivery_column_mappings`;
+- criado endpoint protegido `GET /api-v2/integrations/acessorias/delivery-column-mappings`;
+- criado endpoint protegido `GET /api-v2/integrations/acessorias/delivery-column-mappings/suggestions`;
+- criado endpoint protegido `POST /api-v2/integrations/acessorias/delivery-column-mappings`;
+- criado endpoint protegido `PATCH /api-v2/integrations/acessorias/delivery-column-mappings/:id`;
+- RBAC ganhou `integrations.acessorias.deliveries.manage`;
+- criacao/alteracao de mapeamentos registra auditoria;
+- sugestoes usam entregas locais sincronizadas, mas nao alteram celulas automaticamente.
+
+Validacao local:
+
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web;
+- `npm.cmd run prisma:generate` passou na API;
+- `npm.cmd run prisma:format` passou na API;
+- `npm.cmd run prisma:validate` passou na API;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run lint` passou na API;
+- testes focados de Acessorias/RBAC passaram com 5 suites e 16 testes.
+
+Pendencia real remanescente: aplicar migrations no MySQL real, rodar seed RBAC, validar no EasyPanel o auto-refresh aguardando vencimento real do access token, validar contrato real do Acessorias e implementar a proxima etapa: aplicar mapeamentos confirmados na planilha Fiscal com status visual `Acessorias` e divergencias para casos nao seguros.
+
 ## Atualizacao operacional de 2026-05-28 10:06 -03:00
 
 Foi implementada a fatia local da Home por perfil usando dados do Acessorias pela API v2.
@@ -924,7 +961,7 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [x] Salvar entregas localmente e registrar sync runs.
 - [ ] Implementar sincronizacao automatica agendada de entregas do Acessorias.
 - [ ] Salvar divergencias e alertas.
-- [ ] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
+- [x] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
 - [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas.
 - [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
 - [ ] Criar vencimentos oficiais a partir do Acessorias e vencimentos previstos apenas como fallback.

@@ -55,6 +55,8 @@
 - [ ] SVG bloqueado para foto.
 - [ ] Erros nao vazam detalhes internos.
 - [ ] Dados sensiveis nao ficam no localStorage.
+- [x] Auto-refresh de access token implementado no Web com retry unico em 401.
+- [ ] Validar auto-refresh no EasyPanel apos vencimento real do access token.
 
 ## Build
 - [ ] `npm run lint` passa.

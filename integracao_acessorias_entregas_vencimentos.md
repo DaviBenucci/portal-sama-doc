@@ -24,6 +24,8 @@ Atualizacao 2026-05-28: foi adicionada tambem uma fundacao backend para cadastro
 
 Atualizacao 2026-05-28: foi criada a primeira base backend do MVP de entregas. A API passa a ter as tabelas `acessorias_deliveries` e `acessorias_delivery_sync_runs`, variavel `ACESSORIAS_DELIVERIES_PATH`, endpoint `POST /api-v2/integrations/acessorias/deliveries/sync` para sincronizacao manual auditada e endpoint `GET /api-v2/integrations/acessorias/deliveries` para listar entregas salvas localmente. Essa etapa ainda nao cria planilha Fiscal automatica, Central de Vencimentos, divergencias, alertas D-7/D-3/D-1/D0/D+1 ou scheduler automatico.
 
+Atualizacao 2026-06-01: foi criada a camada backend de mapeamento entre entregas do Acessorias e colunas da planilha Fiscal. A API passa a ter a tabela `acessorias_delivery_column_mappings`, endpoint `GET /api-v2/integrations/acessorias/delivery-column-mappings`, endpoint `GET /api-v2/integrations/acessorias/delivery-column-mappings/suggestions`, `POST /api-v2/integrations/acessorias/delivery-column-mappings` e `PATCH /api-v2/integrations/acessorias/delivery-column-mappings/:id`. Essa etapa permite confirmar mapeamentos com auditoria, mas ainda nao atualiza automaticamente celulas da planilha Fiscal.
+
 ---
 
 ## 2. Decisão de implementação
@@ -431,6 +433,8 @@ Exemplo:
 | DAS | Fiscal | DAS | Confirmado |
 | EFD CONTRIBUIÇÕES | Fiscal | EFD Contribuições | Confirmado |
 | GIA | Fiscal | Não mapeado | Revisar |
+
+Status implementado parcialmente em 2026-06-01: mapeamentos podem ser listados, sugeridos com base nas entregas locais, criados/atualizados com permissao `integrations.acessorias.deliveries.manage` e auditados. Apenas mapeamentos confirmados devem ser usados em uma etapa futura para atualizar celulas automaticamente.
 
 ---
 
