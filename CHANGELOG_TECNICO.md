@@ -1,5 +1,74 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 paginacao Acessorias e Central de Vencimentos
+
+### Arquivos alterados
+
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/.env.example`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/pages/dev/DevAdminPage.tsx`
+- `portal-sama-web/src/pages/departments/DepartmentDueCenterPage.tsx`
+- `portal-sama-web/src/pages/departments/DepartmentModelPage.tsx`
+- `portal-sama-web/src/app/router.tsx`
+- `portal-sama-web/src/components/layout/navigation.tsx`
+- `portal-sama-web/src/pages/home/HomePage.tsx`
+- Documentacao de ordem, status, pendencias, testes e Acessorias.
+
+### O que mudou
+
+- Servicos Acessorias passaram de teto fixo de 50 paginas para `ACESSORIAS_MAX_PAGES`, parando quando uma pagina vier vazia.
+- Foi adicionado intervalo entre paginas por `ACESSORIAS_RATE_LIMIT_PER_MINUTE`, com default 95/minuto para manter margem abaixo de 100/minuto.
+- Respostas `429` entram em retry controlado e respeitam `Retry-After`.
+- Sync de entregas grava e reutiliza `incremental_since` do ultimo run `SUCCESS`.
+- O Web usa timeout longo somente em chamadas Acessorias e mostra erro por acao no painel DEV.
+- `Importar tudo` usa cadastro `entity=all` e evita refetch duplicado de empresas quando responsaveis sao extraidos dos departamentos.
+- Criada a Central de Vencimentos em `/departamentos/vencimentos`, consolidando vencimentos de calendario e Acessorias do workspace.
+
+### Testes executados
+
+- `npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand`.
+- `npx.cmd tsc --noEmit --pretty false` no Web.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com payload real e observar se a duracao de 5 a 7 minutos nao sofre timeout de proxy/container.
+- A Central de Vencimentos esta implementada localmente, mas nao homologada.
+- Scheduler e notificacoes continuam pendentes.
+
+## 2026-06-01 vencimentos Acessorias no workspace
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/departments/departments.service.ts`
+- `portal-sama-api/src/modules/departments/departments.service.spec.ts`
+- `portal-sama-web/src/pages/departments/DepartmentModelPage.tsx`
+- `portal-sama-web/src/types/departments.ts`
+- Documentacao de status, pendencias, testes, pagina departamental, UX e ordem de implementacao.
+
+### O que mudou
+
+- O workspace departamental passou a incluir entregas Acessorias pendentes/atrasadas com `dueAt` no pacote de vencimentos do mes.
+- As entregas sao cruzadas com empresas visiveis por `clientId` ou documento.
+- Mapeamentos `CONFIRMED` conectam a entrega Acessorias a uma coluna operacional valida; sem mapeamento, o vencimento aparece no carrossel sem bloquear celula.
+- O carrossel de `/departamentos/modelo` sinaliza itens de origem `Acessorias`.
+
+### Testes executados
+
+- `npm.cmd test -- departments.service.spec.ts --runInBand`.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com entregas reais e mapeamentos reais.
+- Central de Vencimentos dedicada, scheduler e notificacoes ainda nao foram implementados.
+
 ## 2026-06-01 revisao manual de divergencias Acessorias
 
 ### Arquivos alterados

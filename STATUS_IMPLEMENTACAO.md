@@ -1,5 +1,24 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-01 paginacao Acessorias e Central de Vencimentos
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade das Fases 2 e 3: a integracao Acessorias passou a respeitar limite de requisicoes por minuto, buscar paginas ate lista vazia e a UI ganhou a rota dedicada `/departamentos/vencimentos`.
+- **Backend/API v2:** Home, preview/sync de entregas e preview/sync de cadastros usam `ACESSORIAS_MAX_PAGES` e `ACESSORIAS_RATE_LIMIT_PER_MINUTE`, fazem retry controlado em `429` e aceitam formatos de lista mais amplos (`rows`, `records`, `registros`, `dados`, `lista`). Sync de entregas registra/usa `incremental_since` baseado no ultimo run `SUCCESS`.
+- **Frontend React:** chamadas Acessorias passam a ter timeout de ate 10 minutos; `/dev` mostra erro por acao e `Importar tudo` usa cadastros `all` antes das entregas. Criada `/departamentos/vencimentos`, com filtros por departamento, mes, origem, status e busca, consolidando vencimentos de calendario e Acessorias do workspace.
+- **Validacao local:** passaram suites focadas de Acessorias/Departamentos com 20 testes, TypeScript do Web, build/lint da API e build/lint do Web.
+- **Pendente:** validar no EasyPanel com dados reais, confirmar total de clientes/entregas, observar tempo real da importacao e conferir se proxy/container toleram chamadas longas. A Central nao deve ser marcada como homologada ate essa validacao.
+
+## Atualizacao complementar 2026-06-01 vencimentos Acessorias no workspace
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 3: entregas sincronizadas do Acessorias agora alimentam o carrossel e o pacote de vencimentos do workspace departamental.
+- **Backend/API v2:** `DepartmentsService.buildDueBundle()` passou a consultar `acessorias_deliveries` do mes selecionado, considerar status `PENDING`, `DUE_SOON`, `OVERDUE` e `UNKNOWN`, cruzar por `clientId`/documento e conectar a coluna quando houver mapeamento `CONFIRMED`.
+- **Frontend React:** `/departamentos/modelo` passou a identificar itens do carrossel vindos do Acessorias com selo `Acessorias`; o contrato `DepartmentWorkspaceDueItem` agora inclui `source`, dados da entrega e status externo.
+- **Regra de seguranca operacional:** vencimento Acessorias sem mapeamento confirmado aparece no carrossel, mas nao bloqueia celula; bloqueio por vencimento so ocorre quando a entrega foi conectada a uma coluna operacional valida.
+- **Validacao local:** passou `departments.service.spec.ts` com 5 testes, alem de build/lint da API e build/lint do Web.
+- **Pendente:** validar no EasyPanel com entregas reais, mapeamentos reais e usuarios por departamento; Central de Vencimentos dedicada, scheduler e notificacoes seguem pendentes.
+
 ## Atualizacao complementar 2026-06-01 revisao manual de divergencias Acessorias
 
 - **Responsavel/IA:** Codex
@@ -39,7 +58,7 @@
 - **Acessorias/Home:** `home-summary` passa a usar `ACESSORIAS_HOME_PATH`, `ACESSORIAS_DELIVERIES_PATH` ou `deliveries`, trata corpo vazio como lista vazia disponivel e retorna diagnostico sanitizado quando houver erro.
 - **Frontend React:** `/departamentos/modelo` ganhou selecao por departamento, cards de Fiscal/Contabil/Pessoal/Financeiro/Legalizacao e aplica o Acessorias no departamento ativo.
 - **Validacao local:** passaram testes focados de Acessorias/Departamentos, TypeScript do Web, build/lint da API e build/lint do Web.
-- **Pendente:** validar contrato real no EasyPanel, revisar mapeamentos de nomes reais de obrigacoes/departamentos, validar revisao manual de divergencias com dados reais e integrar vencimentos/notificacoes.
+- **Pendente:** validar contrato real no EasyPanel, revisar mapeamentos de nomes reais de obrigacoes/departamentos, validar revisao manual/vencimentos Acessorias com dados reais e integrar Central de Vencimentos/notificacoes.
 
 ## Atualizacao complementar 2026-06-01 11:30 -03:00
 

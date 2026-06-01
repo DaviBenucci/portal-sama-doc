@@ -34,6 +34,10 @@ Atualizacao 2026-06-01 contrato oficial: a validacao em `integracao_acessorias_p
 
 Atualizacao 2026-06-01 importacao DEV: a rota React `/dev` agora possui painel `Integracao Acessorias` para testar conexao, pre-visualizar e importar clientes, responsaveis e entregas. O backend adicionou `GET /api-v2/integrations/acessorias/deliveries/preview` para consultar entregas externas sem persistir dados. A localizacao dos botoes e o contrato curto continuam centralizados em `integracao_acessorias_paths_importacao_dev.md`.
 
+Atualizacao 2026-06-01 vencimentos no workspace: `GET /api-v2/departments/workspace` passou a incluir entregas Acessorias com vencimento no mes selecionado no carrossel operacional. Quando a entrega possui cliente visivel e mapeamento `CONFIRMED` para coluna valida, o vencimento tambem aparece na celula e participa do bloqueio por vencimento. Sem mapeamento confirmado, o item aparece apenas no carrossel, preservando a regra conservadora de nao alterar/bloquear celula por associacao insegura.
+
+Atualizacao 2026-06-01 paginacao e Central: os servicos Acessorias de Home, entregas e cadastros passaram a paginar `ListAll` ate lista vazia, respeitar `ACESSORIAS_RATE_LIMIT_PER_MINUTE`, aceitar `ACESSORIAS_MAX_PAGES`, tentar novamente em `429` e usar timeout longo no Web para importacoes manuais. A sincronizacao de entregas registra `incremental_since` e usa o ultimo run bem-sucedido como marco incremental. Foi criada a rota React `/departamentos/vencimentos`, consolidando vencimentos de calendario e Acessorias do workspace com filtros operacionais. Esta Central esta implementada localmente, mas nao homologada ate validacao no EasyPanel com dados reais.
+
 ---
 
 ## 2. Decisão de implementação
@@ -964,7 +968,7 @@ Status implementado parcialmente em 2026-05-28: lista entregas persistidas em `a
 GET /api-v2/integrations/acessorias/deliveries/divergences
 ```
 
-Status implementado parcialmente em 2026-06-01 11:30: divergencias passaram a ser persistidas em `acessorias_fiscal_divergences` durante `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` e exibidas no workspace Fiscal. Atualizacao 2026-06-01: `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite revisar manualmente uma divergencia como `RESOLVED`, `IGNORED` ou `OPEN`, com CSRF, RBAC, auditoria e historico em metadata; `/departamentos/modelo` oferece as acoes `Resolver` e `Ignorar`. Ainda falta endpoint dedicado de listagem geral, validacao real no EasyPanel, alertas e vencimentos.
+Status implementado parcialmente em 2026-06-01 11:30: divergencias passaram a ser persistidas em `acessorias_fiscal_divergences` durante `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal` e exibidas no workspace Fiscal. Atualizacao 2026-06-01: `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite revisar manualmente uma divergencia como `RESOLVED`, `IGNORED` ou `OPEN`, com CSRF, RBAC, auditoria e historico em metadata; `/departamentos/modelo` oferece as acoes `Resolver` e `Ignorar`. Vencimentos Acessorias sincronizados tambem aparecem no carrossel/workspace quando possuem `dueAt`. Ainda faltam endpoint dedicado de listagem geral, validacao real no EasyPanel, alertas e Central de Vencimentos dedicada.
 
 ### 21.4 Resolver alerta
 

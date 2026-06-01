@@ -16,6 +16,18 @@
 - A Home do Acessorias passou a diferenciar indisponibilidade real de retorno vazio (`204 No Content`), exibindo diagnostico sanitizado quando houver falha.
 - O aceite continua pendente ate validar dados reais, responsaveis reais e mapeamentos reais de obrigacoes no EasyPanel.
 
+## Status parcial - 2026-06-01 vencimentos Acessorias
+
+- O carrossel do Modelo Dpto passou a exibir vencimentos oficiais vindos de entregas Acessorias sincronizadas.
+- Vencimentos Acessorias so aparecem em celula/bloqueio quando ha mapeamento confirmado para coluna operacional.
+- O aceite continua pendente ate validar com entregas reais, mapeamentos reais e usuarios reais por departamento no EasyPanel.
+
+## Status parcial - 2026-06-01 Central de Vencimentos
+
+- `/departamentos/vencimentos` foi criada localmente para consolidar vencimentos de calendario e Acessorias do workspace.
+- A tela possui filtros por departamento, mes, origem, status e busca.
+- O aceite continua pendente ate validar no EasyPanel com dados reais e confirmar totais contra o Acessorias da empresa.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

@@ -4,6 +4,8 @@
 > Atualizacao 2026-05-20 11:45: `/manager/historico` passou a criar/editar historico por `POST/PATCH /api-v2/managers/history` e salvar vida da empresa por `POST /api-v2/managers/company-life`, com `manager_history.write`, CSRF, escopo por departamento e auditoria. Validacao MySQL/usuarios reais/Playwright segue pendente.
 > Atualizacao 2026-05-20 12:30: `/manager` passou a consumir `GET /api-v2/managers/overview` para presenca da equipe e KPIs online/offline; `sama_user_presence` foi modelada como `UserPresence`. Validacao MySQL/usuarios reais/Playwright segue pendente antes de desligar o `overview` legado.
 > Atualizacao 2026-05-20 16:02: `/manager` passou a remover vencimentos por `DELETE /api-v2/calendar/entries/:id` quando a sessao possui `calendar.manage`; a API v2 exige CSRF, escopo por departamento e auditoria `calendar.entry.delete`. Validacao MySQL/usuarios reais/Playwright segue pendente antes de desligar `calendar_delete_entry`.
+> Atualizacao 2026-06-01: o workspace departamental passou a incluir vencimentos oficiais de entregas Acessorias sincronizadas.
+> Atualizacao 2026-06-01 Central: criada rota `/departamentos/vencimentos` para consolidar vencimentos de calendario e Acessorias; ainda falta validar no EasyPanel com dados reais antes de considerar homologado.
 
 ## 1. Identificação da página
 

@@ -1,5 +1,97 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 paginacao Acessorias e Central de Vencimentos
+
+### Contexto
+
+- Continuidade das Fases 2 e 3: corrigir baixa cobertura de registros retornados pelo Acessorias, evitar timeout do Web em acoes longas e criar a Central de Vencimentos dedicada.
+- Escopo local: paginacao ate lista vazia, rate limit configuravel, retry de `429`, sync incremental de entregas por ultimo run `SUCCESS`, timeout longo no Web e rota `/departamentos/vencimentos`.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 4 suites, 20 testes.
+- TypeScript do Web passou.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com mocks; nao houve execucao contra EasyPanel, MySQL real ou payload real do Acessorias.
+
+### Pendencias
+
+- Validar no EasyPanel se os totais de empresas/entregas batem com a base real do Acessorias.
+- Confirmar se a chamada longa nao sofre timeout no proxy/container.
+- Homologar visualmente `/departamentos/vencimentos` com dados reais antes de marcar a Central como concluida.
+
+### Observacao anti-alucinacao
+
+A Central de Vencimentos foi criada localmente e compila, mas nao esta homologada. O aceite depende de EasyPanel com dados reais.
+
+## Execucao 2026-06-01 vencimentos Acessorias no workspace
+
+### Contexto
+
+- Continuidade da Fase 3: conectar entregas/vencimentos do Acessorias ao calendario operacional do workspace departamental.
+- Escopo local: `DepartmentsService` passa a montar vencimentos oficiais Acessorias a partir de `acessorias_deliveries`, vinculando celula quando houver mapeamento confirmado, e o Web passa a sinalizar a origem no carrossel.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- departments.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 1 suite, 5 testes.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com mocks; nao houve execucao contra EasyPanel, MySQL real ou payload real do Acessorias.
+
+### Falhas encontradas
+
+- A primeira execucao do teste focado falhou por tipagem `unknown` no spec; a linha foi tipada explicitamente.
+- A segunda execucao apontou ausencia do helper `onlyDigits` em `DepartmentsService`; o helper foi adicionado.
+- O lint da API apontou uma assercao de tipo desnecessaria; a assercao foi removida e o lint/build foram reexecutados.
+
+### Pendencias
+
+- Validar com entregas reais sincronizadas no EasyPanel.
+- Conferir se mapeamentos reais conectam corretamente vencimentos Acessorias a colunas operacionais.
+- Criar Central de Vencimentos dedicada, scheduler e notificacoes D-7/D-3/D-1/D0/D+1.
+
+### Observacao anti-alucinacao
+
+Nao foi declarado que a Central de Vencimentos esta pronta. Esta rodada apenas conectou vencimentos oficiais Acessorias ao carrossel/celula do workspace departamental.
+
 ## Execucao 2026-06-01 revisao manual de divergencias Acessorias
 
 ### Contexto

@@ -2,13 +2,34 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
 
+## Atualizacao 2026-06-01 paginacao Acessorias e Central de Vencimentos
+
+- Implementada paginacao local ate lista vazia em Home, entregas e cadastros Acessorias, com `ACESSORIAS_MAX_PAGES=1000` por padrao.
+- Implementado rate limit configuravel com `ACESSORIAS_RATE_LIMIT_PER_MINUTE=95`, para manter margem abaixo do limite de 100 requisicoes por minuto.
+- Implementado retry controlado para `429`, respeitando `Retry-After` quando o Acessorias informar.
+- Sync de entregas passou a registrar e reutilizar `incremental_since` do ultimo run `SUCCESS`.
+- O Web passou a usar timeout de 10 minutos nas chamadas Acessorias e a mostrar erro por acao no painel DEV.
+- `Importar tudo` passou a chamar cadastros com `entity=all`, reduzindo repeticao quando responsaveis forem extraidos de empresas.
+- Criada a rota React `/departamentos/vencimentos`, com filtros por departamento, mes, origem, status e busca, consolidando vencimentos de calendario e Acessorias.
+- Validacoes locais passaram: 4 suites focadas com 20 testes na API, TypeScript do Web, build/lint API e build/lint Web.
+- Permanece pendente validar no EasyPanel com dados reais, totais reais de clientes/entregas, tempo real de importacao e a tela da Central antes de qualquer homologacao.
+
+## Atualizacao 2026-06-01 vencimentos Acessorias no workspace
+
+- Implementada a conexao local entre entregas/vencimentos do Acessorias e o carrossel de vencimentos do workspace departamental.
+- `DepartmentsService` agora inclui entregas de `acessorias_deliveries` com `dueAt` no mes selecionado e status pendente/atrasado no mesmo pacote de vencimentos das regras de calendario.
+- Quando existe mapeamento `CONFIRMED` para uma coluna operacional valida, o vencimento Acessorias tambem aparece na celula e participa do bloqueio por vencimento; sem mapeamento confirmado, aparece apenas no carrossel.
+- `/departamentos/modelo` passou a sinalizar no carrossel os itens com origem `Acessorias`.
+- Validacoes locais passaram: `departments.service.spec.ts` com 5 testes, build/lint API e build/lint Web.
+- Permanece pendente validar com dados reais no EasyPanel, mapeamentos reais de obrigacoes/departamentos, Central de Vencimentos dedicada, scheduler e notificacoes.
+
 ## Atualizacao 2026-06-01 revisao manual de divergencias Acessorias
 
 - Implementada a revisao manual de divergencias Acessorias abertas na planilha departamental.
 - Adicionado `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` com JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, auditoria e historico em metadata.
 - `/departamentos/modelo` passou a exibir acoes protegidas `Resolver` e `Ignorar` nos cards de divergencias abertas; ao revisar, o workspace e recarregado e a divergencia deixa de aparecer como aberta.
 - Validacoes locais passaram: teste focado da API com 4 testes, build/lint API e build/lint Web.
-- Permanece pendente validar no EasyPanel com dados reais, usuario autorizado, CSRF real e auditoria persistida; Central de Vencimentos, scheduler e notificacoes continuam pendentes.
+- Permanece pendente validar no EasyPanel com dados reais, usuario autorizado, CSRF real e auditoria persistida; Central de Vencimentos dedicada, scheduler e notificacoes continuam pendentes.
 
 ## Atualizacao 2026-06-01 importacao DEV Acessorias
 
@@ -33,7 +54,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - Adicionado `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` para aplicar baixas do Acessorias no departamento ativo.
 - Corrigida a Home do Acessorias para usar `deliveries` como fallback e tratar `204 No Content` como retorno valido sem entregas.
 - Validacoes locais passaram: testes focados de Acessorias/Departamentos, TypeScript do Web, build/lint API e build/lint Web.
-- Permanece pendente validar dados reais no EasyPanel, revisar mapeamentos de obrigacoes por departamento e conectar vencimentos/notificacoes.
+- Permanece pendente validar dados reais no EasyPanel, revisar mapeamentos de obrigacoes por departamento e conectar a Central de Vencimentos/notificacoes.
 
 ## Atualizacao 2026-06-01 11:30 -03:00
 

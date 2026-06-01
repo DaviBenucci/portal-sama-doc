@@ -104,6 +104,9 @@ Ja feito localmente:
 - A Home recebe diagnostico sanitizado de erro externo, sem expor token, URL completa ou payload.
 - `GET /api-v2/integrations/acessorias/deliveries/preview` permite pre-visualizar entregas externas sem gravar dados locais.
 - `/dev` possui painel `Integracao Acessorias` com botoes de testar conexao, pre-visualizar entregas/clientes/responsaveis, importar clientes, importar responsaveis, sincronizar entregas e importar tudo.
+- Consultas `ListAll` do Acessorias usam paginacao ate lista vazia, limite configuravel `ACESSORIAS_MAX_PAGES`, espera entre paginas por `ACESSORIAS_RATE_LIMIT_PER_MINUTE` e retry controlado para `429`.
+- Sincronizacao de entregas registra `incremental_since` em `acessorias_delivery_sync_runs` e usa o ultimo sync bem-sucedido como marco incremental quando houver.
+- O Web usa timeout estendido apenas para acoes Acessorias, evitando erro local em importacoes que podem levar varios minutos.
 
 Implementar/validar em ordem:
 
@@ -136,7 +139,7 @@ Criterio de saida:
 
 ## Fase 3 - Acessorias aplicado nas planilhas departamentais e vencimentos
 
-Estado: aplicacao local multidepartamental e revisao manual de divergencias implementadas; validacao real ainda pendente.
+Estado: aplicacao local multidepartamental, revisao manual de divergencias, vencimentos Acessorias e Central de Vencimentos implementados localmente; validacao real ainda pendente.
 
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
 
@@ -149,6 +152,7 @@ Ja feito localmente:
 - `/departamentos/modelo` agora permite alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, com colunas operacionais proprias por departamento.
 - `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status` foram adicionados como rotas genericas, mantendo as rotas fiscais antigas compativeis.
 - `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite resolver ou ignorar divergencias manualmente com CSRF, RBAC e auditoria; `/departamentos/modelo` oferece botoes protegidos na lista de divergencias abertas.
+- Entregas Acessorias pendentes/atrasadas com `dueAt` entram no carrossel de vencimentos do workspace; quando ha mapeamento confirmado para coluna operacional, tambem alimentam o vencimento da celula correspondente.
 
 Implementar em ordem:
 
@@ -156,8 +160,8 @@ Implementar em ordem:
 2. [local concluido; real pendente] Marcar celulas preenchidas pelo Acessorias com status visual proprio.
 3. [local concluido; real pendente] Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
 4. [local concluido; real pendente] Permitir revisao manual das divergencias.
-5. Conectar entregas/vencimentos ao calendario operacional.
-6. Criar Central de Vencimentos baseada nas entregas sincronizadas.
+5. [local concluido; real pendente] Conectar entregas/vencimentos ao calendario operacional.
+6. [local concluido; real pendente] Criar Central de Vencimentos baseada nas entregas sincronizadas.
 7. Adicionar notificacoes para vencimento proximo, atraso, baixa e divergencia.
 8. Criar scheduler seguro para sincronizacao periodica.
 

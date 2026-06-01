@@ -44,7 +44,7 @@ Admin
 | Documentos | Nao deve ser item principal; acessar pelo painel do cliente |
 | Certificados Digitais | Todos os departamentos, o certificado DEVE ser vinculado a um cliente, aonde as informações "cliente/id do cliente devem ser preenchidos automáticamente" e escolher departamento deve ser retirado pois todos os dptos terão acesso aos certificados digitais. |
 | Integra-AI | Somente departamento Contabil |
-| Vencimentos | Todos os departamentos, filtrando por escopo |
+| Vencimentos | Todos os departamentos, filtrando por escopo; rota local `/departamentos/vencimentos` pendente de aceite real |
 | Contratos | Legalizacao, Financeiro e Comercial |
 | Propostas | Financeiro e Comercial |
 | Legalizacao | Legalizacao |

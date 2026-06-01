@@ -7,6 +7,8 @@ Status parcial 2026-06-01 11:30: a planilha Fiscal em React ja exibe baixas vind
 
 Status parcial 2026-06-01 complementar: a tela passou a alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, com colunas proprias por departamento e aplicacao do Acessorias no departamento selecionado.
 
+Status parcial 2026-06-01 vencimentos: o carrossel operacional do Modelo Dpto passou a receber vencimentos oficiais de entregas Acessorias sincronizadas. Quando houver mapeamento confirmado para coluna operacional, o vencimento tambem aparece na celula correspondente.
+
 ### Deve conter
 - resumo do departamento;
 - clientes;
@@ -93,6 +95,8 @@ Somente departamento Contabil.
 
 ## Vencimentos
 Central operacional de obrigacoes.
+
+Status parcial 2026-06-01 Central: rota `/departamentos/vencimentos` criada localmente, consolidando vencimentos de calendario e Acessorias do workspace com filtros por departamento, mes, origem, status e busca. Aceite real segue pendente no EasyPanel.
 
 ### Deve conter
 - hoje;

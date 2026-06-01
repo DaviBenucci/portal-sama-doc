@@ -11,6 +11,8 @@ A Home deve ser um Painel do Dia. Ela precisa mostrar o resumo do que o usuario 
 - O token do Acessorias nao vai para o navegador.
 - Colaborador, gestor e DEV/Admin possuem blocos diferentes, mantendo os atalhos conforme permissoes.
 - Atualizacao complementar 2026-06-01: retorno externo `204 No Content`/corpo vazio e tratado como resumo disponivel sem entregas; falhas retornam diagnostico sanitizado para o painel admin.
+- Atualizacao 2026-06-01: o workspace departamental passou a receber vencimentos oficiais de entregas Acessorias sincronizadas; a Home continua pendente de validacao real para consolidar esses vencimentos por perfil.
+- Atualizacao 2026-06-01 Central: a Home/atalhos locais podem apontar para `/departamentos/vencimentos`; aceite segue pendente ate validar com dados reais.
 - Ainda falta validar no EasyPanel com a API real do Acessorias e usuarios reais por perfil.
 
 ## Home - Colaborador

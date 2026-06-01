@@ -2,7 +2,7 @@
 
 Ultima atualizacao: 2026-06-01
 Responsavel/IA: Codex
-Status: base local corrigida; botoes DEV implementados; validacao real no EasyPanel pendente
+Status: base local corrigida; botoes DEV, paginacao/rate limit, aplicacao em planilha, revisao de divergencias, vencimentos no workspace e Central de Vencimentos implementados localmente; validacao real no EasyPanel pendente
 
 ## Objetivo
 
@@ -37,7 +37,9 @@ ACESSORIAS_CLIENTS_PATH=companies/ListAll
 ACESSORIAS_COLLABORATORS_PATH=
 ACESSORIAS_AUTH_HEADER=Authorization
 ACESSORIAS_AUTH_SCHEME=Bearer
-ACESSORIAS_TIMEOUT_SEC=15
+ACESSORIAS_TIMEOUT_SEC=30
+ACESSORIAS_RATE_LIMIT_PER_MINUTE=95
+ACESSORIAS_MAX_PAGES=1000
 ACESSORIAS_HOME_APPEND_CONTEXT_QUERY=false
 ```
 
@@ -87,7 +89,10 @@ Comportamento atualizado:
 
 - Home e sincronizacao de entregas usam `deliveries/ListAll` como padrao.
 - O backend monta `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina`.
-- O backend pagina `ListAll` ate retorno vazio, com limite interno conservador.
+- O backend pagina `ListAll` ate retorno vazio, com limite configuravel por `ACESSORIAS_MAX_PAGES`.
+- O backend aguarda entre paginas conforme `ACESSORIAS_RATE_LIMIT_PER_MINUTE`, com default 95/minuto para manter margem abaixo do limite oficial de 100/minuto.
+- Respostas `429` entram em retry controlado, respeitando `Retry-After` quando informado.
+- Sincronizacao de entregas registra `incremental_since` e usa o ultimo run `SUCCESS` como marco incremental para proximas sincronizacoes.
 - O retorno real `empresa -> Entregas[]` e achatado em entregas individuais.
 - Entregas usam `Config.EntID` como `externalId` preferencial.
 - Campos reais como `Razao`, `Identificador`, `Nome`, `EntCompetencia`, `EntDtPrazo`, `EntDtEntrega`, `Status`, `Config.DptoNome`, `Config.RespPrazo` e `Config.RespEntrega` sao normalizados.
@@ -112,6 +117,8 @@ Regras declaradas:
 
 - O frontend nao deve receber token, base URL privada ou qualquer `VITE_ACESSORIAS_*`.
 - O Web consome apenas endpoints autenticados da propria API do Portal Sama.
+- As chamadas Acessorias no Web usam timeout estendido de 10 minutos para suportar importacoes manuais longas.
+- A rota `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias do workspace; ela esta implementada localmente e ainda depende de validacao real.
 
 ## Onde ficam os botoes de adicionar/importar clientes
 
@@ -149,10 +156,12 @@ Fase 3 depende das entregas persistidas localmente ja normalizadas:
 ```txt
 # portal-sama-api
 npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-deliveries.service.spec.ts integrations/acessorias/acessorias-registrations.service.spec.ts --runInBand
+npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand
 npm.cmd run build
 npm.cmd run lint
 
 # portal-sama-web
+npx.cmd tsc --noEmit --pretty false
 npm.cmd run build
 npm.cmd run lint
 
@@ -160,7 +169,7 @@ npm.cmd run lint
 git diff --check
 ```
 
-Resultado consolidado local: 3 suites passaram, 15 testes passaram; build/lint da API passaram; build/lint do Web passaram; `git diff --check` deve ser mantido como ultimo gate antes de commit.
+Resultado consolidado local atualizado: 4 suites focadas de Acessorias/Departamentos passaram com 20 testes; TypeScript do Web passou; build/lint da API passaram; build/lint do Web passaram; `git diff --check` deve ser mantido como ultimo gate antes de commit.
 
 ## Proximos passos no EasyPanel
 

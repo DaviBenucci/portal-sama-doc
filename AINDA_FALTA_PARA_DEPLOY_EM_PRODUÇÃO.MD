@@ -77,8 +77,29 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
-| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar e importar clientes, responsaveis e entregas; planilhas departamentais aplicam baixas e permitem revisar divergencias abertas como resolvidas/ignoradas. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada e seguir a trilha maior de Central de Vencimentos, notificacoes e auditoria em `integracao_acessorias_entregas_vencimentos.md`. |
+| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar e importar clientes, responsaveis e entregas com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada e seguir notificacoes, scheduler e auditoria operacional em `integracao_acessorias_entregas_vencimentos.md`. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-01 paginacao Acessorias e Central de Vencimentos
+
+Foi implementada localmente a correcao dos fluxos Acessorias que podiam retornar poucos registros ou falhar por timeout no Web.
+
+- Home, preview/sync de entregas e preview/sync de cadastros paginam `ListAll` ate resposta vazia, com `ACESSORIAS_MAX_PAGES=1000` por padrao;
+- as chamadas externas aguardam entre paginas conforme `ACESSORIAS_RATE_LIMIT_PER_MINUTE=95`, mantendo margem abaixo do limite de 100 requisicoes/minuto;
+- respostas `429` do Acessorias entram em retry controlado, respeitando `Retry-After` quando informado;
+- sync de entregas salva `incremental_since` no run e usa o ultimo run `SUCCESS` como marco para sincronizacoes seguintes;
+- o Web passou a dar ate 10 minutos para chamadas Acessorias, e `/dev` mostra erro por acao;
+- `Importar tudo` usa `entity=all` para cadastros e reaproveita empresas carregadas quando responsaveis forem extraidos dos departamentos;
+- criada rota React `/departamentos/vencimentos`, consolidando vencimentos de calendario e Acessorias com filtros por departamento, mes, origem, status e busca.
+
+Validacao local:
+
+- `npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand` passou com 4 suites e 20 testes;
+- `npx.cmd tsc --noEmit --pretty false` passou no Web;
+- `npm.cmd run build` e `npm.cmd run lint` passaram na API;
+- `npm.cmd run build` e `npm.cmd run lint` passaram no Web.
+
+Pendencia real remanescente: publicar API/Web no EasyPanel, executar os botoes com token real, confirmar se os totais batem com a base real do Acessorias, observar duracao real da importacao e validar visualmente `/departamentos/vencimentos`. A Central esta implementada localmente, mas nao homologada.
 
 ## Atualizacao operacional de 2026-06-01 09:30 -03:00
 
@@ -208,6 +229,26 @@ Validacao local:
 - `npm.cmd run lint` passou no Web.
 
 Pendencia real remanescente: publicar API/Web, validar no EasyPanel com usuario autorizado, CSRF real, dados reais e conferencia de auditoria/historico no banco. Central de Vencimentos, scheduler e notificacoes continuam pendentes.
+
+## Atualizacao operacional de 2026-06-01 vencimentos Acessorias no workspace
+
+Foi implementada a conexao local entre entregas/vencimentos do Acessorias e o workspace departamental.
+
+- `GET /api-v2/departments/workspace` agora inclui entregas sincronizadas em `acessorias_deliveries` com `dueAt` dentro do mes selecionado e status pendente/atrasado;
+- os vencimentos Acessorias entram no carrossel operacional da planilha;
+- quando existe mapeamento `CONFIRMED` para uma coluna operacional valida, o vencimento tambem aparece na celula e participa do bloqueio por vencimento;
+- sem mapeamento confirmado, o vencimento aparece apenas no carrossel, sem bloquear celula;
+- `/departamentos/modelo` identifica a origem `Acessorias` no item do carrossel.
+
+Validacao local:
+
+- `npm.cmd test -- departments.service.spec.ts --runInBand` passou na API com 1 suite e 5 testes;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run lint` passou na API;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web.
+
+Pendencia real remanescente: validar no EasyPanel com entregas reais, mapeamentos reais, usuarios por departamento e conferencia visual do carrossel/celulas. Central de Vencimentos dedicada, scheduler e notificacoes continuam pendentes.
 
 ## Atualizacao operacional de 2026-06-01 10:00 -03:00
 
@@ -1029,7 +1070,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 
 ### Acessorias, entregas e vencimentos
 
-Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. O MVP amplo continua como fase futura; a excecao implementada nesta rodada e a consulta read-only do Acessorias para alimentar a Home por perfil.
+Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. O MVP amplo continua como fase futura; excecoes locais ja implementadas incluem a consulta read-only do Acessorias para alimentar a Home por perfil, a aplicacao segura em planilhas departamentais, a revisao manual de divergencias e a exibicao de vencimentos oficiais no workspace.
 
 - [x] Registrar Acessorias/Entregas/Vencimentos como backlog futuro pos-migracao base.
 - [x] Implementar consumo read-only do Acessorias para a Home por perfil via backend, usando variaveis do ambiente da API.
@@ -1048,9 +1089,11 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [x] Salvar divergencias iniciais da aplicacao Fiscal em `acessorias_fiscal_divergences`.
 - [x] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
 - [x] Aplicar baixas confirmadas do Acessorias na planilha Fiscal existente com status visual `ACESSORIAS`.
+- [x] Conectar vencimentos oficiais Acessorias ao carrossel/workspace departamental local.
+- [ ] Validar vencimentos Acessorias no workspace com dados reais no EasyPanel.
 - [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas quando a planilha ainda nao existir.
 - [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
-- [ ] Criar vencimentos oficiais a partir do Acessorias e vencimentos previstos apenas como fallback.
+- [ ] Consolidar vencimentos oficiais do Acessorias na Central de Vencimentos e manter vencimentos previstos apenas como fallback.
 - [x] Implementar revisao manual local de divergencias Acessorias.
 - [ ] Validar revisao manual de divergencias no EasyPanel com dados reais e auditoria.
 - [ ] Implementar alertas de divergencias.
@@ -1121,7 +1164,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
 12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
-13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria e decidir o corte funcional; Central de Vencimentos, scheduler e notificacoes continuam como backlog futuro aprovado.
+13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias e vencimentos oficiais no carrossel, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria e decidir o corte funcional; Central de Vencimentos, scheduler e notificacoes continuam como backlog futuro aprovado.
 
 ## Criterio para dizer "pronto para producao"
 

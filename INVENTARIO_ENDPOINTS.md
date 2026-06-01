@@ -9,7 +9,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Finalidade:** testar e operar a importacao controlada de entregas, empresas/clientes e responsaveis extraidos do Acessorias pela rota React `/dev`.
 - **Pagina/tela relacionada:** `/dev`, painel `Integracao Acessorias`.
 - **Permissoes:** `integrations.acessorias.deliveries.read`, `integrations.acessorias.deliveries.sync`, `integrations.acessorias.registrations.read` e `integrations.acessorias.registrations.sync`.
-- **Controles implementados:** JWT, CSRF nas sincronizacoes, RBAC granular, preview sem persistencia, token do Acessorias somente no backend e aviso para colaboradores ativos enquanto nao houver endpoint oficial.
+- **Controles implementados:** JWT, CSRF nas sincronizacoes, RBAC granular, preview sem persistencia, token do Acessorias somente no backend, paginacao ate lista vazia, rate limit configuravel, retry de `429`, timeout longo no Web e aviso para colaboradores ativos enquanto nao houver endpoint oficial.
 - **Status de migracao:** Implementado localmente em 2026-06-01; pendente de validacao real no EasyPanel com usuario autorizado e evidencia sanitizada.
 
 ## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/apply-to-workspace`
@@ -40,13 +40,13 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 
 - **Arquivo:** `portal-sama-api/src/modules/departments/departments.controller.ts`, `portal-sama-api/src/modules/departments/departments.service.ts`.
 - **Metodo:** GET.
-- **Finalidade:** Carregar workspace operacional de Fiscal, Contabil, Pessoal, Financeiro ou Legalizacao, conforme `dept_key` e escopo do usuario.
+- **Finalidade:** Carregar workspace operacional de Fiscal, Contabil, Pessoal, Financeiro ou Legalizacao, conforme `dept_key` e escopo do usuario, incluindo carrossel de vencimentos manuais e vencimentos oficiais Acessorias sincronizados.
 - **Pagina/tela relacionada:** `/departamentos/modelo`.
 - **Modulo NestJS alvo:** `DepartmentsModule`.
 - **Status de migracao:** Implementado localmente; rotas `/api-v2/departments/fiscal/workspace*` seguem compativeis.
 - **Riscos de seguranca:** exposicao de carteira de outro departamento ou colaborador.
-- **Controles implementados:** JWT, permissao `departments.workspace.read`, escopo por departamento permitido, selecao de colaborador restrita a perfis de gestao.
-- **Testes necessarios:** validar com usuarios reais por departamento, dados reais de carteira e matriz de permissoes.
+- **Controles implementados:** JWT, permissao `departments.workspace.read`, escopo por departamento permitido, selecao de colaborador restrita a perfis de gestao, e conexao de vencimento Acessorias a celula apenas quando ha mapeamento confirmado para coluna valida.
+- **Testes necessarios:** validar com usuarios reais por departamento, dados reais de carteira, entregas Acessorias reais, mapeamentos reais e matriz de permissoes.
 
 ## Endpoint novo: `/api-v2/departments/workspace/cycle-cell` e `/api-v2/departments/workspace/cell-status`
 
