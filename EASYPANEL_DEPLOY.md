@@ -63,6 +63,8 @@ Atualizacao 2026-06-01 09:30 -03:00: o repo `portal-sama-api` agora expoe `npm r
 
 Atualizacao 2026-06-01 contrato oficial Acessorias: no servico `portal-sama-api`, configurar `ACESSORIAS_HOME_PATH=deliveries/ListAll`, `ACESSORIAS_DELIVERIES_PATH=deliveries/ListAll`, `ACESSORIAS_CLIENTS_PATH=companies/ListAll` e manter `ACESSORIAS_COLLABORATORS_PATH=` vazio ate confirmacao oficial de endpoint de colaboradores. O Web nao deve receber token nem variaveis `VITE_ACESSORIAS_*`. A `.env` local da API foi ajustada para `COOKIE_SECURE=true` e paths efetivos de storage em `/var/private/portal-sama`.
 
+Atualizacao 2026-06-01 importacao DEV Acessorias: apos redeploy da API/Web, validar na rota `/dev` o painel `Integracao Acessorias` com `Testar conexao`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Previa entregas` e `Sincronizar entregas`. Registrar evidencia sanitizada em `RELATORIO_TESTES.md` sem token, URL completa ou payload sensivel.
+
 ---
 
 ## 2. Serviços recomendados

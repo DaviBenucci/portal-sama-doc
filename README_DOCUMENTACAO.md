@@ -58,6 +58,12 @@ A documentacao em [`ux-ui-docs/`](ux-ui-docs/) deve ser seguida na fase de melho
 
 ---
 
+## Referencia operacional do Acessorias
+
+Para rodadas da Fase 2, Fase 3 ou area DEV de importacao, consulte [`integracao_acessorias_paths_importacao_dev.md`](integracao_acessorias_paths_importacao_dev.md). Esse arquivo centraliza os paths oficiais, a configuracao `.env`, a relacao com o EasyPanel e a localizacao dos botoes de testar, pre-visualizar e importar dados do Acessorias em `/dev`.
+
+---
+
 ## Stack alvo oficial
 
 ### Frontend

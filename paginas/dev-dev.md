@@ -23,6 +23,8 @@ Administrar usuários da plataforma, presença, status, estatísticas e criaçã
 - **Dados/documentos manipulados:** usuários, roles, departamentos, presença, eventos de auditoria, status e estatísticas de atividade.
 - **Observação:** Por operar usuários, permissões e dados administrativos, esta tela deve ser tratada como superfície crítica de administração.
 
+Atualizacao React 2026-06-01: a rota `/dev` em `portal-sama-web/src/pages/dev/DevAdminPage.tsx` agora tambem concentra a importacao operacional do Acessorias. O botao manual `Novo cliente` fica no cabecalho da area DEV; os botoes `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Previa entregas`, `Sincronizar entregas` e `Importar tudo` ficam no painel `Integracao Acessorias`.
+
 ---
 
 ## 3. Funcionamento detalhado da interface

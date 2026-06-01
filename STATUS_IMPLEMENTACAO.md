@@ -1,5 +1,15 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-01 importacao DEV Acessorias
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** A area `/dev` agora possui botoes operacionais para testar, pre-visualizar e importar dados do Acessorias, alinhando o que estava documentado em `integracao_acessorias_paths_importacao_dev.md`.
+- **Backend/API v2:** criado `GET /api-v2/integrations/acessorias/deliveries/preview`, que consulta entregas externas, normaliza amostra/resumo e nao persiste dados; rotas de preview/sync de cadastros e sync de entregas seguem protegidas por RBAC/CSRF quando gravam.
+- **Frontend React:** `DevAdminPage.tsx` recebeu o painel `Integracao Acessorias` com `Testar conexao`, `Previa entregas`, `Sincronizar entregas`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Importar tudo` e `Colaboradores ativos` desabilitado ate endpoint oficial.
+- **Documentacao:** `integracao_acessorias_paths_importacao_dev.md`, `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, `README.md`, `README_DOCUMENTACAO.md`, `INVENTARIO_ENDPOINTS.md`, `MAPEAMENTO_MIGRACAO_APIS.md` e `paginas/dev-dev.md` referenciam a localizacao dos botoes e a relacao com Fase 2/Fase 3.
+- **Validacao local:** passaram 3 suites focadas de Acessorias com 15 testes, build/lint da API e build/lint do Web.
+- **Pendente:** executar os botoes no EasyPanel com usuario autorizado, validar payload real e registrar evidencia sanitizada.
+
 ## Atualizacao complementar 2026-06-01 contrato oficial Acessorias
 
 - **Responsavel/IA:** Codex

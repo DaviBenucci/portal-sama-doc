@@ -1,6 +1,6 @@
 # [PENDENTE] Ainda Falta Para Deploy Em Producao - Portal Sama
 
-Ultima atualizacao: 2026-05-28 10:06 -03:00
+Ultima atualizacao: 2026-06-01
 Responsavel/IA: Codex
 Status do documento: obrigatorio e vivo
 
@@ -38,11 +38,12 @@ Antes de atualizar este documento, a IA/desenvolvedor deve:
 5. Ler `EASYPANEL_DEPLOY.md`.
 6. Ler `RELATORIO_TESTES.md`.
 7. Ler `CHANGELOG_TECNICO.md`.
-8. Ler `integracao_acessorias_entregas_vencimentos.md` quando a tarefa envolver entregas, vencimentos, planilhas departamentais, notificacoes ou integracoes externas.
-9. Ler `ux-ui-docs/README.md` e `ux-ui-docs/09-checklist-aceite.md` quando a tarefa envolver UX/UI, navegacao, configuracoes, solicitacoes, departamentos, permissoes ou responsabilidades de clientes.
-10. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
-11. Verificar o estado real do Git e dos arquivos existentes.
-12. Atualizar este documento com data/hora, percentual e pendencias reais.
+8. Ler `integracao_acessorias_paths_importacao_dev.md` quando a tarefa envolver Acessorias, `.env`, importacao pela area DEV, Fase 2 ou Fase 3.
+9. Ler `integracao_acessorias_entregas_vencimentos.md` quando a tarefa envolver entregas, vencimentos, planilhas departamentais, notificacoes ou integracoes externas.
+10. Ler `ux-ui-docs/README.md` e `ux-ui-docs/09-checklist-aceite.md` quando a tarefa envolver UX/UI, navegacao, configuracoes, solicitacoes, departamentos, permissoes ou responsabilidades de clientes.
+11. Ler os arquivos de codigo afetados em `portal-sama-api` e/ou `portal-sama-web`.
+12. Verificar o estado real do Git e dos arquivos existentes.
+13. Atualizar este documento com data/hora, percentual e pendencias reais.
 
 Se uma porcentagem for informada, ela deve ser marcada como estimativa operacional, nao como metrica matematica exata.
 
@@ -76,7 +77,7 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
-| Acessorias, entregas e vencimentos | Parcial para Home; MVP futuro segue pendente | A Home local agora possui consulta read-only ao Acessorias via backend, usando `ACESSORIAS_BASE_URL` e `ACESSORIAS_TOKEN` do ambiente da API e sem expor token no Web. O MVP maior de sincronizacao, planilha Fiscal, Central de Vencimentos, notificacoes e auditoria continua como trilha futura em `integracao_acessorias_entregas_vencimentos.md`. |
+| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar e importar clientes, responsaveis e entregas conforme `integracao_acessorias_paths_importacao_dev.md`. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada e seguir a trilha maior de planilhas, Central de Vencimentos, notificacoes e auditoria em `integracao_acessorias_entregas_vencimentos.md`. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
 
 ## Atualizacao operacional de 2026-06-01 09:30 -03:00

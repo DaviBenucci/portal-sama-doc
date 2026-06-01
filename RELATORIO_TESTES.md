@@ -1,5 +1,41 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 importacao DEV Acessorias
+
+### Contexto
+
+- Continuidade da Fase 2/Fase 3: expor na area `/dev` os botoes documentados para testar, pre-visualizar e importar dados do Acessorias.
+- Escopo local: preview externo de entregas sem persistencia, servicos tipados no Web, painel de importacao DEV e atualizacao da documentacao principal.
+
+### Comandos executados
+
+```bash
+npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-deliveries.service.spec.ts integrations/acessorias/acessorias-registrations.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 3 suites, 15 testes.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com fixtures/mocks; nao houve chamada real ao Acessorias nem execucao real no EasyPanel.
+
+### Pendencias
+
+- Executar os botoes no EasyPanel com usuario autorizado.
+- Validar preview/sync com payload real e evidencia sanitizada.
+- Manter `Colaboradores ativos` desabilitado ate confirmacao oficial de endpoint.
+
 ## Execucao 2026-06-01 contrato oficial Acessorias
 
 ### Contexto

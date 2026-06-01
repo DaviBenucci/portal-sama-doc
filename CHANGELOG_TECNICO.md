@@ -1,5 +1,35 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 importacao DEV Acessorias
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.spec.ts`
+- `portal-sama-web/src/pages/dev/DevAdminPage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- Documentacao principal, inventario de endpoints, ordem de implementacao e pagina DEV.
+
+### O que mudou
+
+- Criado preview externo de entregas do Acessorias sem persistencia.
+- A rota `/dev` ganhou painel `Integracao Acessorias` com acoes de testar conexao, pre-visualizar e importar clientes/responsaveis/entregas.
+- O botao de colaboradores ativos fica desabilitado ate o Acessorias confirmar endpoint oficial de usuarios/colaboradores.
+- A documentacao principal agora aponta para `integracao_acessorias_paths_importacao_dev.md` como referencia de Fase 2/Fase 3 e localizacao dos botoes.
+
+### Testes executados
+
+- `npm.cmd test -- integrations/acessorias/acessorias-home.service.spec.ts integrations/acessorias/acessorias-deliveries.service.spec.ts integrations/acessorias/acessorias-registrations.service.spec.ts --runInBand`.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta executar os botoes no EasyPanel com usuario autorizado e dados reais.
+- Falta registrar evidencia sanitizada sem token, URL completa ou payload sensivel.
+
 ## 2026-06-01 contrato oficial Acessorias
 
 ### Arquivos alterados

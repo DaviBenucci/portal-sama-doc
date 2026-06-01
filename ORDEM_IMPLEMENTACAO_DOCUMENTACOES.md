@@ -102,6 +102,8 @@ Ja feito localmente:
 - `companies/ListAll` e usado com parametros de enriquecimento e paginacao; `departments/ListAll` nao e usado como fonte direta de colaboradores.
 - Resposta externa `204 No Content` ou corpo vazio passa a ser tratada como resumo disponivel sem entregas, em vez de indisponibilidade.
 - A Home recebe diagnostico sanitizado de erro externo, sem expor token, URL completa ou payload.
+- `GET /api-v2/integrations/acessorias/deliveries/preview` permite pre-visualizar entregas externas sem gravar dados locais.
+- `/dev` possui painel `Integracao Acessorias` com botoes de testar conexao, pre-visualizar entregas/clientes/responsaveis, importar clientes, importar responsaveis, sincronizar entregas e importar tudo.
 
 Implementar/validar em ordem:
 
@@ -109,7 +111,7 @@ Implementar/validar em ordem:
 2. Validar payload real de Home, empresas, responsaveis extraidos de departamentos e entregas.
 3. Confirmar com o fornecedor se existe endpoint oficial para colaboradores/usuarios; nao apontar `ACESSORIAS_COLLABORATORS_PATH` para `departments`.
 4. Ajustar normalizadores se o contrato real divergir do previsto.
-5. Rodar preview de empresas/responsaveis.
+5. Rodar preview de empresas, responsaveis e entregas pela area DEV.
 6. Sincronizar empresas e responsaveis preservando edicao local no Portal Sama.
 7. Sincronizar entregas e conferir deduplicacao por `external_id`.
 8. Validar auditoria e permissoes da integracao.

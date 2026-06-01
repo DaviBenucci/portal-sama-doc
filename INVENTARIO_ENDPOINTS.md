@@ -2,6 +2,16 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
+## Endpoints Acessorias para importacao DEV
+
+- **Arquivos:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts`.
+- **Rotas:** `GET /api-v2/integrations/acessorias/deliveries/preview`, `POST /api-v2/integrations/acessorias/deliveries/sync`, `GET /api-v2/integrations/acessorias/registrations/preview`, `POST /api-v2/integrations/acessorias/registrations/sync`.
+- **Finalidade:** testar e operar a importacao controlada de entregas, empresas/clientes e responsaveis extraidos do Acessorias pela rota React `/dev`.
+- **Pagina/tela relacionada:** `/dev`, painel `Integracao Acessorias`.
+- **Permissoes:** `integrations.acessorias.deliveries.read`, `integrations.acessorias.deliveries.sync`, `integrations.acessorias.registrations.read` e `integrations.acessorias.registrations.sync`.
+- **Controles implementados:** JWT, CSRF nas sincronizacoes, RBAC granular, preview sem persistencia, token do Acessorias somente no backend e aviso para colaboradores ativos enquanto nao houver endpoint oficial.
+- **Status de migracao:** Implementado localmente em 2026-06-01; pendente de validacao real no EasyPanel com usuario autorizado e evidencia sanitizada.
+
 ## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/apply-to-workspace`
 
 - **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.

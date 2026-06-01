@@ -32,6 +32,8 @@ Atualizacao 2026-06-01 complementar: a aplicacao deixou de ser apenas Fiscal no 
 
 Atualizacao 2026-06-01 contrato oficial: a validacao em `integracao_acessorias_paths_importacao_dev.md` confirmou que Home e entregas devem usar `deliveries/ListAll` com `DtInitial`, `DtFinal`, `DtLastDH`, `situation`, `config` e `Pagina`; empresas devem usar `companies/ListAll` com paginacao; e `departments/ListAll` nao deve ser usado como fonte de colaboradores. O backend local foi ajustado para achatar `empresa -> Entregas[]`, normalizar campos reais e extrair responsaveis a partir dos departamentos das empresas quando nao houver endpoint oficial de colaboradores.
 
+Atualizacao 2026-06-01 importacao DEV: a rota React `/dev` agora possui painel `Integracao Acessorias` para testar conexao, pre-visualizar e importar clientes, responsaveis e entregas. O backend adicionou `GET /api-v2/integrations/acessorias/deliveries/preview` para consultar entregas externas sem persistir dados. A localizacao dos botoes e o contrato curto continuam centralizados em `integracao_acessorias_paths_importacao_dev.md`.
+
 ---
 
 ## 2. Decisão de implementação

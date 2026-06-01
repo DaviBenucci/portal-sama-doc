@@ -26,6 +26,6 @@ Depois da integracao com o Acessorias, toda rodada de melhoria de interface deve
 
 ## Referencia da integracao Acessorias
 
-Para Fase 2/Fase 3, use `integracao_acessorias_paths_importacao_dev.md` como contrato operacional curto de paths, `.env`, importacao DEV e regras de seguranca; o documento detalhado de negocio continua em `integracao_acessorias_entregas_vencimentos.md`.
+Para Fase 2/Fase 3, use `integracao_acessorias_paths_importacao_dev.md` como contrato operacional curto de paths, `.env`, importacao DEV, botoes da rota `/dev` e regras de seguranca; o documento detalhado de negocio continua em `integracao_acessorias_entregas_vencimentos.md`.
 
 Depois de qualquer mudanca tecnica em API ou Web, atualize aqui os documentos de status, changelog, testes, pendencias, decisoes e deploy quando aplicavel.

@@ -2,6 +2,14 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
 
+## Atualizacao 2026-06-01 importacao DEV Acessorias
+
+- `/dev` ganhou painel `Integracao Acessorias` para testar conexao, pre-visualizar e importar clientes, responsaveis e entregas.
+- Adicionado `GET /api-v2/integrations/acessorias/deliveries/preview` para consultar/normalizar entregas externas sem persistir dados.
+- O botao `Colaboradores ativos` permanece desabilitado ate confirmacao oficial de endpoint; o fluxo atual importa responsaveis extraidos de departamentos das empresas.
+- Validacoes locais passaram: 3 suites focadas de Acessorias, 15 testes, build/lint API e build/lint Web.
+- Permanece pendente executar os botoes no EasyPanel com usuario autorizado, validar payload real e registrar evidencia sanitizada.
+
 ## Atualizacao 2026-06-01 contrato oficial Acessorias
 
 - Backend local alinhado ao contrato oficial: `deliveries/ListAll` com datas/status/config/paginacao, `companies/ListAll` com parametros de enriquecimento e normalizacao do formato `empresa -> Entregas[]`.
