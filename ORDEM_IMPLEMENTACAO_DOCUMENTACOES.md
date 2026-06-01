@@ -136,7 +136,7 @@ Criterio de saida:
 
 ## Fase 3 - Acessorias aplicado nas planilhas departamentais e vencimentos
 
-Estado: aplicacao local multidepartamental implementada; validacao real e revisao manual ainda pendentes.
+Estado: aplicacao local multidepartamental e revisao manual de divergencias implementadas; validacao real ainda pendente.
 
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
 
@@ -148,13 +148,14 @@ Ja feito localmente:
 - `/departamentos/modelo` exibe contadores, marcador de celula e divergencias abertas.
 - `/departamentos/modelo` agora permite alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, com colunas operacionais proprias por departamento.
 - `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status` foram adicionados como rotas genericas, mantendo as rotas fiscais antigas compativeis.
+- `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite resolver ou ignorar divergencias manualmente com CSRF, RBAC e auditoria; `/departamentos/modelo` oferece botoes protegidos na lista de divergencias abertas.
 
 Implementar em ordem:
 
 1. [local concluido; real pendente] Aplicar mapeamentos confirmados nas planilhas Fiscal, Contabil, Pessoal, Financeiro e Legalizacao.
 2. [local concluido; real pendente] Marcar celulas preenchidas pelo Acessorias com status visual proprio.
-3. [local concluido; revisao pendente] Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
-4. Permitir revisao manual das divergencias.
+3. [local concluido; real pendente] Criar divergencias quando nao houver confianca suficiente para baixar automaticamente.
+4. [local concluido; real pendente] Permitir revisao manual das divergencias.
 5. Conectar entregas/vencimentos ao calendario operacional.
 6. Criar Central de Vencimentos baseada nas entregas sincronizadas.
 7. Adicionar notificacoes para vencimento proximo, atraso, baixa e divergencia.

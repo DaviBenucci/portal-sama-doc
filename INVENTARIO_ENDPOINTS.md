@@ -24,6 +24,18 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado, departamento selecionado e mes aberto; casos inseguros viram divergencia aberta.
 - **Testes necessarios:** dry-run e execucao real no EasyPanel, validacao de auditoria, status visual, divergencias e matriz de permissao.
 
+## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/divergences/:id`
+
+- **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.
+- **Metodo:** PATCH.
+- **Finalidade:** Registrar revisao manual de uma divergencia Acessorias aberta, marcando como `RESOLVED`, `IGNORED` ou reabrindo como `OPEN`.
+- **Pagina/tela relacionada:** `/departamentos/modelo`, cards de divergencias Acessorias.
+- **Modulo NestJS alvo:** integracao Acessorias.
+- **Status de migracao:** Implementado localmente em 2026-06-01; pendente de deploy/validacao real.
+- **Riscos de seguranca:** ocultar divergencia real sem auditoria, revisar divergencia fora do escopo operacional ou perder historico de tratamento.
+- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, `resolvedAt`, `resolvedById`, `metadata.manualReview`, `metadata.reviewHistory` e auditoria `integrations.acessorias.divergence.review`.
+- **Testes necessarios:** validar com usuario real no EasyPanel, conferir 403 para perfil sem permissao, conferir auditoria e persistencia do status no banco real.
+
 ## Endpoint novo: `/api-v2/departments/workspace`
 
 - **Arquivo:** `portal-sama-api/src/modules/departments/departments.controller.ts`, `portal-sama-api/src/modules/departments/departments.service.ts`.

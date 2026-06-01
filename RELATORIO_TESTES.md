@@ -1,5 +1,47 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-01 revisao manual de divergencias Acessorias
+
+### Contexto
+
+- Continuidade da Fase 3: permitir que divergencias Acessorias abertas na planilha departamental sejam resolvidas ou ignoradas manualmente.
+- Escopo local: endpoint protegido de revisao, auditoria/historico no backend, botoes protegidos em `/departamentos/modelo` e tipagem do service React.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- acessorias-fiscal-application.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada: 1 suite, 4 testes.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com mocks; nao houve execucao contra EasyPanel, MySQL real ou API real do Acessorias.
+
+### Pendencias
+
+- Validar `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` no EasyPanel com usuario autorizado e CSRF real.
+- Conferir auditoria `integrations.acessorias.divergence.review`, `resolvedAt`, `resolvedById` e historico em `metadata.reviewHistory` no banco real.
+- Seguir Fase 3 com vencimentos, scheduler e notificacoes.
+
+### Observacao anti-alucinacao
+
+Nao foi declarado que a revisao manual esta homologada em producao. Ela passou localmente em API/Web, mas ainda precisa de validacao real e evidencia sanitizada.
+
 ## Execucao 2026-06-01 importacao DEV Acessorias
 
 ### Contexto

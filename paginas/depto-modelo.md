@@ -7,10 +7,11 @@
 - **Atualizacao 2026-05-21 09:34 -03:00:** criada a rota React `/departamentos/modelo` com `DepartmentModelPage.tsx`, consumindo `GET /api-v2/departments/fiscal/workspace`.
 - **Atualizacao 2026-06-01 11:30 -03:00:** `/departamentos/modelo` passou a exibir status visual `Acessorias`, contadores de baixas sincronizadas, divergencias abertas por empresa/celula e acao protegida `Aplicar Acessorias`, consumindo `POST /api-v2/integrations/acessorias/deliveries/apply-to-fiscal`.
 - **Atualizacao 2026-06-01 complementar:** a tela passou a alternar Fiscal, Contabil, Pessoal, Financeiro e Legalizacao, consumindo tambem `GET /api-v2/departments/workspace` e aplicando Acessorias pelo endpoint `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace`.
+- **Atualizacao 2026-06-01 revisao manual:** divergencias Acessorias abertas ganharam botoes protegidos `Resolver` e `Ignorar`, consumindo `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` com auditoria e historico.
 - **Backend inicial:** `DepartmentsModule` cobre leitura do workspace departamental e mutacoes genericas `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status`, mantendo rotas fiscais antigas compativeis.
 - **Backend Acessorias:** `AcessoriasFiscalApplicationService` aplica somente entregas `DELIVERED` com mapeamento confirmado e cria divergencias persistidas para casos inseguros, agora respeitando o departamento ativo.
 - **Seguranca aplicada:** JWT, RBAC `departments.workspace.read/write`, CSRF nas mutacoes, escopo por departamento, bloqueio de mes/vencimento e auditoria nas alteracoes de celula.
-- **Pendencias:** aplicar migrations no MySQL real, validar com contrato real do Acessorias e dados reais de `Client.metadata`, criar revisao manual de divergencias, ampliar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
+- **Pendencias:** aplicar migrations no MySQL real, validar com contrato real do Acessorias e dados reais de `Client.metadata`, validar revisao manual de divergencias em ambiente real, ampliar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
 
 - **Arquivo HTML:** `Depto/modelo.html`
 - **Módulo:** Departamento / Planilhas

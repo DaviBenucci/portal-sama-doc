@@ -77,7 +77,7 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
-| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar e importar clientes, responsaveis e entregas conforme `integracao_acessorias_paths_importacao_dev.md`. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada e seguir a trilha maior de planilhas, Central de Vencimentos, notificacoes e auditoria em `integracao_acessorias_entregas_vencimentos.md`. |
+| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar e importar clientes, responsaveis e entregas; planilhas departamentais aplicam baixas e permitem revisar divergencias abertas como resolvidas/ignoradas. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada e seguir a trilha maior de Central de Vencimentos, notificacoes e auditoria em `integracao_acessorias_entregas_vencimentos.md`. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
 
 ## Atualizacao operacional de 2026-06-01 09:30 -03:00
@@ -188,6 +188,26 @@ Validacao local:
 - `git diff --check` passou em API/Web.
 
 Pendencia real remanescente: aplicar migrations no MySQL real, publicar API/Web, validar contrato real do Acessorias no EasyPanel, executar dry-run/execucao real do endpoint com usuario autorizado e conferir auditoria, celulas `ACESSORIAS` e divergencias abertas com dados reais.
+
+## Atualizacao operacional de 2026-06-01 revisao manual de divergencias Acessorias
+
+Foi implementada a revisao manual local das divergencias criadas pela aplicacao do Acessorias nas planilhas departamentais.
+
+- criado endpoint protegido `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id`;
+- o endpoint exige `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, alem de CSRF;
+- a revisao aceita status `RESOLVED`, `IGNORED` ou `OPEN`;
+- a API grava `resolvedAt`, `resolvedById`, `metadata.manualReview`, `metadata.reviewHistory` e auditoria `integrations.acessorias.divergence.review`;
+- `/departamentos/modelo` exibe botoes protegidos `Resolver` e `Ignorar` nos cards de divergencias abertas e recarrega o workspace apos a revisao.
+
+Validacao local:
+
+- `npm.cmd test -- acessorias-fiscal-application.service.spec.ts --runInBand` passou na API com 1 suite e 4 testes;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run lint` passou na API;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web.
+
+Pendencia real remanescente: publicar API/Web, validar no EasyPanel com usuario autorizado, CSRF real, dados reais e conferencia de auditoria/historico no banco. Central de Vencimentos, scheduler e notificacoes continuam pendentes.
 
 ## Atualizacao operacional de 2026-06-01 10:00 -03:00
 
@@ -1031,7 +1051,9 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [ ] Gerar planilha Fiscal por competencia a partir das entregas sincronizadas quando a planilha ainda nao existir.
 - [ ] Refatorar a pagina atual de vencimentos para Central de Vencimentos.
 - [ ] Criar vencimentos oficiais a partir do Acessorias e vencimentos previstos apenas como fallback.
-- [ ] Implementar resolucao/revisao manual de divergencias e alertas.
+- [x] Implementar revisao manual local de divergencias Acessorias.
+- [ ] Validar revisao manual de divergencias no EasyPanel com dados reais e auditoria.
+- [ ] Implementar alertas de divergencias.
 - [ ] Implementar notificacoes D-7, D-3, D-1, D0 e D+1 quando o modulo de notificacoes estiver pronto.
 - [ ] Implementar motor de recorrencia inteligente sem substituir vencimento oficial.
 - [ ] Criar permissoes, perfis, auditoria e testes unitarios/integracao/E2E/seguranca do MVP Fiscal.
@@ -1099,7 +1121,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
 12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
-13. A Home agora possui uma leitura inicial do Acessorias, mas ainda falta validar o contrato real da API externa no EasyPanel e decidir se essa consulta read-only entra no corte base; o MVP amplo de Acessorias/Entregas/Vencimentos continua como backlog futuro aprovado.
+13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria e decidir o corte funcional; Central de Vencimentos, scheduler e notificacoes continuam como backlog futuro aprovado.
 
 ## Criterio para dizer "pronto para producao"
 

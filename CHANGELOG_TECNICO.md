@@ -1,5 +1,37 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-01 revisao manual de divergencias Acessorias
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.spec.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/dto/review-acessorias-fiscal-divergence.dto.ts`
+- `portal-sama-web/src/pages/departments/DepartmentModelPage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- Documentacao de status, pendencias, testes, endpoints, pagina departamental e ordem de implementacao.
+
+### O que mudou
+
+- Criado endpoint `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` para registrar revisao manual com status `RESOLVED`, `IGNORED` ou `OPEN`.
+- A revisao exige JWT, CSRF e permissoes `integrations.acessorias.deliveries.manage` + `departments.workspace.write`.
+- O backend grava `resolvedAt`, `resolvedById`, `metadata.manualReview`, `metadata.reviewHistory` e auditoria `integrations.acessorias.divergence.review`.
+- `/departamentos/modelo` ganhou botoes protegidos para resolver ou ignorar divergencias abertas e recarregar o workspace.
+
+### Testes executados
+
+- `npm.cmd test -- acessorias-fiscal-application.service.spec.ts --runInBand`.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com usuario real, CSRF real e dados reais.
+- Falta conferir auditoria e historico persistidos no banco real.
+- Vencimentos, scheduler e notificacoes seguem pendentes na Fase 3.
+
 ## 2026-06-01 importacao DEV Acessorias
 
 ### Arquivos alterados

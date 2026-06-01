@@ -1,5 +1,14 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-01 revisao manual de divergencias Acessorias
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 3: divergencias Acessorias abertas na planilha departamental agora podem ser revisadas manualmente pela operacao.
+- **Backend/API v2:** criado `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id`, protegido por JWT, CSRF e permissoes `integrations.acessorias.deliveries.manage` + `departments.workspace.write`; a rota atualiza `status`, `resolvedAt`, `resolvedById`, preserva historico em `metadata.reviewHistory` e registra auditoria `integrations.acessorias.divergence.review`.
+- **Frontend React:** `/departamentos/modelo` ganhou botoes protegidos `Resolver` e `Ignorar` nos cards de divergencias Acessorias, invalidando o workspace para remover da lista aberta quando o backend muda o status.
+- **Validacao local:** passaram teste unitario focado da API com 4 testes, build/lint da API e build/lint do Web.
+- **Pendente:** validar no EasyPanel com dados reais, usuario autorizado, CSRF real e conferencia de auditoria no banco; vencimentos, scheduler e notificacoes continuam como proximas etapas da Fase 3.
+
 ## Atualizacao complementar 2026-06-01 importacao DEV Acessorias
 
 - **Responsavel/IA:** Codex
@@ -30,7 +39,7 @@
 - **Acessorias/Home:** `home-summary` passa a usar `ACESSORIAS_HOME_PATH`, `ACESSORIAS_DELIVERIES_PATH` ou `deliveries`, trata corpo vazio como lista vazia disponivel e retorna diagnostico sanitizado quando houver erro.
 - **Frontend React:** `/departamentos/modelo` ganhou selecao por departamento, cards de Fiscal/Contabil/Pessoal/Financeiro/Legalizacao e aplica o Acessorias no departamento ativo.
 - **Validacao local:** passaram testes focados de Acessorias/Departamentos, TypeScript do Web, build/lint da API e build/lint do Web.
-- **Pendente:** validar contrato real no EasyPanel, revisar mapeamentos de nomes reais de obrigacoes/departamentos, criar revisao manual de divergencias e integrar vencimentos/notificacoes.
+- **Pendente:** validar contrato real no EasyPanel, revisar mapeamentos de nomes reais de obrigacoes/departamentos, validar revisao manual de divergencias com dados reais e integrar vencimentos/notificacoes.
 
 ## Atualizacao complementar 2026-06-01 11:30 -03:00
 
