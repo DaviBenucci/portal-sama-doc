@@ -1,5 +1,42 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 painel do cliente e responsabilidades
+
+### Contexto
+
+- Inicio da Fase 4 na UI: conectar o painel do cliente ao backend normalizado de responsabilidades.
+- Escopo local: tipos, services `listClientAssignments()`/`createClientAssignment()` e bloco `Equipe e responsaveis` em `/clientes/:id`, respeitando `client_assignments.read` para leitura e `client_assignments.create` para criacao inicial.
+- A criacao inicial tambem carrega departamentos e colaboradores por `departments.read`/`collaborators.read`.
+
+### Comandos executados
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- TypeScript do Web passou.
+- Web build passou.
+- Web lint passou.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real ou responsabilidades reais.
+
+### Pendencias
+
+- Validar com usuario real que possui `client_assignments.read`.
+- Conferir comportamento sem permissao.
+- Validar com cliente que possua responsabilidades reais e gestor vinculado.
+- Seguir Fase 4 com backfill, atribuicao inicial e migracao de filtros/carteiras.
+
+### Observacao anti-alucinacao
+
+O painel foi conectado localmente ao endpoint existente, mas os dados reais ainda dependem de migrations/backfill/validacao no EasyPanel.
+
 ## Execucao 2026-06-02 scheduler Acessorias opt-in
 
 ### Contexto

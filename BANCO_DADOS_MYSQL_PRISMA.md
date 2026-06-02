@@ -93,11 +93,14 @@ collaborators
 departments
 client_managers
 client_departments
+client_department_assignments
 ```
 
 Status em 2026-05-13 14:43: `Client` foi expandido no Prisma para cobrir os campos operacionais de `DEV/dev-novo-cliente.html` e telas de clientes (`rank`, regime tributario, id empresa, atividade, telefone, endereco, grupo, metadata e soft delete). `User` foi expandido para a primeira fatia de colaboradores (`position`, `phone`, `extension`, `metadata`, `archivedAt`, `archivedById`), usada pelo `CollaboratorsModule`. As migrations `20260513113000_expand_clients_profile` e `20260513124500_add_collaborator_profile_to_users` foram aplicadas no MySQL local apos baseline controlado; `prisma:migrate:status` passou e `prisma migrate diff` nao encontrou diferencas. Ainda faltam tabelas/vinculos formais para carteira, departamentos, gestores e backfill de dados legados.
 
 Status em 2026-05-19 12:16: a primeira fatia de transferencias foi modelada no Prisma com `TransferSession`, usando a tabela legada `sama_transfer_sessions` e migration `20260519120000_add_transfer_sessions` com criacao/indices condicionais para reduzir risco em bancos onde a tabela ja exista. A carteira ainda permanece em `Client.metadata.departamentos/depts/dept_*` e `User.metadata.clientes/colaboradorId`; uma modelagem formal `client_departments`/carteira segue pendente apos backfill e validacao real.
+
+Status em 2026-06-02: a responsabilidade formal de clientes avancou localmente com `Department` e `ClientDepartmentAssignment`, usando as migrations `20260527153000_add_controlled_departments` e `20260527162000_add_client_department_assignments`. A UI React `/clientes/:id` ja le e cria atribuicoes iniciais pela tabela `client_department_assignments`, incluindo gestor opcional. A carteira operacional completa, os filtros e o corte de `Client.metadata` ainda dependem de aplicar migrations/seeds no MySQL real, executar backfill seguro e validar no EasyPanel.
 
 Status em 2026-05-20 11:45: historico operacional do gestor usa os modelos Prisma `CompanyHistoryEntry` e `CompanyLifeEntry`, mapeados para `sama_company_history_entries` e `sama_company_life_entries`. As novas mutacoes do `ManagersModule` gravam nessas tabelas preservando `topics_json`, datas ISO em string e `data_json` com metadados de ator/acao; validacao MySQL/homologacao e backfill real continuam pendentes.
 

@@ -14,7 +14,7 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 - **Status:** Criado, validado por `prisma validate` e coberto pela migration inicial `20260512172700_init_current_schema`, com incrementos `20260512195000_add_digital_certificates`, `20260513085700_add_proposals`, `20260513092300_add_contracts`, `20260513101500_add_access_requests`, `20260513113000_expand_clients_profile` e `20260513124500_add_collaborator_profile_to_users`
 - **Origem:** Prisma/MySQL alvo
 - **Finalidade:** Fundação inicial para identidade, RBAC, documentos, clientes, refresh tokens, auditoria, certificados digitais, propostas, contratos e solicitacoes de acesso.
-- **Modelos principais:** `User`, `Role`, `Permission`, `UserRole`, `RolePermission`, `RefreshToken`, `Client`, `PublicToken`, `Document`, `DigitalCertificate`, `Proposal`, `Contract`, `AccessRequest`, `DocumentRequirement`, `DocumentStatusHistory`, `AuditLog`.
+- **Modelos principais:** `User`, `Role`, `Permission`, `UserRole`, `RolePermission`, `RefreshToken`, `Client`, `Department`, `ClientDepartmentAssignment`, `PublicToken`, `Document`, `DigitalCertificate`, `Proposal`, `Contract`, `AccessRequest`, `DocumentRequirement`, `DocumentStatusHistory`, `AuditLog`.
 - **Relacionamentos:** usuários-roles, roles-permissões, usuário-refresh tokens, cliente-documentos, cliente-requisitos documentais, usuário-auditoria, usuário-documentos enviados.
 - **Índices:** status/departamento de usuário, status/razão social de cliente, índices de documentos, refresh tokens e auditoria. `RefreshToken.tokenHash` é único para permitir lookup seguro por hash de token opaco; `Document.storageKey` é único para evitar colisão de arquivo privado.
 - **Dados sensíveis:** `passwordHash`, `tokenHash`, metadados de auditoria e storage de documentos.
@@ -80,6 +80,30 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 - **Dados sensíveis:** dados cadastrais/contato do cliente e metadados operacionais; respostas não devem expor campos internos desnecessários.
 - **Regras de retenção:** `DELETE /api-v2/clients/:id` arquiva logicamente com `status=ARCHIVED`, `deletedAt` e `deletedById`.
 - **Migrations relacionadas:** `20260512172700_init_current_schema` e `20260513113000_expand_clients_profile`; status/diff Prisma passaram no MySQL local.
+
+## Modelo Prisma: `Department`
+
+- **Status:** Criado no schema alvo e usado pelo catalogo controlado de departamentos; banco real ponto a validar.
+- **Origem:** Prisma/MySQL alvo, substituindo gradualmente campos livres de departamento em usuarios, colaboradores, clientes e telas operacionais.
+- **Finalidade:** armazenar departamentos controlados com chave, nome, descricao, status ativo e ordenacao.
+- **Campos principais:** `id`, `key`, `name`, `description`, `active`, `sortOrder`, `createdAt`, `updatedAt`.
+- **Relacionamentos:** departamento possui responsabilidades de clientes por `ClientDepartmentAssignment`.
+- **Indices:** chave `key` unica e ordenacao/status para listagens.
+- **Dados sensiveis:** nao contem dados pessoais, mas orienta escopo operacional e permissao.
+- **Regras de retencao:** departamentos devem ser desativados em vez de removidos quando ja houver historico operacional.
+- **Migrations relacionadas:** `20260527153000_add_controlled_departments`; aplicar no MySQL real e rodar seed antes da validacao.
+
+## Modelo Prisma: `ClientDepartmentAssignment`
+
+- **Status:** Criado no schema alvo e usado pelo `ClientAssignmentsModule`; `/clientes/:id` ja le e cria atribuicoes iniciais localmente.
+- **Origem:** Prisma/MySQL alvo, substituindo gradualmente `clients.metadata.departamentos/depts/dept_*` e vinculos soltos de carteira.
+- **Finalidade:** armazenar responsabilidade normalizada de cliente por departamento, responsavel operacional, gestor opcional, tipo, status e periodo.
+- **Campos principais:** `id`, `clientId`, `departmentId`, `responsibleUserId`, `managerUserId`, `assignmentType`, `status`, `startAt`, `endAt`, `createdById`, `updatedById`, `metadata`, `createdAt`, `updatedAt`.
+- **Relacionamentos:** pertence a `Client`, `Department` e `User` como responsavel; pode pertencer a `User` como gestor, criador e atualizador.
+- **Indices:** `clientId/status`, `departmentId/status`, `responsibleUserId/status`, `managerUserId/status`, `assignmentType/status` e escopo `clientId/departmentId/assignmentType/status`.
+- **Dados sensiveis:** estrutura carteira operacional e dados indiretos de responsabilidade por cliente; deve ser protegida por `client_assignments.*`.
+- **Regras de retencao:** encerramento deve usar `status`, `endAt`, auditoria e historico, evitando exclusao fisica.
+- **Migrations relacionadas:** `20260527162000_add_client_department_assignments`; ainda pendente aplicar/validar em MySQL real e rodar backfill seguro de `clients.metadata`.
 
 ## Modelo Prisma: `Document`
 

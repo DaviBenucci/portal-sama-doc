@@ -40,6 +40,13 @@
 - `/dev` ganhou `Status scheduler` para conferir configuracao, proxima execucao e ultimo sync.
 - O aceite continua pendente ate habilitar no EasyPanel, observar execucoes reais e validar notificacoes automaticas apenas depois da deduplicacao/destinatarios.
 
+## Status parcial - 2026-06-02 responsabilidades no cliente
+
+- `/clientes/:id` passou a mostrar `Equipe e responsaveis` com dados normalizados de `client_department_assignments`.
+- A secao respeita `client_assignments.read` e lista responsavel, gestor, departamento, tipo, status e periodo.
+- A acao `Nova responsabilidade` permite atribuicao inicial local com departamento, responsavel operacional, tipo, inicio e gestor opcional.
+- O aceite continua pendente ate validar com dados reais, backfill e UI de edicao/encerramento/transferencia.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.
@@ -121,7 +128,8 @@
 - [ ] Existe entidade/tabela propria para responsabilidade cliente x departamento x usuario.
 - [ ] Cadastro de cliente permite escolher responsavel operacional por departamento.
 - [ ] Cadastro de cliente permite escolher gestor responsavel por departamento, quando aplicavel.
-- [ ] Painel do Cliente possui guia Equipe/Responsaveis.
+- [x] Painel do Cliente possui guia/secao Equipe/Responsaveis local.
+- [x] Painel do Cliente permite atribuicao inicial local de responsavel por departamento, com gestor opcional.
 - [ ] Gestor consegue transferir carteira com auditoria.
 - [ ] Colaborador visualiza apenas sua carteira conforme escopo.
 - [ ] Vencimentos, documentos e planilhas usam a responsabilidade normalizada para filtros.

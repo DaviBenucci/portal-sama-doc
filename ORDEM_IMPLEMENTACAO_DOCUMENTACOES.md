@@ -187,16 +187,24 @@ Criterio de saida:
 
 ## Fase 4 - Responsabilidade de clientes e carteiras
 
+Estado: backend normalizado local existente; painel do cliente conectado localmente a responsabilidades; atribuicao inicial local disponivel; backfill e validacao real ainda pendentes.
+
 Objetivo: remover a dependencia operacional exclusiva de `clients.metadata` para carteira, responsavel e gestor.
+
+Ja feito localmente:
+
+- API v2 possui `client_department_assignments` e endpoints `GET/POST /api-v2/clients/:clientId/assignments`, `PATCH/POST /api-v2/client-assignments/:id*` e `POST /api-v2/client-assignments/transfer`.
+- `/clientes/:id` exibe o painel `Equipe e responsaveis` consumindo `GET /api-v2/clients/:clientId/assignments`, protegido visualmente por `client_assignments.read`.
+- `/clientes/:id` possui acao `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com responsavel operacional, departamento, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e dependente das listas `departments.read`/`collaborators.read`.
 
 Implementar em ordem:
 
 1. Aplicar migrations/seeds de `client_department_assignments` no MySQL real.
 2. Rodar relatorio de backfill.
 3. Criar backfill seguro de responsabilidades a partir de `clients.metadata`.
-4. Conectar painel do cliente a uma guia Equipe/Responsaveis.
-5. Permitir atribuicao inicial de responsavel operacional por departamento.
-6. Permitir gestor responsavel quando aplicavel.
+4. [local concluido; real pendente] Conectar painel do cliente a uma guia Equipe/Responsaveis.
+5. [local concluido; real pendente] Permitir atribuicao inicial de responsavel operacional por departamento.
+6. [local parcial; real pendente] Permitir gestor responsavel quando aplicavel.
 7. Conectar telas de gestor/carteira ao modelo normalizado.
 8. Garantir transferencia auditada pela UI.
 9. Migrar filtros de planilha, documentos e vencimentos para responsabilidade normalizada.

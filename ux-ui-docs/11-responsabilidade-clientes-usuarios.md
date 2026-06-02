@@ -2,6 +2,8 @@
 
 Atualizacao 2026-05-27 16:44 -03:00: a recomendacao de backend avancou localmente. Alem da tabela e dos endpoints de listar/criar/editar/encerrar, a API v2 agora possui `POST /api-v2/client-assignments/transfer` para transferencia normalizada e auditada. A analise historica abaixo continua valida para fluxos legados que ainda leem `clients.metadata` e para as telas que ainda nao foram conectadas a `client_department_assignments`.
 
+Atualizacao 2026-06-02: o painel React do cliente passou a consultar `GET /api-v2/clients/:clientId/assignments` e exibir a secao `Equipe e responsaveis`, respeitando `client_assignments.read`. A mesma secao agora possui `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e listas auxiliares `departments.read`/`collaborators.read`. Backfill, gestor editavel, transferencia/encerramento pela UI e migracao dos filtros operacionais continuam pendentes.
+
 ## 1. Pergunta analisada
 
 Como o Portal Sama define que um cliente esta sob responsabilidade de um usuario, seja colaborador ou gestor?

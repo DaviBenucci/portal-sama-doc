@@ -1,5 +1,35 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 painel do cliente e responsabilidades
+
+### Arquivos alterados
+
+- `portal-sama-web/src/pages/clients/ClientDashboardPage.tsx`
+- `portal-sama-web/src/services/clients.service.ts`
+- `portal-sama-web/src/types/clients.ts`
+- Documentacao de status, pendencias, testes, ordem e pagina do cliente.
+
+### O que mudou
+
+- `clients.service.ts` passou a expor `listClientAssignments(clientId)` e `createClientAssignment(clientId, input)`.
+- `types/clients.ts` passou a tipar `ClientAssignmentItem`, `ClientAssignmentsListResponse`, `ClientAssignmentResponse` e `ClientAssignmentPayloadInput`.
+- `/clientes/:id` ganhou o painel `Equipe e responsaveis`, conectado a `GET /api-v2/clients/:clientId/assignments`.
+- A consulta respeita `client_assignments.read`; sem permissao, o endpoint nao e chamado e a UI mostra aviso.
+- O painel exibe departamento, responsavel, gestor, tipo de vinculo, status e periodo.
+- A acao `Nova responsabilidade` cria o vinculo inicial por `POST /api-v2/clients/:clientId/assignments`, com departamento, responsavel operacional, tipo, inicio e gestor opcional.
+
+### Testes executados
+
+- `npx.cmd tsc --noEmit --pretty false` no Web.
+- `npm.cmd run build` no Web.
+- `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com responsabilidades reais.
+- Falta implementar UI para editar, encerrar e transferir responsavel/gestor no painel.
+- A migração operacional ainda depende de backfill de `clients.metadata` para `client_department_assignments`.
+
 ## 2026-06-02 scheduler Acessorias opt-in
 
 ### Arquivos alterados

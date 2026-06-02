@@ -281,6 +281,20 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Testes necessários:** 200 com dados reais, filtros, unicidade de CNPJ, cliente sem vínculo, 401 sem token, 403 sem permissão/CSRF, auditoria persistida e validação de backfill.
 - **Observações:** Em 2026-05-13 10:50, unitários do `ClientsService`, e2e de 401/403/CSRF e migration local passaram. Respostas mantêm aliases legados como `razao_social`, `nome_fantasia`, `regime_tributario`, `id_empresa`, `faz_parte_grupo` e `grupo_nome`. Em 2026-05-18 15:58, `DepartmentClientsPage.tsx` passou a consumir este endpoint para `/departamentos/clientes`; atribuicao/transferencia departamental segue pendente por exigir contrato backend proprio e auditoria.
 
+## Endpoint novo: `/api-v2/clients/:clientId/assignments` e `/api-v2/client-assignments`
+
+- **Arquivo:** `portal-sama-api/src/modules/client-assignments/client-assignments.controller.ts`, `portal-sama-api/src/modules/client-assignments/client-assignments.service.ts`.
+- **Metodo:** GET e POST em `/api-v2/clients/:clientId/assignments`; PATCH e POST em `/api-v2/client-assignments/:id`; POST em `/api-v2/client-assignments/transfer`.
+- **Finalidade:** listar, criar, atualizar, encerrar e transferir responsabilidades normalizadas de cliente por departamento, responsavel operacional e gestor opcional.
+- **Pagina/tela relacionada:** rota React `/clientes/:id`; futuras telas de carteira, transferencia e gestor.
+- **Novo endpoint proposto:** Implementado como `GET /api-v2/clients/:clientId/assignments`, `POST /api-v2/clients/:clientId/assignments`, `PATCH /api-v2/client-assignments/:id`, `POST /api-v2/client-assignments/:id/end` e `POST /api-v2/client-assignments/transfer`.
+- **Modulo NestJS alvo:** `ClientAssignmentsModule`.
+- **Permissoes:** `client_assignments.read`, `client_assignments.create`, `client_assignments.update`, `client_assignments.end` e `client_assignments.transfer`, conforme rota.
+- **Controles implementados:** JWT, RBAC granular, CSRF em mutacoes, resolucao por departamento controlado, usuario responsavel ativo, gestor opcional, bloqueio de escopo conforme permissao/papel e auditoria nas mutacoes.
+- **Status de migracao:** Implementado localmente; `/clientes/:id` consome leitura e criacao inicial. Pendente aplicar migrations/seeds/backfill no MySQL real e validar no EasyPanel com dados reais.
+- **Riscos de seguranca:** IDOR por cliente, transferencia indevida de carteira, atribuicao de colaborador fora do escopo, gestor incorreto e perda de trilha de auditoria.
+- **Testes necessarios:** validar leitura/criacao/edicao/encerramento/transferencia com usuario real, 401/403/CSRF, duplicidade de ativo por escopo, auditoria persistida e comportamento apos backfill.
+
 ## Endpoint novo: `/api-v2/collaborators`
 
 - **Arquivo:** `portal-sama-api/src/modules/collaborators/collaborators.controller.ts`, `portal-sama-api/src/modules/collaborators/collaborators.service.ts`

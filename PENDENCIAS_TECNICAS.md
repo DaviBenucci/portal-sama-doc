@@ -1,6 +1,17 @@
 # [PENDENTE] Pendências Técnicas - Portal Sama
 
-Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
+Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
+
+## Atualizacao 2026-06-02 painel do cliente e responsabilidades
+
+- `/clientes/:id` passou a exibir `Equipe e responsaveis` com dados de `client_department_assignments`.
+- A tela consome `GET /api-v2/clients/:clientId/assignments` por `listClientAssignments()`.
+- A consulta e renderizacao respeitam `client_assignments.read`; sem a permissao, o painel mostra aviso e nao chama o endpoint.
+- O painel lista departamento, responsavel, gestor, tipo de vinculo, status e datas de inicio/fim.
+- A acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional.
+- A criacao exige `client_assignments.create` e depende das listas auxiliares `departments.read` e `collaborators.read`.
+- Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build` e `npm.cmd run lint` no Web.
+- Permanece pendente validar no EasyPanel com responsabilidades reais, criar UI de edicao/encerramento/transferencia, rodar/backfill de `clients.metadata` e migrar filtros operacionais para o modelo normalizado.
 
 ## Atualizacao 2026-06-02 scheduler Acessorias opt-in
 

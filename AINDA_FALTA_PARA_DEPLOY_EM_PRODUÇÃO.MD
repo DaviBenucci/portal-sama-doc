@@ -78,7 +78,28 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais e consultar `Status scheduler`, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Scheduler seguro existe como opt-in e desabilitado por padrao. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e habilitar scheduler em rollout controlado. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis` a partir da tabela normalizada; a Home por perfil consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar responsabilidades reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar atribuicao inicial/gestor, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-02 painel do cliente e responsabilidades
+
+Foi implementada localmente a primeira conexao visual da Fase 4.
+
+- `/clientes/:id` ganhou a secao `Equipe e responsaveis`;
+- a secao consome `GET /api-v2/clients/:clientId/assignments`;
+- a consulta respeita `client_assignments.read` e nao chama o endpoint sem permissao;
+- o painel exibe departamento, responsavel, gestor, tipo de vinculo, status e datas;
+- a acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com responsavel operacional, departamento, tipo, inicio e gestor opcional;
+- a criacao exige `client_assignments.create` e listas auxiliares com `departments.read`/`collaborators.read`;
+- `clients.service.ts` ganhou `listClientAssignments()` e `createClientAssignment()`;
+- `types/clients.ts` passou a tipar leitura e criacao de responsabilidades normalizadas.
+
+Validacao local:
+
+- `npx.cmd tsc --noEmit --pretty false` passou no Web;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web.
+
+Pendencia real remanescente: validar no EasyPanel com responsabilidades reais, conferir perfis com/sem `client_assignments.read` e `client_assignments.create`, aplicar migrations/backfill no MySQL real e implementar UI de edicao/encerramento/transferencia.
 
 ## Atualizacao operacional de 2026-06-02 scheduler Acessorias opt-in
 
@@ -1130,7 +1151,7 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [x] Criar base backend de entregas em `integrations/acessorias`, com persistencia local inicial.
 - [x] Implementar sincronizacao manual de entregas do Acessorias com auditoria.
 - [x] Salvar entregas localmente e registrar sync runs.
-- [ ] Implementar sincronizacao automatica agendada de entregas do Acessorias.
+- [x] Implementar sincronizacao automatica agendada opt-in de entregas do Acessorias.
 - [x] Salvar divergencias iniciais da aplicacao Fiscal em `acessorias_fiscal_divergences`.
 - [x] Criar mapeamento entre entregas do Acessorias e colunas da planilha Fiscal.
 - [x] Aplicar baixas confirmadas do Acessorias na planilha Fiscal existente com status visual `ACESSORIAS`.
@@ -1171,8 +1192,11 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 - [ ] Validar solicitacoes de acesso disponiveis a todos os usuarios autenticados, com aprovacao/execucao conforme perfil e escopo.
 - [ ] Validar roles/permissoes com nome amigavel, descricao, agrupamento por modulo/acao, risco, formulario guiado e confirmacao para permissoes criticas.
 - [ ] Validar auditoria para alteracoes em usuarios, roles, permissoes, departamentos e solicitacoes.
+- [x] Conectar painel do cliente a Equipe/Responsaveis usando `client_department_assignments` localmente.
+- [x] Implementar atribuicao inicial local de responsavel operacional por departamento, com gestor opcional.
+- [ ] Validar painel do cliente com responsabilidades reais no EasyPanel.
 - [ ] Evoluir responsabilidade de clientes para uso operacional completo da entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
-- [ ] Validar cadastro de cliente com responsavel operacional e gestor por departamento, painel do cliente com guia Equipe/Responsaveis e transferencia de carteira auditada.
+- [ ] Validar cadastro/painel de cliente com responsavel operacional e gestor por departamento, atribuicao inicial, gestor editavel e transferencia de carteira auditada.
 
 ### Testes e QA
 

@@ -13,6 +13,8 @@
 
 **Status backend 2026-05-13 10:50:** `ClientsModule` criou `GET /api-v2/clients/:id`, `PATCH /api-v2/clients/:id` e `GET /api-v2/clients/:id/dashboard`; `DocumentsModule` continua cobrindo `/api-v2/clients/:clientId/documents`. Falta integrar o painel e validar vinculos reais cliente-usuario/gestor.
 
+**Atualizacao React 2026-06-02:** `portal-sama-web/src/pages/clients/ClientDashboardPage.tsx` agora exibe `Equipe e responsaveis`, consumindo `GET /api-v2/clients/:clientId/assignments` por `listClientAssignments()`. A secao respeita `client_assignments.read` e lista departamento, responsavel, gestor, tipo, status e periodo. A acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` por `createClientAssignment()`, usando departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create`. Ainda falta validar no EasyPanel com dados reais e criar UI de edicao/encerramento/transferencia.
+
 ---
 
 ## 2. Objetivo da página

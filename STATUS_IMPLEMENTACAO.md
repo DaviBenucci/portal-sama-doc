@@ -1,5 +1,15 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-02 painel do cliente e responsabilidades
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Inicio da Fase 4 na UI: o painel do cliente passou a consumir e criar responsabilidades normalizadas em `client_department_assignments`.
+- **Frontend React:** `ClientDashboardPage.tsx` adicionou o bloco `Equipe e responsaveis`, com responsavel por departamento, gestor quando existir, tipo de vinculo, status e datas. A leitura usa `GET /api-v2/clients/:clientId/assignments` e respeita a permissao `client_assignments.read`.
+- **Atribuicao inicial:** a acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional. A acao exige `client_assignments.create` e carrega listas auxiliares somente com `departments.read` e `collaborators.read`.
+- **Servicos/tipos:** `clients.service.ts` ganhou `listClientAssignments()` e `createClientAssignment()`; `types/clients.ts` ganhou o contrato de `ClientAssignmentItem`, `ClientAssignmentsListResponse`, `ClientAssignmentResponse` e `ClientAssignmentPayloadInput`.
+- **Validacao local:** passaram TypeScript do Web, build do Web e lint do Web.
+- **Pendente:** validar no EasyPanel com dados reais e responsabilidades reais; ainda falta backfill de `clients.metadata`, edicao/encerramento/transferencia pela UI e migrar filtros de carteira para o modelo normalizado.
+
 ## Atualizacao complementar 2026-06-02 scheduler Acessorias opt-in
 
 - **Responsavel/IA:** Codex

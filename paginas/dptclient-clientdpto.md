@@ -11,6 +11,8 @@
 - **Nível de criticidade:** Alto
 - **Prioridade de refatoração:** Alta
 
+**Atualizacao React 2026-06-02:** a entidade normalizada `client_department_assignments` ja e lida e criada inicialmente no painel `/clientes/:id`. Esta pagina ainda precisa migrar filtros/listagem de carteira para a mesma entidade, substituindo a leitura operacional principal de `clients.metadata`.
+
 ---
 
 ## 2. Objetivo da página
