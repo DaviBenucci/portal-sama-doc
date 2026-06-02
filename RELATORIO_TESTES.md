@@ -1,5 +1,51 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 transferencia de responsabilidades no painel do cliente
+
+### Contexto
+
+- Continuidade da Fase 4 na UI: acionar pelo painel do cliente a transferencia normalizada de responsabilidades ja existente na API v2.
+- Escopo local: tipos, service `transferClientAssignments()` e formulario `Transferir` em `/clientes/:id`, respeitando `client_assignments.transfer` e carregando responsaveis por `collaborators.read`.
+
+### Comandos executados
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+npm.cmd run test:e2e
+git diff --check
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- TypeScript do Web passou.
+- Web build passou.
+- Web lint passou.
+- Playwright local passou com 12 testes e 1 teste real opt-in pulado.
+- `git diff --check` passou no Web.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, CSRF real ou responsabilidades reais.
+
+### Saida relevante
+
+- `npm.cmd run test:e2e`: 12 passed, 1 skipped.
+- O teste real de homologacao ficou pulado por ser opt-in.
+- O Vite exibiu avisos conhecidos de `HydrateFallback` e proxy local do Acessorias sem backend local, sem falhar a suite.
+
+### Pendencias
+
+- Validar com usuario real que possui `client_assignments.transfer`.
+- Conferir comportamento para usuario sem `client_assignments.transfer`.
+- Conferir auditoria `client_assignments.transfer` no banco real.
+- Seguir Fase 4 com edicao/encerramento pela UI, backfill e migracao de carteiras/filtros.
+
+### Observacao anti-alucinacao
+
+A transferencia pelo painel foi implementada e validada localmente no Web, mas ainda nao foi homologada no EasyPanel.
+
 ## Execucao 2026-06-02 painel do cliente e responsabilidades
 
 ### Contexto

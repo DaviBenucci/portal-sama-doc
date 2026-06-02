@@ -2,7 +2,7 @@
 
 > Atualizacao 2026-05-19 15:33: primeira fatia React criada em `/manager/transferencias` com `ManagerTransfersPage.tsx`, consumindo `TransfersModule` para dashboard, criacao e retorno manual. Ainda faltam validacao com MySQL real, seed `transfers.*`, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 
-> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece transferencia normalizada por `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial local. Esta pagina ainda precisa trocar a transferencia operacional para `client_department_assignments` na UI e validar auditoria real.
+> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece transferencia normalizada por `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial e transfere responsabilidades ativas localmente. Esta pagina ainda precisa trocar a transferencia operacional em lote para `client_department_assignments` na UI e validar auditoria real.
 
 ## 1. Identificação da página
 

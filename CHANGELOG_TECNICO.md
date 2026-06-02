@@ -1,5 +1,52 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 11:21 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-web/src/pages/clients/ClientDashboardPage.tsx`
+- `portal-sama-web/src/services/clients.service.ts`
+- `portal-sama-web/src/types/clients.ts`
+- Documentacao de ordem, status, pendencias, testes, deploy e paginas/UX da Fase 4.
+
+### O que mudou
+
+- `/clientes/:id` passou a permitir transferencia de responsabilidades normalizadas ativas pelo painel `Equipe e responsaveis`.
+- A UI chama `POST /api-v2/client-assignments/transfer` por `transferClientAssignments()`, usando CSRF pelo client centralizado.
+- A acao exige `client_assignments.transfer` para aparecer e `collaborators.read` para carregar responsaveis de destino.
+- O formulario coleta novo responsavel operacional, gestor opcional, data efetiva e motivo.
+- A UI impede selecionar o mesmo responsavel atual como destino.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, reduzindo a dependencia visual de `clients.metadata` e levando a transferencia auditada ja existente na API para a experiencia React do painel do cliente.
+
+### Impacto esperado
+
+- Frontend passa a cobrir atribuicao inicial e transferencia local de responsabilidades por `client_department_assignments`.
+- Backend nao foi alterado nesta fatia; a seguranca real continua no endpoint existente com JWT, CSRF, RBAC, escopo e auditoria.
+- Ainda nao ha homologacao real no EasyPanel.
+
+### Testes executados
+
+- Comando: `npx.cmd tsc --noEmit --pretty false`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run build`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run lint`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run test:e2e`
+- Resultado: passou no Web com 12 testes e 1 teste real opt-in pulado.
+- Comando: `git diff --check`
+- Resultado: passou no Web.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com responsabilidades reais, usuario autorizado, CSRF real e auditoria persistida.
+- Validar bloqueio visual/servidor para perfil sem `client_assignments.transfer`.
+- Implementar edicao/encerramento pela UI.
+- Migrar carteiras, filtros de gestor, planilhas, documentos e vencimentos para priorizar `client_department_assignments`.
+
 ## 2026-06-02 painel do cliente e responsabilidades
 
 ### Arquivos alterados

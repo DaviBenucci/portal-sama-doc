@@ -2,7 +2,7 @@
 
 > Atualizacao 2026-05-19 15:53: primeira fatia React criada em `/manager/colaboradores` com `ManagerCollaboratorsPage.tsx`, consumindo `GET /api-v2/transfers/dashboard` para consulta de carteira por colaborador. Transferencias continuam operadas em `/manager/transferencias`; faltam validacao com MySQL real, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 
-> Atualizacao 2026-06-02: o painel `/clientes/:id` passou a ler `client_department_assignments` e criar atribuicao inicial local com gestor opcional. Esta pagina ainda precisa conectar a carteira do colaborador ao modelo normalizado antes de abandonar `clients.metadata`/contratos de transferencia legados.
+> Atualizacao 2026-06-02: o painel `/clientes/:id` passou a ler `client_department_assignments`, criar atribuicao inicial local com gestor opcional e transferir responsabilidades ativas pelo endpoint normalizado. Esta pagina ainda precisa conectar a carteira do colaborador ao modelo normalizado antes de abandonar `clients.metadata`/contratos de transferencia legados.
 
 ## 1. Identificação da página
 

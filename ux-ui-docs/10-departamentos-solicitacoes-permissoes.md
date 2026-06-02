@@ -6,7 +6,7 @@ Esta documentacao corrige pontos de UX/UI, governanca e seguranca identificados 
 
 O foco e evitar ambiguidade operacional, reduzir erros de cadastro e tornar o modelo de permissao mais compreensivel para usuarios MASTER, gestores e colaboradores.
 
-Atualizacao 2026-06-02: a criacao inicial de responsabilidade no painel `/clientes/:id` ja usa departamento controlado via `departments.read` e colaborador ativo via `collaborators.read`, gravando em `client_department_assignments` por `POST /api-v2/clients/:clientId/assignments`. A migracao completa dos filtros/carteiras ainda depende de backfill e validacao real.
+Atualizacao 2026-06-02: a criacao inicial de responsabilidade no painel `/clientes/:id` ja usa departamento controlado via `departments.read` e colaborador ativo via `collaborators.read`, gravando em `client_department_assignments` por `POST /api-v2/clients/:clientId/assignments`. A mesma tela agora transfere responsabilidade ativa por `POST /api-v2/client-assignments/transfer`, exigindo `client_assignments.transfer` e `collaborators.read` na experiencia. A migracao completa dos filtros/carteiras ainda depende de backfill e validacao real.
 
 ---
 

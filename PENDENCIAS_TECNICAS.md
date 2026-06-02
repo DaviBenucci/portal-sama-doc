@@ -2,6 +2,15 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
 
+## Atualizacao 2026-06-02 transferencia de responsabilidades no painel do cliente
+
+- `/clientes/:id` agora possui acao `Transferir` em responsabilidades normalizadas ativas.
+- A UI chama `POST /api-v2/client-assignments/transfer` por `transferClientAssignments()`, com CSRF via client centralizado.
+- A acao exige `client_assignments.transfer` na experiencia e `collaborators.read` para carregar responsaveis de destino.
+- A transferencia coleta novo responsavel operacional, gestor opcional, data efetiva e motivo, bloqueando o mesmo responsavel atual como destino.
+- Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build`, `npm.cmd run lint`, `npm.cmd run test:e2e` com 12 testes e 1 opt-in real pulado, e `git diff --check` no Web.
+- Permanece pendente validar no EasyPanel com usuario real, CSRF real, responsabilidades reais, auditoria persistida e matriz de permissoes; edicao/encerramento pela UI, backfill de `clients.metadata` e migracao de carteiras/filtros seguem pendentes.
+
 ## Atualizacao 2026-06-02 painel do cliente e responsabilidades
 
 - `/clientes/:id` passou a exibir `Equipe e responsaveis` com dados de `client_department_assignments`.
@@ -11,7 +20,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - A acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional.
 - A criacao exige `client_assignments.create` e depende das listas auxiliares `departments.read` e `collaborators.read`.
 - Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build` e `npm.cmd run lint` no Web.
-- Permanece pendente validar no EasyPanel com responsabilidades reais, criar UI de edicao/encerramento/transferencia, rodar/backfill de `clients.metadata` e migrar filtros operacionais para o modelo normalizado.
+- Permanece pendente validar no EasyPanel com responsabilidades reais, criar UI de edicao/encerramento, rodar/backfill de `clients.metadata` e migrar filtros operacionais para o modelo normalizado.
 
 ## Atualizacao 2026-06-02 scheduler Acessorias opt-in
 
@@ -123,7 +132,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - O endpoint aceita transferencia de uma ou mais responsabilidades ativas, valida escopo do ator, responsavel interno ativo, departamento controlado, compatibilidade do responsavel com o departamento e duplicidade `PRIMARY` ativa.
 - A auditoria registra `client_assignments.transfer` para cada nova responsabilidade criada.
 - Passaram testes focados de client assignments/RBAC/catalogo, `prisma:validate`, lint e build da API.
-- Permanece pendente aplicar migrations/seeds no MySQL real, validar com usuario real/CSRF real, criar UI de transferencia/carteira e executar backfill gradual de `clients.metadata`.
+- Permanece pendente aplicar migrations/seeds no MySQL real, validar endpoint e UI de transferencia com usuario real/CSRF real, conectar carteiras/transferencias em lote ao modelo normalizado e executar backfill gradual de `clients.metadata`.
 
 ## Atualizacao 2026-05-27 16:31 -03:00
 
