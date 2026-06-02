@@ -24,6 +24,12 @@ Pacote de documentacao em Markdown para orientar a melhoria das telas do Portal 
 
 Depois da integracao com o Acessorias, este pacote deve orientar a rodada de melhoria visual e experiencia de uso do Portal Sama. O arquivo `09-checklist-aceite.md` sera usado como ultima verificacao de UI/UX antes da liberacao do sistema para os usuarios.
 
+## Status local - 2026-06-02
+
+- Navegacao agrupada, drawer mobile, notificacoes no header e `/configuracoes` foram implementados localmente no React.
+- Validacao local passou com lint/build Web e smoke Playwright.
+- O aceite real ainda depende de EasyPanel, usuarios reais por perfil, notificacoes reais e backend/storage de avatar.
+
 ## Arquivos
 1. `01-visao-geral.md`
 2. `02-navegacao-e-rotas.md`

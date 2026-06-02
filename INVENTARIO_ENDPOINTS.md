@@ -47,7 +47,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Modulo NestJS alvo:** `AcessoriasHomeModule`/integracao Acessorias.
 - **Status de migracao:** Implementado localmente em 2026-06-01; `apply-to-fiscal` permanece como rota compativel; pendente de migration/deploy/validacao real.
 - **Riscos de seguranca:** atualizacao indevida de planilha por mapeamento incorreto, cliente errado, competencia fechada ou status divergente.
-- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado, departamento selecionado e mes aberto; casos inseguros viram divergencia aberta.
+- **Controles implementados:** JWT, CSRF, permissoes `integrations.acessorias.deliveries.manage` e `departments.workspace.write`, aplicacao somente com mapeamento `CONFIRMED`, confianca minima, cliente identificado, departamento selecionado e mes aberto; casos inseguros viram divergencia aberta. Em 2026-06-02 16:00, a aplicacao passou a validar `client_department_assignments` ativas antes de escrever e registra `CLIENT_DEPARTMENT_MISMATCH` quando a responsabilidade normalizada aponta para outro departamento.
 - **Testes necessarios:** dry-run e execucao real no EasyPanel, validacao de auditoria, status visual, divergencias e matriz de permissao.
 
 ## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/divergences/:id`
@@ -71,7 +71,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Modulo NestJS alvo:** `DepartmentsModule`.
 - **Status de migracao:** Implementado localmente; rotas `/api-v2/departments/fiscal/workspace*` seguem compativeis.
 - **Riscos de seguranca:** exposicao de carteira de outro departamento ou colaborador.
-- **Controles implementados:** JWT, permissao `departments.workspace.read`, escopo por departamento permitido, selecao de colaborador restrita a perfis de gestao, e conexao de vencimento Acessorias a celula apenas quando ha mapeamento confirmado para coluna valida.
+- **Controles implementados:** JWT, permissao `departments.workspace.read`, escopo por departamento permitido, selecao de colaborador restrita a perfis de gestao, conexao de vencimento Acessorias a celula apenas quando ha mapeamento confirmado para coluna valida e prioridade de `client_department_assignments` ativas para definir os clientes do departamento, com fallback por `clients.metadata` quando nao ha dado normalizado.
 - **Testes necessarios:** validar com usuarios reais por departamento, dados reais de carteira, entregas Acessorias reais, mapeamentos reais e matriz de permissoes.
 
 ## Endpoint novo: `/api-v2/departments/workspace/cycle-cell` e `/api-v2/departments/workspace/cell-status`
@@ -83,7 +83,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Modulo NestJS alvo:** `DepartmentsModule`.
 - **Status de migracao:** Implementado localmente; rotas fiscais antigas seguem compativeis.
 - **Riscos de seguranca:** alteracao de celula fora do departamento, mes fechado ou vencimento bloqueado.
-- **Controles implementados:** JWT, CSRF, permissao `departments.workspace.write`, papel operacional, escopo por departamento/colaborador, coluna valida do departamento e bloqueio por mes/vencimento.
+- **Controles implementados:** JWT, CSRF, permissao `departments.workspace.write`, papel operacional, escopo por departamento/colaborador, coluna valida do departamento, bloqueio por mes/vencimento e validacao do departamento do cliente por `client_department_assignments` ativa antes do fallback por `clients.metadata`.
 - **Testes necessarios:** validar em EasyPanel com usuario real, carteira real e auditoria persistida.
 
 ## Endpoint novo: `/api-v2/health`
@@ -225,7 +225,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Novo endpoint proposto:** Implementado como `GET /api-v2/users/:id`, `PATCH /api-v2/users/:id`, `PATCH /api-v2/users/:id/status` e `PUT /api-v2/users/:id/roles`.
 - **Módulo NestJS alvo:** `UsersModule`.
 - **Status de migração:** Implementado parcialmente; não conectado ao frontend e não validado contra MySQL real.
-- **Riscos de segurança:** enumeração de usuários e privilégios, alteração indevida de status/roles e auto-bloqueio. GET exige JWT e `users.read`; PATCH exige `users.update` e CSRF; status exige `users.status` e CSRF; roles exige `users.roles` e CSRF. O service bloqueia auto-inativação/bloqueio e remoção da própria role administrativa.
+- **Riscos de segurança:** enumeração de usuários e privilégios, alteração indevida de status/roles, troca indevida de senha e auto-bloqueio. GET exige JWT e `users.read`; PATCH exige `users.update` e CSRF; quando o payload altera `password`, o service exige papel `MASTER`; status exige `users.status` e CSRF; roles exige `users.roles` e CSRF. O service bloqueia auto-inativação/bloqueio e remoção da própria role administrativa.
 - **Testes necessários:** 200 com permissão, 404 para ID inexistente, 401 sem token, 403 sem permissão/CSRF, update real com MySQL, auditoria persistida.
 - **Observações:** Unitário cobre 404; e2e de permissão foi feito em `/users`. Em 2026-05-12 15:25, unitários cobrem atualização/status/roles e e2e cobre mutações sem CSRF.
 
@@ -291,7 +291,7 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Modulo NestJS alvo:** `ClientAssignmentsModule`.
 - **Permissoes:** `client_assignments.read`, `client_assignments.create`, `client_assignments.update`, `client_assignments.end` e `client_assignments.transfer`, conforme rota.
 - **Controles implementados:** JWT, RBAC granular, CSRF em mutacoes, resolucao por departamento controlado, usuario responsavel ativo, gestor opcional, bloqueio de escopo conforme permissao/papel e auditoria nas mutacoes.
-- **Status de migracao:** Implementado localmente; `/clientes/:id` consome leitura e criacao inicial. Pendente aplicar migrations/seeds/backfill no MySQL real e validar no EasyPanel com dados reais.
+- **Status de migracao:** Implementado localmente; `/clientes/:id` consome leitura, criacao inicial, edicao, encerramento e transferencia. Backfill seguro local existe por `ops:client-assignments:backfill`; pendente aplicar migrations/seeds/backfill no MySQL real e validar no EasyPanel com dados reais.
 - **Riscos de seguranca:** IDOR por cliente, transferencia indevida de carteira, atribuicao de colaborador fora do escopo, gestor incorreto e perda de trilha de auditoria.
 - **Testes necessarios:** validar leitura/criacao/edicao/encerramento/transferencia com usuario real, 401/403/CSRF, duplicidade de ativo por escopo, auditoria persistida e comportamento apos backfill.
 
@@ -333,6 +333,8 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Riscos de segurança:** IDOR por troca de `clientId`; endpoint exige JWT e `documents.read`, mas vínculo real cliente/gestor ainda precisa ser validado em banco real.
 - **Testes necessários:** cliente sem vínculo, gestor sem vínculo, departamento sem permissão, 401/403 e listagem com dados reais.
 - **Observações:** E2E 401/403 passou em 2026-05-11; em 2026-05-11 08:59 passou a retornar checklist compatível com o legado.
+
+Atualizacao 2026-06-02 16:30: `DocumentsModule` passou a priorizar `client_department_assignments` ativas no escopo interno de documentos para usuarios departamentais. A regra vale para listagem global, checklist por cliente, detalhe, historico, download, revisao, arquivamento e upload interno. Quando o cliente possui responsabilidade normalizada ativa, ela precisa coincidir com o departamento do documento e do usuario; quando nao possui, `document.department` segue como fallback temporario ate backfill/conferencia real. Testes locais de `documents.service.spec.ts`, TypeScript, lint, build e suite completa da API passaram; validacao com MySQL/storage/usuarios reais segue pendente.
 
 ## Endpoint novo: `/api-v2/documents/templates`
 
@@ -941,7 +943,7 @@ Atualizacao em 2026-05-18 15:35: `TiAccessPage.tsx` consome este endpoint para a
 - **Status de migração:** Parcialmente implementado; legado `api/manager_workspace.php?action=transfer_*` ainda ativo.
 - **Riscos de segurança:** Transferencia indevida de carteira, gestor operando fora do departamento, CSRF em mutacoes e inconsistencias no retorno automatico/manual.
 - **Testes necessários:** HTTP com JWT/CSRF reais, escopo por MANAGER/ADMIN/DEV, MySQL real, seed `transfers.*`, dados legados de carteira e Playwright da tela React.
-- **Observações:** Em 2026-05-19 12:16, unitarios focados, suite completa, lint, build, `prisma:generate` e `prisma:validate` passaram. O modulo usa `TransferSession` em `sama_transfer_sessions` e atualiza carteira em `Client.metadata`/`User.metadata` ate existir modelagem formal. Em 2026-05-19 15:33, `/manager/transferencias` ganhou primeira tela React consumindo dashboard, criacao e retorno, validada com lint/build/audit frontend. Em 2026-05-19 15:53, `/manager/colaboradores` passou a consumir o dashboard para consulta de carteira por colaborador.
+- **Observações:** Em 2026-05-19 12:16, unitarios focados, suite completa, lint, build, `prisma:generate` e `prisma:validate` passaram. O modulo usa `TransferSession` em `sama_transfer_sessions`. Em 2026-05-19 15:33, `/manager/transferencias` ganhou primeira tela React consumindo dashboard, criacao e retorno, validada com lint/build/audit frontend. Em 2026-05-19 15:53, `/manager/colaboradores` passou a consumir o dashboard para consulta de carteira por colaborador. Em 2026-06-02, o dashboard passou a priorizar `client_department_assignments`, as mutacoes de transferencia em lote passaram a escrever localmente nessa tabela e `ops:client-assignments:backfill` foi criado para migrar `Client.metadata` em dry-run/aplicacao controlada, mantendo `User.metadata` como fallback ate validacao real.
 
 ## Endpoint novo: `/api-v2/calendar`
 
@@ -954,7 +956,7 @@ Atualizacao em 2026-05-18 15:35: `TiAccessPage.tsx` consome este endpoint para a
 - **Status de migracao:** Parcialmente implementado; legado `api/manager_workspace.php?action=calendar_*` ainda ativo ate homologacao.
 - **Riscos de seguranca:** Exposicao de vencimentos de outro departamento, alteracao/exclusao indevida de prazos, CSRF em mutacoes e perda de notificacoes vinculadas.
 - **Testes necessarios:** HTTP com JWT/CSRF reais, escopo por MANAGER/ADMIN/DEV, MySQL real, seed `calendar.read/manage`, dados legados de calendario/carteira e Playwright das telas React.
-- **Observacoes:** Em 2026-05-20 10:00, `CalendarModule` iniciou configuracao/leitura sobre `sama_calendar_rules`, `sama_calendar_rule_companies` e `sama_calendar_due_notified`; em 2026-05-20 10:30, `/manager` passou a consumir a leitura mensal; em 2026-05-20 16:02, `DELETE /api-v2/calendar/entries/:id` passou a substituir inicialmente `calendar_delete_entry`, limpando vinculos/notificacoes, removendo regra orfa e auditando `calendar.entry.delete`.
+- **Observacoes:** Em 2026-05-20 10:00, `CalendarModule` iniciou configuracao/leitura sobre `sama_calendar_rules`, `sama_calendar_rule_companies` e `sama_calendar_due_notified`; em 2026-05-20 10:30, `/manager` passou a consumir a leitura mensal; em 2026-05-20 16:02, `DELETE /api-v2/calendar/entries/:id` passou a substituir inicialmente `calendar_delete_entry`, limpando vinculos/notificacoes, removendo regra orfa e auditando `calendar.entry.delete`. Em 2026-06-02, configuracao, leitura mensal e exclusao passaram a priorizar `client_department_assignments` para decidir departamentos dos clientes, mantendo `clients.metadata` como fallback.
 
 ## Endpoint novo: `/api-v2/managers/overview` e `/api-v2/managers/history`
 

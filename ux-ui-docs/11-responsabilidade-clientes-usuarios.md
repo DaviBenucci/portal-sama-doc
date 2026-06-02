@@ -2,7 +2,7 @@
 
 Atualizacao 2026-05-27 16:44 -03:00: a recomendacao de backend avancou localmente. Alem da tabela e dos endpoints de listar/criar/editar/encerrar, a API v2 agora possui `POST /api-v2/client-assignments/transfer` para transferencia normalizada e auditada. A analise historica abaixo continua valida para fluxos legados que ainda leem `clients.metadata` e para as telas que ainda nao foram conectadas a `client_department_assignments`.
 
-Atualizacao 2026-06-02: o painel React do cliente passou a consultar `GET /api-v2/clients/:clientId/assignments` e exibir a secao `Equipe e responsaveis`, respeitando `client_assignments.read`. A mesma secao agora possui `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e listas auxiliares `departments.read`/`collaborators.read`. A secao tambem permite editar responsabilidades por `PATCH /api-v2/client-assignments/:id`, protegida por `client_assignments.update`, com departamento, responsavel operacional, gestor, tipo, status e periodo; encerrar responsabilidades ativas por `POST /api-v2/client-assignments/:id/end`, protegida por `client_assignments.end`, com data e motivo; e transferir responsabilidades ativas por `POST /api-v2/client-assignments/transfer`, protegida por `client_assignments.transfer`, com novo responsavel, gestor opcional, data efetiva e motivo. O dashboard `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` na consulta de carteira, mantendo fallback temporario para `clients.metadata`. Backfill, validacao real no EasyPanel, escrita normalizada de transferencias em lote e migracao dos filtros operacionais continuam pendentes.
+Atualizacao 2026-06-02: o painel React do cliente passou a consultar `GET /api-v2/clients/:clientId/assignments` e exibir a secao `Equipe e responsaveis`, respeitando `client_assignments.read`. A mesma secao agora possui `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e listas auxiliares `departments.read`/`collaborators.read`. A secao tambem permite editar responsabilidades por `PATCH /api-v2/client-assignments/:id`, protegida por `client_assignments.update`, com departamento, responsavel operacional, gestor, tipo, status e periodo; encerrar responsabilidades ativas por `POST /api-v2/client-assignments/:id/end`, protegida por `client_assignments.end`, com data e motivo; e transferir responsabilidades ativas por `POST /api-v2/client-assignments/transfer`, protegida por `client_assignments.transfer`, com novo responsavel, gestor opcional, data efetiva e motivo. O dashboard `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` na consulta de carteira, mantendo fallback temporario para `clients.metadata`. A transferencia operacional em lote do `TransfersModule` agora tambem escreve localmente em `client_department_assignments` ao aplicar/retornar sessoes. Backfill, validacao real no EasyPanel e migracao dos filtros operacionais continuam pendentes.
 
 ## 1. Pergunta analisada
 
@@ -757,7 +757,125 @@ O que segue pendente:
 - aplicar migration/seed no MySQL real;
 - validar no EasyPanel a UI local de atribuicao, edicao, encerramento e transferencia;
 - validar carteira real no detalhe do colaborador/gestor com MySQL real;
-- migrar escrita de transferencias em lote, departamentos e filtros para priorizar a tabela nova;
-- executar backfill de clients.metadata para client_department_assignments;
+- validar no EasyPanel a escrita normalizada de transferencias em lote, departamentos e filtros para priorizar a tabela nova;
+- executar no EasyPanel o backfill seguro ja criado em portal-sama-api por npm run ops:client-assignments:backfill;
 - manter fallback temporario para metadata ate a migracao ser conferida.
+```
+
+## 16. Complemento 2026-06-02 - backfill seguro
+
+Foi criado em `portal-sama-api` o comando operacional:
+
+```txt
+npm run ops:client-assignments:backfill
+```
+
+Comportamento esperado:
+
+```txt
+- dry-run por padrao;
+- --apply obrigatorio para gravar;
+- leitura de clients.metadata.departamentos/departments/depts/dept_* e formatos equivalentes;
+- resolucao de responsavel por user.id, username e User.metadata.colaboradorId;
+- bloqueio de responsavel ausente, ambiguo, inativo, CLIENT ou fora do departamento;
+- bloqueio de duplicidade PRIMARY ACTIVE para o mesmo cliente/departamento;
+- metadata.source=clients_metadata_backfill nas responsabilidades criadas.
+```
+
+Sequencia real pendente:
+
+```txt
+1. Rodar ops:backfill:report -- --json no EasyPanel.
+2. Rodar ops:client-assignments:backfill -- --json.
+3. Revisar amostras e pulos.
+4. Confirmar backup externo verificado.
+5. Aplicar com --apply somente apos aprovacao operacional.
+6. Validar carteira, transferencias e filtros com dados reais.
+```
+
+## 17. Complemento 2026-06-02 - vencimentos
+
+O `CalendarModule` passou a priorizar responsabilidades normalizadas:
+
+```txt
+GET /api-v2/calendar/config
+POST /api-v2/calendar/config
+GET /api-v2/calendar/month
+DELETE /api-v2/calendar/entries/:id
+```
+
+Regra aplicada localmente:
+
+```txt
+- se o cliente possui client_department_assignments ACTIVE com departamento ativo, a carteira normalizada define o departamento;
+- se nao possui responsabilidade normalizada, clients.metadata segue como fallback temporario;
+- metadata divergente nao deve prevalecer sobre responsabilidade normalizada.
+```
+
+Ainda pendente:
+
+```txt
+- validar no EasyPanel com backfill real;
+- documentos receberam corte local posterior nesta mesma data; validar no EasyPanel;
+- remover fallback somente depois de conferencia operacional.
+```
+
+## 18. Complemento 2026-06-02 - planilhas departamentais
+
+O `DepartmentsModule` e a aplicacao Acessorias no workspace passaram a priorizar responsabilidades normalizadas:
+
+```txt
+GET /api-v2/departments/workspace
+POST /api-v2/departments/workspace/cycle-cell
+PATCH /api-v2/departments/workspace/cell-status
+POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace
+```
+
+Regra aplicada localmente:
+
+```txt
+- se o cliente possui client_department_assignments ACTIVE com departamento ativo, a carteira normalizada define se ele entra na planilha;
+- se nao possui responsabilidade normalizada, clients.metadata segue como fallback temporario;
+- a aplicacao Acessorias nao escreve status ACESSORIAS quando a responsabilidade normalizada aponta para outro departamento;
+- nesses casos, a divergencia registrada e CLIENT_DEPARTMENT_MISMATCH.
+```
+
+Ainda pendente:
+
+```txt
+- validar no EasyPanel com backfill real e entregas reais do Acessorias;
+- validar usuarios reais por departamento/perfil;
+- remover fallback somente depois de conferencia operacional.
+```
+
+## 19. Complemento 2026-06-02 - documentos internos
+
+O `DocumentsModule` passou a priorizar responsabilidades normalizadas no escopo de documentos internos:
+
+```txt
+GET /api-v2/documents
+GET /api-v2/clients/:clientId/documents
+GET /api-v2/documents/:id
+GET /api-v2/documents/:id/status-history
+GET /api-v2/documents/:id/download
+PATCH /api-v2/documents/:id/status
+DELETE /api-v2/documents/:id
+POST /api-v2/documents/clients/:clientId/upload
+```
+
+Regra aplicada localmente:
+
+```txt
+- usuarios departamentais continuam limitados ao departamento do documento;
+- se o cliente possui client_department_assignments ACTIVE com departamento ativo, a carteira normalizada tambem precisa permitir aquele departamento;
+- se nao possui responsabilidade normalizada, document.department segue como fallback temporario;
+- documentos sem departamento permanecem restritos a perfis privilegiados/cliente proprio ate decisao operacional.
+```
+
+Ainda pendente:
+
+```txt
+- validar no EasyPanel com backfill real, storage real e usuarios reais;
+- validar upload/download/revisao/arquivamento com auditoria persistida;
+- remover fallback somente depois de conferencia operacional.
 ```

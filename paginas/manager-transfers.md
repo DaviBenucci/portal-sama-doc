@@ -2,7 +2,7 @@
 
 > Atualizacao 2026-05-19 15:33: primeira fatia React criada em `/manager/transferencias` com `ManagerTransfersPage.tsx`, consumindo `TransfersModule` para dashboard, criacao e retorno manual. Ainda faltam validacao com MySQL real, seed `transfers.*`, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 
-> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece edicao, encerramento e transferencia normalizada por `PATCH /api-v2/client-assignments/:id`, `POST /api-v2/client-assignments/:id/end` e `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial, edita, encerra e transfere responsabilidades localmente. O dashboard de consulta usado por gestor ja prioriza `client_department_assignments`, mas esta pagina ainda precisa trocar a transferencia operacional em lote para escrita normalizada e validar auditoria real.
+> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece edicao, encerramento e transferencia normalizada por `PATCH /api-v2/client-assignments/:id`, `POST /api-v2/client-assignments/:id/end` e `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial, edita, encerra e transfere responsabilidades localmente. O dashboard de consulta usado por gestor ja prioriza `client_department_assignments`; a transferencia operacional em lote de `POST /api-v2/transfers` agora escreve localmente na tabela normalizada ao aplicar/retornar sessoes, preservando fallback em `clients.metadata`; o backfill seguro local existe por `ops:client-assignments:backfill`. Falta validar auditoria, backfill e dados reais no EasyPanel.
 
 ## 1. Identificação da página
 
@@ -424,7 +424,7 @@ Esta seção complementa a análise original da página com a decisão técnica 
 
 Atualizacao 2026-05-19 15:33: os itens 2, 3, 4 e 5 receberam a primeira implementacao integrada. O service React usa `GET /api-v2/transfers/dashboard`, `POST /api-v2/transfers` e `POST /api-v2/transfers/:id/return`; as mutacoes emitem CSRF pelo client centralizado e a tela condiciona a UX a `transfers.read/create/return`. A validacao final continua pendente em homologacao com dados reais e Playwright.
 
-Atualizacao 2026-06-02: `GET /api-v2/transfers/dashboard` passou a priorizar responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira exibida ao gestor, preservando fallback por `clients.metadata`. As mutacoes `POST /api-v2/transfers` e `POST /api-v2/transfers/:id/return` ainda operam o contrato legado e precisam ser migradas para escrever em `client_department_assignments`.
+Atualizacao 2026-06-02: `GET /api-v2/transfers/dashboard` passou a priorizar responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira exibida ao gestor, preservando fallback por `clients.metadata`. As mutacoes `POST /api-v2/transfers` e `POST /api-v2/transfers/:id/return` agora escrevem localmente em `client_department_assignments` quando ha departamento controlado aplicado, mantendo o contrato legado como compatibilidade temporaria. O backfill seguro de `clients.metadata` foi criado como `ops:client-assignments:backfill`, com dry-run por padrao. Falta validar em homologacao real com MySQL/backfill, gestor real e auditoria.
 
 ### 15.5 Referências complementares
 

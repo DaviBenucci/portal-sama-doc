@@ -6,6 +6,7 @@
 > Atualizacao 2026-05-20 16:02: `/manager` passou a remover vencimentos por `DELETE /api-v2/calendar/entries/:id` quando a sessao possui `calendar.manage`; a API v2 exige CSRF, escopo por departamento e auditoria `calendar.entry.delete`. Validacao MySQL/usuarios reais/Playwright segue pendente antes de desligar `calendar_delete_entry`.
 > Atualizacao 2026-06-01: o workspace departamental passou a incluir vencimentos oficiais de entregas Acessorias sincronizadas.
 > Atualizacao 2026-06-01 Central: criada rota `/departamentos/vencimentos` para consolidar vencimentos de calendario e Acessorias; ainda falta validar no EasyPanel com dados reais antes de considerar homologado.
+> Atualizacao 2026-06-02: a API de calendario agora prioriza responsabilidades ativas de `client_department_assignments` para escopo de empresas por departamento em vencimentos, mantendo fallback por `clients.metadata` ate o backfill real ser conferido.
 
 ## 1. Identificação da página
 

@@ -47,12 +47,22 @@
 - A acao `Nova responsabilidade` permite atribuicao inicial local com departamento, responsavel operacional, tipo, inicio e gestor opcional.
 - O aceite continua pendente ate validar com dados reais, backfill e UI de edicao/encerramento/transferencia.
 
+## Status parcial - 2026-06-02 UX estrutural e configuracoes
+
+- Sidebar local foi agrupada por Operacao, Gestao, Entrada, T.I e Admin.
+- Mobile local usa botao hamburguer e drawer com backdrop, validado no smoke sem overflow horizontal.
+- Header local possui sino de notificacoes, badge, popover e botao para `/notificacoes`.
+- `/configuracoes` foi criada com abas de conta, seguranca, notificacoes, preferencias e administracao condicional.
+- Foto de perfil tem validacao local de tipo/tamanho e bloqueio de SVG.
+- Backend passou a restringir troca de senha a `MASTER`, com auditoria existente em `users.update`.
+- O aceite continua pendente ate validar no EasyPanel com usuarios reais, notificacoes reais, auditoria persistida e backend de avatar.
+
 ## Navegacao
-- [ ] Sidebar desktop mantem hover/foco.
-- [ ] Mobile tem botao hamburguer.
-- [ ] Menu mobile abre em drawer.
-- [ ] Rotas agrupadas corretamente.
-- [ ] Itens sem permissao nao aparecem.
+- [x] Sidebar desktop mantem hover/foco.
+- [x] Mobile tem botao hamburguer.
+- [x] Menu mobile abre em drawer.
+- [x] Rotas agrupadas corretamente.
+- [x] Itens sem permissao nao aparecem.
 - [ ] Departamentos especificos respeitam regras.
 
 ## Home
@@ -63,10 +73,10 @@
 - [ ] Cards respeitam permissoes.
 
 ## Notificacoes
-- [ ] Sino no header.
-- [ ] Badge de nao lidas.
-- [ ] Popover com recentes.
-- [ ] Botao para ver todas.
+- [x] Sino no header.
+- [x] Badge de nao lidas.
+- [x] Popover com recentes.
+- [x] Botao para ver todas.
 - [ ] Pagina completa com filtros.
 
 ## Clientes e documentos
@@ -85,24 +95,24 @@
 - [ ] Contrato assinado pode ser vinculado.
 
 ## Configuracoes
-- [ ] Existe `/configuracoes`.
-- [ ] Usuario pode alterar foto.
-- [ ] Foto tem validacoes seguras.
-- [ ] Troca de senha somente MASTER.
-- [ ] Troca gera auditoria.
+- [x] Existe `/configuracoes`.
+- [ ] Usuario pode alterar foto persistida.
+- [x] Foto tem validacoes seguras locais.
+- [x] Troca de senha somente MASTER.
+- [x] Troca gera auditoria via `users.update`.
 
 ## Seguranca
 - [ ] Acoes sensiveis tem confirmacao.
-- [ ] Upload valida tipo e tamanho.
-- [ ] SVG bloqueado para foto.
+- [x] Upload de foto valida tipo e tamanho localmente.
+- [x] SVG bloqueado para foto.
 - [ ] Erros nao vazam detalhes internos.
 - [ ] Dados sensiveis nao ficam no localStorage.
 - [x] Auto-refresh de access token implementado no Web com retry unico em 401.
 - [ ] Validar auto-refresh no EasyPanel apos vencimento real do access token.
 
 ## Build
-- [ ] `npm run lint` passa.
-- [ ] `npm run build` passa.
+- [x] `npm run lint` passa localmente.
+- [x] `npm run build` passa localmente.
 
 
 ## Departamentos, solicitacoes e permissoes

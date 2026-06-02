@@ -10,10 +10,11 @@
 - **Atualizacao 2026-06-01 revisao manual:** divergencias Acessorias abertas ganharam botoes protegidos `Resolver` e `Ignorar`, consumindo `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` com auditoria e historico.
 - **Atualizacao 2026-06-01 vencimentos:** o carrossel da planilha passou a receber vencimentos oficiais de entregas Acessorias sincronizadas; quando ha mapeamento confirmado para coluna, o vencimento tambem aparece na celula e participa do bloqueio operacional.
 - **Atualizacao 2026-06-01 Central:** a tela recebeu atalho para `/departamentos/vencimentos`, Central dedicada que consolida vencimentos de calendario e Acessorias do workspace; a Central ainda precisa de validacao real no EasyPanel.
+- **Atualizacao 2026-06-02 responsabilidade normalizada:** o backend do workspace passou a priorizar `client_department_assignments` ativas para decidir clientes por departamento, mantendo `clients.metadata` como fallback. A aplicacao Acessorias cria divergencia `CLIENT_DEPARTMENT_MISMATCH` quando a responsabilidade normalizada aponta para outro departamento.
 - **Backend inicial:** `DepartmentsModule` cobre leitura do workspace departamental e mutacoes genericas `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status`, mantendo rotas fiscais antigas compativeis.
 - **Backend Acessorias:** `AcessoriasFiscalApplicationService` aplica somente entregas `DELIVERED` com mapeamento confirmado e cria divergencias persistidas para casos inseguros, agora respeitando o departamento ativo.
 - **Seguranca aplicada:** JWT, RBAC `departments.workspace.read/write`, CSRF nas mutacoes, escopo por departamento, bloqueio de mes/vencimento e auditoria nas alteracoes de celula.
-- **Pendencias:** aplicar migrations no MySQL real, validar com contrato real do Acessorias e dados reais de `Client.metadata`, validar revisao manual/vencimentos Acessorias em ambiente real, ampliar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
+- **Pendencias:** aplicar migrations/seeds/backfill no MySQL real, validar com contrato real do Acessorias e responsabilidades reais normalizadas, conferir fallback por `Client.metadata`, validar revisao manual/vencimentos Acessorias em ambiente real, ampliar Playwright e desligar `api/fiscal_workspace.php` somente depois da homologacao.
 
 - **Arquivo HTML:** `Depto/modelo.html`
 - **Módulo:** Departamento / Planilhas

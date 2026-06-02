@@ -1,5 +1,16 @@
 # [PARCIAL] 07 - Configuracoes e Seguranca
 
+## Status local - 2026-06-02
+
+- `/configuracoes` foi criada no React.
+- Abas locais implementadas: Minha conta, Seguranca, Notificacoes, Preferencias e Administracao condicional.
+- Minha conta exibe nome, login, email, departamento, status e perfis em modo leitura.
+- Foto de perfil possui preview local e validacoes client-side: PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG.
+- Seguranca exibe expiracao da sessao, politica de senha, MFA futuro e formulario de troca de senha.
+- Troca de senha foi reforcada no backend: `UsersService.update()` rejeita alteracao de senha quando o ator nao possui papel `MASTER`; quando permitido, a auditoria existente registra `passwordChanged` sem segredo bruto.
+- Preferencias de notificacoes/visual sao locais ate existir endpoint dedicado.
+- Pendencias: persistir avatar em backend/storage seguro, validar MIME real no servidor, remover metadados, gerar versao otimizada, listar sessoes/dispositivos reais e homologar com usuarios reais no EasyPanel.
+
 ## Rota
 Criar base para `/configuracoes`.
 

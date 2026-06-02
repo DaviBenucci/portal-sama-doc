@@ -3,6 +3,7 @@
 > Atualizacao 2026-05-20 16:02: o dominio de calendario do gestor passou a contar tambem com `DELETE /api-v2/calendar/entries/:id` para exclusao auditavel de vencimentos a partir do dashboard `/manager`, complementando `GET/POST /api-v2/calendar/config`, `/month` e `/day`. A tela de configuracao segue responsavel por criar/substituir regras.
 > Atualizacao 2026-06-01: vencimentos oficiais vindos de `acessorias_deliveries` passaram a aparecer no workspace departamental quando sincronizados; a configuracao manual de calendario continua sendo fonte complementar para regras internas, previsoes e excecoes.
 > Atualizacao 2026-06-01 Central: `/departamentos/vencimentos` foi criada como Central operacional dedicada para leitura dos vencimentos consolidados; `/manager/calendario/config` permanece como tela de configuracao de regras manuais/recorrentes.
+> Atualizacao 2026-06-02: `CalendarModule` passou a priorizar `client_department_assignments` ativas para listar/validar empresas por departamento em configuracao, leitura mensal e exclusao de vencimentos, mantendo `clients.metadata` como fallback quando nao ha responsabilidade normalizada.
 
 ## 1. Identificação da página
 

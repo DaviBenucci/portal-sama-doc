@@ -95,7 +95,7 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 
 ## Modelo Prisma: `ClientDepartmentAssignment`
 
-- **Status:** Criado no schema alvo e usado pelo `ClientAssignmentsModule`; `/clientes/:id` ja le e cria atribuicoes iniciais localmente.
+- **Status:** Criado no schema alvo e usado pelo `ClientAssignmentsModule`; `/clientes/:id` ja le, cria, edita, encerra e transfere atribuicoes localmente; `TransfersModule` escreve na tabela em transferencias em lote quando ha departamento controlado; backfill seguro local foi instrumentalizado.
 - **Origem:** Prisma/MySQL alvo, substituindo gradualmente `clients.metadata.departamentos/depts/dept_*` e vinculos soltos de carteira.
 - **Finalidade:** armazenar responsabilidade normalizada de cliente por departamento, responsavel operacional, gestor opcional, tipo, status e periodo.
 - **Campos principais:** `id`, `clientId`, `departmentId`, `responsibleUserId`, `managerUserId`, `assignmentType`, `status`, `startAt`, `endAt`, `createdById`, `updatedById`, `metadata`, `createdAt`, `updatedAt`.
@@ -103,7 +103,7 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 - **Indices:** `clientId/status`, `departmentId/status`, `responsibleUserId/status`, `managerUserId/status`, `assignmentType/status` e escopo `clientId/departmentId/assignmentType/status`.
 - **Dados sensiveis:** estrutura carteira operacional e dados indiretos de responsabilidade por cliente; deve ser protegida por `client_assignments.*`.
 - **Regras de retencao:** encerramento deve usar `status`, `endAt`, auditoria e historico, evitando exclusao fisica.
-- **Migrations relacionadas:** `20260527162000_add_client_department_assignments`; ainda pendente aplicar/validar em MySQL real e rodar backfill seguro de `clients.metadata`.
+- **Migrations relacionadas:** `20260527162000_add_client_department_assignments`; ainda pendente aplicar/validar em MySQL real. Em 2026-06-02, transferencias operacionais em lote passaram a escrever localmente nesta tabela quando ha departamento controlado aplicado, e `npm run ops:client-assignments:backfill` foi criado para migrar `clients.metadata` com dry-run por padrao e `--apply` explicito. Complemento em 2026-06-02 16:00: vencimentos/calendario, workspace departamental e aplicacao Acessorias ja priorizam responsabilidades ativas desta tabela, mantendo fallback por `clients.metadata` quando nao ha dado normalizado. Complemento em 2026-06-02 16:30: documentos internos tambem usam responsabilidades ativas desta tabela no escopo local, mantendo fallback por `document.department` quando nao ha dado normalizado. Execucao/conferencia real no EasyPanel segue pendente.
 
 ## Modelo Prisma: `Document`
 
@@ -115,6 +115,7 @@ Status: inventário em andamento baseado em `api/db.php`, no schema alvo `portal
 - **Índices:** `clientId`, `type`, `department`, `status`, `source`, `createdAt`; `storageKey` é único.
 - **Dados sensíveis:** `storageKey`, nome original do arquivo, metadados e hash do documento. Respostas da API v2 não devem retornar `storageKey`.
 - **Regras de retenção:** ponto a validar; `DELETE /api-v2/documents/:id` arquiva logicamente (`ARCHIVED`) e não remove fisicamente nesta versão.
+- **Escopo operacional:** desde 2026-06-02 16:30, usuarios departamentais passam por `client_department_assignments` ativas quando acessam documentos internos de clientes; se nao houver responsabilidade normalizada ativa, o fallback por `Document.department` permanece ate backfill/conferencia real.
 - **Migrations relacionadas:** migration real pendente de MySQL/homologação.
 
 ## Modelo Prisma: `DocumentRequirement`

@@ -187,7 +187,7 @@ Criterio de saida:
 
 ## Fase 4 - Responsabilidade de clientes e carteiras
 
-Estado: backend normalizado local existente; painel do cliente conectado localmente a responsabilidades; atribuicao inicial, edicao, encerramento e transferencia auditada pelo painel local disponiveis; dashboard de carteira do gestor prioriza responsabilidades normalizadas localmente; backfill e validacao real ainda pendentes.
+Estado: backend normalizado local existente; painel do cliente conectado localmente a responsabilidades; atribuicao inicial, edicao, encerramento e transferencia auditada pelo painel local disponiveis; dashboard de carteira do gestor prioriza responsabilidades normalizadas localmente; calendario/vencimentos, planilhas departamentais e documentos internos priorizam responsabilidades normalizadas localmente; script de backfill seguro existe localmente; execucao/conferencia real ainda pendente.
 
 Objetivo: remover a dependencia operacional exclusiva de `clients.metadata` para carteira, responsavel e gestor.
 
@@ -200,18 +200,25 @@ Ja feito localmente:
 - `/clientes/:id` permite encerrar responsabilidade ativa por `POST /api-v2/client-assignments/:id/end`, com data e motivo, protegida por `client_assignments.end`.
 - `/clientes/:id` permite transferir uma responsabilidade ativa para outro responsavel por `POST /api-v2/client-assignments/transfer`, com CSRF, permissao `client_assignments.transfer`, gestor opcional, data efetiva e motivo.
 - `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira de consulta, com fallback temporario para `clients.metadata`.
+- A transferencia operacional em lote do `TransfersModule` agora escreve localmente em `client_department_assignments` ao aplicar/retornar sessoes, mantendo `clients.metadata` como fallback temporario.
+- `npm run ops:client-assignments:backfill` cria o backfill seguro de `clients.metadata` para `client_department_assignments`, com dry-run por padrao, `--apply` explicito, resolucao de responsavel por `user.id`/`username`/`metadata.colaboradorId` e pulos para casos ambiguos, inativos, role `CLIENT`, duplicidade `PRIMARY ACTIVE` ou divergencia de departamento.
+- `npm run ops:backfill:report` conta `departments` e `client_department_assignments`, incluindo duplicidades `PRIMARY ACTIVE` e gaps relacionais da tabela normalizada.
+- `CalendarModule` ja prioriza responsabilidades `ACTIVE` de `client_department_assignments` em configuracao, listagem mensal e exclusao de vencimentos, mantendo `clients.metadata` como fallback quando nao ha dado normalizado.
+- `DepartmentsModule` ja prioriza responsabilidades `ACTIVE` de `client_department_assignments` no workspace departamental e na escrita de celulas, mantendo `clients.metadata` como fallback quando nao ha dado normalizado.
+- A aplicacao Acessorias em `apply-to-workspace` ja bloqueia baixa em departamento divergente da responsabilidade normalizada, registrando `CLIENT_DEPARTMENT_MISMATCH`.
+- `DocumentsModule` ja prioriza responsabilidades `ACTIVE` de `client_department_assignments` no escopo local de documentos internos para usuarios departamentais, mantendo fallback por `document.department` quando nao ha dado normalizado.
 
 Implementar em ordem:
 
 1. Aplicar migrations/seeds de `client_department_assignments` no MySQL real.
-2. Rodar relatorio de backfill.
-3. Criar backfill seguro de responsabilidades a partir de `clients.metadata`.
+2. [local instrumentalizado; real pendente] Rodar relatorio de backfill no EasyPanel com `npm run ops:backfill:report -- --json`.
+3. [local concluido; real pendente] Executar backfill seguro de responsabilidades a partir de `clients.metadata`: primeiro `npm run ops:client-assignments:backfill -- --json`, revisar pulos/amostras, garantir backup externo verificado e so entao aplicar `--apply`.
 4. [local concluido; real pendente] Conectar painel do cliente a uma guia Equipe/Responsaveis.
 5. [local concluido; real pendente] Permitir atribuicao inicial de responsavel operacional por departamento.
 6. [local concluido; real pendente] Permitir gestor responsavel quando aplicavel.
-7. [local parcial; real pendente] Conectar telas de gestor/carteira ao modelo normalizado. O dashboard de consulta ja prioriza `client_department_assignments`; a transferencia em lote ainda precisa escrever no modelo normalizado.
+7. [local concluido; real pendente] Conectar telas de gestor/carteira ao modelo normalizado. O dashboard de consulta ja prioriza `client_department_assignments` e a transferencia operacional em lote ja escreve localmente no modelo normalizado; falta validar no EasyPanel com MySQL real/backfill.
 8. [local concluido; real pendente] Garantir transferencia auditada pela UI.
-9. Migrar filtros de planilha, documentos e vencimentos para responsabilidade normalizada.
+9. [local concluido; real pendente] Migrar filtros de planilha, documentos e vencimentos para responsabilidade normalizada. Vencimentos/calendario, planilhas departamentais e documentos internos ja priorizam `client_department_assignments`, mantendo fallbacks temporarios ate backfill/conferencia real.
 
 Documentos que devem ser atualizados:
 
@@ -233,6 +240,8 @@ Criterio de saida:
 ## Fase 5 - UX/UI estrutural e configuracoes
 
 Objetivo: fechar a experiencia prevista em `ux-ui-docs` depois da base operacional estar segura.
+
+Estado em 2026-06-02 17:05 -03: local parcial implementado: sidebar agrupada, drawer mobile, header com notificacoes, rota `/configuracoes`, abas principais, validacao local de avatar e bloqueio backend de troca de senha para nao MASTER. Ainda falta avatar persistido com backend/storage seguro, sessoes/dispositivos reais, validacao EasyPanel e aceite UX completo.
 
 Implementar em ordem:
 

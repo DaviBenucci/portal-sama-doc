@@ -11,7 +11,7 @@
 - **Nível de criticidade:** Alto
 - **Prioridade de refatoração:** Alta
 
-**Atualizacao React 2026-06-02:** a entidade normalizada `client_department_assignments` ja e lida e criada inicialmente no painel `/clientes/:id`. Esta pagina ainda precisa migrar filtros/listagem de carteira para a mesma entidade, substituindo a leitura operacional principal de `clients.metadata`.
+**Atualizacao React 2026-06-02:** a entidade normalizada `client_department_assignments` ja e lida e criada inicialmente no painel `/clientes/:id`. Dashboard de carteira, transferencias em lote, vencimentos/calendario, planilhas departamentais e documentos internos ja priorizam essa entidade localmente, com fallbacks temporarios ate backfill/conferencia real. Esta pagina ainda precisa validar filtros/listagem de carteira no EasyPanel com dados reais antes de substituir definitivamente a leitura operacional principal de `clients.metadata`.
 
 ---
 

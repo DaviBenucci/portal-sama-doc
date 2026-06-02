@@ -493,3 +493,12 @@ Esta seção complementa a análise original da página com a decisão técnica 
 - A cobertura valida documento privado listado, cliente vinculado, extensoes permitidas, link publico ativo, resumo de pendencias obrigatorias e abertura do formulario de revisao.
 - Validacao local: `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e` com 7 testes Chromium e `git diff --check` passaram.
 - Pendencias: validar upload/download/revisao reais com API v2, MySQL, storage privado, ClamAV/EICAR, dados de escopo cliente/gestor, usuarios/permissoes reais e homologacao HTTPS.
+
+## 20. Atualizacao de backend - 2026-06-02 16:30 -03:00
+
+- O backend do `DocumentsModule` passou a usar `client_department_assignments` ativas no escopo de documentos internos.
+- Para usuarios departamentais, o documento precisa estar no departamento permitido e, quando o cliente ja tem responsabilidade normalizada ativa, essa responsabilidade tambem precisa apontar para o mesmo departamento.
+- A regra foi aplicada em listagem, checklist por cliente, detalhe, historico, download, revisao, arquivamento e upload interno.
+- Quando nao existe responsabilidade normalizada ativa para o cliente, `document.department` segue como fallback temporario ate backfill/conferencia real.
+- Validacao local: `documents.service.spec.ts`, TypeScript sem emit, lint, build e suite completa da API passaram.
+- Pendencias: validar no EasyPanel com MySQL/storage/ClamAV reais, usuarios reais por perfil/departamento, auditoria persistida e documentos sem departamento.

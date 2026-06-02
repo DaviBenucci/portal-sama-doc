@@ -1,5 +1,285 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 UX estrutural e configuracoes
+
+### Contexto
+
+- Continuidade da Fase 5: validar localmente navegacao agrupada, drawer mobile, header de notificacoes, rota `/configuracoes` e regra MASTER para troca de senha.
+- Escopo local: API de usuarios, layout Web, CSS responsivo, smoke Playwright e validacao de avatar no cliente.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- users.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+npm.cmd test -- --runInBand
+```
+
+No Web:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `users.service.spec.ts` passou com 8 testes.
+- Lint e build da API passaram.
+- Suite completa da API passou com 40 suites e 229 testes.
+- Lint e build do Web passaram.
+- Playwright smoke passou com 13 testes.
+- Os novos testes cobrem drawer mobile sem overflow, `/configuracoes`, abas principais, bloqueio visual de troca de senha para usuario nao MASTER e bloqueio de SVG no avatar.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, usuario MASTER real, avatar persistido ou notificacoes reais.
+
+### Pendencias
+
+- Implementar upload/persistencia backend do avatar com validacao MIME real, remocao de metadados, otimizacao e storage controlado.
+- Validar troca de senha por MASTER real no EasyPanel e conferir auditoria persistida.
+- Validar header de notificacoes com contagem real, popover e pagina completa com dados reais.
+- Executar checklist UX completo em desktop/mobile reais.
+
+### Observacao anti-alucinacao
+
+A rota `/configuracoes`, drawer mobile e regra MASTER de senha foram implementados e testados localmente. Avatar ainda nao e recurso persistido em backend e esta fatia ainda nao foi homologada em producao.
+
+## Execucao 2026-06-02 documentos com responsabilidade normalizada
+
+### Contexto
+
+- Continuidade da Fase 4 no backend: completar a migracao local dos filtros operacionais para `client_department_assignments` pelo dominio de documentos.
+- Escopo local: `DocumentsModule` passa a priorizar responsabilidades normalizadas em listagem, checklist, detalhe, historico, download, revisao, arquivamento e upload interno, mantendo fallback por `document.department` quando o cliente ainda nao possui atribuicao ativa normalizada.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- documents.service.spec.ts --runInBand
+npm.cmd exec tsc -- --noEmit
+npm.cmd run lint
+npm.cmd run build
+npm.cmd test -- --runInBand
+git diff --check
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `documents.service.spec.ts` passou com 31 testes.
+- TypeScript sem emit passou.
+- Lint da API passou.
+- Build da API passou.
+- Suite completa da API passou com 40 suites e 227 testes.
+- `git diff --check` passou na API; houve apenas aviso esperado de CRLF em arquivo ja modificado.
+- Os novos testes validam checklist bloqueado por responsabilidade normalizada divergente, detalhe permitido por responsabilidade normalizada do mesmo departamento e detalhe negado quando a responsabilidade aponta para outro departamento.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, backfill real, storage real ou usuarios reais.
+
+### Pendencias
+
+- Validar com MySQL real e responsabilidades populadas por backfill/atribuicao manual.
+- Conferir `/documentos`, painel do cliente, upload/download/revisao e arquivamento no EasyPanel.
+- Testar usuarios reais por departamento, gestor, DEV/ADMIN e cliente.
+- Confirmar regra para documentos sem departamento antes de remover fallback.
+
+### Observacao anti-alucinacao
+
+Documentos internos priorizam responsabilidades normalizadas localmente, mas essa fatia ainda nao foi homologada em producao nem validada contra MySQL/storage reais.
+
+## Execucao 2026-06-02 planilhas departamentais com responsabilidade normalizada
+
+### Contexto
+
+- Continuidade da Fase 4 no backend: migrar o escopo das planilhas departamentais para `client_department_assignments`.
+- Escopo local: `DepartmentsModule` passa a priorizar responsabilidades normalizadas ao listar/validar empresas por departamento e a aplicacao Acessorias passa a bloquear baixa em departamento divergente.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- departments.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand
+npm.cmd test -- calendar.service.spec.ts departments.service.spec.ts transfers.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+node --check scripts/backfill-client-assignments.js
+node --check scripts/backfill-readiness-report.js
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- A suite focada de Departments + Acessorias passou com 12 testes.
+- A suite integrada de Calendar + Departments + Transfers + Acessorias passou com 21 testes.
+- Build da API passou.
+- Lint da API passou.
+- Os scripts de backfill/readiness passaram em `node --check`.
+- `git diff --check` passou na API e na documentacao, com avisos esperados de CRLF e sem erros de whitespace.
+- Os novos testes validam que responsabilidade normalizada prevalece sobre metadata legado na grade departamental e que Acessorias gera `CLIENT_DEPARTMENT_MISMATCH` quando o cliente pertence a outro departamento normalizado.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, backfill real ou entregas reais do Acessorias.
+
+### Pendencias
+
+- Validar com MySQL real e responsabilidades populadas por backfill/atribuicao manual.
+- Conferir `/departamentos/modelo`, mutacoes de celula e `apply-to-workspace` no EasyPanel.
+- Testar metadata legado divergente contra dados reais.
+- Migrar documentos para a mesma prioridade normalizada.
+
+### Observacao anti-alucinacao
+
+Planilhas departamentais e aplicacao Acessorias priorizam responsabilidades normalizadas localmente, mas essa fatia ainda nao foi homologada em producao nem validada contra MySQL real.
+
+## Execucao 2026-06-02 vencimentos com responsabilidade normalizada
+
+### Contexto
+
+- Continuidade da Fase 4 no backend: iniciar a migracao dos filtros operacionais para `client_department_assignments` pelo dominio de vencimentos/calendario.
+- Escopo local: `CalendarModule` passa a priorizar responsabilidades normalizadas ao listar/validar empresas por departamento e preserva fallback por `clients.metadata` quando nao ha atribuicao ativa normalizada.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- calendar.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `calendar.service.spec.ts` passou com 3 testes.
+- Build da API passou.
+- Lint da API passou.
+- O novo teste valida que uma responsabilidade `ACTIVE` em `client_department_assignments` prevalece sobre `clients.metadata` divergente ao validar o escopo de um vencimento.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, backfill real ou calendario real.
+
+### Pendencias
+
+- Validar com MySQL real e responsabilidades populadas por backfill/atribuicao manual.
+- Conferir `GET/POST /api-v2/calendar/config`, `GET /api-v2/calendar/month` e `DELETE /api-v2/calendar/entries/:id` no EasyPanel.
+- Revalidar Central de Vencimentos e dashboard do gestor com usuarios reais.
+- Migrar documentos para a mesma prioridade normalizada; planilhas departamentais foram cobertas em corte posterior local nesta mesma data.
+
+### Observacao anti-alucinacao
+
+Vencimentos/calendario priorizam responsabilidades normalizadas localmente, mas essa fatia ainda nao foi homologada em producao nem validada contra MySQL real.
+
+## Execucao 2026-06-02 backfill seguro de responsabilidades
+
+### Contexto
+
+- Continuidade da Fase 4 em operacao/backend: criar comando seguro para backfill de `clients.metadata` para `client_department_assignments`.
+- Escopo local: validar sintaxe, help dos comandos e regressao focada de transferencias; nao houve conexao com MySQL real nesta rodada.
+
+### Comandos executados
+
+Na API:
+
+```bash
+node --check scripts/backfill-client-assignments.js
+node --check scripts/backfill-readiness-report.js
+npm.cmd run ops:client-assignments:backfill -- --help
+npm.cmd run ops:backfill:report -- --help
+npm.cmd test -- transfers.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- Os dois scripts operacionais passaram em `node --check`.
+- `ops:client-assignments:backfill -- --help` passou e confirmou dry-run como padrao.
+- `ops:backfill:report -- --help` passou com a nova contagem de responsabilidades normalizadas documentada.
+- `transfers.service.spec.ts` passou com 6 testes.
+- Lint e build da API passaram.
+- A validacao foi local; nao houve dry-run real contra EasyPanel, MySQL real, backup real ou aplicacao `--apply`.
+
+### Saida relevante
+
+- `npm.cmd test -- transfers.service.spec.ts --runInBand`: 1 suite passou, 6 testes passaram.
+- `npm.cmd run lint`: sem erros.
+- `npm.cmd run build`: `nest build` passou.
+
+### Falhas encontradas
+
+- Nenhuma falha local depois da implementacao do script.
+
+### Pendencias
+
+- Rodar `npm run ops:backfill:report -- --json` no EasyPanel.
+- Rodar `npm run ops:client-assignments:backfill -- --json` no EasyPanel e revisar pulos.
+- Garantir backup externo verificado antes de `--apply`.
+- Executar `npm run ops:client-assignments:backfill -- --apply --json` somente apos aprovacao operacional.
+- Revalidar dashboard/carteira, transferencias em lote, filtros e auditoria com dados reais.
+
+### Observacao anti-alucinacao
+
+O backfill seguro foi implementado e validado localmente como ferramenta, mas ainda nao foi executado contra o banco real nem homologado em producao.
+
+## Execucao 2026-06-02 transferencia operacional em lote normalizada
+
+### Contexto
+
+- Continuidade da Fase 4 no backend: migrar a escrita da transferencia operacional em lote para `client_department_assignments`.
+- Escopo local: `TransfersService` continua atualizando `clients.metadata`/`user.metadata.clientes`, mas tambem encerra/cria responsabilidades normalizadas quando o departamento controlado existe.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- transfers.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `transfers.service.spec.ts` passou com 6 testes.
+- Lint da API passou.
+- Build da API passou.
+- O novo teste valida que uma transferencia em lote encerra a responsabilidade normalizada anterior e cria nova responsabilidade `ACTIVE` para o destino.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, backfill real, CSRF real ou usuarios reais.
+
+### Saida relevante
+
+- `npm.cmd test -- transfers.service.spec.ts --runInBand`: 1 suite passou, 6 testes passaram.
+- `npm.cmd run lint`: sem erros.
+- `npm.cmd run build`: `nest build` passou.
+
+### Falhas encontradas
+
+- A primeira execucao focada apontou uma chamada interna de retorno sem o `username` do ator e uma anotacao estreita de enum; ambas foram corrigidas.
+- A segunda execucao apontou fixture de teste com responsavel normalizado ja no destino; o fixture foi ajustado para representar a origem antes da transferencia.
+- A primeira execucao de lint apontou tipo auxiliar nao usado; o tipo foi removido.
+
+### Acoes corretivas realizadas
+
+- Ajustada a chamada de `returnSessionItems()` para receber o usuario executor.
+- Ajustada a tipagem do status de encerramento normalizado.
+- Corrigido o fixture de responsabilidade normalizada no spec.
+- Removido tipo auxiliar nao utilizado.
+- Reexecutados teste focado, lint e build com sucesso.
+
+### Pendencias
+
+- Validar no EasyPanel com usuario gestor real e clientes reais.
+- Conferir escrita em `client_department_assignments`, fallback em `clients.metadata` e auditoria/metadados no banco real.
+- Rodar backfill de `clients.metadata` para a tabela normalizada antes de remover dependencia operacional do legado.
+
+### Observacao anti-alucinacao
+
+A escrita normalizada da transferencia em lote foi implementada e testada localmente, mas ainda nao foi homologada em producao nem validada contra MySQL real.
+
 ## Execucao 2026-06-02 dashboard de carteira normalizado
 
 ### Contexto
@@ -30,11 +310,11 @@ npm.cmd run lint
 
 - Validar a carteira do gestor no EasyPanel com dados reais.
 - Rodar/aplicar backfill de `clients.metadata` para `client_department_assignments`.
-- Migrar a escrita da transferencia operacional em lote para a entidade normalizada.
+- Validar no EasyPanel a escrita normalizada da transferencia operacional em lote, implementada em fatia posterior local nesta mesma data.
 
 ### Observacao anti-alucinacao
 
-O dashboard de consulta foi conectado localmente ao modelo normalizado, mas a transferencia operacional em lote ainda nao grava em `client_department_assignments`.
+O dashboard de consulta foi conectado localmente ao modelo normalizado. A transferencia operacional em lote tambem recebeu escrita normalizada em fatia posterior local, mas ainda nao foi homologada no EasyPanel.
 
 ## Execucao 2026-06-02 edicao e encerramento de responsabilidades no painel do cliente
 

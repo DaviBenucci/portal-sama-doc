@@ -1,5 +1,14 @@
 # [PARCIAL] 02 - Navegacao e Rotas
 
+## Status local - 2026-06-02
+
+- Sidebar React reorganizada por grupos Operacao, Gestao, Entrada, T.I e Admin.
+- Desktop mantem expansao por hover/foco e itens filtrados por permissao.
+- Mobile usa botao hamburguer no header e drawer com backdrop.
+- Notificacoes foram movidas para o header com sino, badge, popover e botao para `/notificacoes`.
+- Validacao local: Playwright smoke cobre sidebar desktop, drawer mobile e ausencia de overflow.
+- Aceite real ainda depende de EasyPanel com usuarios reais por perfil e matriz de permissoes real.
+
 ## Estrutura recomendada da sidebar
 
 ```text

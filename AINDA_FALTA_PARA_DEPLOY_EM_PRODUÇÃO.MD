@@ -72,13 +72,155 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Storage privado | Parcial validado | Health publico retornou `storage=up` e readiness real confirmou leitura/escrita em `/var/private/portal-sama`. O Web ja aponta para o upload publico documentado de onboarding, mas ainda falta validar persistencia do volume, permissoes, backup externo e fluxos reais de upload/download. |
 | ClamAV | Validado em homologacao real | Readiness real detectou EICAR com `/usr/bin/clamscan` em modo strict. Manter `npm run ops:clamav:update` como rotina operacional quando assinaturas precisarem ser atualizadas. |
 | Usuarios/permissoes reais | Parcial validado | Usuario bootstrap/DEV autenticou em HTTPS e passou matriz minima 401/200 para `/auth/me`, `/users`, `/roles` e `/permissions`. Falta matriz oficial com CLIENT, MANAGER, departamentos e perfis operacionais, incluindo 403 esperados. |
-| Backfills | Parcial instrumentalizado | `portal-sama-api` agora possui `npm run ops:backfill:report`, read-only, para listar tabelas atuais/legadas, contagens, usuarios sem role, roles sem permissoes e vinculos quebrados. Falta rodar no MySQL real e executar/conferir os backfills. |
+| Backfills | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backfill:report`, read-only, agora contando tambem `departments` e `client_department_assignments`, e `npm run ops:client-assignments:backfill`, dry-run por padrao, para migrar responsabilidades de `clients.metadata` para a tabela normalizada. Falta rodar no MySQL real, revisar pulos, garantir backup externo e aplicar/conferir backfills com evidencia sanitizada. |
 | Backups/rollback | Parcial instrumentalizado | `portal-sama-api` possui `npm run ops:backup:create`, `npm run ops:backup:verify` e agora `npm run ops:restore:drill`, com dry-run, bloqueio de alvo igual ao banco/storage da aplicacao e confirmacao explicita para aplicar restore. Falta rodar no EasyPanel, copiar artefatos para fora do container e provar restore drill real. |
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais e consultar `Status scheduler`, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Scheduler seguro existe como opt-in e desabilitado por padrao. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e habilitar scheduler em rollout controlado. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial, edita, encerra e transfere responsabilidade ativa pela tabela normalizada; o dashboard de carteira do gestor prioriza responsabilidades normalizadas em leitura; a Home por perfil consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar responsabilidades reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar escrita normalizada de transferencias em lote, solicitacoes globais e permissoes guiadas. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial, edita, encerra e transfere responsabilidade ativa pela tabela normalizada; o dashboard de carteira do gestor prioriza responsabilidades normalizadas em leitura; transferencias operacionais em lote agora escrevem localmente na tabela normalizada quando ha departamento controlado; existe backfill seguro local para popular responsabilidades a partir de `clients.metadata`; vencimentos/calendario, planilhas departamentais e documentos ja priorizam responsabilidades normalizadas localmente; a Home por perfil consome resumo do Acessorias. A Fase 5 tambem avancou localmente com sidebar agrupada, drawer mobile, notificacoes no header e `/configuracoes` com validacao local de avatar e troca de senha restrita a MASTER no backend. Falta aplicar migrations/seeds/backfill no MySQL real, validar responsabilidades, transferencias, planilhas, documentos, configuracoes e vencimentos reais no EasyPanel, persistir avatar em backend seguro, executar `ux-ui-docs/09-checklist-aceite.md`, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-02 UX estrutural e configuracoes
+
+Foi implementada localmente a primeira fatia da Fase 5 de UX/configuracoes.
+
+Escopo local concluido:
+
+- sidebar agrupada por Operacao, Gestao, Entrada, T.I e Admin;
+- drawer mobile acionado por botao hamburguer no header;
+- notificacoes no header com sino, badge, popover e acesso para `/notificacoes`;
+- rota `/configuracoes` com abas Minha conta, Seguranca, Notificacoes, Preferencias e Administracao condicional;
+- foto de perfil com validacao local de PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG;
+- troca de senha no backend restrita a usuarios com papel `MASTER`, mantendo hash e auditoria sem senha bruta.
+
+Validacao local executada:
+
+- API: `npm.cmd test -- users.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd test -- --runInBand` com 40 suites/229 testes;
+- Web: `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts` com 13 testes.
+
+Pendencia real remanescente: publicar Web/API, validar no EasyPanel com usuarios reais por perfil, confirmar notificacoes reais no header, testar troca de senha por MASTER real e conferir auditoria persistida. Avatar ainda precisa de endpoint/storage seguro com validacao MIME real no backend, remocao de metadados, otimizacao e persistencia controlada.
+
+## Atualizacao operacional de 2026-06-02 documentos com responsabilidade normalizada
+
+Foi implementada localmente a prioridade de responsabilidades normalizadas no escopo de documentos internos.
+
+- `DocumentsModule` consulta `client_department_assignments` ativas quando usuarios departamentais acessam documentos de clientes;
+- `GET /api-v2/documents` exige departamento permitido no documento e responsabilidade ativa normalizada do cliente quando ela existe;
+- checklist, detalhe, historico, download, revisao, arquivamento e upload interno validam a carteira normalizada quando ha dado normalizado;
+- `document.department` permanece como fallback temporario quando o cliente ainda nao possui responsabilidade ativa normalizada;
+- documentos sem departamento continuam restritos a perfis privilegiados/cliente proprio ate decisao operacional especifica.
+
+Validacao local executada:
+
+- `npm.cmd test -- documents.service.spec.ts --runInBand`;
+- `npm.cmd exec tsc -- --noEmit`;
+- `npm.cmd run lint`;
+- `npm.cmd run build`;
+- `npm.cmd test -- --runInBand`.
+
+Ainda falta no EasyPanel:
+
+1. Aplicar migrations/seeds/backfill reais.
+2. Validar `/documentos`, painel do cliente, upload/download/revisao e arquivamento com usuarios reais.
+3. Conferir casos com responsabilidade normalizada divergente de metadata legado.
+4. Validar storage privado/ClamAV e documentos sem departamento antes de remover fallback.
+
+## Atualizacao operacional de 2026-06-02 planilhas departamentais com responsabilidade normalizada
+
+Foi implementada localmente a prioridade de responsabilidades normalizadas nas planilhas departamentais.
+
+- `DepartmentsModule` carrega `client_department_assignments` ativas ao buscar clientes para workspace e escrita de celulas;
+- quando ha responsabilidade normalizada ativa, ela define os departamentos do cliente;
+- `clients.metadata` permanece como fallback quando nao ha dado normalizado;
+- a aplicacao Acessorias em `apply-to-workspace` cria divergencia `CLIENT_DEPARTMENT_MISMATCH` quando a baixa tentaria escrever em departamento divergente;
+- documentos internos tambem receberam corte local posterior nesta mesma data; validacao real segue pendente.
+
+Validacao local executada:
+
+- `npm.cmd test -- departments.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`;
+- `npm.cmd test -- calendar.service.spec.ts departments.service.spec.ts transfers.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`;
+- `npm.cmd run build`;
+- `npm.cmd run lint`.
+
+Ainda falta no EasyPanel:
+
+1. Aplicar migrations/seeds/backfill reais.
+2. Validar `/departamentos/modelo`, mutacoes de celula e aplicacao Acessorias com usuarios reais.
+3. Conferir caso com metadata legado divergente da responsabilidade normalizada.
+4. Registrar evidencia sanitizada de clientes por departamento e divergencias Acessorias reais.
+
+## Atualizacao operacional de 2026-06-02 vencimentos com responsabilidade normalizada
+
+Foi implementada localmente a prioridade de responsabilidades normalizadas no calendario de vencimentos.
+
+- `CalendarModule` carrega `client_department_assignments` ativas ao buscar clientes para configuracao, listagem mensal e exclusao de vencimentos;
+- quando ha responsabilidade normalizada ativa, ela define os departamentos do cliente;
+- `clients.metadata` permanece como fallback quando nao ha dado normalizado;
+- a fatia cobre `GET /api-v2/calendar/config`, `POST /api-v2/calendar/config`, `GET /api-v2/calendar/month` e `DELETE /api-v2/calendar/entries/:id`;
+- documentos internos tambem receberam corte local posterior nesta mesma data; validacao real segue pendente.
+
+Validacao local executada:
+
+- `npm.cmd test -- calendar.service.spec.ts --runInBand`;
+- `npm.cmd run build`;
+- `npm.cmd run lint`.
+
+Ainda falta no EasyPanel:
+
+1. Aplicar migrations/seeds/backfill reais.
+2. Validar configuracao, listagem mensal e exclusao de vencimentos com usuarios reais.
+3. Revalidar Central de Vencimentos e dashboard do gestor.
+4. Conferir caso com metadata legado divergente da responsabilidade normalizada.
+
+## Atualizacao operacional de 2026-06-02 backfill seguro de responsabilidades
+
+Foi implementado localmente o comando operacional de backfill de responsabilidades:
+
+- `npm run ops:client-assignments:backfill` roda em dry-run por padrao;
+- `--apply` e obrigatorio para criar linhas em `client_department_assignments`;
+- o script extrai responsabilidades de `clients.metadata.departamentos`, `departments`, `depts`, `dept_*`, `responsaveis`, `departmentAssignments`, `assignments`, `carteira` e chaves top-level por departamento;
+- responsaveis sao resolvidos por `user.id`, `username` ou `User.metadata.colaboradorId`;
+- casos com responsavel ausente, ambiguo, inativo, role `CLIENT`, divergencia de `mainDepartment`, metadata conflitante ou `PRIMARY ACTIVE` ja existente sao pulados e reportados;
+- `ops:backfill:report` agora conta `departments`, `client_department_assignments`, duplicidades `PRIMARY ACTIVE` e gaps da tabela normalizada.
+
+Validacao local executada:
+
+- `node --check scripts/backfill-client-assignments.js`;
+- `node --check scripts/backfill-readiness-report.js`;
+- `npm.cmd run ops:client-assignments:backfill -- --help`;
+- `npm.cmd run ops:backfill:report -- --help`;
+- `npm.cmd test -- transfers.service.spec.ts --runInBand`;
+- `npm.cmd run lint`;
+- `npm.cmd run build`.
+
+Ainda falta no EasyPanel:
+
+1. Rodar `npm run ops:backfill:report -- --json`.
+2. Rodar `npm run ops:client-assignments:backfill -- --json`.
+3. Revisar amostras e pulos.
+4. Confirmar backup externo verificado.
+5. Aplicar com `npm run ops:client-assignments:backfill -- --apply --json` somente apos aprovacao operacional.
+6. Revalidar carteira, transferencias em lote, dashboard do gestor e filtros com dados reais.
+
+## Atualizacao operacional de 2026-06-02 transferencia operacional em lote normalizada
+
+Foi implementada localmente a escrita normalizada da transferencia operacional em lote.
+
+- `POST /api-v2/transfers`, ao aplicar sessoes, passa a carregar responsabilidades normalizadas para validar a origem;
+- quando a transferencia e aplicada, o vinculo ativo anterior em `client_department_assignments` e encerrado como `TRANSFERRED`;
+- uma nova responsabilidade `ACTIVE` e criada para o responsavel de destino;
+- no retorno de transferencia por tempo indeterminado, o vinculo do destino e encerrado como `INACTIVE` e a origem volta a ter responsabilidade `ACTIVE`;
+- `clients.metadata` e `user.metadata.clientes` continuam sendo atualizados como fallback temporario;
+- se o departamento controlado ainda nao existir no banco, a escrita normalizada e ignorada para preservar o fluxo legado ate migration/seed reais;
+- `transfers.service.spec.ts` ganhou teste cobrindo a escrita normalizada da transferencia em lote.
+
+Validacao local:
+
+- `npm.cmd test -- transfers.service.spec.ts --runInBand` passou na API com 6 testes;
+- `npm.cmd run lint` passou na API;
+- `npm.cmd run build` passou na API.
+
+Pendencia real remanescente: publicar a API atualizada, aplicar migrations/seeds/backfill no MySQL real, validar transferencias em lote no EasyPanel com gestor real, conferir `client_department_assignments`, fallback em metadata, auditoria/metadados e matriz de permissoes.
 
 ## Atualizacao operacional de 2026-06-02 dashboard de carteira normalizado
 
@@ -88,7 +230,7 @@ Foi implementada localmente a leitura normalizada da carteira do gestor no dashb
 - `/manager/colaboradores`, que consome esse dashboard, passa a refletir a tabela normalizada quando ha responsabilidade ativa para cliente/departamento;
 - o backend resolve `responsibleUserId` para o `colaboradorId` legado usado pela UI;
 - o fallback por `clients.metadata` continua quando nao existe responsabilidade normalizada ativa;
-- a transferencia operacional em lote ainda nao escreve em `client_department_assignments` nesta fatia.
+- a transferencia operacional em lote recebeu escrita normalizada em fatia posterior local nesta mesma data.
 
 Validacao local:
 
@@ -96,7 +238,7 @@ Validacao local:
 - `npm.cmd run build` passou na API;
 - `npm.cmd run lint` passou na API.
 
-Pendencia real remanescente: publicar a API atualizada, validar no EasyPanel com MySQL real/backfill, gestor real por departamento e carteira real; depois migrar a escrita de transferencias em lote para `client_department_assignments`.
+Pendencia real remanescente: publicar a API atualizada, validar no EasyPanel com MySQL real/backfill, gestor real por departamento, carteira real e escrita normalizada das transferencias em lote.
 
 ## Atualizacao operacional de 2026-06-02 edicao e encerramento de responsabilidades no painel
 
@@ -459,7 +601,7 @@ Validacao local:
 - `npm.cmd run lint` passou;
 - `npm.cmd run build` passou.
 
-Pendencia real remanescente: aplicar migrations/seeds no MySQL real, validar `POST /api-v2/client-assignments/transfer` e a UI local do painel no EasyPanel com usuario real e CSRF real, conectar carteira/transferencias em lote ao modelo normalizado e planejar backfill de `clients.metadata` para `client_department_assignments`.
+Pendencia real remanescente: aplicar migrations/seeds no MySQL real, validar `POST /api-v2/client-assignments/transfer` e a UI local do painel no EasyPanel com usuario real e CSRF real, conferir carteira/transferencias em lote no modelo normalizado e executar o backfill seguro ja criado de `clients.metadata` para `client_department_assignments`.
 
 ## Atualizacao operacional de 2026-05-27 16:31 -03:00
 
@@ -1084,7 +1226,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 16. Rodar `npm run prisma:seed`.
 17. Rodar `npm run prisma:bootstrap-admin`.
 18. [x] Rodar `npm run ops:readiness` no container da API sem `--skip` (passou com warning apenas de backup/rollback).
-19. Rodar `npm run ops:backfill:report` no container da API e anexar JSON/evidencia ao plano de backfill.
+19. Rodar `npm run ops:backfill:report -- --json` e `npm run ops:client-assignments:backfill -- --json` no container da API e anexar JSON/evidencia ao plano de backfill.
 20. [x] Validar `GET /api-v2/health` publicamente (`database=up`, `storage=up`).
 21. [x] Validar `GET /api-v2/auth/csrf` publicamente com CORS/cookie CSRF.
 22. [x] Validar acesso inicial ao frontend em HTTPS e criacao de usuarios iniciais.
@@ -1147,6 +1289,7 @@ Depois trocar/gerenciar a senha por fluxo seguro e manter usuarios reais auditad
 - [ ] Rodar/registrar bootstrap admin ou procedimento equivalente usado para usuarios iniciais.
 - [ ] Comparar schema Prisma com schema legado.
 - [x] Disponibilizar relatorio read-only de backfill/consistencia (`npm run ops:backfill:report`).
+- [x] Disponibilizar dry-run/aplicacao controlada do backfill de responsabilidades (`npm run ops:client-assignments:backfill`).
 - [ ] Rodar relatorio read-only de backfill no MySQL real e anexar evidencia.
 - [ ] Planejar backfills por modulo com base no relatorio real.
 - [ ] Executar backfills com logs e conferencia.
@@ -1237,13 +1380,15 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checklist-aceite.md` e o gate visual/experiencia antes de liberar uso amplo aos usuarios.
 
 - [ ] Rodar e marcar o checklist `ux-ui-docs/09-checklist-aceite.md`.
-- [ ] Validar sidebar desktop com hover/foco, agrupamento de rotas e ocultacao de itens sem permissao.
-- [ ] Validar mobile com botao hamburguer, drawer e ausencia de quebra/overflow.
+- [x] Implementar localmente sidebar desktop com hover/foco, agrupamento de rotas e ocultacao de itens sem permissao.
+- [x] Implementar localmente mobile com botao hamburguer, drawer e ausencia de quebra/overflow.
 - [ ] Validar Home por perfil no EasyPanel: colaborador com pendencias reais do Acessorias, gestor com carteira/atrasos/riscos e DEV/Admin com diagnostico tecnico.
-- [ ] Validar notificacoes no header: sino, badge, popover, pagina completa e filtros.
+- [x] Implementar localmente notificacoes no header: sino, badge, popover e botao para pagina completa.
+- [ ] Validar notificacoes reais no header e pagina completa no EasyPanel com dados reais.
 - [ ] Validar clientes/documentos: Meus Clientes por vinculo, Todos os Clientes por permissao ampla, documentos no painel do cliente, status, auditoria e links publicos expiraveis.
 - [ ] Validar propostas, contratos, assinatura publica e entrada de cliente no fluxo completo.
-- [ ] Validar `/configuracoes`: minha conta, foto com validacao segura, troca de senha restrita quando aplicavel e auditoria.
+- [x] Implementar localmente `/configuracoes`: minha conta, abas, foto com validacao local e troca de senha restrita a MASTER no backend.
+- [ ] Validar `/configuracoes` no EasyPanel: avatar persistido quando houver backend, troca de senha por MASTER real e auditoria persistida.
 - [ ] Validar UX de seguranca: confirmacao em acoes sensiveis, upload com tipo/tamanho, SVG bloqueado para foto, erros sem detalhes internos e sem dados sensiveis em storage do navegador.
 - [x] Implementar catalogo controlado de departamentos no backend com chave tecnica unica.
 - [x] Trocar departamento livre por select no cadastro/edicao de usuarios DEV/Admin.
@@ -1261,8 +1406,10 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 - [x] Implementar encerramento local de responsabilidade pelo painel do cliente.
 - [x] Conectar consulta local de carteira do gestor a `client_department_assignments` via dashboard de transferencias.
 - [ ] Validar painel do cliente com responsabilidades reais no EasyPanel.
-- [ ] Migrar escrita da transferencia operacional em lote para `client_department_assignments`.
-- [ ] Evoluir responsabilidade de clientes para uso operacional completo da entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
+- [x] Migrar escrita local da transferencia operacional em lote para `client_department_assignments`.
+- [ ] Validar transferencia operacional em lote normalizada no EasyPanel com MySQL real, backfill, gestor real e auditoria.
+- [x] Evoluir localmente responsabilidade de clientes para uso operacional da entidade propria cliente x departamento x usuario/gestor em painel, carteira, transferencias, vencimentos, planilhas e documentos internos, mantendo fallback temporario enquanto o backfill real nao for conferido.
+- [ ] Validar no EasyPanel o uso operacional completo de `client_department_assignments` com MySQL real, backfill, usuarios reais, documentos, vencimentos, planilhas e transferencias antes de remover fallbacks de `clients.metadata`.
 - [ ] Validar cadastro/painel de cliente com responsavel operacional e gestor por departamento, atribuicao inicial, gestor editavel, encerramento e transferencia de carteira auditada.
 
 ### Testes e QA
@@ -1293,7 +1440,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 
 1. Atualizacoes tecnicas e documentais desta rodada precisam ser enviadas aos remotos.
 2. Confirmar historico de migrations/seed/bootstrap no banco real e registrar o procedimento usado.
-3. Rodar `npm run ops:backfill:report -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
+3. Rodar `npm run ops:backfill:report -- --json` e `npm run ops:client-assignments:backfill -- --json` no container `portal-sama-api` e usar o resultado para planejar/executar backfills reais por modulo.
 4. Rodar `npm run ops:backup:create`, `npm run ops:backup:verify` e `npm run ops:restore:drill` no container `portal-sama-api`, copiar os artefatos para fora do container e documentar restore drill real.
 5. Storage privado retornou `storage=up` e readiness real confirmou escrita em `/var/private/portal-sama`; aliases publicos de onboarding ja estao implementados, mas persistencia, permissoes, backup externo e fluxos reais de upload/download ainda precisam ser homologados.
 6. O smoke operacional de autenticacao passou com usuario bootstrap/DEV; ainda precisa ser repetido por perfis criticos quando as credenciais forem disponibilizadas.
@@ -1302,7 +1449,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 9. Backup operacional foi instrumentalizado com geracao, verificacao e restore drill protegido, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado em alvo isolado real; retencao de logs segue pendente.
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
-12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend/painel do cliente de responsabilidades normalizadas existe localmente com atribuicao, edicao, encerramento, transferencia e leitura de carteira do gestor, mas ainda faltam validacao real, escrita normalizada de transferencias em lote, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
+12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend/painel do cliente de responsabilidades normalizadas existe localmente com atribuicao, edicao, encerramento, transferencia, leitura de carteira do gestor, escrita normalizada de transferencias em lote e backfill seguro instrumentalizado, mas ainda faltam validacao real, solicitacoes globais, permissoes guiadas/auditadas, aplicacao/conferencia do backfill e migracao operacional completa fora de `clients.metadata`.
 13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, vencimentos oficiais no carrossel, Central de Vencimentos, geracao manual de notificacoes e scheduler opt-in, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria/destinatarios e decidir o corte funcional; notificacoes automaticas devem ser habilitadas apenas depois dessa validacao.
 
 ## Criterio para dizer "pronto para producao"
@@ -1331,7 +1478,7 @@ So marcar como pronto quando todos estes pontos forem verdadeiros:
 Com Bitbucket, EasyPanel, dominio HTTPS, banco real e smoke publico ja funcionando, o proximo passo operacional e transformar a homologacao tecnica em homologacao funcional:
 
 ```txt
-registrar migrations/seed/bootstrap -> configurar/validar Acessorias no ambiente da API -> carregar credenciais no shell -> rodar homologation:real por perfis -> rodar ops:backfill:report --json -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> homologar TXT Dominio -> aceitar UX/UI/Home por perfil -> manter MVP amplo de Acessorias como backlog futuro -> desligamento seguro do legado
+registrar migrations/seed/bootstrap -> configurar/validar Acessorias no ambiente da API -> carregar credenciais no shell -> rodar homologation:real por perfis -> rodar ops:backfill:report --json -> rodar ops:client-assignments:backfill --json -> revisar pulos e backup -> rodar ops:backup:create -> rodar ops:backup:verify -> rodar ops:restore:drill em alvo isolado -> copiar artefatos/evidencias -> testar fluxos criticos reais -> validar uploads/downloads/storage -> homologar TXT Dominio -> aceitar UX/UI/Home por perfil -> manter MVP amplo de Acessorias como backlog futuro -> desligamento seguro do legado
 ```
 
 Tambem e necessario enviar este commit/documentacao atualizada ao remoto de documentacao para manter Bitbucket e workspace local sincronizados.

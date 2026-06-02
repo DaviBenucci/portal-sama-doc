@@ -1,13 +1,68 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-02 UX estrutural e configuracoes
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 5: a navegacao React foi reorganizada por grupos, o mobile passou a usar drawer acionado pelo header e a rota `/configuracoes` foi criada.
+- **Frontend React:** `AppLayout`, `Sidebar`, `Header` e `navigation` agora suportam grupos Operacao/Gestao/Entrada/T.I/Admin, botao hamburguer no mobile, drawer com backdrop, sino de notificacoes com badge/popover e atalho do usuario para configuracoes. `/configuracoes` ganhou abas de Minha conta, Seguranca, Notificacoes, Preferencias e Administracao quando aplicavel.
+- **Seguranca/UX:** a foto de perfil tem validacao local de PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG. Preferencias visuais/notificacoes ficam locais ate existir endpoint dedicado. A troca de senha no backend passou a exigir papel `MASTER`; quando executada por MASTER, segue usando `UsersService.update()` com hash e auditoria sem segredo bruto.
+- **Validacao local:** passaram `npm.cmd test -- users.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e a suite completa `npm.cmd test -- --runInBand` na API com 40 suites/229 testes; `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts` no Web, com 13 testes Playwright.
+- **Pendente:** avatar ainda nao persiste em backend/storage, nao remove metadados nem valida MIME real no servidor. Falta validar no EasyPanel com usuarios reais por perfil, notificacoes reais, permissao MASTER real, auditoria persistida e checklist UX completo.
+
+## Atualizacao complementar 2026-06-02 documentos com responsabilidade normalizada
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 no backend: o `DocumentsModule` passou a considerar `client_department_assignments` ao aplicar escopo de documentos para usuarios departamentais.
+- **Backend/API v2:** `GET /api-v2/documents` filtra por departamento do documento e por responsabilidade ativa normalizada do cliente quando ela existe. Checklist, detalhe, historico, download, revisao, arquivamento e upload interno consultam as atribuicoes `ACTIVE` do cliente antes de permitir acesso departamental. Quando nao ha responsabilidade normalizada ativa para o cliente, o fallback temporario por `document.department` permanece.
+- **Seguranca:** a responsabilidade normalizada passa a prevalecer sobre metadata legado no escopo documental local, reduzindo risco de usuario departamental acessar documento de cliente cuja carteira ja aponta para outro departamento.
+- **Validacao local:** passaram `npm.cmd test -- documents.service.spec.ts --runInBand`, `npm.cmd exec tsc -- --noEmit`, `npm.cmd run lint`, `npm.cmd run build` e a suite completa `npm.cmd test -- --runInBand` com 40 suites e 227 testes.
+- **Pendente:** validar no EasyPanel com migrations/seeds/backfill reais, usuarios reais por perfil/departamento, upload/download/revisao reais, storage privado e casos de documentos sem departamento antes de retirar o fallback.
+
+## Atualizacao complementar 2026-06-02 planilhas departamentais com responsabilidade normalizada
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 no backend: `DepartmentsModule` e aplicacao Acessorias em workspace passaram a priorizar `client_department_assignments` ao decidir se um cliente pertence ao departamento operacional.
+- **Backend/API v2:** `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell`, `PATCH /api-v2/departments/workspace/cell-status` e a compatibilidade fiscal agora carregam responsabilidades ativas normalizadas dos clientes. Quando existem atribuicoes `ACTIVE` com departamento controlado, elas definem o escopo; `clients.metadata` permanece fallback quando nao ha dado normalizado.
+- **Acessorias:** `POST /api-v2/integrations/acessorias/deliveries/apply-to-workspace` deixa de aplicar baixa em planilha de departamento divergente quando a responsabilidade normalizada do cliente aponta para outro departamento; o caso vira divergencia `CLIENT_DEPARTMENT_MISMATCH`.
+- **Validacao local:** passaram `npm.cmd test -- departments.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`, `npm.cmd test -- calendar.service.spec.ts departments.service.spec.ts transfers.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API.
+- **Pendente:** validar no EasyPanel com migrations/seeds/backfill reais, dados reais de departamentos, aplicacao Acessorias real, usuarios MANAGER/ADMIN/DEV e metadata legado divergente. Documentos receberam corte local posterior nesta mesma data; validacao real segue pendente.
+
+## Atualizacao complementar 2026-06-02 vencimentos com responsabilidade normalizada
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 no backend: o `CalendarModule` passou a priorizar `client_department_assignments` ao validar/listar empresas por departamento em vencimentos.
+- **Backend/API v2:** `GET /api-v2/calendar/config`, `POST /api-v2/calendar/config`, `GET /api-v2/calendar/month` e a exclusao `DELETE /api-v2/calendar/entries/:id` agora carregam responsabilidades ativas normalizadas dos clientes. Quando existem atribuicoes `ACTIVE` com departamento controlado, elas definem os departamentos do cliente; `clients.metadata` fica como fallback apenas quando nao ha dado normalizado.
+- **Escopo:** esta fatia cobre vencimentos/calendario. Planilhas departamentais e documentos foram cobertos em cortes posteriores locais nesta mesma data; validacao real segue pendente.
+- **Validacao local:** passaram `npm.cmd test -- calendar.service.spec.ts --runInBand` com 3 testes, `npm.cmd run build` e `npm.cmd run lint` na API. O novo teste cobre metadata legado divergente e responsabilidade normalizada prevalecendo no escopo do vencimento.
+- **Pendente:** validar no EasyPanel com migrations/seeds/backfill reais, calendario real, usuarios MANAGER/ADMIN/DEV, exclusao/configuracao de vencimentos e regressao da Central de Vencimentos.
+
+## Atualizacao complementar 2026-06-02 backfill seguro de responsabilidades
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 em operacao/backend: criado script seguro para migrar responsabilidades de `clients.metadata` para `client_department_assignments`, com dry-run por padrao.
+- **Backend/operacao:** `portal-sama-api` agora expoe `npm run ops:client-assignments:backfill`. O comando le `clients.metadata`, interpreta `departamentos`, `departments`, `depts`, `dept_*`, `responsaveis`, `departmentAssignments`, `assignments`, `carteira` e chaves top-level de responsavel por departamento, resolve responsavel por `user.id`, `username` e `User.metadata.colaboradorId`, exige usuario interno ativo e valida que `mainDepartment` bate com o departamento controlado.
+- **Seguranca de dados:** o comando nao escreve sem `--apply`, pula cliente/departamento que ja possui `PRIMARY ACTIVE`, pula responsavel ausente/ambiguo/inativo/CLIENT, reporta conflitos de metadata e grava `metadata.source=clients_metadata_backfill` nas linhas criadas.
+- **Relatorio operacional:** `npm run ops:backfill:report` passou a contar `departments` e `client_department_assignments`, incluindo `PRIMARY ACTIVE`, duplicidades por cliente/departamento e gaps relacionais da tabela normalizada.
+- **Validacao local:** passaram `node --check` nos scripts, `npm.cmd run ops:client-assignments:backfill -- --help`, `npm.cmd run ops:backfill:report -- --help`, `npm.cmd test -- transfers.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` na API.
+- **Pendente:** executar no EasyPanel primeiro em dry-run com `--json`, revisar amostras/pulos, garantir backup externo recente, aplicar com `--apply` somente apos aprovacao operacional, anexar evidencia sanitizada e revalidar carteira/transferencias com usuarios reais.
+
+## Atualizacao complementar 2026-06-02 transferencia operacional em lote normalizada
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 no backend: a transferencia operacional em lote do `TransfersModule` passou a escrever tambem em `client_department_assignments` quando ha departamento controlado aplicado.
+- **Backend/API v2:** `TransfersService.create()` e a reconciliacao de sessoes carregam responsabilidades normalizadas para validar a origem. Ao aplicar uma transferencia, a responsabilidade ativa anterior e encerrada e uma nova responsabilidade `ACTIVE` e criada para o destino. Ao retornar uma transferencia por tempo indeterminado, o vinculo do destino e encerrado como `INACTIVE` e a origem volta a ter responsabilidade ativa.
+- **Compatibilidade:** `clients.metadata` e `user.metadata.clientes` continuam sendo atualizados como fallback temporario. Se o departamento controlado ainda nao existir no banco, a escrita normalizada e ignorada para preservar o fluxo legado ate migration/seed reais.
+- **Validacao local:** passaram `npm.cmd test -- transfers.service.spec.ts --runInBand` com 6 testes, `npm.cmd run lint` e `npm.cmd run build` na API. O spec cobre a escrita normalizada ao aplicar uma transferencia em lote.
+- **Pendente:** publicar API atualizada, aplicar migrations/seeds/backfill no MySQL real, validar transferencia operacional em lote no EasyPanel com gestor real, conferir auditoria/metadados e validar regressao do dashboard/carteira por perfis reais.
+
 ## Atualizacao complementar 2026-06-02 dashboard de carteira normalizado
 
 - **Responsavel/IA:** Codex
 - **Resumo da alteracao:** Continuidade da Fase 4 no backend: o dashboard de transferencias/carteira passou a priorizar responsabilidades ativas de `client_department_assignments` ao montar a consulta usada por `/manager/colaboradores`.
 - **Backend/API v2:** `TransfersService.getDashboard()` chama o runtime com leitura normalizada. O runtime busca responsabilidades `ACTIVE`, resolve o `responsibleUserId` para o `colaboradorId` legado da UI e sobrepoe a carteira em memoria.
-- **Compatibilidade:** o fallback por `clients.metadata` permanece quando nao ha responsabilidade normalizada ativa para cliente/departamento. As mutacoes legadas de transferencia em lote continuam sem alterar `client_department_assignments` nesta fatia.
+- **Compatibilidade:** o fallback por `clients.metadata` permanece quando nao ha responsabilidade normalizada ativa para cliente/departamento. A escrita normalizada da transferencia em lote foi implementada em fatia posterior local nesta mesma data, ainda pendente de validacao real.
 - **Validacao local:** passaram `npm.cmd test -- transfers.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API. O spec inclui teste que garante prioridade da responsabilidade normalizada sobre o metadata legado.
-- **Pendente:** validar com MySQL real/backfill, publicar API atualizada e migrar a escrita da transferencia operacional em lote para o modelo normalizado.
+- **Pendente:** validar com MySQL real/backfill, publicar API atualizada e conferir leitura/escrita normalizada da transferencia operacional em lote no EasyPanel.
 
 ## Atualizacao complementar 2026-06-02 edicao e encerramento de responsabilidades no painel do cliente
 
@@ -353,7 +408,7 @@
 - **Backend/operacao:** `portal-sama-api` agora expoe `npm run ops:backup:create`, gerando dump MySQL compactado, manifesto de storage, metadados com SHA-256 e arquivo de storage opcional.
 - **Docker/runtime:** O runtime da API instala `mariadb-client` alem de `clamav`, deixando `mariadb-dump` disponivel dentro da imagem.
 - **Validacao:** Passaram `node --check`, help do comando de backup, backup local sem banco com manifesto/archive, `prisma:validate`, lint, build, Jest completo com 165 testes, Docker build e checagem de `/usr/bin/mariadb-dump` dentro da imagem.
-- **Pendente:** Rodar `ops:backfill:report -- --json` e `ops:backup:create` no EasyPanel, copiar artefatos para fora do container, provar restore drill, validar matriz real de perfis, Playwright real e QA final.
+- **Pendente:** Rodar `ops:backfill:report -- --json`, `ops:client-assignments:backfill -- --json` e `ops:backup:create` no EasyPanel, copiar artefatos para fora do container, provar restore drill, validar matriz real de perfis, Playwright real e QA final.
 
 ## Atualizacao complementar 2026-05-25 16:31 -03:00
 
@@ -369,12 +424,12 @@
 
 - **Responsavel/IA:** Codex
 - **Resumo da alteracao:** Adicionadas validacoes operacionais de API para readiness, RBAC/perfis, storage/ClamAV e relatorio read-only de backfill, alem de corrigir uma fragilidade temporal na suite de transferencias.
-- **Backend/operacao:** `portal-sama-api/package.json` agora expoe `npm run ops:readiness` e `npm run ops:backfill:report`.
+- **Backend/operacao:** `portal-sama-api/package.json` agora expoe `npm run ops:readiness`, `npm run ops:backfill:report` e, desde 2026-06-02, `npm run ops:client-assignments:backfill`.
 - **Readiness:** O comando valida ambiente de producao, MySQL, migrations Prisma aplicadas, seed RBAC contra catalogo padrao, usuarios ADMIN/DEV ativos, storage privado e ClamAV/EICAR. A execucao local foi feita com skips para banco/ClamAV; a execucao real sem skips continua pendente no EasyPanel.
 - **Backfill:** O relatorio read-only lista tabelas atuais, candidatos legados, contagens por modulo e gaps de relacao sem alterar dados, servindo como evidencia antes de qualquer backfill real.
 - **Transferencias:** `transfers.service.spec.ts` passou a congelar o relogio em `2026-05-19T12:00:00.000Z`, removendo flakiness causada pela data atual.
 - **Validacao:** Passaram `node --check` dos scripts, smokes locais dos comandos operacionais, `npm.cmd run test -- --runInBand` com 165 testes, `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run prisma:validate` com `DATABASE_URL` dummy.
-- **Pendente:** Rodar `ops:readiness` sem skips e `ops:backfill:report -- --json` no container real da API, anexar evidencias, executar backfills, backup/restore drill, validar matriz real de perfis e concluir Playwright/QA.
+- **Pendente:** Rodar `ops:readiness` sem skips, `ops:backfill:report -- --json` e `ops:client-assignments:backfill -- --json` no container real da API, anexar evidencias, executar backfills com backup, backup/restore drill, validar matriz real de perfis e concluir Playwright/QA.
 
 ## Atualizacao complementar 2026-05-25 11:46 -03:00
 

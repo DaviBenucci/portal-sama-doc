@@ -1,5 +1,336 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 17:05 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/users/users.service.ts`
+- `portal-sama-api/src/modules/users/users.service.spec.ts`
+- `portal-sama-web/src/app/router.tsx`
+- `portal-sama-web/src/components/layout/AppLayout.tsx`
+- `portal-sama-web/src/components/layout/Header.tsx`
+- `portal-sama-web/src/components/layout/Sidebar.tsx`
+- `portal-sama-web/src/components/layout/navigation.tsx`
+- `portal-sama-web/src/pages/settings/SettingsPage.tsx`
+- `portal-sama-web/src/services/admin.service.ts`
+- `portal-sama-web/src/index.css`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- Documentacao viva da Fase 5/UX.
+
+### O que mudou
+
+- Sidebar React foi reorganizada por grupos de navegacao conforme UX docs, mantendo permissao por item.
+- Header ganhou botao hamburguer mobile, sino de notificacoes com badge/popover e atalho do usuario para `/configuracoes`.
+- Mobile passou a abrir a navegacao em drawer com backdrop, sem empurrar a Home nem criar overflow horizontal.
+- Criada rota `/configuracoes` com abas Minha conta, Seguranca, Notificacoes, Preferencias e Administracao condicional.
+- Foto de perfil ganhou validacao local de tipo/tamanho e bloqueio de SVG.
+- `UsersService.update()` passou a bloquear troca de senha por usuario que nao tenha papel `MASTER`; a auditoria existente continua registrando `passwordChanged` sem segredo bruto.
+- `admin.service.ts` deixou de enviar `email: null`/`mainDepartment: null` quando a atualizacao de usuario omite esses campos.
+
+### Motivo da alteracao
+
+Avancar a Fase 5 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, cobrindo navegacao estrutural, header de notificacoes e base de configuracoes/seguranca antes do aceite UX.
+
+### Impacto esperado
+
+- A experiencia desktop/mobile fica mais proxima do checklist de UX.
+- A rota de configuracoes passa a existir para consulta de conta, preferencias locais e acao de senha restrita a MASTER.
+- A validacao de avatar ainda e local; persistencia segura, remocao de metadados e validacao MIME real seguem pendentes de backend.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- users.service.spec.ts --runInBand`
+- Resultado: passou na API com 8 testes.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd test -- --runInBand`
+- Resultado: passou na API com 40 suites e 229 testes.
+- Comando: `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts`
+- Resultado: passou no Web com 13 testes.
+
+### Riscos ou pendencias
+
+- Criar endpoint/storage de avatar com validacao MIME real, stripping de metadados e versao otimizada.
+- Validar no EasyPanel com usuario MASTER real, auditoria persistida e perfis sem permissao.
+- Executar checklist UX completo em desktop/mobile reais.
+
+## 2026-06-02 16:30 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/documents/documents.service.ts`
+- `portal-sama-api/src/modules/documents/documents.service.spec.ts`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+- `portal-sama-docs/CHANGELOG_TECNICO.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
+- `portal-sama-docs/ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+- `portal-sama-docs/BANCO_DADOS_MYSQL_PRISMA.md`
+- `portal-sama-docs/INVENTARIO_BANCO_DADOS.md`
+- `portal-sama-docs/INVENTARIO_ENDPOINTS.md`
+- `portal-sama-docs/paginas/client-painel.md`
+- `portal-sama-docs/paginas/dptclient-clientdpto.md`
+- `portal-sama-docs/ux-ui-docs/11-responsabilidade-clientes-usuarios.md`
+
+### O que mudou
+
+- `DocumentsService` passou a usar `client_department_assignments` ativas para escopo de documentos internos quando o usuario e departamental.
+- `GET /api-v2/documents` agora combina `document.department` com carteira normalizada do cliente; se o cliente ainda nao tem atribuicao ativa normalizada, preserva fallback temporario por departamento do documento.
+- Checklist, detalhe, historico, download, revisao, arquivamento e upload interno validam a responsabilidade normalizada do cliente quando ela existe.
+- Testes unitarios cobrem checklist bloqueado por carteira normalizada divergente, detalhe permitido por atribuicao normalizada e detalhe negado quando a atribuicao aponta para outro departamento.
+
+### Motivo da alteracao
+
+Fechar localmente o item 9 da Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, completando a migracao local de vencimentos, planilhas departamentais e documentos para a fonte normalizada de responsabilidades.
+
+### Impacto esperado
+
+- Documentos internos reduzem risco de IDOR/carteira cruzada quando `client_department_assignments` ja foi populada.
+- `clients.metadata` deixa de prevalecer sobre responsabilidade normalizada no escopo documental local.
+- A validacao real ainda depende de migrations/seeds/backfill e dados reais no EasyPanel.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- documents.service.spec.ts --runInBand`
+- Resultado: passou na API com 31 testes.
+- Comando: `npm.cmd exec tsc -- --noEmit`
+- Resultado: passou na API.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+- Comando: `npm.cmd test -- --runInBand`
+- Resultado: passou na API com 40 suites e 227 testes.
+- Comando: `git diff --check`
+- Resultado: passou na API; houve apenas aviso esperado de CRLF em arquivo ja modificado.
+
+### Riscos ou pendencias
+
+- Validar em MySQL real com `client_department_assignments` populada por backfill/atribuicao manual.
+- Validar upload/download/revisao/listagem de documentos no EasyPanel com usuarios reais por departamento, gestor e cliente.
+- Confirmar que documentos sem departamento continuam com comportamento esperado para usuarios departamentais antes do corte do legado.
+
+## 2026-06-02 16:00 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/departments/departments.service.ts`
+- `portal-sama-api/src/modules/departments/departments.service.spec.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.spec.ts`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+- `portal-sama-docs/CHANGELOG_TECNICO.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
+- `portal-sama-docs/ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+- `portal-sama-docs/BANCO_DADOS_MYSQL_PRISMA.md`
+- `portal-sama-docs/INVENTARIO_BANCO_DADOS.md`
+- `portal-sama-docs/INVENTARIO_ENDPOINTS.md`
+- `portal-sama-docs/MAPEAMENTO_MIGRACAO_APIS.md`
+- `portal-sama-docs/MATRIZ_MIGRACAO_PHP_PARA_NESTJS.md`
+- `portal-sama-docs/paginas/depto-modelo.md`
+- `portal-sama-docs/ux-ui-docs/11-responsabilidade-clientes-usuarios.md`
+
+### O que mudou
+
+- `DepartmentsService` passou a carregar responsabilidades `ACTIVE` de `client_department_assignments` ao montar o workspace departamental e ao validar escrita de celula.
+- Quando ha responsabilidade normalizada ativa, ela define os departamentos do cliente; `clients.metadata` segue como fallback quando nao ha dado normalizado.
+- A aplicacao Acessorias nas planilhas departamentais agora valida o departamento pela responsabilidade normalizada antes de escrever status `ACESSORIAS`.
+- Cliente com responsabilidade normalizada em outro departamento gera divergencia `CLIENT_DEPARTMENT_MISMATCH`, sem sobrescrever a planilha selecionada.
+
+### Motivo da alteracao
+
+Avancar o item 9 da Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, migrando planilhas departamentais para a mesma fonte normalizada ja usada por transferencias, carteira e vencimentos/calendario.
+
+### Impacto esperado
+
+- A grade de `/departamentos/modelo` passa a refletir a carteira normalizada quando o backfill/atribuicao manual ja populou `client_department_assignments`.
+- A aplicacao automatica do Acessorias reduz risco de escrever baixa em departamento errado quando o metadata legado diverge da responsabilidade atual.
+- Documentos ainda precisam de corte proprio para priorizar a tabela normalizada.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- departments.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`
+- Resultado: passou na API com 12 testes.
+- Comando: `npm.cmd test -- calendar.service.spec.ts departments.service.spec.ts transfers.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`
+- Resultado: passou na API com 21 testes.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+- Comando: `node --check scripts/backfill-client-assignments.js` e `node --check scripts/backfill-readiness-report.js`
+- Resultado: passaram na API.
+- Comando: `git diff --check`
+- Resultado: passou na API e na documentacao, apenas com avisos esperados de CRLF.
+
+### Riscos ou pendencias
+
+- Validar em MySQL real com migrations/seeds/backfill aplicados e metadata legado divergente.
+- Revalidar `/departamentos/modelo`, aplicacao Acessorias e permissoes por departamento no EasyPanel.
+- Migrar documentos para a mesma regra normalizada.
+
+## 2026-06-02 15:33 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/calendar/calendar.service.ts`
+- `portal-sama-api/src/modules/calendar/calendar.service.spec.ts`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+- `portal-sama-docs/CHANGELOG_TECNICO.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
+- `portal-sama-docs/ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+- `portal-sama-docs/BANCO_DADOS_MYSQL_PRISMA.md`
+- `portal-sama-docs/INVENTARIO_ENDPOINTS.md`
+- `portal-sama-docs/paginas/manager-calendar-config.md`
+- `portal-sama-docs/paginas/manager-manager.md`
+
+### O que mudou
+
+- `CalendarModule` passou a carregar responsabilidades ativas de `client_department_assignments` junto com clientes.
+- A lista de empresas por departamento em `GET /api-v2/calendar/config` agora prioriza departamentos normalizados.
+- `POST /api-v2/calendar/config` e `DELETE /api-v2/calendar/entries/:id` validam o departamento do cliente pela tabela normalizada quando ela existe.
+- `GET /api-v2/calendar/month` passa a montar vencimentos com clientes carregados com responsabilidades normalizadas.
+- `clients.metadata` segue como fallback quando o cliente ainda nao possui responsabilidade ativa normalizada.
+
+### Motivo da alteracao
+
+Avancar o item 9 da Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, iniciando a migracao de filtros operacionais para responsabilidade normalizada pelo corte de vencimentos/calendario.
+
+### Impacto esperado
+
+- Vencimentos passam a respeitar a carteira normalizada quando o backfill ou a atribuicao manual ja populou `client_department_assignments`.
+- O risco de calendario exibir ou permitir empresa em departamento errado por metadata antigo diminui.
+- Planilhas departamentais foram migradas em corte posterior local nesta mesma data; documentos ainda precisam de corte proprio.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- calendar.service.spec.ts --runInBand`
+- Resultado: passou na API com 3 testes.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+
+### Riscos ou pendencias
+
+- Validar em MySQL real com responsabilidades normalizadas e metadata legado divergente.
+- Revalidar configuracao, listagem mensal, exclusao de vencimentos e Central de Vencimentos no EasyPanel.
+- Migrar documentos para a mesma regra normalizada; planilhas departamentais foram cobertas em corte posterior local nesta mesma data.
+
+## 2026-06-02 15:21 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/backfill-client-assignments.js`
+- `portal-sama-api/scripts/backfill-readiness-report.js`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+- `portal-sama-docs/CHANGELOG_TECNICO.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUCAO.MD`
+- `portal-sama-docs/ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+- `portal-sama-docs/BANCO_DADOS_MYSQL_PRISMA.md`
+- `portal-sama-docs/INVENTARIO_BANCO_DADOS.md`
+- `portal-sama-docs/ux-ui-docs/11-responsabilidade-clientes-usuarios.md`
+
+### O que mudou
+
+- Criado `npm run ops:client-assignments:backfill` para migrar responsabilidades de `clients.metadata` para `client_department_assignments`.
+- O backfill roda em dry-run por padrao e so grava com `--apply`.
+- O script resolve departamentos controlados, responsaveis por `user.id`, `username` e `metadata.colaboradorId`, e pula casos ambiguos, inativos, CLIENT, conflito de metadata, duplicidade `PRIMARY ACTIVE` e divergencia de departamento.
+- `ops:backfill:report` agora inclui `departments`, `client_department_assignments`, contagens de responsabilidades normalizadas, duplicidades `PRIMARY ACTIVE` e gaps relacionais dessa tabela.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, transformando o backfill de carteira em procedimento operacional reproduzivel antes do corte de `clients.metadata`.
+
+### Impacto esperado
+
+- O time pode rodar dry-run no EasyPanel, revisar pulos e aplicar o backfill com menor risco depois de backup.
+- A tabela normalizada passa a ter procedimento de populacao inicial sem depender de edicao manual.
+- Ainda nao muda o status de producao, pois a execucao real no MySQL do EasyPanel nao foi feita nesta rodada.
+
+### Testes executados
+
+- Comando: `node --check scripts/backfill-client-assignments.js`
+- Resultado: passou.
+- Comando: `node --check scripts/backfill-readiness-report.js`
+- Resultado: passou.
+- Comando: `npm.cmd run ops:client-assignments:backfill -- --help`
+- Resultado: passou.
+- Comando: `npm.cmd run ops:backfill:report -- --help`
+- Resultado: passou.
+- Comando: `npm.cmd test -- transfers.service.spec.ts --runInBand`
+- Resultado: passou na API com 6 testes.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+
+### Riscos ou pendencias
+
+- Executar primeiro `npm run ops:client-assignments:backfill -- --json` no container real da API.
+- Revisar amostras e contadores de pulos antes de `--apply`.
+- Garantir backup externo/verificado antes de aplicar.
+- Revalidar carteira, transferencias em lote, dashboard do gestor e filtros com dados reais apos o backfill.
+
+## 2026-06-02 15:02 -03:00
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/transfers/transfers.service.ts`
+- `portal-sama-api/src/modules/transfers/transfers.service.spec.ts`
+- `portal-sama-docs/STATUS_IMPLEMENTACAO.md`
+- `portal-sama-docs/CHANGELOG_TECNICO.md`
+- `portal-sama-docs/RELATORIO_TESTES.md`
+- `portal-sama-docs/PENDENCIAS_TECNICAS.md`
+- `portal-sama-docs/AINDA_FALTA_PARA_DEPLOY_EM_PRODUÇÃO.MD`
+- `portal-sama-docs/ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`
+- `portal-sama-docs/ux-ui-docs/11-responsabilidade-clientes-usuarios.md`
+- `portal-sama-docs/paginas/manager-transfers.md`
+
+### O que mudou
+
+- `TransfersService` passou a carregar responsabilidades normalizadas ao criar/aplicar/retornar sessoes de transferencia.
+- A aplicacao da transferencia operacional em lote encerra o vinculo ativo anterior em `client_department_assignments` e cria novo vinculo `ACTIVE` para o destino.
+- O retorno de transferencia por tempo indeterminado encerra o vinculo do destino como `INACTIVE` e recria vinculo `ACTIVE` para a origem.
+- A compatibilidade com `clients.metadata` e `user.metadata.clientes` foi preservada durante a transicao.
+- Quando o departamento controlado ainda nao existe no banco, a escrita normalizada e ignorada para nao quebrar o fluxo legado antes de migration/seed reais.
+- O spec de transferencias ganhou cobertura para escrita normalizada em transferencia em lote.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, removendo a pendencia local de escrita da transferencia operacional em lote fora de `client_department_assignments`.
+
+### Impacto esperado
+
+- Transferencias operacionais passam a alimentar a entidade normalizada usada pelo dashboard/carteira.
+- A dependencia de `clients.metadata` diminui sem remover o fallback legado.
+- Ainda nao muda o status de producao, pois falta validar com MySQL real, backfill, usuarios reais e auditoria no EasyPanel.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- transfers.service.spec.ts --runInBand`
+- Resultado: passou na API com 6 testes.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com migrations/seeds/backfill aplicados.
+- Conferir se departamentos reais existem e batem com os nomes usados nas transferencias.
+- Validar auditoria/metadados e matriz de permissoes `transfers.*` com gestor real.
+- Testar regressao do dashboard/carteira com clientes que possuem e nao possuem responsabilidade normalizada.
+
 ## 2026-06-02 dashboard de carteira normalizado
 
 ### Arquivos alterados
@@ -13,7 +344,7 @@
 - `GET /api-v2/transfers/dashboard` passou a priorizar responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira de consulta.
 - A resolucao normalizada converte `responsibleUserId` para o `colaboradorId` legado esperado pela UI de gestor.
 - O fallback por `clients.metadata` continua quando nao existe responsabilidade normalizada ativa para o cliente/departamento.
-- A escrita de transferencias operacionais em lote nao foi alterada nesta fatia.
+- A escrita de transferencias operacionais em lote nao foi alterada nesta fatia; foi implementada em fatia posterior local nesta mesma data.
 
 ### Motivo da alteracao
 
@@ -23,7 +354,7 @@ Dar continuidade a Fase 4, conectando `/manager/colaboradores` ao modelo normali
 
 - Carteiras exibidas ao gestor passam a refletir `client_department_assignments` quando houver dado normalizado ativo.
 - O risco de divergencia com `clients.metadata` diminui na consulta.
-- A migracao completa ainda depende de backfill real e escrita normalizada das transferencias em lote.
+- A migracao completa ainda depende de backfill real e validacao real da escrita normalizada das transferencias em lote.
 
 ### Testes executados
 
@@ -37,7 +368,7 @@ Dar continuidade a Fase 4, conectando `/manager/colaboradores` ao modelo normali
 ### Riscos ou pendencias
 
 - Validar no EasyPanel com MySQL real/backfill e usuarios reais de gestor/departamento.
-- Migrar a escrita da transferencia operacional em lote para `client_department_assignments`.
+- Validar no EasyPanel a escrita normalizada da transferencia operacional em lote em `client_department_assignments`.
 - Validar matriz de permissoes `transfers.*` e auditoria real.
 
 ## 2026-06-02 edicao e encerramento de responsabilidades no painel
