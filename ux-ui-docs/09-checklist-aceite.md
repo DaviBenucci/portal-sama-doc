@@ -28,6 +28,12 @@
 - A tela possui filtros por departamento, mes, origem, status e busca.
 - O aceite continua pendente ate validar no EasyPanel com dados reais e confirmar totais contra o Acessorias da empresa.
 
+## Status parcial - 2026-06-02 notificacoes Acessorias
+
+- `/dev` ganhou a acao protegida `Gerar notificacoes` para vencimento proximo, atraso, baixa e divergencia Acessorias.
+- A geracao retorna resumo operacional e amostra de destinatarios.
+- O aceite continua pendente ate validar notificacoes reais, auditoria, destinatarios e ausencia de duplicidade no EasyPanel.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

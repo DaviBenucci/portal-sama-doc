@@ -1,5 +1,14 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-02 notificacoes Acessorias manuais
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 3: implementada a geracao manual e auditavel de notificacoes operacionais a partir de entregas e divergencias Acessorias sincronizadas.
+- **Backend/API v2:** criado `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`, protegido por JWT, CSRF e permissoes `integrations.acessorias.deliveries.manage` + `notifications.create`. A rotina cria notificacoes deduplicadas para vencimento proximo, atraso, baixa confirmada e divergencia aberta, mirando responsavel da entrega quando existir ou departamento operacional quando nao houver responsavel.
+- **Frontend React:** `/dev` ganhou o botao protegido `Gerar notificacoes` no painel `Integracao Acessorias`, com resumo de candidatas, criadas, duplicadas, ignoradas, erros e amostra de destinatarios.
+- **Validacao local:** passaram `acessorias-fiscal-application.service.spec.ts` com 5 testes, suites focadas de Acessorias/Departamentos com 20 testes, TypeScript do Web, build/lint da API e build/lint do Web.
+- **Pendente:** validar no EasyPanel com entregas/divergencias reais, conferir auditoria/notificacoes no banco real e criar scheduler seguro. Esta fatia nao foi homologada em producao.
+
 ## Atualizacao complementar 2026-06-01 paginacao Acessorias e Central de Vencimentos
 
 - **Responsavel/IA:** Codex

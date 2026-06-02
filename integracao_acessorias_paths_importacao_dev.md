@@ -126,7 +126,7 @@ Na rota React `/dev`, arquivo `portal-sama-web/src/pages/dev/DevAdminPage.tsx`:
 
 - O botao manual `Novo cliente` fica no cabecalho da area DEV e abre `/dev/clientes/novo`; ele depende da permissao `clients.create`.
 - O painel `Integracao Acessorias` / `Importacao DEV` fica logo abaixo dos cards de resumo da area DEV.
-- Nesse painel existem os botoes `Testar conexao`, `Previa entregas`, `Sincronizar entregas`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis` e `Importar tudo`.
+- Nesse painel existem os botoes `Testar conexao`, `Previa entregas`, `Sincronizar entregas`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Gerar notificacoes` e `Importar tudo`.
 - `Previa clientes` usa `GET /api-v2/integrations/acessorias/registrations/preview?entity=clients`.
 - `Importar clientes` usa `POST /api-v2/integrations/acessorias/registrations/sync` com `entity=clients`.
 - `Colaboradores ativos` fica desabilitado ate o Acessorias confirmar endpoint oficial de usuarios/colaboradores; por enquanto a importacao segura e de responsaveis extraidos dos departamentos das empresas.
@@ -682,6 +682,7 @@ Pré-visualizar clientes
 Importar clientes
 Pré-visualizar responsáveis
 Importar responsáveis
+Gerar notificacoes
 Importar tudo
 ```
 
@@ -820,7 +821,24 @@ Regras:
 
 ---
 
-### 17.8 Importar tudo
+### 17.8 Gerar notificacoes
+
+Gera notificacoes operacionais manuais a partir das entregas e divergencias Acessorias ja sincronizadas.
+
+Regras:
+
+- exigir JWT, CSRF, `integrations.acessorias.deliveries.manage` e `notifications.create`;
+- gerar eventos para vencimento proximo, atraso, baixa confirmada e divergencia aberta;
+- usar `dedupeKey` por entrega/divergencia para evitar duplicidade;
+- priorizar o responsavel da entrega quando houver `responsibleUsername`;
+- usar departamento operacional como fallback;
+- registrar auditoria da execucao.
+
+Esta acao e manual e local. O scheduler seguro ainda precisa ser implementado.
+
+---
+
+### 17.9 Importar tudo
 
 Executa em sequência:
 

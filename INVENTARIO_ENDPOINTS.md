@@ -2,6 +2,19 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
+## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/notifications/generate`
+
+- **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.
+- **Metodo:** POST.
+- **Finalidade:** Gerar notificacoes operacionais manuais a partir de entregas Acessorias sincronizadas e divergencias abertas.
+- **Pagina/tela relacionada:** `/dev`, painel `Integracao Acessorias`, botao `Gerar notificacoes`.
+- **Modulo NestJS alvo:** integracao Acessorias + notificacoes.
+- **Permissoes:** `integrations.acessorias.deliveries.manage` e `notifications.create`.
+- **Controles implementados:** JWT, CSRF, RBAC, auditoria, deduplicacao por `dedupeKey`, alvo por responsavel da entrega ou departamento operacional, modo `dry_run` para pre-visualizacao tecnica.
+- **Status de migracao:** Implementado localmente em 2026-06-02; pendente de deploy/validacao real no EasyPanel.
+- **Riscos de seguranca:** spam operacional, destinatario incorreto, notificacao duplicada ou ocultar divergencia real sem tratamento.
+- **Testes necessarios:** validar com usuario real, entregas reais, divergencias reais, auditoria persistida, 403 sem permissoes e reexecucao sem duplicar notificacoes.
+
 ## Endpoints Acessorias para importacao DEV
 
 - **Arquivos:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts`.

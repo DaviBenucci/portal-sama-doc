@@ -1,6 +1,6 @@
 # [PENDENTE] Ordem de Implementacao para Concluir as Documentacoes
 
-Ultima atualizacao: 2026-06-01
+Ultima atualizacao: 2026-06-02
 Responsavel/IA: Codex
 Status do documento: guia operacional vivo
 
@@ -139,7 +139,7 @@ Criterio de saida:
 
 ## Fase 3 - Acessorias aplicado nas planilhas departamentais e vencimentos
 
-Estado: aplicacao local multidepartamental, revisao manual de divergencias, vencimentos Acessorias e Central de Vencimentos implementados localmente; validacao real ainda pendente.
+Estado: aplicacao local multidepartamental, revisao manual de divergencias, vencimentos Acessorias, Central de Vencimentos e geracao manual de notificacoes implementados localmente; validacao real ainda pendente.
 
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
 
@@ -153,6 +153,7 @@ Ja feito localmente:
 - `GET /api-v2/departments/workspace`, `POST /api-v2/departments/workspace/cycle-cell` e `PATCH /api-v2/departments/workspace/cell-status` foram adicionados como rotas genericas, mantendo as rotas fiscais antigas compativeis.
 - `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite resolver ou ignorar divergencias manualmente com CSRF, RBAC e auditoria; `/departamentos/modelo` oferece botoes protegidos na lista de divergencias abertas.
 - Entregas Acessorias pendentes/atrasadas com `dueAt` entram no carrossel de vencimentos do workspace; quando ha mapeamento confirmado para coluna operacional, tambem alimentam o vencimento da celula correspondente.
+- `POST /api-v2/integrations/acessorias/deliveries/notifications/generate` gera notificacoes manuais deduplicadas para vencimento proximo, atraso, baixa e divergencia aberta; `/dev` possui botao protegido `Gerar notificacoes`.
 
 Implementar em ordem:
 
@@ -162,7 +163,7 @@ Implementar em ordem:
 4. [local concluido; real pendente] Permitir revisao manual das divergencias.
 5. [local concluido; real pendente] Conectar entregas/vencimentos ao calendario operacional.
 6. [local concluido; real pendente] Criar Central de Vencimentos baseada nas entregas sincronizadas.
-7. Adicionar notificacoes para vencimento proximo, atraso, baixa e divergencia.
+7. [local concluido manual; real pendente] Adicionar notificacoes para vencimento proximo, atraso, baixa e divergencia.
 8. Criar scheduler seguro para sincronizacao periodica.
 
 Documentos que devem ser atualizados:

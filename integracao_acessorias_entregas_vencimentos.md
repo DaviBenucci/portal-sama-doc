@@ -38,6 +38,8 @@ Atualizacao 2026-06-01 vencimentos no workspace: `GET /api-v2/departments/worksp
 
 Atualizacao 2026-06-01 paginacao e Central: os servicos Acessorias de Home, entregas e cadastros passaram a paginar `ListAll` ate lista vazia, respeitar `ACESSORIAS_RATE_LIMIT_PER_MINUTE`, aceitar `ACESSORIAS_MAX_PAGES`, tentar novamente em `429` e usar timeout longo no Web para importacoes manuais. A sincronizacao de entregas registra `incremental_since` e usa o ultimo run bem-sucedido como marco incremental. Foi criada a rota React `/departamentos/vencimentos`, consolidando vencimentos de calendario e Acessorias do workspace com filtros operacionais. Esta Central esta implementada localmente, mas nao homologada ate validacao no EasyPanel com dados reais.
 
+Atualizacao 2026-06-02 notificacoes manuais: a API passou a expor `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`, que gera notificacoes deduplicadas para vencimento proximo, atraso, baixa confirmada e divergencia aberta. O endpoint e protegido por JWT, CSRF, `integrations.acessorias.deliveries.manage` e `notifications.create`, registra auditoria e mira o responsavel da entrega quando existir ou o departamento operacional. A rota `/dev` ganhou o botao `Gerar notificacoes`. Esta etapa e manual e local; scheduler e homologacao no EasyPanel seguem pendentes.
+
 ---
 
 ## 2. Decisão de implementação

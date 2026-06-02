@@ -1,5 +1,41 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 notificacoes Acessorias manuais
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.spec.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.module.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/dto/generate-acessorias-delivery-notifications.dto.ts`
+- `portal-sama-web/src/pages/dev/DevAdminPage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- Documentacao de ordem, status, pendencias, testes, endpoints, pagina DEV e Acessorias.
+
+### O que mudou
+
+- Criado endpoint manual para gerar notificacoes operacionais com base em entregas e divergencias Acessorias.
+- Eventos cobertos: vencimento proximo, atraso, baixa confirmada e divergencia aberta.
+- Notificacoes usam `dedupeKey` por evento/entidade para evitar duplicidade em reexecucoes manuais.
+- O alvo prioriza o responsavel da entrega e usa o departamento operacional quando nao houver usuario responsavel.
+- `/dev` ganhou o botao `Gerar notificacoes`, protegido por permissoes e com resumo operacional do resultado.
+
+### Testes executados
+
+- `npm.cmd test -- acessorias-fiscal-application.service.spec.ts --runInBand`.
+- `npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand`.
+- `npx.cmd tsc --noEmit --pretty false` no Web.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com notificacoes, auditoria e destinatarios reais.
+- O scheduler automatico ainda nao foi implementado; esta fatia e manual.
+- Confirmar em dados reais se `responsibleUsername` vem preenchido em volume suficiente ou se sera necessario reforcar o mapeamento por departamento/carteira.
+
 ## 2026-06-01 paginacao Acessorias e Central de Vencimentos
 
 ### Arquivos alterados

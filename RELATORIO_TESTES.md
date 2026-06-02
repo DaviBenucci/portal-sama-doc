@@ -1,5 +1,51 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 notificacoes Acessorias manuais
+
+### Contexto
+
+- Continuidade da Fase 3: gerar notificacoes operacionais de vencimento proximo, atraso, baixa e divergencia a partir de entregas/divergencias Acessorias ja sincronizadas.
+- Escopo local: endpoint manual deduplicado, botao DEV protegido, tipagem Web e cobertura focada no servico de aplicacao fiscal.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- acessorias-fiscal-application.service.spec.ts --runInBand
+npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts departments.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada de notificacoes/aplicacao fiscal: 1 suite, 5 testes.
+- API focada Acessorias/Departamentos: 4 suites, 20 testes.
+- TypeScript do Web passou.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com mocks; nao houve execucao contra EasyPanel, MySQL real ou API real do Acessorias.
+
+### Pendencias
+
+- Validar o endpoint e o botao `Gerar notificacoes` no EasyPanel com usuario autorizado e CSRF real.
+- Conferir notificacoes deduplicadas, auditoria e destinatarios no banco real.
+- Implementar scheduler seguro para transformar a geracao manual em rotina periodica controlada.
+
+### Observacao anti-alucinacao
+
+As notificacoes manuais foram implementadas e testadas localmente, mas nao estao homologadas em producao. O scheduler ainda nao foi implementado.
+
 ## Execucao 2026-06-01 paginacao Acessorias e Central de Vencimentos
 
 ### Contexto

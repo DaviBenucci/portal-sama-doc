@@ -2,6 +2,16 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
 
+## Atualizacao 2026-06-02 notificacoes Acessorias manuais
+
+- Implementada a geracao manual de notificacoes operacionais do Acessorias por `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`.
+- A rotina considera entregas sincronizadas do mes para eventos de vencimento proximo, atraso e baixa confirmada, alem de divergencias abertas.
+- As notificacoes usam `dedupeKey` por entrega/divergencia para evitar duplicidade em novas execucoes manuais.
+- O alvo prioriza `responsibleUsername` da entrega; quando nao houver responsavel, usa o departamento operacional normalizado.
+- `/dev` ganhou o botao protegido `Gerar notificacoes`, com resumo de candidatas/criadas/duplicadas/ignoradas/erros.
+- Validacoes locais passaram: teste focado de aplicacao fiscal com 5 testes, suites focadas Acessorias/Departamentos com 20 testes, TypeScript Web, build/lint API e build/lint Web.
+- Permanece pendente validar no EasyPanel com dados reais, conferir notificacoes/auditoria persistidas e implementar scheduler seguro para geracao periodica.
+
 ## Atualizacao 2026-06-01 paginacao Acessorias e Central de Vencimentos
 
 - Implementada paginacao local ate lista vazia em Home, entregas e cadastros Acessorias, com `ACESSORIAS_MAX_PAGES=1000` por padrao.
