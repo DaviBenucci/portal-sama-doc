@@ -34,6 +34,12 @@
 - A geracao retorna resumo operacional e amostra de destinatarios.
 - O aceite continua pendente ate validar notificacoes reais, auditoria, destinatarios e ausencia de duplicidade no EasyPanel.
 
+## Status parcial - 2026-06-02 scheduler Acessorias
+
+- Scheduler Acessorias foi implementado localmente como opt-in e fica desabilitado por padrao.
+- `/dev` ganhou `Status scheduler` para conferir configuracao, proxima execucao e ultimo sync.
+- O aceite continua pendente ate habilitar no EasyPanel, observar execucoes reais e validar notificacoes automaticas apenas depois da deduplicacao/destinatarios.
+
 ## Navegacao
 - [ ] Sidebar desktop mantem hover/foco.
 - [ ] Mobile tem botao hamburguer.

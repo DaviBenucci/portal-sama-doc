@@ -65,6 +65,8 @@ Atualizacao 2026-06-01 contrato oficial Acessorias: no servico `portal-sama-api`
 
 Atualizacao 2026-06-01 importacao DEV Acessorias: apos redeploy da API/Web, validar na rota `/dev` o painel `Integracao Acessorias` com `Testar conexao`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Previa entregas` e `Sincronizar entregas`. Registrar evidencia sanitizada em `RELATORIO_TESTES.md` sem token, URL completa ou payload sensivel.
 
+Atualizacao 2026-06-02 scheduler Acessorias: o scheduler seguro existe localmente, mas deve permanecer `ACESSORIAS_SCHEDULER_ENABLED=false` ate validar token/payload/totais reais no EasyPanel. Para rollout, habilitar primeiro apenas sincronizacao (`ACESSORIAS_SCHEDULER_ENABLED=true`, `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=false`), observar auditoria `integrations.acessorias.scheduler.run`, duracao, totais e `Status scheduler` na rota `/dev`; habilitar notificacoes automaticas somente depois de validar destinatarios e deduplicacao reais.
+
 ---
 
 ## 2. Serviços recomendados
@@ -135,6 +137,14 @@ ACESSORIAS_HOME_PATH=
 ACESSORIAS_AUTH_HEADER=Authorization
 ACESSORIAS_AUTH_SCHEME=Bearer
 ACESSORIAS_TIMEOUT_SEC=30
+ACESSORIAS_RATE_LIMIT_PER_MINUTE=95
+ACESSORIAS_MAX_PAGES=1000
+ACESSORIAS_SCHEDULER_ENABLED=false
+ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=false
+ACESSORIAS_SCHEDULER_INITIAL_DELAY_SEC=120
+ACESSORIAS_SCHEDULER_INTERVAL_MINUTES=360
+ACESSORIAS_SCHEDULER_MAX_RUN_MINUTES=60
+ACESSORIAS_SCHEDULER_NOTIFICATION_DAYS_AHEAD=7
 SAMA_BACKUP_DIR=/var/private/portal-sama/_ops-backups
 SAMA_MYSQL_DUMP_BIN=
 SAMA_MYSQL_CLIENT_BIN=

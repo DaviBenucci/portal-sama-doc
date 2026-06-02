@@ -1,5 +1,56 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 scheduler Acessorias opt-in
+
+### Contexto
+
+- Continuidade da Fase 3: criar scheduler seguro para sincronizacao periodica do Acessorias, sem ligar automaticamente em producao.
+- Escopo local: envs opt-in, trava contra sobreposicao, auditoria do scheduler, status pela API e diagnostico no painel DEV.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- acessorias-scheduler.service.spec.ts acessorias-deliveries.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand
+npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts acessorias-scheduler.service.spec.ts departments.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API focada scheduler/Acessorias: 3 suites, 12 testes.
+- API regressao Acessorias/Departamentos: 5 suites, 23 testes.
+- TypeScript do Web passou.
+- API build e lint passaram.
+- Web build e lint passaram.
+- A validacao foi local, com mocks; nao houve execucao contra EasyPanel, MySQL real ou API real do Acessorias.
+
+### Falhas encontradas
+
+- A primeira execucao do lint da API apontou casts desnecessarios no spec do scheduler; os casts foram removidos e lint/build/teste focado foram reexecutados com sucesso.
+- A primeira execucao focada apontou metadata de auditoria com tipo `unknown`; a metadata passou a ser serializada como JSON seguro antes de gravar auditoria.
+
+### Pendencias
+
+- Validar `GET /api-v2/integrations/acessorias/scheduler/status` no EasyPanel com usuario autorizado.
+- Habilitar `ACESSORIAS_SCHEDULER_ENABLED=true` primeiro sem notificacoes e observar duracao/totais/auditoria.
+- Habilitar `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=true` somente depois de confirmar destinatarios e deduplicacao com dados reais.
+
+### Observacao anti-alucinacao
+
+O scheduler esta implementado localmente e desabilitado por padrao. Ele ainda nao foi homologado em producao.
+
 ## Execucao 2026-06-02 notificacoes Acessorias manuais
 
 ### Contexto
@@ -40,11 +91,11 @@ npm.cmd run lint
 
 - Validar o endpoint e o botao `Gerar notificacoes` no EasyPanel com usuario autorizado e CSRF real.
 - Conferir notificacoes deduplicadas, auditoria e destinatarios no banco real.
-- Implementar scheduler seguro para transformar a geracao manual em rotina periodica controlada.
+- Habilitar o scheduler automatico apenas apos validacao real do EasyPanel.
 
 ### Observacao anti-alucinacao
 
-As notificacoes manuais foram implementadas e testadas localmente, mas nao estao homologadas em producao. O scheduler ainda nao foi implementado.
+As notificacoes manuais foram implementadas e testadas localmente, mas nao estao homologadas em producao. O scheduler agora existe localmente, porem permanece desabilitado por padrao e sem homologacao real.
 
 ## Execucao 2026-06-01 paginacao Acessorias e Central de Vencimentos
 

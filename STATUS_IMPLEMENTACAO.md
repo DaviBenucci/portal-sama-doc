@@ -1,5 +1,15 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-02 scheduler Acessorias opt-in
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 3: criado scheduler seguro e desabilitado por padrao para sincronizacao periodica do Acessorias, com geracao de notificacoes opcional por flag separada.
+- **Backend/API v2:** `AcessoriasSchedulerService` usa `setTimeout/setInterval` somente quando `ACESSORIAS_SCHEDULER_ENABLED=true`, respeita intervalo minimo de 15 minutos, trava execucao em memoria, evita iniciar se houver sync `RUNNING` recente, audita `integrations.acessorias.scheduler.run` e expoe `GET /api-v2/integrations/acessorias/scheduler/status`.
+- **Frontend React:** `/dev` ganhou o botao protegido `Status scheduler`, que mostra ativo/inativo, execucao atual, notificacoes, intervalo, proxima execucao e ultimo sync.
+- **Configuracao:** novas envs `ACESSORIAS_SCHEDULER_ENABLED`, `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED`, `ACESSORIAS_SCHEDULER_INITIAL_DELAY_SEC`, `ACESSORIAS_SCHEDULER_INTERVAL_MINUTES`, `ACESSORIAS_SCHEDULER_MAX_RUN_MINUTES` e `ACESSORIAS_SCHEDULER_NOTIFICATION_DAYS_AHEAD`.
+- **Validacao local:** passaram testes focados do scheduler/Acessorias com 12 testes, suite Acessorias/Departamentos com 23 testes, build/lint da API, TypeScript/build/lint do Web.
+- **Pendente:** manter desabilitado ate validar token/payload real no EasyPanel; depois habilitar primeiro sem notificacoes, observar duracao/totais/auditoria e so entao habilitar notificacoes automaticas. Esta fatia nao foi homologada em producao.
+
 ## Atualizacao complementar 2026-06-02 notificacoes Acessorias manuais
 
 - **Responsavel/IA:** Codex
@@ -7,7 +17,7 @@
 - **Backend/API v2:** criado `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`, protegido por JWT, CSRF e permissoes `integrations.acessorias.deliveries.manage` + `notifications.create`. A rotina cria notificacoes deduplicadas para vencimento proximo, atraso, baixa confirmada e divergencia aberta, mirando responsavel da entrega quando existir ou departamento operacional quando nao houver responsavel.
 - **Frontend React:** `/dev` ganhou o botao protegido `Gerar notificacoes` no painel `Integracao Acessorias`, com resumo de candidatas, criadas, duplicadas, ignoradas, erros e amostra de destinatarios.
 - **Validacao local:** passaram `acessorias-fiscal-application.service.spec.ts` com 5 testes, suites focadas de Acessorias/Departamentos com 20 testes, TypeScript do Web, build/lint da API e build/lint do Web.
-- **Pendente:** validar no EasyPanel com entregas/divergencias reais, conferir auditoria/notificacoes no banco real e criar scheduler seguro. Esta fatia nao foi homologada em producao.
+- **Pendente:** validar no EasyPanel com entregas/divergencias reais, conferir auditoria/notificacoes no banco real e habilitar o scheduler automatico apenas apos essa validacao. Esta fatia nao foi homologada em producao.
 
 ## Atualizacao complementar 2026-06-01 paginacao Acessorias e Central de Vencimentos
 

@@ -1,5 +1,45 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 scheduler Acessorias opt-in
+
+### Arquivos alterados
+
+- `portal-sama-api/.env.example`
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.module.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-scheduler.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-scheduler.service.spec.ts`
+- `portal-sama-web/src/pages/dev/DevAdminPage.tsx`
+- `portal-sama-web/src/services/acessorias.service.ts`
+- `portal-sama-web/src/types/acessorias.ts`
+- Documentacao operacional e de Acessorias.
+
+### O que mudou
+
+- Criado scheduler interno opt-in para sincronizar entregas Acessorias periodicamente.
+- `AcessoriasDeliveriesService.sync()` agora registra `trigger`, permitindo diferenciar execucao manual e scheduler.
+- Scheduler fica desligado por padrao e so inicia quando `ACESSORIAS_SCHEDULER_ENABLED=true`.
+- Geracao automatica de notificacoes tem flag separada `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED`.
+- A rotina tem trava em memoria e tambem pula execucao quando encontra sync `RUNNING` recente.
+- Criado `GET /api-v2/integrations/acessorias/scheduler/status` para diagnostico.
+- `/dev` ganhou botao `Status scheduler`.
+
+### Testes executados
+
+- `npm.cmd test -- acessorias-scheduler.service.spec.ts acessorias-deliveries.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand`.
+- `npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts acessorias-scheduler.service.spec.ts departments.service.spec.ts --runInBand`.
+- `npx.cmd tsc --noEmit --pretty false` no Web.
+- `npm.cmd run build` e `npm.cmd run lint` na API.
+- `npm.cmd run build` e `npm.cmd run lint` no Web.
+
+### Riscos ou pendencias
+
+- Falta validar no EasyPanel com token/payload real e observar tempo real da importacao.
+- Scheduler em memoria nao e lock distribuido entre multiplas instancias; se houver escala horizontal, sera necessario evoluir para lock persistente.
+- Notificacoes automaticas devem permanecer desligadas ate confirmar destinatarios e deduplicacao reais.
+
 ## 2026-06-02 notificacoes Acessorias manuais
 
 ### Arquivos alterados
@@ -33,7 +73,7 @@
 ### Riscos ou pendencias
 
 - Falta validar no EasyPanel com notificacoes, auditoria e destinatarios reais.
-- O scheduler automatico ainda nao foi implementado; esta fatia e manual.
+- O scheduler automatico foi implementado em fatia posterior local e opt-in; esta acao manual continua disponivel para controle operacional.
 - Confirmar em dados reais se `responsibleUsername` vem preenchido em volume suficiente ou se sera necessario reforcar o mapeamento por departamento/carteira.
 
 ## 2026-06-01 paginacao Acessorias e Central de Vencimentos

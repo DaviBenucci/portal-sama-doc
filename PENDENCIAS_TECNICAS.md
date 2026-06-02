@@ -2,6 +2,17 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias) e Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos).
 
+## Atualizacao 2026-06-02 scheduler Acessorias opt-in
+
+- Implementado `AcessoriasSchedulerService` no backend, desabilitado por padrao.
+- O scheduler roda somente com `ACESSORIAS_SCHEDULER_ENABLED=true` e usa intervalo configuravel por `ACESSORIAS_SCHEDULER_INTERVAL_MINUTES`, com minimo de 15 minutos.
+- A geracao automatica de notificacoes fica separada em `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=false` por padrao.
+- A rotina evita sobreposicao local por trava em memoria e tambem pula se existir `acessorias_delivery_sync_runs` com status `RUNNING` recente.
+- Criado `GET /api-v2/integrations/acessorias/scheduler/status`, protegido por `integrations.acessorias.deliveries.read`.
+- `/dev` ganhou o botao `Status scheduler` para diagnostico operacional.
+- Validacoes locais passaram: scheduler/Acessorias com 12 testes, Acessorias/Departamentos com 23 testes, build/lint API, TypeScript/build/lint Web.
+- Permanece pendente validar no EasyPanel com dados reais, habilitar primeiro sem notificacoes, observar logs/auditoria/totais e so depois habilitar notificacoes automaticas.
+
 ## Atualizacao 2026-06-02 notificacoes Acessorias manuais
 
 - Implementada a geracao manual de notificacoes operacionais do Acessorias por `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`.
@@ -10,7 +21,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - O alvo prioriza `responsibleUsername` da entrega; quando nao houver responsavel, usa o departamento operacional normalizado.
 - `/dev` ganhou o botao protegido `Gerar notificacoes`, com resumo de candidatas/criadas/duplicadas/ignoradas/erros.
 - Validacoes locais passaram: teste focado de aplicacao fiscal com 5 testes, suites focadas Acessorias/Departamentos com 20 testes, TypeScript Web, build/lint API e build/lint Web.
-- Permanece pendente validar no EasyPanel com dados reais, conferir notificacoes/auditoria persistidas e implementar scheduler seguro para geracao periodica.
+- Permanece pendente validar no EasyPanel com dados reais, conferir notificacoes/auditoria persistidas e habilitar scheduler automatico apenas apos validacao.
 
 ## Atualizacao 2026-06-01 paginacao Acessorias e Central de Vencimentos
 

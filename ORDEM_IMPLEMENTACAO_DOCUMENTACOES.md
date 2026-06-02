@@ -139,7 +139,7 @@ Criterio de saida:
 
 ## Fase 3 - Acessorias aplicado nas planilhas departamentais e vencimentos
 
-Estado: aplicacao local multidepartamental, revisao manual de divergencias, vencimentos Acessorias, Central de Vencimentos e geracao manual de notificacoes implementados localmente; validacao real ainda pendente.
+Estado: aplicacao local multidepartamental, revisao manual de divergencias, vencimentos Acessorias, Central de Vencimentos, geracao manual de notificacoes e scheduler opt-in implementados localmente; validacao real ainda pendente.
 
 Objetivo: transformar a sincronizacao do Acessorias em operacao diaria visivel e auditavel.
 
@@ -154,6 +154,7 @@ Ja feito localmente:
 - `PATCH /api-v2/integrations/acessorias/deliveries/divergences/:id` permite resolver ou ignorar divergencias manualmente com CSRF, RBAC e auditoria; `/departamentos/modelo` oferece botoes protegidos na lista de divergencias abertas.
 - Entregas Acessorias pendentes/atrasadas com `dueAt` entram no carrossel de vencimentos do workspace; quando ha mapeamento confirmado para coluna operacional, tambem alimentam o vencimento da celula correspondente.
 - `POST /api-v2/integrations/acessorias/deliveries/notifications/generate` gera notificacoes manuais deduplicadas para vencimento proximo, atraso, baixa e divergencia aberta; `/dev` possui botao protegido `Gerar notificacoes`.
+- Scheduler Acessorias opt-in por env (`ACESSORIAS_SCHEDULER_ENABLED`) sincroniza entregas periodicamente e pode gerar notificacoes com flag separada; `/dev` possui diagnostico `Status scheduler`.
 
 Implementar em ordem:
 
@@ -164,7 +165,7 @@ Implementar em ordem:
 5. [local concluido; real pendente] Conectar entregas/vencimentos ao calendario operacional.
 6. [local concluido; real pendente] Criar Central de Vencimentos baseada nas entregas sincronizadas.
 7. [local concluido manual; real pendente] Adicionar notificacoes para vencimento proximo, atraso, baixa e divergencia.
-8. Criar scheduler seguro para sincronizacao periodica.
+8. [local concluido opt-in; real pendente] Criar scheduler seguro para sincronizacao periodica.
 
 Documentos que devem ser atualizados:
 

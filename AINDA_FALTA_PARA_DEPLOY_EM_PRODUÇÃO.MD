@@ -77,8 +77,31 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | Playwright real | Parcial validado | `npm.cmd run test:e2e:real` passou com usuario real de bootstrap/DEV contra `https://portal.samacontabil.com.br`, validando login, Home, storage do navegador, cookie HttpOnly/SameSite/Secure e logout. Falta repetir por perfis criticos e ampliar fluxos. |
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
-| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e criar scheduler seguro em `integracao_acessorias_entregas_vencimentos.md`. |
+| Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais e consultar `Status scheduler`, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Scheduler seguro existe como opt-in e desabilitado por padrao. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e habilitar scheduler em rollout controlado. |
 | UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; a Home por perfil agora consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar a Home com dados reais do Acessorias no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar UI de clientes/responsabilidades, carteiras, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-02 scheduler Acessorias opt-in
+
+Foi implementado localmente o scheduler seguro do Acessorias, desabilitado por padrao.
+
+- criado `AcessoriasSchedulerService`;
+- adicionadas envs `ACESSORIAS_SCHEDULER_ENABLED`, `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED`, `ACESSORIAS_SCHEDULER_INITIAL_DELAY_SEC`, `ACESSORIAS_SCHEDULER_INTERVAL_MINUTES`, `ACESSORIAS_SCHEDULER_MAX_RUN_MINUTES` e `ACESSORIAS_SCHEDULER_NOTIFICATION_DAYS_AHEAD`;
+- scheduler sincroniza entregas com `trigger=scheduler`;
+- notificacoes automaticas ficam separadas e desligadas por padrao;
+- execucao evita sobreposicao local e pula quando ha sync `RUNNING` recente;
+- criado `GET /api-v2/integrations/acessorias/scheduler/status`;
+- `/dev` ganhou o botao `Status scheduler`;
+- cada execucao audita `integrations.acessorias.scheduler.run`.
+
+Validacao local:
+
+- `npm.cmd test -- acessorias-scheduler.service.spec.ts acessorias-deliveries.service.spec.ts acessorias-fiscal-application.service.spec.ts --runInBand` passou com 3 suites e 12 testes;
+- `npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-home.service.spec.ts acessorias-scheduler.service.spec.ts departments.service.spec.ts --runInBand` passou com 5 suites e 23 testes;
+- `npx.cmd tsc --noEmit --pretty false` passou no Web;
+- `npm.cmd run build` e `npm.cmd run lint` passaram na API;
+- `npm.cmd run build` e `npm.cmd run lint` passaram no Web.
+
+Pendencia real remanescente: publicar API/Web no EasyPanel, validar status do scheduler com usuario autorizado, habilitar primeiro sem notificacoes automaticas, observar duracao/totais/auditoria e so depois habilitar notificacoes automaticas. Esta fatia nao esta homologada em producao.
 
 ## Atualizacao operacional de 2026-06-02 notificacoes Acessorias manuais
 
@@ -100,7 +123,7 @@ Validacao local:
 - `npm.cmd run build` e `npm.cmd run lint` passaram na API;
 - `npm.cmd run build` e `npm.cmd run lint` passaram no Web.
 
-Pendencia real remanescente: publicar API/Web no EasyPanel, executar o botao com usuario autorizado, conferir notificacoes e auditoria no banco real, validar destinatarios reais e implementar scheduler seguro. Esta fatia nao esta homologada em producao.
+Pendencia real remanescente: publicar API/Web no EasyPanel, executar o botao com usuario autorizado, conferir notificacoes e auditoria no banco real, validar destinatarios reais e habilitar scheduler automatico apenas em rollout controlado. Esta fatia nao esta homologada em producao.
 
 ## Atualizacao operacional de 2026-06-01 paginacao Acessorias e Central de Vencimentos
 
@@ -1120,7 +1143,9 @@ Trilha consolidada a partir de `integracao_acessorias_entregas_vencimentos.md`. 
 - [ ] Validar revisao manual de divergencias no EasyPanel com dados reais e auditoria.
 - [x] Implementar geracao manual local de alertas/notificacoes para divergencias, vencimento proximo, atraso e baixa Acessorias.
 - [ ] Validar notificacoes Acessorias no EasyPanel com dados reais, auditoria e destinatarios reais.
-- [ ] Implementar scheduler seguro para notificacoes recorrentes D-7, D-3, D-1, D0 e D+1.
+- [x] Implementar scheduler seguro opt-in para sincronizacao periodica.
+- [ ] Validar scheduler Acessorias no EasyPanel com dados reais, auditoria e sem notificacoes automaticas inicialmente.
+- [ ] Habilitar notificacoes recorrentes D-7, D-3, D-1, D0 e D+1 somente apos validar destinatarios/deduplicacao.
 - [ ] Implementar motor de recorrencia inteligente sem substituir vencimento oficial.
 - [ ] Criar permissoes, perfis, auditoria e testes unitarios/integracao/E2E/seguranca do MVP Fiscal.
 
@@ -1187,7 +1212,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
 12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
-13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, vencimentos oficiais no carrossel, Central de Vencimentos e geracao manual de notificacoes, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria/destinatarios e decidir o corte funcional; scheduler seguro continua como backlog aprovado.
+13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, vencimentos oficiais no carrossel, Central de Vencimentos, geracao manual de notificacoes e scheduler opt-in, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria/destinatarios e decidir o corte funcional; notificacoes automaticas devem ser habilitadas apenas depois dessa validacao.
 
 ## Criterio para dizer "pronto para producao"
 

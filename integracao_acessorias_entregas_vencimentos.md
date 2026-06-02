@@ -40,6 +40,8 @@ Atualizacao 2026-06-01 paginacao e Central: os servicos Acessorias de Home, entr
 
 Atualizacao 2026-06-02 notificacoes manuais: a API passou a expor `POST /api-v2/integrations/acessorias/deliveries/notifications/generate`, que gera notificacoes deduplicadas para vencimento proximo, atraso, baixa confirmada e divergencia aberta. O endpoint e protegido por JWT, CSRF, `integrations.acessorias.deliveries.manage` e `notifications.create`, registra auditoria e mira o responsavel da entrega quando existir ou o departamento operacional. A rota `/dev` ganhou o botao `Gerar notificacoes`. Esta etapa e manual e local; scheduler e homologacao no EasyPanel seguem pendentes.
 
+Atualizacao 2026-06-02 scheduler opt-in: foi criado `AcessoriasSchedulerService`, desabilitado por padrao. Quando `ACESSORIAS_SCHEDULER_ENABLED=true`, o backend agenda sincronizacao periodica de entregas com intervalo configuravel, evita sobreposicao com sync `RUNNING` recente, registra auditoria `integrations.acessorias.scheduler.run` e permite gerar notificacoes automaticas somente se `ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=true`. O status fica disponivel em `GET /api-v2/integrations/acessorias/scheduler/status` e no botao `Status scheduler` da area `/dev`. Esta automacao ainda precisa ser validada no EasyPanel com dados reais antes de qualquer homologacao.
+
 ---
 
 ## 2. Decisão de implementação

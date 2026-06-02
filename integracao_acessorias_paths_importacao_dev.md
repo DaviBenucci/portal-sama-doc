@@ -126,7 +126,7 @@ Na rota React `/dev`, arquivo `portal-sama-web/src/pages/dev/DevAdminPage.tsx`:
 
 - O botao manual `Novo cliente` fica no cabecalho da area DEV e abre `/dev/clientes/novo`; ele depende da permissao `clients.create`.
 - O painel `Integracao Acessorias` / `Importacao DEV` fica logo abaixo dos cards de resumo da area DEV.
-- Nesse painel existem os botoes `Testar conexao`, `Previa entregas`, `Sincronizar entregas`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Gerar notificacoes` e `Importar tudo`.
+- Nesse painel existem os botoes `Testar conexao`, `Status scheduler`, `Previa entregas`, `Sincronizar entregas`, `Previa clientes`, `Importar clientes`, `Previa responsaveis`, `Importar responsaveis`, `Gerar notificacoes` e `Importar tudo`.
 - `Previa clientes` usa `GET /api-v2/integrations/acessorias/registrations/preview?entity=clients`.
 - `Importar clientes` usa `POST /api-v2/integrations/acessorias/registrations/sync` com `entity=clients`.
 - `Colaboradores ativos` fica desabilitado ate o Acessorias confirmar endpoint oficial de usuarios/colaboradores; por enquanto a importacao segura e de responsaveis extraidos dos departamentos das empresas.
@@ -683,6 +683,7 @@ Importar clientes
 Pré-visualizar responsáveis
 Importar responsáveis
 Gerar notificacoes
+Status scheduler
 Importar tudo
 ```
 
@@ -834,11 +835,43 @@ Regras:
 - usar departamento operacional como fallback;
 - registrar auditoria da execucao.
 
-Esta acao e manual e local. O scheduler seguro ainda precisa ser implementado.
+Esta acao e manual e local. O scheduler seguro existe como opt-in, mas ainda precisa ser habilitado e homologado no EasyPanel.
 
 ---
 
-### 17.9 Importar tudo
+### 17.9 Status scheduler
+
+Consulta o status do scheduler seguro do Acessorias.
+
+Endpoint:
+
+```txt
+GET /api-v2/integrations/acessorias/scheduler/status
+```
+
+Regras:
+
+- exigir `integrations.acessorias.deliveries.read`;
+- nao expor token/base URL do Acessorias;
+- mostrar se o scheduler esta ativo, se esta rodando, se notificacoes automaticas estao habilitadas, intervalo, proxima execucao e ultimo sync;
+- usar apenas como diagnostico, sem disparar sincronizacao.
+
+Variaveis relevantes:
+
+```txt
+ACESSORIAS_SCHEDULER_ENABLED=false
+ACESSORIAS_SCHEDULER_NOTIFICATIONS_ENABLED=false
+ACESSORIAS_SCHEDULER_INITIAL_DELAY_SEC=120
+ACESSORIAS_SCHEDULER_INTERVAL_MINUTES=360
+ACESSORIAS_SCHEDULER_MAX_RUN_MINUTES=60
+ACESSORIAS_SCHEDULER_NOTIFICATION_DAYS_AHEAD=7
+```
+
+Ativar primeiro sem notificacoes automaticas. Depois de validar totais, destinatarios e auditoria reais, habilitar notificacoes.
+
+---
+
+### 17.10 Importar tudo
 
 Executa em sequência:
 

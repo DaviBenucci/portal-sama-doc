@@ -2,6 +2,19 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
+## Endpoint novo: `/api-v2/integrations/acessorias/scheduler/status`
+
+- **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-scheduler.service.ts`.
+- **Metodo:** GET.
+- **Finalidade:** Consultar diagnostico do scheduler Acessorias: ativo/inativo, execucao atual, notificacoes automaticas, intervalo, proxima execucao, ultimo status e ultimo sync.
+- **Pagina/tela relacionada:** `/dev`, painel `Integracao Acessorias`, botao `Status scheduler`.
+- **Modulo NestJS alvo:** integracao Acessorias.
+- **Permissoes:** `integrations.acessorias.deliveries.read`.
+- **Controles implementados:** JWT, RBAC, leitura sem mutacao e sem expor token/base URL do Acessorias.
+- **Status de migracao:** Implementado localmente em 2026-06-02; pendente de deploy/validacao real no EasyPanel.
+- **Riscos de seguranca:** exposicao de diagnostico operacional para usuario sem escopo; mitigado por permissao de leitura de entregas.
+- **Testes necessarios:** validar 200 com usuario autorizado, 403 sem permissao, status coerente com envs reais e ultimo sync real.
+
 ## Endpoint novo: `/api-v2/integrations/acessorias/deliveries/notifications/generate`
 
 - **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-fiscal-application.service.ts`.
