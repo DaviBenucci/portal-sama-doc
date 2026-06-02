@@ -187,7 +187,7 @@ Criterio de saida:
 
 ## Fase 4 - Responsabilidade de clientes e carteiras
 
-Estado: backend normalizado local existente; painel do cliente conectado localmente a responsabilidades; atribuicao inicial e transferencia auditada pelo painel local disponiveis; backfill e validacao real ainda pendentes.
+Estado: backend normalizado local existente; painel do cliente conectado localmente a responsabilidades; atribuicao inicial, edicao, encerramento e transferencia auditada pelo painel local disponiveis; dashboard de carteira do gestor prioriza responsabilidades normalizadas localmente; backfill e validacao real ainda pendentes.
 
 Objetivo: remover a dependencia operacional exclusiva de `clients.metadata` para carteira, responsavel e gestor.
 
@@ -196,7 +196,10 @@ Ja feito localmente:
 - API v2 possui `client_department_assignments` e endpoints `GET/POST /api-v2/clients/:clientId/assignments`, `PATCH/POST /api-v2/client-assignments/:id*` e `POST /api-v2/client-assignments/transfer`.
 - `/clientes/:id` exibe o painel `Equipe e responsaveis` consumindo `GET /api-v2/clients/:clientId/assignments`, protegido visualmente por `client_assignments.read`.
 - `/clientes/:id` possui acao `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com responsavel operacional, departamento, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e dependente das listas `departments.read`/`collaborators.read`.
+- `/clientes/:id` permite editar responsabilidade por `PATCH /api-v2/client-assignments/:id`, com departamento, responsavel operacional, gestor, tipo, status e periodo, protegida por `client_assignments.update` e dependente das listas `departments.read`/`collaborators.read`.
+- `/clientes/:id` permite encerrar responsabilidade ativa por `POST /api-v2/client-assignments/:id/end`, com data e motivo, protegida por `client_assignments.end`.
 - `/clientes/:id` permite transferir uma responsabilidade ativa para outro responsavel por `POST /api-v2/client-assignments/transfer`, com CSRF, permissao `client_assignments.transfer`, gestor opcional, data efetiva e motivo.
+- `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira de consulta, com fallback temporario para `clients.metadata`.
 
 Implementar em ordem:
 
@@ -205,8 +208,8 @@ Implementar em ordem:
 3. Criar backfill seguro de responsabilidades a partir de `clients.metadata`.
 4. [local concluido; real pendente] Conectar painel do cliente a uma guia Equipe/Responsaveis.
 5. [local concluido; real pendente] Permitir atribuicao inicial de responsavel operacional por departamento.
-6. [local parcial; real pendente] Permitir gestor responsavel quando aplicavel.
-7. Conectar telas de gestor/carteira ao modelo normalizado.
+6. [local concluido; real pendente] Permitir gestor responsavel quando aplicavel.
+7. [local parcial; real pendente] Conectar telas de gestor/carteira ao modelo normalizado. O dashboard de consulta ja prioriza `client_department_assignments`; a transferencia em lote ainda precisa escrever no modelo normalizado.
 8. [local concluido; real pendente] Garantir transferencia auditada pela UI.
 9. Migrar filtros de planilha, documentos e vencimentos para responsabilidade normalizada.
 

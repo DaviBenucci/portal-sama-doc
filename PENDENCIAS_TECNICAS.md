@@ -2,6 +2,24 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
 
+## Atualizacao 2026-06-02 dashboard de carteira normalizado
+
+- `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` em `client_department_assignments` para montar a carteira de consulta.
+- O runtime do `TransfersModule` resolve `responsibleUserId` para o `colaboradorId` usado pela experiencia legada e aplica a carteira normalizada em memoria.
+- O fallback para `clients.metadata` continua quando nao ha responsabilidade normalizada ativa para o cliente/departamento.
+- A escrita da transferencia operacional em lote continua pendente para `client_department_assignments`; nesta fatia foi alterada somente a leitura do dashboard.
+- Validacao local passou: `npm.cmd test -- transfers.service.spec.ts --runInBand` com 5 testes, `npm.cmd run build` e `npm.cmd run lint` na API.
+- Permanece pendente validar no EasyPanel com MySQL real/backfill, usuarios reais de gestor/departamento e auditoria/matriz de permissoes de transferencias.
+
+## Atualizacao 2026-06-02 edicao e encerramento de responsabilidades no painel do cliente
+
+- `/clientes/:id` agora possui acoes `Editar` e `Encerrar` em responsabilidades normalizadas.
+- A edicao chama `PATCH /api-v2/client-assignments/:id` por `updateClientAssignment()`, com departamento, responsavel operacional, gestor, tipo, status e periodo.
+- O encerramento chama `POST /api-v2/client-assignments/:id/end` por `endClientAssignment()`, com data de encerramento e motivo.
+- A acao `Editar` exige `client_assignments.update` e listas auxiliares `departments.read`/`collaborators.read`; a acao `Encerrar` exige `client_assignments.end`.
+- Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build`, `npm.cmd run lint` e `npm.cmd run test:e2e` com 12 testes e 1 opt-in real pulado.
+- Permanece pendente validar no EasyPanel com usuario real, CSRF real, responsabilidades reais, auditoria persistida, backfill de `clients.metadata` e migracao de carteiras/filtros para o modelo normalizado.
+
 ## Atualizacao 2026-06-02 transferencia de responsabilidades no painel do cliente
 
 - `/clientes/:id` agora possui acao `Transferir` em responsabilidades normalizadas ativas.
@@ -9,7 +27,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - A acao exige `client_assignments.transfer` na experiencia e `collaborators.read` para carregar responsaveis de destino.
 - A transferencia coleta novo responsavel operacional, gestor opcional, data efetiva e motivo, bloqueando o mesmo responsavel atual como destino.
 - Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build`, `npm.cmd run lint`, `npm.cmd run test:e2e` com 12 testes e 1 opt-in real pulado, e `git diff --check` no Web.
-- Permanece pendente validar no EasyPanel com usuario real, CSRF real, responsabilidades reais, auditoria persistida e matriz de permissoes; edicao/encerramento pela UI, backfill de `clients.metadata` e migracao de carteiras/filtros seguem pendentes.
+- Permanece pendente validar no EasyPanel com usuario real, CSRF real, responsabilidades reais, auditoria persistida e matriz de permissoes; backfill de `clients.metadata` e migracao de carteiras/filtros seguem pendentes.
 
 ## Atualizacao 2026-06-02 painel do cliente e responsabilidades
 
@@ -20,7 +38,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - A acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional.
 - A criacao exige `client_assignments.create` e depende das listas auxiliares `departments.read` e `collaborators.read`.
 - Validacoes locais passaram: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build` e `npm.cmd run lint` no Web.
-- Permanece pendente validar no EasyPanel com responsabilidades reais, criar UI de edicao/encerramento, rodar/backfill de `clients.metadata` e migrar filtros operacionais para o modelo normalizado.
+- Permanece pendente validar no EasyPanel com responsabilidades reais, rodar/backfill de `clients.metadata` e migrar filtros operacionais para o modelo normalizado.
 
 ## Atualizacao 2026-06-02 scheduler Acessorias opt-in
 

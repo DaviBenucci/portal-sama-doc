@@ -1,5 +1,24 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-02 dashboard de carteira normalizado
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 no backend: o dashboard de transferencias/carteira passou a priorizar responsabilidades ativas de `client_department_assignments` ao montar a consulta usada por `/manager/colaboradores`.
+- **Backend/API v2:** `TransfersService.getDashboard()` chama o runtime com leitura normalizada. O runtime busca responsabilidades `ACTIVE`, resolve o `responsibleUserId` para o `colaboradorId` legado da UI e sobrepoe a carteira em memoria.
+- **Compatibilidade:** o fallback por `clients.metadata` permanece quando nao ha responsabilidade normalizada ativa para cliente/departamento. As mutacoes legadas de transferencia em lote continuam sem alterar `client_department_assignments` nesta fatia.
+- **Validacao local:** passaram `npm.cmd test -- transfers.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API. O spec inclui teste que garante prioridade da responsabilidade normalizada sobre o metadata legado.
+- **Pendente:** validar com MySQL real/backfill, publicar API atualizada e migrar a escrita da transferencia operacional em lote para o modelo normalizado.
+
+## Atualizacao complementar 2026-06-02 edicao e encerramento de responsabilidades no painel do cliente
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 4 na UI: o painel do cliente passou a editar e encerrar responsabilidades normalizadas usando endpoints ja existentes da API v2.
+- **Frontend React:** `ClientDashboardPage.tsx` adicionou acoes `Editar` e `Encerrar` por responsabilidade. A edicao permite ajustar departamento, responsavel operacional, gestor, tipo, status e periodo; o encerramento coleta data e motivo.
+- **Servicos/tipos:** `clients.service.ts` ganhou `updateClientAssignment()` para `PATCH /api-v2/client-assignments/:id` e `endClientAssignment()` para `POST /api-v2/client-assignments/:id/end`; `types/clients.ts` ganhou `ClientAssignmentUpdateInput` e `ClientAssignmentEndInput`.
+- **Permissoes:** `Editar` aparece com `client_assignments.update` e depende de `departments.read`/`collaborators.read` para carregar listas. `Encerrar` aparece para responsabilidades `ACTIVE` com `client_assignments.end`. A seguranca real permanece no backend com JWT, CSRF, RBAC, escopo e auditoria.
+- **Validacao local:** passaram `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build`, `npm.cmd run lint` e `npm.cmd run test:e2e` com 12 testes e 1 opt-in real pulado no Web.
+- **Pendente:** validar no EasyPanel com responsabilidades reais, conferir auditoria persistida, aplicar migrations/seeds/backfill no MySQL real e migrar carteiras/filtros de gestor para priorizar `client_department_assignments`.
+
 ## Atualizacao complementar 2026-06-02 transferencia de responsabilidades no painel do cliente
 
 - **Responsavel/IA:** Codex
@@ -8,7 +27,7 @@
 - **Servicos/tipos:** `clients.service.ts` ganhou `transferClientAssignments()` para `POST /api-v2/client-assignments/transfer`; `types/clients.ts` ganhou `ClientAssignmentTransferInput` e `ClientAssignmentsTransferResponse`.
 - **Permissoes:** a acao aparece apenas com `client_assignments.transfer`; para carregar responsaveis, a sessao tambem precisa de `collaborators.read`. A seguranca real permanece no backend com JWT, CSRF, RBAC, escopo e auditoria `client_assignments.transfer`.
 - **Validacao local:** passaram `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run build`, `npm.cmd run lint`, `npm.cmd run test:e2e` com 12 testes e 1 opt-in real pulado, e `git diff --check` no Web.
-- **Pendente:** validar no EasyPanel com responsabilidades reais, conferir auditoria persistida, aplicar migrations/seeds/backfill no MySQL real, implementar edicao/encerramento pela UI e migrar carteiras/filtros de gestor para priorizar `client_department_assignments`.
+- **Pendente:** validar no EasyPanel com responsabilidades reais, conferir auditoria persistida, aplicar migrations/seeds/backfill no MySQL real e migrar carteiras/filtros de gestor para priorizar `client_department_assignments`.
 
 ## Atualizacao complementar 2026-06-02 painel do cliente e responsabilidades
 
@@ -18,7 +37,7 @@
 - **Atribuicao inicial:** a acao `Nova responsabilidade` cria `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional. A acao exige `client_assignments.create` e carrega listas auxiliares somente com `departments.read` e `collaborators.read`.
 - **Servicos/tipos:** `clients.service.ts` ganhou `listClientAssignments()` e `createClientAssignment()`; `types/clients.ts` ganhou o contrato de `ClientAssignmentItem`, `ClientAssignmentsListResponse`, `ClientAssignmentResponse` e `ClientAssignmentPayloadInput`.
 - **Validacao local:** passaram TypeScript do Web, build do Web e lint do Web.
-- **Pendente:** validar no EasyPanel com dados reais e responsabilidades reais; ainda falta backfill de `clients.metadata`, edicao/encerramento pela UI e migrar filtros de carteira para o modelo normalizado.
+- **Pendente:** validar no EasyPanel com dados reais e responsabilidades reais; ainda falta backfill de `clients.metadata` e migrar filtros de carteira para o modelo normalizado.
 
 ## Atualizacao complementar 2026-06-02 scheduler Acessorias opt-in
 

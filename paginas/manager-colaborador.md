@@ -2,7 +2,7 @@
 
 > Atualizacao 2026-05-19 15:53: primeira fatia React criada em `/manager/colaboradores` com `ManagerCollaboratorsPage.tsx`, consumindo `GET /api-v2/transfers/dashboard` para consulta de carteira por colaborador. Transferencias continuam operadas em `/manager/transferencias`; faltam validacao com MySQL real, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 
-> Atualizacao 2026-06-02: o painel `/clientes/:id` passou a ler `client_department_assignments`, criar atribuicao inicial local com gestor opcional e transferir responsabilidades ativas pelo endpoint normalizado. Esta pagina ainda precisa conectar a carteira do colaborador ao modelo normalizado antes de abandonar `clients.metadata`/contratos de transferencia legados.
+> Atualizacao 2026-06-02: o painel `/clientes/:id` passou a ler `client_department_assignments`, criar atribuicao inicial local com gestor opcional, editar/encerrar responsabilidades e transferir responsabilidades ativas pelo endpoint normalizado. O dashboard `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` para a consulta de carteira, com fallback temporario para `clients.metadata`. Ainda falta validar no EasyPanel e migrar a escrita de transferencias em lote.
 
 ## 1. Identificação da página
 
@@ -414,6 +414,6 @@ Atualizacao 2026-05-19 15:53: os itens 3, 4 e 5 receberam a primeira implementac
 ## 17. Atualizacao frontend - 2026-05-19 15:53
 
 - `ManagerCollaboratorsPage.tsx` foi criado para `/manager/colaboradores`.
-- A tela consome o dashboard do `TransfersModule`, porque ele ja aplica JWT, `transfers.read`, escopo por departamento e monta carteira por colaborador a partir dos metadados legados.
+- A tela consome o dashboard do `TransfersModule`, porque ele ja aplica JWT, `transfers.read`, escopo por departamento e monta carteira por colaborador. Atualizacao 2026-06-02: essa montagem prioriza responsabilidades ativas de `client_department_assignments` e usa `clients.metadata` apenas como fallback temporario.
 - A primeira fatia e somente consulta: busca colaboradores, lista empresas da carteira, indica transferencias ativas e mostra sessoes relacionadas.
-- Criacao/retorno de transferencias continuam em `/manager/transferencias`; adicionar empresas sem responsavel e historico/calendario completos ainda dependem de contratos futuros e backfill.
+- Criacao/retorno de transferencias continuam em `/manager/transferencias`; a escrita normalizada de transferencias em lote, adicionar empresas sem responsavel e historico/calendario completos ainda dependem de contratos futuros e backfill.

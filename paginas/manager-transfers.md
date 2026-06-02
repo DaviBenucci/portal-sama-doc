@@ -2,7 +2,7 @@
 
 > Atualizacao 2026-05-19 15:33: primeira fatia React criada em `/manager/transferencias` com `ManagerTransfersPage.tsx`, consumindo `TransfersModule` para dashboard, criacao e retorno manual. Ainda faltam validacao com MySQL real, seed `transfers.*`, usuarios reais por perfil/departamento, backfill/modelagem de carteira e Playwright.
 
-> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece transferencia normalizada por `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial e transfere responsabilidades ativas localmente. Esta pagina ainda precisa trocar a transferencia operacional em lote para `client_department_assignments` na UI e validar auditoria real.
+> Atualizacao 2026-06-02: `ClientAssignmentsModule` ja oferece edicao, encerramento e transferencia normalizada por `PATCH /api-v2/client-assignments/:id`, `POST /api-v2/client-assignments/:id/end` e `POST /api-v2/client-assignments/transfer`, e o painel `/clientes/:id` ja cria atribuicao inicial, edita, encerra e transfere responsabilidades localmente. O dashboard de consulta usado por gestor ja prioriza `client_department_assignments`, mas esta pagina ainda precisa trocar a transferencia operacional em lote para escrita normalizada e validar auditoria real.
 
 ## 1. Identificação da página
 
@@ -423,6 +423,8 @@ Esta seção complementa a análise original da página com a decisão técnica 
 6. Registrar auditoria para ações críticas desta página, principalmente criação, alteração, upload, download, aprovação, assinatura ou acesso a dados sensíveis.
 
 Atualizacao 2026-05-19 15:33: os itens 2, 3, 4 e 5 receberam a primeira implementacao integrada. O service React usa `GET /api-v2/transfers/dashboard`, `POST /api-v2/transfers` e `POST /api-v2/transfers/:id/return`; as mutacoes emitem CSRF pelo client centralizado e a tela condiciona a UX a `transfers.read/create/return`. A validacao final continua pendente em homologacao com dados reais e Playwright.
+
+Atualizacao 2026-06-02: `GET /api-v2/transfers/dashboard` passou a priorizar responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira exibida ao gestor, preservando fallback por `clients.metadata`. As mutacoes `POST /api-v2/transfers` e `POST /api-v2/transfers/:id/return` ainda operam o contrato legado e precisam ser migradas para escrever em `client_department_assignments`.
 
 ### 15.5 Referências complementares
 

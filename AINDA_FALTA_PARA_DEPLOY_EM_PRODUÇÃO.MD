@@ -78,7 +78,47 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais e consultar `Status scheduler`, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Scheduler seguro existe como opt-in e desabilitado por padrao. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e habilitar scheduler em rollout controlado. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial e transfere responsabilidade ativa pela tabela normalizada; a Home por perfil consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar responsabilidades reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar edicao/encerramento, carteiras, solicitacoes globais e permissoes guiadas. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial, edita, encerra e transfere responsabilidade ativa pela tabela normalizada; o dashboard de carteira do gestor prioriza responsabilidades normalizadas em leitura; a Home por perfil consome resumo do Acessorias. Falta aplicar migrations/seeds no MySQL real, validar responsabilidades reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md` e fechar escrita normalizada de transferencias em lote, solicitacoes globais e permissoes guiadas. |
+
+## Atualizacao operacional de 2026-06-02 dashboard de carteira normalizado
+
+Foi implementada localmente a leitura normalizada da carteira do gestor no dashboard de transferencias.
+
+- `GET /api-v2/transfers/dashboard` passou a carregar responsabilidades `ACTIVE` de `client_department_assignments`;
+- `/manager/colaboradores`, que consome esse dashboard, passa a refletir a tabela normalizada quando ha responsabilidade ativa para cliente/departamento;
+- o backend resolve `responsibleUserId` para o `colaboradorId` legado usado pela UI;
+- o fallback por `clients.metadata` continua quando nao existe responsabilidade normalizada ativa;
+- a transferencia operacional em lote ainda nao escreve em `client_department_assignments` nesta fatia.
+
+Validacao local:
+
+- `npm.cmd test -- transfers.service.spec.ts --runInBand` passou na API com 5 testes;
+- `npm.cmd run build` passou na API;
+- `npm.cmd run lint` passou na API.
+
+Pendencia real remanescente: publicar a API atualizada, validar no EasyPanel com MySQL real/backfill, gestor real por departamento e carteira real; depois migrar a escrita de transferencias em lote para `client_department_assignments`.
+
+## Atualizacao operacional de 2026-06-02 edicao e encerramento de responsabilidades no painel
+
+Foi implementada localmente a edicao e o encerramento de responsabilidades normalizadas no painel do cliente.
+
+- `/clientes/:id` ganhou acoes `Editar` e `Encerrar` por responsabilidade;
+- `Editar` chama `PATCH /api-v2/client-assignments/:id` por `updateClientAssignment()`;
+- a edicao permite ajustar departamento, responsavel operacional, gestor, tipo, status e periodo;
+- `Encerrar` chama `POST /api-v2/client-assignments/:id/end` por `endClientAssignment()`;
+- o encerramento coleta data e motivo;
+- a UI exige `client_assignments.update` para edicao e `client_assignments.end` para encerramento;
+- a edicao depende de `departments.read` e `collaborators.read` para carregar listas auxiliares;
+- `types/clients.ts` passou a tipar `ClientAssignmentUpdateInput` e `ClientAssignmentEndInput`.
+
+Validacao local:
+
+- `npx.cmd tsc --noEmit --pretty false` passou no Web;
+- `npm.cmd run build` passou no Web;
+- `npm.cmd run lint` passou no Web;
+- `npm.cmd run test:e2e` passou no Web com 12 testes e 1 teste real opt-in pulado.
+
+Pendencia real remanescente: publicar o Web atualizado, validar no EasyPanel com responsabilidades reais e usuario autorizado, conferir auditoria persistida para `client_assignments.update` e `client_assignments.end`, validar bloqueios para perfis sem essas permissoes e seguir com backfill e carteiras/filtros normalizados.
 
 ## Atualizacao operacional de 2026-06-02 painel do cliente e responsabilidades
 
@@ -99,7 +139,7 @@ Validacao local:
 - `npm.cmd run build` passou no Web;
 - `npm.cmd run lint` passou no Web.
 
-Pendencia real remanescente: validar no EasyPanel com responsabilidades reais, conferir perfis com/sem `client_assignments.read` e `client_assignments.create`, aplicar migrations/backfill no MySQL real e implementar UI de edicao/encerramento.
+Pendencia real remanescente: validar no EasyPanel com responsabilidades reais, conferir perfis com/sem `client_assignments.read` e `client_assignments.create`, aplicar migrations/backfill no MySQL real e migrar carteiras/filtros normalizados.
 
 ## Atualizacao operacional de 2026-06-02 transferencia de responsabilidades no painel
 
@@ -121,7 +161,7 @@ Validacao local:
 - `npm.cmd run test:e2e` passou no Web com 12 testes e 1 teste real opt-in pulado;
 - `git diff --check` passou no Web.
 
-Pendencia real remanescente: publicar o Web atualizado, validar no EasyPanel com responsabilidades reais e usuario autorizado, conferir auditoria persistida, validar bloqueios para perfis sem `client_assignments.transfer` e seguir com edicao/encerramento, backfill e carteiras/filtros normalizados.
+Pendencia real remanescente: publicar o Web atualizado, validar no EasyPanel com responsabilidades reais e usuario autorizado, conferir auditoria persistida, validar bloqueios para perfis sem `client_assignments.transfer` e seguir com backfill e carteiras/filtros normalizados.
 
 ## Atualizacao operacional de 2026-06-02 scheduler Acessorias opt-in
 
@@ -1217,9 +1257,13 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 - [x] Conectar painel do cliente a Equipe/Responsaveis usando `client_department_assignments` localmente.
 - [x] Implementar atribuicao inicial local de responsavel operacional por departamento, com gestor opcional.
 - [x] Implementar transferencia auditada local de responsabilidade pelo painel do cliente.
+- [x] Implementar edicao local de responsabilidade pelo painel do cliente.
+- [x] Implementar encerramento local de responsabilidade pelo painel do cliente.
+- [x] Conectar consulta local de carteira do gestor a `client_department_assignments` via dashboard de transferencias.
 - [ ] Validar painel do cliente com responsabilidades reais no EasyPanel.
+- [ ] Migrar escrita da transferencia operacional em lote para `client_department_assignments`.
 - [ ] Evoluir responsabilidade de clientes para uso operacional completo da entidade propria cliente x departamento x usuario/gestor, sem depender exclusivamente de `clients.metadata`.
-- [ ] Validar cadastro/painel de cliente com responsavel operacional e gestor por departamento, atribuicao inicial, gestor editavel e transferencia de carteira auditada.
+- [ ] Validar cadastro/painel de cliente com responsavel operacional e gestor por departamento, atribuicao inicial, gestor editavel, encerramento e transferencia de carteira auditada.
 
 ### Testes e QA
 
@@ -1258,7 +1302,7 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 9. Backup operacional foi instrumentalizado com geracao, verificacao e restore drill protegido, mas ainda precisa ser executado no EasyPanel, armazenado fora do container e testado em alvo isolado real; retencao de logs segue pendente.
 10. Dependencias funcionais remanescentes do legado ainda precisam ser desligadas com seguranca.
 11. UX/UI ainda precisa passar pelo aceite de `ux-ui-docs/09-checklist-aceite.md`, incluindo mobile, navegacao por permissao, Home por perfil, documentos, configuracoes e seguranca visivel.
-12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend de responsabilidades/transferencias normalizadas existe localmente, mas ainda faltam validacao real, UI de clientes/carteiras, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
+12. Departamentos, solicitacoes, roles/permissoes e responsabilidade de clientes ainda precisam ser fechados como governanca operacional: usuarios e colaboradores ja usam catalogo controlado localmente, e o backend/painel do cliente de responsabilidades normalizadas existe localmente com atribuicao, edicao, encerramento, transferencia e leitura de carteira do gestor, mas ainda faltam validacao real, escrita normalizada de transferencias em lote, solicitacoes globais, permissoes guiadas/auditadas e migracao operacional fora de `clients.metadata`.
 13. A Home agora possui uma leitura inicial do Acessorias e a planilha possui aplicacao/revisao manual local de divergencias, vencimentos oficiais no carrossel, Central de Vencimentos, geracao manual de notificacoes e scheduler opt-in, mas ainda falta validar o contrato real da API externa no EasyPanel, revisar com dados reais/auditoria/destinatarios e decidir o corte funcional; notificacoes automaticas devem ser habilitadas apenas depois dessa validacao.
 
 ## Criterio para dizer "pronto para producao"

@@ -1,5 +1,91 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-02 dashboard de carteira normalizado
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/transfers/transfers.service.ts`
+- `portal-sama-api/src/modules/transfers/transfers.service.spec.ts`
+- Documentacao de ordem, status, pendencias, testes, deploy e paginas/UX da Fase 4.
+
+### O que mudou
+
+- `GET /api-v2/transfers/dashboard` passou a priorizar responsabilidades `ACTIVE` de `client_department_assignments` ao montar a carteira de consulta.
+- A resolucao normalizada converte `responsibleUserId` para o `colaboradorId` legado esperado pela UI de gestor.
+- O fallback por `clients.metadata` continua quando nao existe responsabilidade normalizada ativa para o cliente/departamento.
+- A escrita de transferencias operacionais em lote nao foi alterada nesta fatia.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 4, conectando `/manager/colaboradores` ao modelo normalizado pela leitura do dashboard sem quebrar a compatibilidade do fluxo legado de transferencias.
+
+### Impacto esperado
+
+- Carteiras exibidas ao gestor passam a refletir `client_department_assignments` quando houver dado normalizado ativo.
+- O risco de divergencia com `clients.metadata` diminui na consulta.
+- A migracao completa ainda depende de backfill real e escrita normalizada das transferencias em lote.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- transfers.service.spec.ts --runInBand`
+- Resultado: passou na API com 5 testes.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com MySQL real/backfill e usuarios reais de gestor/departamento.
+- Migrar a escrita da transferencia operacional em lote para `client_department_assignments`.
+- Validar matriz de permissoes `transfers.*` e auditoria real.
+
+## 2026-06-02 edicao e encerramento de responsabilidades no painel
+
+### Arquivos alterados
+
+- `portal-sama-web/src/pages/clients/ClientDashboardPage.tsx`
+- `portal-sama-web/src/services/clients.service.ts`
+- `portal-sama-web/src/types/clients.ts`
+- Documentacao de ordem, status, pendencias, testes, deploy e paginas/UX da Fase 4.
+
+### O que mudou
+
+- `/clientes/:id` passou a permitir editar responsabilidades normalizadas pelo painel `Equipe e responsaveis`.
+- A edicao chama `PATCH /api-v2/client-assignments/:id` por `updateClientAssignment()`.
+- O formulario de edicao permite ajustar departamento, responsavel operacional, gestor, tipo, status, inicio e fim.
+- `/clientes/:id` passou a permitir encerrar responsabilidades `ACTIVE` pelo painel.
+- O encerramento chama `POST /api-v2/client-assignments/:id/end` por `endClientAssignment()`, coletando data e motivo.
+- A UI respeita `client_assignments.update` para edicao, `client_assignments.end` para encerramento e usa `departments.read`/`collaborators.read` para opcoes auxiliares da edicao.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, completando localmente as acoes basicas do painel do cliente sobre a entidade `client_department_assignments`.
+
+### Impacto esperado
+
+- Frontend passa a cobrir atribuicao inicial, edicao, encerramento e transferencia local de responsabilidades normalizadas.
+- Backend nao foi alterado nesta fatia; a seguranca real continua nos endpoints existentes com JWT, CSRF, RBAC, escopo e auditoria.
+- Ainda nao ha homologacao real no EasyPanel.
+
+### Testes executados
+
+- Comando: `npx.cmd tsc --noEmit --pretty false`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run build`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run lint`
+- Resultado: passou no Web.
+- Comando: `npm.cmd run test:e2e`
+- Resultado: passou no Web com 12 testes e 1 teste real opt-in pulado.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com responsabilidades reais, usuario autorizado, CSRF real e auditoria persistida.
+- Validar bloqueio visual/servidor para perfis sem `client_assignments.update` e `client_assignments.end`.
+- Aplicar migrations/seeds/backfill no MySQL real.
+- Migrar carteiras, filtros de gestor, planilhas, documentos e vencimentos para priorizar `client_department_assignments`.
+
 ## 2026-06-02 11:21 -03:00
 
 ### Arquivos alterados
@@ -44,7 +130,7 @@ Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, reduzindo a
 
 - Validar no EasyPanel com responsabilidades reais, usuario autorizado, CSRF real e auditoria persistida.
 - Validar bloqueio visual/servidor para perfil sem `client_assignments.transfer`.
-- Implementar edicao/encerramento pela UI.
+- Validar edicao/encerramento da UI no EasyPanel.
 - Migrar carteiras, filtros de gestor, planilhas, documentos e vencimentos para priorizar `client_department_assignments`.
 
 ## 2026-06-02 painel do cliente e responsabilidades
@@ -74,7 +160,7 @@ Dar continuidade a Fase 4 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, reduzindo a
 ### Riscos ou pendencias
 
 - Falta validar no EasyPanel com responsabilidades reais.
-- Falta implementar UI para editar, encerrar e transferir responsavel/gestor no painel.
+- Falta validar no EasyPanel a UI local de editar, encerrar e transferir responsavel/gestor no painel.
 - A migração operacional ainda depende de backfill de `clients.metadata` para `client_department_assignments`.
 
 ## 2026-06-02 scheduler Acessorias opt-in

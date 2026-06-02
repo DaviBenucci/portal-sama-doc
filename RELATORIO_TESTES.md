@@ -1,5 +1,85 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-02 dashboard de carteira normalizado
+
+### Contexto
+
+- Continuidade da Fase 4 no backend: conectar a consulta de carteira do gestor ao modelo `client_department_assignments`.
+- Escopo local: `TransfersService.getDashboard()` passa a carregar responsabilidades ativas normalizadas e a prioriza-las sobre `clients.metadata` ao montar `/manager/colaboradores`.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- transfers.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `transfers.service.spec.ts` passou com 5 testes.
+- Build da API passou.
+- Lint da API passou.
+- O novo teste valida que uma responsabilidade `ACTIVE` em `client_department_assignments` prevalece sobre o responsavel antigo em `clients.metadata`.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, backfill real ou usuarios reais.
+
+### Pendencias
+
+- Validar a carteira do gestor no EasyPanel com dados reais.
+- Rodar/aplicar backfill de `clients.metadata` para `client_department_assignments`.
+- Migrar a escrita da transferencia operacional em lote para a entidade normalizada.
+
+### Observacao anti-alucinacao
+
+O dashboard de consulta foi conectado localmente ao modelo normalizado, mas a transferencia operacional em lote ainda nao grava em `client_department_assignments`.
+
+## Execucao 2026-06-02 edicao e encerramento de responsabilidades no painel do cliente
+
+### Contexto
+
+- Continuidade da Fase 4 na UI: completar localmente as acoes de edicao e encerramento de responsabilidades normalizadas no painel do cliente.
+- Escopo local: tipos, services `updateClientAssignment()`/`endClientAssignment()` e formularios `Editar`/`Encerrar` em `/clientes/:id`, respeitando `client_assignments.update`, `client_assignments.end`, `departments.read` e `collaborators.read`.
+
+### Comandos executados
+
+No Web:
+
+```bash
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run build
+npm.cmd run lint
+npm.cmd run test:e2e
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- TypeScript do Web passou.
+- Web build passou.
+- Web lint passou.
+- Playwright local passou com 12 testes e 1 teste real opt-in pulado.
+- A validacao foi local; nao houve execucao contra EasyPanel, MySQL real, CSRF real ou responsabilidades reais.
+
+### Saida relevante
+
+- `npm.cmd run test:e2e`: 12 passed, 1 skipped.
+- O teste real de homologacao ficou pulado por ser opt-in.
+- O Vite exibiu avisos conhecidos de `HydrateFallback` e proxy local do Acessorias sem backend local, sem falhar a suite.
+
+### Pendencias
+
+- Validar com usuario real que possui `client_assignments.update` e `client_assignments.end`.
+- Conferir comportamento para usuarios sem essas permissoes.
+- Conferir auditoria `client_assignments.update` e `client_assignments.end` no banco real.
+- Seguir Fase 4 com backfill e migracao de carteiras/filtros.
+
+### Observacao anti-alucinacao
+
+A edicao e o encerramento pelo painel foram implementados e validados localmente no Web, mas ainda nao foram homologados no EasyPanel.
+
 ## Execucao 2026-06-02 transferencia de responsabilidades no painel do cliente
 
 ### Contexto
@@ -40,7 +120,7 @@ git diff --check
 - Validar com usuario real que possui `client_assignments.transfer`.
 - Conferir comportamento para usuario sem `client_assignments.transfer`.
 - Conferir auditoria `client_assignments.transfer` no banco real.
-- Seguir Fase 4 com edicao/encerramento pela UI, backfill e migracao de carteiras/filtros.
+- Seguir Fase 4 com validacao real, backfill e migracao de carteiras/filtros.
 
 ### Observacao anti-alucinacao
 

@@ -2,7 +2,7 @@
 
 Atualizacao 2026-05-27 16:44 -03:00: a recomendacao de backend avancou localmente. Alem da tabela e dos endpoints de listar/criar/editar/encerrar, a API v2 agora possui `POST /api-v2/client-assignments/transfer` para transferencia normalizada e auditada. A analise historica abaixo continua valida para fluxos legados que ainda leem `clients.metadata` e para as telas que ainda nao foram conectadas a `client_department_assignments`.
 
-Atualizacao 2026-06-02: o painel React do cliente passou a consultar `GET /api-v2/clients/:clientId/assignments` e exibir a secao `Equipe e responsaveis`, respeitando `client_assignments.read`. A mesma secao agora possui `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e listas auxiliares `departments.read`/`collaborators.read`. A secao tambem permite transferir responsabilidades ativas por `POST /api-v2/client-assignments/transfer`, protegida por `client_assignments.transfer`, com novo responsavel, gestor opcional, data efetiva e motivo. Backfill, gestor editavel por atualizacao, encerramento pela UI e migracao dos filtros operacionais continuam pendentes.
+Atualizacao 2026-06-02: o painel React do cliente passou a consultar `GET /api-v2/clients/:clientId/assignments` e exibir a secao `Equipe e responsaveis`, respeitando `client_assignments.read`. A mesma secao agora possui `Nova responsabilidade`, criando `POST /api-v2/clients/:clientId/assignments` com departamento, responsavel operacional, tipo, inicio e gestor opcional, protegida por `client_assignments.create` e listas auxiliares `departments.read`/`collaborators.read`. A secao tambem permite editar responsabilidades por `PATCH /api-v2/client-assignments/:id`, protegida por `client_assignments.update`, com departamento, responsavel operacional, gestor, tipo, status e periodo; encerrar responsabilidades ativas por `POST /api-v2/client-assignments/:id/end`, protegida por `client_assignments.end`, com data e motivo; e transferir responsabilidades ativas por `POST /api-v2/client-assignments/transfer`, protegida por `client_assignments.transfer`, com novo responsavel, gestor opcional, data efetiva e motivo. O dashboard `GET /api-v2/transfers/dashboard`, usado por `/manager/colaboradores`, agora prioriza responsabilidades `ACTIVE` de `client_department_assignments` na consulta de carteira, mantendo fallback temporario para `clients.metadata`. Backfill, validacao real no EasyPanel, escrita normalizada de transferencias em lote e migracao dos filtros operacionais continuam pendentes.
 
 ## 1. Pergunta analisada
 
@@ -755,9 +755,9 @@ O que segue pendente:
 
 ```txt
 - aplicar migration/seed no MySQL real;
-- criar UI no cadastro/painel do cliente para edicao/encerramento e completar o cadastro inicial quando necessario;
-- carregar carteira real no detalhe do colaborador;
-- migrar gestor, departamentos e telas de transferencias para priorizar a tabela nova;
+- validar no EasyPanel a UI local de atribuicao, edicao, encerramento e transferencia;
+- validar carteira real no detalhe do colaborador/gestor com MySQL real;
+- migrar escrita de transferencias em lote, departamentos e filtros para priorizar a tabela nova;
 - executar backfill de clients.metadata para client_department_assignments;
 - manter fallback temporario para metadata ate a migracao ser conferida.
 ```
