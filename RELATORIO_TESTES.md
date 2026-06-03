@@ -1,5 +1,56 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-03 avatar persistido em backend/storage
+
+### Contexto
+
+- Continuidade da Fase 5: validar localmente upload persistido de foto de perfil em backend/storage privado.
+- Escopo local: API `/me/avatar`, validacao real de assinatura/MIME/tamanho, remocao de metadados, auditoria e integracao da tela `/configuracoes` no Web.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- user-avatar.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+```
+
+Tentativa bloqueada no Web:
+
+```bash
+npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `user-avatar.service.spec.ts` passou com 2 testes.
+- Build e lint da API passaram.
+- Lint e build do Web passaram.
+- Os testes cobrem gravacao de avatar PNG sanitizado sem expor `storageKey` no contrato publico e bloqueio de SVG antes de escrita privada.
+- A validacao foi local; nao houve execucao contra EasyPanel, storage real de homologacao, usuario real, CSRF real de navegador ou auditoria persistida no MySQL real.
+- O smoke Playwright nao iniciou nesta rodada: duas tentativas foram recusadas pelo executor com erro `spawn setup refresh`, antes de carregar a aplicacao.
+
+### Pendencias
+
+- Publicar API/Web e validar `/configuracoes` no EasyPanel com upload e leitura real do avatar.
+- Conferir `STORAGE_PRIVATE_PATH`, permissao de volume, backup/retencao externa e limpeza de avatar anterior.
+- Conferir auditoria `users.avatar.update` no banco real.
+- Executar checklist UX completo em desktop/mobile reais.
+
+### Observacao anti-alucinacao
+
+Avatar persistido, MIME real e remocao de metadados foram implementados e testados localmente. Homologacao real no EasyPanel continua pendente.
+
 ## Execucao 2026-06-02 UX estrutural e configuracoes
 
 ### Contexto
@@ -39,14 +90,14 @@ npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts
 
 ### Pendencias
 
-- Implementar upload/persistencia backend do avatar com validacao MIME real, remocao de metadados, otimizacao e storage controlado.
+- Validar no EasyPanel o upload/persistencia backend do avatar implementado localmente em 2026-06-03.
 - Validar troca de senha por MASTER real no EasyPanel e conferir auditoria persistida.
 - Validar header de notificacoes com contagem real, popover e pagina completa com dados reais.
 - Executar checklist UX completo em desktop/mobile reais.
 
 ### Observacao anti-alucinacao
 
-A rota `/configuracoes`, drawer mobile e regra MASTER de senha foram implementados e testados localmente. Avatar ainda nao e recurso persistido em backend e esta fatia ainda nao foi homologada em producao.
+A rota `/configuracoes`, drawer mobile e regra MASTER de senha foram implementados e testados localmente. Naquela execucao, avatar ainda nao era recurso persistido em backend; a persistencia local foi implementada em 2026-06-03 e ainda nao foi homologada em producao.
 
 ## Execucao 2026-06-02 documentos com responsabilidade normalizada
 

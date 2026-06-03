@@ -1,5 +1,57 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-03
+
+### Arquivos alterados
+
+- `portal-sama-api/src/common/decorators/current-user.decorator.ts`
+- `portal-sama-api/src/modules/auth/auth.module.ts`
+- `portal-sama-api/src/modules/auth/auth.service.ts`
+- `portal-sama-api/src/modules/auth/auth.types.ts`
+- `portal-sama-api/src/modules/auth/guards/jwt-auth.guard.ts`
+- `portal-sama-api/src/modules/auth/me.controller.ts`
+- `portal-sama-api/src/modules/auth/user-avatar.service.ts`
+- `portal-sama-api/src/modules/auth/user-avatar.service.spec.ts`
+- `portal-sama-web/src/pages/settings/SettingsPage.tsx`
+- `portal-sama-web/src/services/auth.service.ts`
+- `portal-sama-web/src/types/auth.ts`
+- `portal-sama-web/src/index.css`
+- Documentacao viva da Fase 5/UX.
+
+### O que mudou
+
+- Criado upload autenticado de avatar em `PATCH /api-v2/me/avatar`, com CSRF, validacao de tamanho/tipo, magic bytes, bloqueio de SVG e auditoria `users.avatar.update`.
+- Criado download autenticado em `GET /api-v2/me/avatar`, servindo o arquivo do storage privado sem URL publica.
+- O avatar passa a ser gravado em `STORAGE_PRIVATE_PATH/users/avatars/...`; `User.metadata.profileAvatar` guarda somente metadados e o contrato publico nao expoe `storageKey`.
+- PNG, JPG/JPEG e WebP passam por remocao local de metadados/chunks auxiliares antes da gravacao.
+- `AuthenticatedUser` e o payload JWT passaram a carregar metadados publicos do avatar.
+- `/configuracoes` agora salva a foto no backend, atualiza a store de autenticacao e carrega a imagem persistida por blob autenticado.
+
+### Motivo da alteracao
+
+Avancar a pendencia da Fase 5 em `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`: foto de perfil com backend/storage seguro, validacao real no servidor e persistencia controlada.
+
+### Impacto esperado
+
+- A foto de perfil deixa de ser apenas preview local.
+- O frontend nao recebe chave de storage nem URL publica para a imagem.
+- A pendencia de avatar passa a depender principalmente de deploy/homologacao no EasyPanel e aceite UX real.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- user-avatar.service.spec.ts --runInBand`
+- Resultado: passou na API com 2 testes.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API e no Web.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com `STORAGE_PRIVATE_PATH` real, usuario real, CSRF real, auditoria persistida e backup/retencao do volume.
+- Confirmar UX desktop/mobile real de upload/leitura do avatar.
+- Sessoes/dispositivos reais e preferencias persistidas continuam fora desta fatia.
+
 ## 2026-06-02 17:05 -03:00
 
 ### Arquivos alterados
@@ -35,7 +87,7 @@ Avancar a Fase 5 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, cobrindo navegacao e
 
 - A experiencia desktop/mobile fica mais proxima do checklist de UX.
 - A rota de configuracoes passa a existir para consulta de conta, preferencias locais e acao de senha restrita a MASTER.
-- A validacao de avatar ainda e local; persistencia segura, remocao de metadados e validacao MIME real seguem pendentes de backend.
+- Naquela rodada, a validacao de avatar ainda era local; persistencia segura, remocao de metadados e validacao MIME real foram implementadas localmente em 2026-06-03, ainda pendentes de homologacao real.
 
 ### Testes executados
 
@@ -52,7 +104,7 @@ Avancar a Fase 5 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, cobrindo navegacao e
 
 ### Riscos ou pendencias
 
-- Criar endpoint/storage de avatar com validacao MIME real, stripping de metadados e versao otimizada.
+- Validar no EasyPanel o endpoint/storage de avatar implementado localmente em 2026-06-03.
 - Validar no EasyPanel com usuario MASTER real, auditoria persistida e perfis sem permissao.
 - Executar checklist UX completo em desktop/mobile reais.
 

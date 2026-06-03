@@ -2,6 +2,16 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
 
+## Atualizacao 2026-06-03 avatar persistido em backend/storage
+
+- `portal-sama-api` agora possui `PATCH /api-v2/me/avatar` e `GET /api-v2/me/avatar`, com JWT, CSRF na mutacao e auditoria `users.avatar.update`.
+- A foto fica em storage privado sob `STORAGE_PRIVATE_PATH/users/avatars/...`; o banco recebe apenas `User.metadata.profileAvatar` com metadados sanitizados, sem expor `storageKey` no contrato publico.
+- O backend valida extensao, MIME declarado, assinatura real por magic bytes, tamanho maximo de 2 MB e bloqueia SVG.
+- PNG, JPG/JPEG e WebP passam por remocao local de metadados/chunks auxiliares antes da gravacao.
+- `/configuracoes` no Web envia a foto para o backend, atualiza a store de autenticacao e carrega a imagem persistida por blob autenticado.
+- Validacoes locais passaram: `npm.cmd test -- user-avatar.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; `npm.cmd run lint` e `npm.cmd run build` no Web.
+- Permanece pendente validar no EasyPanel com storage real, usuario real, CSRF real, auditoria persistida, backup/retencao do volume e checklist UX completo. Sessoes/dispositivos reais e preferencias persistidas continuam pendentes.
+
 ## Atualizacao 2026-06-02 UX estrutural e configuracoes
 
 - `portal-sama-web` agora possui navegacao agrupada por Operacao/Gestao/Entrada/T.I/Admin, com `PermissionGate` preservado por item.
@@ -11,7 +21,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - Foto de perfil tem validacao local: aceita PNG/JPG/WebP, limita 2 MB e bloqueia SVG.
 - `UsersService.update()` agora exige papel `MASTER` para atualizar senha; a auditoria existente registra `passwordChanged` sem expor senha/hash.
 - Validacoes locais passaram: `users.service.spec.ts`, suite completa API com 40 suites/229 testes, lint/build API, lint/build Web e Playwright smoke com 13 testes.
-- Permanece pendente criar backend/storage de avatar com MIME real, remocao de metadados, versao otimizada e persistencia; validar senha MASTER/auditoria, notificacoes reais e UX completa no EasyPanel.
+- Naquela rodada permanecia pendente criar backend/storage de avatar; esta parte foi tratada localmente em 2026-06-03. Seguem pendentes validacao de senha MASTER/auditoria, notificacoes reais, avatar com storage real e UX completa no EasyPanel.
 
 ## Atualizacao 2026-06-02 documentos com responsabilidade normalizada
 

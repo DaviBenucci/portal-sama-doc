@@ -2,6 +2,19 @@
 
 Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, nas chamadas `fetch` em HTML/JS, em `docs/MAPEAMENTO_MIGRACAO_APIS.md` e nos endpoints já criados em `portal-sama-api`. Métodos exatos por action PHP ainda devem ser validados em cada controller legado.
 
+## Endpoint novo: `/api-v2/me/avatar`
+
+- **Arquivo:** `portal-sama-api/src/modules/auth/me.controller.ts`, `portal-sama-api/src/modules/auth/user-avatar.service.ts`.
+- **Metodo:** PATCH e GET.
+- **Finalidade:** Salvar e servir foto de perfil do usuario autenticado em storage privado.
+- **Pagina/tela relacionada:** `/configuracoes`, aba Minha conta.
+- **Modulo NestJS alvo:** `AuthModule`/`MeController`.
+- **Permissoes:** usuario autenticado; mutacao exige CSRF.
+- **Controles implementados:** JWT, CSRF no PATCH, validacao de extensao/MIME declarado/assinatura real/tamanho, bloqueio de SVG, remocao de metadados/chunks auxiliares para PNG/JPG/WebP, storage privado em `STORAGE_PRIVATE_PATH/users/avatars/...`, contrato publico sem `storageKey` e auditoria `users.avatar.update`.
+- **Status de migracao:** Implementado localmente em 2026-06-03; pendente de deploy/validacao real no EasyPanel.
+- **Riscos de seguranca:** upload malicioso, exposicao de path privado, avatar antigo sem limpeza, volume sem retencao ou auditoria ausente.
+- **Testes necessarios:** validar PATCH/GET com usuario real, 401 sem token, CSRF real, MIME divergente, SVG bloqueado, auditoria persistida e storage real com backup/retencao.
+
 ## Endpoint novo: `/api-v2/integrations/acessorias/scheduler/status`
 
 - **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-scheduler.service.ts`.

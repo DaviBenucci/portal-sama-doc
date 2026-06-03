@@ -2,6 +2,8 @@
 
 Status: inventário em andamento. Inventário baseado em `docs/SEGURANCA.md`, `.htaccess`, `Dockerfile`, `api/auth.php`, `api/security_lib.php`, `api/client_documents_lib.php`, `api/public_token_lib.php` e endpoints críticos. Testes unitários/e2e parciais foram executados para Auth/CSRF/Audit/RBAC/Documents no NestJS; testes completos de segurança, MySQL real e PHP legado seguem pendentes.
 
+Atualizacao em 2026-06-03: avatar de usuario foi implementado localmente como upload autenticado em `PATCH /api-v2/me/avatar` e leitura autenticada em `GET /api-v2/me/avatar`. A mutacao usa CSRF, valida extensao/MIME/assinatura/tamanho, bloqueia SVG, remove metadados/chunks auxiliares de PNG/JPG/WebP, grava em storage privado e audita `users.avatar.update`; o contrato publico nao expoe `storageKey`. Testes focados, lint e build passaram localmente; falta validar storage real/auditoria no EasyPanel.
+
 Atualizacao em 2026-05-27 10:03: Integra-AI passou a validar upload PDF/OFX na API v2, com OFX atras de `SAMA_INTEGRA_AI_OFX_IMPORT_ENABLED=false`. A validacao cobre extensao, MIME, assinatura, tamanho, scanner/quarentena, storage privado, hash/auditoria e `source_type` dinamico. Falta validar OFX real em homologacao com usuario contabil, parser Python no container, MySQL/storage reais e ClamAV strict.
 
 Atualizacao em 2026-05-26 09:10: `portal-sama-api` agora possui `npm run ops:backup:verify` para conferir artefatos gerados por `ops:backup:create`: metadata, passos, SHA-256, tamanho, gzip do dump, consistencia do manifesto e listagem do archive de storage. Falta executar backup/verificacao reais no EasyPanel, copiar artefatos para fora do container e provar restore drill externo.

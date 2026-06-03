@@ -4,6 +4,8 @@
 
 O Portal Sama manipula documentos empresariais, contratos, propostas, certificados digitais, solicitações de acesso e dados internos de clientes/colaboradores. A migração para NestJS deve começar por segurança, não apenas por troca de linguagem.
 
+Atualizacao em 2026-06-03: avatar de usuario passou a ter upload autenticado em `PATCH /api-v2/me/avatar`, com CSRF, validacao de extensao/MIME/assinatura real/tamanho, bloqueio de SVG, remocao de metadados para PNG/JPG/WebP, storage privado em `STORAGE_PRIVATE_PATH/users/avatars/...` e auditoria `users.avatar.update`. O download usa `GET /api-v2/me/avatar`, autenticado, sem URL publica nem exposicao de `storageKey`. Falta validar no EasyPanel com storage real, auditoria persistida e usuario real.
+
 Arquivos atuais mais relevantes para esta análise:
 
 - `api/auth.php`

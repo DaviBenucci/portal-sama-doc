@@ -68,6 +68,8 @@ UsersModule
 | `api/storage.php?action=auth_logout` | `/api-v2/auth/logout` | POST | Encerrar sessão/revogar refresh token. |
 | `api/storage.php?action=auth_forgot_password` | `/api-v2/auth/forgot-password` | POST | Recuperação de senha. |
 | Preferencia visual de intro | `/api-v2/me/preferences/intro` | PATCH | Marcar animacao de boas-vindas como vista. |
+| Foto de perfil autenticada | `/api-v2/me/avatar` | PATCH | Salvar avatar em storage privado com CSRF, validacao real e auditoria. |
+| Foto de perfil autenticada | `/api-v2/me/avatar` | GET | Servir avatar autenticado sem URL publica nem storage key. |
 
 ---
 

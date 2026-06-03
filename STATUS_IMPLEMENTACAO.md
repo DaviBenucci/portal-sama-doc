@@ -1,5 +1,15 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-03 avatar persistido em backend/storage
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 5: `/configuracoes` deixou de ter apenas preview local de avatar e passou a salvar foto de perfil em backend/storage privado.
+- **Backend/API v2:** criado `UserAvatarService` com `PATCH /api-v2/me/avatar` e `GET /api-v2/me/avatar`, ambos autenticados por JWT; mutacao exige CSRF, grava arquivo em `STORAGE_PRIVATE_PATH/users/avatars/...`, salva somente metadados sanitizados em `User.metadata.profileAvatar`, devolve avatar publico sem `storageKey` e registra auditoria `users.avatar.update`.
+- **Seguranca/arquivo:** o backend valida tamanho maximo de 2 MB, extensao, MIME declarado, assinatura real por magic bytes e bloqueia SVG. PNG, JPG/JPEG e WebP passam por remocao de metadados/chunks auxiliares antes da gravacao privada.
+- **Frontend React:** `/configuracoes` agora envia a foto por `uploadCurrentUserAvatar()`, atualiza a store de autenticacao com o usuario retornado e carrega a imagem por blob autenticado em `GET /me/avatar`, sem URL publica nem storage key no cliente.
+- **Validacao local:** passaram `npm.cmd test -- user-avatar.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; no Web passaram `npm.cmd run lint` e `npm.cmd run build`.
+- **Pendente:** publicar API/Web, validar no EasyPanel com `STORAGE_PRIVATE_PATH` real, usuario real, CSRF real e auditoria persistida. Sessoes/dispositivos reais, preferencias persistidas e aceite UX completo continuam pendentes.
+
 ## Atualizacao complementar 2026-06-02 UX estrutural e configuracoes
 
 - **Responsavel/IA:** Codex
@@ -7,7 +17,7 @@
 - **Frontend React:** `AppLayout`, `Sidebar`, `Header` e `navigation` agora suportam grupos Operacao/Gestao/Entrada/T.I/Admin, botao hamburguer no mobile, drawer com backdrop, sino de notificacoes com badge/popover e atalho do usuario para configuracoes. `/configuracoes` ganhou abas de Minha conta, Seguranca, Notificacoes, Preferencias e Administracao quando aplicavel.
 - **Seguranca/UX:** a foto de perfil tem validacao local de PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG. Preferencias visuais/notificacoes ficam locais ate existir endpoint dedicado. A troca de senha no backend passou a exigir papel `MASTER`; quando executada por MASTER, segue usando `UsersService.update()` com hash e auditoria sem segredo bruto.
 - **Validacao local:** passaram `npm.cmd test -- users.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e a suite completa `npm.cmd test -- --runInBand` na API com 40 suites/229 testes; `npm.cmd run lint`, `npm.cmd run build` e `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts` no Web, com 13 testes Playwright.
-- **Pendente:** avatar ainda nao persiste em backend/storage, nao remove metadados nem valida MIME real no servidor. Falta validar no EasyPanel com usuarios reais por perfil, notificacoes reais, permissao MASTER real, auditoria persistida e checklist UX completo.
+- **Pendente naquela rodada:** avatar ainda nao persistia em backend/storage; esta pendencia local foi tratada em 2026-06-03. Seguem pendentes validacao no EasyPanel com usuarios reais por perfil, notificacoes reais, permissao MASTER real, auditoria persistida e checklist UX completo.
 
 ## Atualizacao complementar 2026-06-02 documentos com responsabilidade normalizada
 

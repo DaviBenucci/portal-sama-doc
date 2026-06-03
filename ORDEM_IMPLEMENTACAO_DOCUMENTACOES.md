@@ -241,7 +241,7 @@ Criterio de saida:
 
 Objetivo: fechar a experiencia prevista em `ux-ui-docs` depois da base operacional estar segura.
 
-Estado em 2026-06-02 17:05 -03: local parcial implementado: sidebar agrupada, drawer mobile, header com notificacoes, rota `/configuracoes`, abas principais, validacao local de avatar e bloqueio backend de troca de senha para nao MASTER. Ainda falta avatar persistido com backend/storage seguro, sessoes/dispositivos reais, validacao EasyPanel e aceite UX completo.
+Estado em 2026-06-03: local parcial implementado: sidebar agrupada, drawer mobile, header com notificacoes, rota `/configuracoes`, abas principais, avatar persistido em backend/storage privado com validacao real e remocao de metadados, e bloqueio backend de troca de senha para nao MASTER. Ainda falta validar no EasyPanel com usuarios reais, sessoes/dispositivos reais, auditoria persistida e aceite UX completo.
 
 Implementar em ordem:
 
@@ -251,7 +251,7 @@ Implementar em ordem:
 4. Mover notificacoes para o header com sino, badge e popover.
 5. Criar rota `/configuracoes`.
 6. Implementar abas de Minha conta, Seguranca, Notificacoes e Preferencias.
-7. Implementar foto de perfil com validacao segura.
+7. [local concluido; real pendente] Implementar foto de perfil com validacao segura.
 8. Implementar troca/redefinicao de senha conforme regra MASTER/auditoria.
 9. Exibir sessoes ativas, ultimos acessos e dispositivos recentes quando houver backend.
 

@@ -28,7 +28,13 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 
 - Navegacao agrupada, drawer mobile, notificacoes no header e `/configuracoes` foram implementados localmente no React.
 - Validacao local passou com lint/build Web e smoke Playwright.
-- O aceite real ainda depende de EasyPanel, usuarios reais por perfil, notificacoes reais e backend/storage de avatar.
+- O aceite real ainda depende de EasyPanel, usuarios reais por perfil, notificacoes reais e validacao do avatar no backend/storage real.
+
+## Status local - 2026-06-03
+
+- Avatar persistido foi implementado localmente com backend/storage privado, validacao real de arquivo, remocao de metadados e leitura autenticada.
+- Validacao local passou com teste focado, lint/build API e lint/build Web.
+- O aceite real ainda depende de deploy no EasyPanel, storage real, auditoria persistida e usuarios reais.
 
 ## Arquivos
 1. `01-visao-geral.md`

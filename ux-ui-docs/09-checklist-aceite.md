@@ -55,7 +55,13 @@
 - `/configuracoes` foi criada com abas de conta, seguranca, notificacoes, preferencias e administracao condicional.
 - Foto de perfil tem validacao local de tipo/tamanho e bloqueio de SVG.
 - Backend passou a restringir troca de senha a `MASTER`, com auditoria existente em `users.update`.
-- O aceite continua pendente ate validar no EasyPanel com usuarios reais, notificacoes reais, auditoria persistida e backend de avatar.
+- O aceite continua pendente ate validar no EasyPanel com usuarios reais, notificacoes reais, auditoria persistida e avatar no backend real.
+
+## Status parcial - 2026-06-03 avatar persistido
+
+- `/configuracoes` passou a salvar foto de perfil por `PATCH /api-v2/me/avatar` e carregar a imagem por `GET /api-v2/me/avatar`.
+- O backend valida tipo real, bloqueia SVG, limita 2 MB, remove metadados/chunks auxiliares e grava em storage privado.
+- O aceite continua pendente ate publicar no EasyPanel e validar storage real, CSRF real, auditoria persistida e UX desktop/mobile com usuario real.
 
 ## Navegacao
 - [x] Sidebar desktop mantem hover/foco.
@@ -96,7 +102,7 @@
 
 ## Configuracoes
 - [x] Existe `/configuracoes`.
-- [ ] Usuario pode alterar foto persistida.
+- [x] Usuario pode alterar foto persistida localmente.
 - [x] Foto tem validacoes seguras locais.
 - [x] Troca de senha somente MASTER.
 - [x] Troca gera auditoria via `users.update`.

@@ -1,5 +1,13 @@
 # [PARCIAL] 07 - Configuracoes e Seguranca
 
+## Status local - 2026-06-03
+
+- Foto de perfil agora possui backend/storage local: `PATCH /api-v2/me/avatar` salva em storage privado e `GET /api-v2/me/avatar` serve a imagem autenticada.
+- O backend valida extensao, MIME declarado, assinatura real por magic bytes, limite de 2 MB e bloqueia SVG.
+- PNG, JPG/JPEG e WebP passam por remocao de metadados/chunks auxiliares antes da gravacao.
+- `/configuracoes` envia a foto para a API, atualiza a sessao local e exibe o avatar persistido por blob autenticado.
+- Pendencias: homologar no EasyPanel com storage real, auditoria persistida e usuario real; listar sessoes/dispositivos reais; persistir preferencias dedicadas; executar aceite UX completo.
+
 ## Status local - 2026-06-02
 
 - `/configuracoes` foi criada no React.
@@ -9,7 +17,7 @@
 - Seguranca exibe expiracao da sessao, politica de senha, MFA futuro e formulario de troca de senha.
 - Troca de senha foi reforcada no backend: `UsersService.update()` rejeita alteracao de senha quando o ator nao possui papel `MASTER`; quando permitido, a auditoria existente registra `passwordChanged` sem segredo bruto.
 - Preferencias de notificacoes/visual sao locais ate existir endpoint dedicado.
-- Pendencias: persistir avatar em backend/storage seguro, validar MIME real no servidor, remover metadados, gerar versao otimizada, listar sessoes/dispositivos reais e homologar com usuarios reais no EasyPanel.
+- Pendencias: homologar avatar em backend/storage real no EasyPanel, conferir auditoria persistida, avaliar versao otimizada/redimensionada futura, listar sessoes/dispositivos reais e homologar com usuarios reais.
 
 ## Rota
 Criar base para `/configuracoes`.
