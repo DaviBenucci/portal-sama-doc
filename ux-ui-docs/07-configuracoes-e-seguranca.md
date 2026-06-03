@@ -6,6 +6,7 @@
 - O backend retorna sessoes ativas a partir de `refresh_tokens` e ultimos eventos de autenticacao a partir de `audit_logs`.
 - O contrato nao expoe `tokenHash`, refresh token, cookie, segredo nem metadado sensivel.
 - A aba Seguranca exibe expiracao da sessao, ultimo acesso, dispositivo recente, sessoes ativas e ultimos acessos.
+- Troca de senha no backend foi padronizada para exigir papel `DEV`; `MASTER` nao e mais papel equivalente de permissao total.
 - Pendencias: homologar no EasyPanel com usuario real, refresh tokens reais e auditoria persistida; revogacao individual de sessoes, MFA e preferencias persistidas seguem pendentes.
 
 ## Status local - 2026-06-03 avatar persistido
@@ -23,7 +24,7 @@
 - Minha conta exibe nome, login, email, departamento, status e perfis em modo leitura.
 - Foto de perfil possui preview local e validacoes client-side: PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG.
 - Seguranca exibe expiracao da sessao, politica de senha, MFA futuro e formulario de troca de senha.
-- Troca de senha foi reforcada no backend: `UsersService.update()` rejeita alteracao de senha quando o ator nao possui papel `MASTER`; quando permitido, a auditoria existente registra `passwordChanged` sem segredo bruto.
+- Troca de senha foi reforcada no backend: `UsersService.update()` rejeita alteracao de senha quando o ator nao possui papel `DEV`; quando permitido, a auditoria existente registra `passwordChanged` sem segredo bruto.
 - Preferencias de notificacoes/visual sao locais ate existir endpoint dedicado.
 - Pendencias: homologar avatar e sessoes/acessos no EasyPanel, conferir auditoria persistida, avaliar versao otimizada/redimensionada futura e homologar com usuarios reais.
 
@@ -84,10 +85,10 @@ Implementado em 2026-06-01 no Web:
 ## Troca de senha
 
 Regra definida:
-- somente usuarios MASTER podem realizar troca de senha;
+- somente usuarios DEV podem realizar troca de senha;
 - usuarios comuns podem solicitar redefinicao, se existir fluxo;
-- troca por MASTER deve gerar auditoria;
-- troca por MASTER deve exigir confirmacao.
+- troca por DEV deve gerar auditoria;
+- troca por DEV deve exigir confirmacao.
 
 ## Notificacoes
 
@@ -116,7 +117,7 @@ Regra definida:
 - transferir carteira;
 - concluir vencimento critico;
 - alterar certificado;
-- trocar senha por MASTER.
+- trocar senha por DEV.
 
 ## Dados sensiveis
 
@@ -141,7 +142,7 @@ Regras:
 - bloquear duplicidade por chave normalizada;
 - auditar criacao, edicao e inativacao;
 - nao excluir departamento com usuarios, clientes ou historico vinculado;
-- restringir criacao de departamento a MASTER/Admin autorizado.
+- restringir criacao de departamento a DEV/Admin autorizado.
 
 ### Roles
 

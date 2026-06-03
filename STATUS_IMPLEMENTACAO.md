@@ -1,5 +1,15 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-03 submenu, visibilidade por cargo/departamento e DEV padrao
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 5: a sidebar deixou de exibir todos os itens como lista plana e passou a usar submenus colapsaveis por Operacao, Gestao, Entrada, T.I e Admin.
+- **Frontend React:** `navigation.tsx` agora centraliza a regra de visibilidade do menu por permissao, departamento, cargo/funcao e role. `Sidebar.tsx` consome somente grupos visiveis, abre o grupo da rota atual, permite abrir/fechar secoes como `T.I` e mantem hover/foco no desktop e drawer no mobile. A Home reutiliza a mesma politica para `Atalhos inteligentes`, evitando atalhos fora do escopo do usuario.
+- **Padrao DEV:** a permissao total/tecnica foi padronizada para `DEV` no Web e na API. A troca de senha administrativa em `UsersService.update()` agora exige role `DEV`; textos de recuperacao/configuracoes foram ajustados de `MASTER` para `DEV`.
+- **Contrato autenticado:** `AuthenticatedUser` e o payload JWT agora carregam `position`/`cargo`; `departamentosPermitidos` deixou de ser preenchido com roles e passa a refletir o departamento conhecido da sessao.
+- **Validacao local:** passaram `npm.cmd test -- users.service.spec.ts auth.service.spec.ts --runInBand`, `npm.cmd run lint` e `npm.cmd run build` na API; no Web passaram `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts` com 13 testes e `git diff --check`.
+- **Pendente:** publicar Web/API e validar no EasyPanel com usuarios reais por departamento/cargo, incluindo DEV, T.I, gestor, colaborador departamental, contabil, legalizacao e usuario sem permissao ampla. A seguranca real continua dependendo dos guards/backend por rota e escopo.
+
 ## Atualizacao complementar 2026-06-03 sessoes e acessos em configuracoes
 
 - **Responsavel/IA:** Codex

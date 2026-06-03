@@ -2,6 +2,16 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
 
+## Atualizacao 2026-06-03 submenu, visibilidade por cargo/departamento e DEV padrao
+
+- `portal-sama-web` agora usa submenus colapsaveis por grupo na sidebar, mantendo hover/foco desktop e drawer mobile.
+- A visibilidade do menu passou a considerar permissao, departamento, cargo/funcao e role em `navigation.tsx`; `DEV` tem acesso tecnico total na UX, e `MASTER` deixou de ser tratado como role total no Web/API novos.
+- A Home reutiliza a mesma politica para `Atalhos inteligentes`, evitando cards fora do escopo visual do usuario.
+- `portal-sama-api` passou a devolver `position`/`cargo` no usuario autenticado e corrigiu `departamentosPermitidos` para nao carregar roles como departamentos.
+- Troca de senha administrativa agora exige role `DEV` no backend e nos controles de `/configuracoes`.
+- Validacoes locais passaram: API `users.service.spec.ts auth.service.spec.ts`, lint e build; Web lint, build, Playwright smoke com 13 testes e `git diff --check`.
+- Permanece pendente validar no EasyPanel com matriz real de usuarios por perfil/departamento/cargo e confirmar 401/403/200 no backend para rotas sensiveis. O menu continua sendo controle de UX; a autorizacao real deve seguir validada por API/escopo.
+
 ## Atualizacao 2026-06-03 sessoes e acessos em configuracoes
 
 - `portal-sama-api` agora possui `GET /api-v2/me/security`, autenticado por JWT, para retornar sessoes ativas e ultimos acessos do usuario autenticado.

@@ -1,5 +1,67 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
+## 2026-06-03 10:15 - submenu, visibilidade por cargo/departamento e DEV padrao
+
+### Arquivos alterados
+
+- `portal-sama-web/src/components/layout/navigation.tsx`
+- `portal-sama-web/src/components/layout/Sidebar.tsx`
+- `portal-sama-web/src/index.css`
+- `portal-sama-web/src/pages/home/HomePage.tsx`
+- `portal-sama-web/src/pages/settings/SettingsPage.tsx`
+- `portal-sama-web/src/pages/auth/LoginPage.tsx`
+- `portal-sama-web/src/stores/auth.store.ts`
+- `portal-sama-web/src/types/auth.ts`
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+- `portal-sama-api/src/common/decorators/current-user.decorator.ts`
+- `portal-sama-api/src/modules/auth/auth.controller.ts`
+- `portal-sama-api/src/modules/auth/auth.service.ts`
+- `portal-sama-api/src/modules/auth/auth.types.ts`
+- `portal-sama-api/src/modules/auth/guards/jwt-auth.guard.ts`
+- `portal-sama-api/src/modules/auth/auth.service.spec.ts`
+- `portal-sama-api/src/modules/users/users.service.ts`
+- `portal-sama-api/src/modules/users/users.service.spec.ts`
+- `portal-sama-api/src/modules/managers/managers.service.ts`
+- Documentacao viva da Fase 5/UX, seguranca e deploy.
+
+### O que mudou
+
+- A sidebar agora usa submenus colapsaveis por grupo: Operacao, Gestao, Entrada, T.I e Admin.
+- A politica de visibilidade do menu foi centralizada em `navigation.tsx`, combinando permissoes, roles, departamento e cargo/funcao.
+- A Home passou a reutilizar os itens visiveis do menu para `Atalhos inteligentes`, removendo a lista paralela de atalhos.
+- `DEV` virou o padrao unico para acesso tecnico/total na nova stack; `MASTER` deixou de ser aceito para troca de senha administrativa e deixou de aparecer nos textos novos.
+- O contrato autenticado passou a carregar `position`/`cargo`, e `departamentosPermitidos` nao usa mais roles como valor.
+
+### Motivo da alteracao
+
+Dar continuidade a Fase 5 de UX/UI, corrigindo o menu solicitado pelo usuario e alinhando permissao visual com departamento/cargo documentados em `ux-ui-docs/`.
+
+### Impacto esperado
+
+- Usuarios deixam de ver secoes inteiras que nao fazem parte do departamento/cargo/permissao deles.
+- Grupos com muitas paginas deixam de ocupar a sidebar inteira e passam a abrir sob demanda.
+- A Home fica consistente com a sidebar e reduz atalhos indevidos.
+- A regra administrativa sensivel fica padronizada em `DEV`.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- users.service.spec.ts auth.service.spec.ts --runInBand`
+- Resultado: passou na API com 2 suites/12 testes.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts`
+- Resultado: primeira execucao falhou por seletor Playwright ambiguo em `Meus clientes`; apos ajuste do teste, passou com 13 testes.
+- Comando: `git diff --check`
+- Resultado: passou na API e no Web.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com usuarios reais por departamento/cargo e matriz oficial de permissoes.
+- A sidebar/Home sao controle de UX; o backend precisa continuar validando permissao e escopo por recurso.
+- Revisar referencias legadas/documentais a `MASTER` no sistema antigo antes do corte final.
+
 ## 2026-06-03 - sessoes e acessos em configuracoes
 
 ### Arquivos alterados

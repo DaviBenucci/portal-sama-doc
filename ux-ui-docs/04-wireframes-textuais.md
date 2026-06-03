@@ -41,11 +41,15 @@
 +----------------------+
 | Portal Sama       X  |
 +----------------------+
-| Operacao             |
-| Gestao               |
-| Entrada de Cliente   |
-| T.I                  |
-| Admin                |
+| Operacao          v  |
+|   Inicio            |
+|   Meus clientes     |
+| Gestao            >  |
+| Entrada de Cliente> |
+| T.I               v  |
+|   Solicitacoes      |
+|   Acessos TI        |
+| Admin             >  |
 +----------------------+
 ```
 

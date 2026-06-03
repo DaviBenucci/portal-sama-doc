@@ -241,18 +241,18 @@ Criterio de saida:
 
 Objetivo: fechar a experiencia prevista em `ux-ui-docs` depois da base operacional estar segura.
 
-Estado em 2026-06-03: local parcial implementado: sidebar agrupada, drawer mobile, header com notificacoes, rota `/configuracoes`, abas principais, avatar persistido em backend/storage privado com validacao real e remocao de metadados, sessoes ativas/ultimos acessos em `/me/security`, e bloqueio backend de troca de senha para nao MASTER. Ainda falta validar no EasyPanel com usuarios reais, refresh tokens/auditoria reais, dispositivos reais e aceite UX completo.
+Estado em 2026-06-03 10:15: local parcial implementado: sidebar agrupada com submenus colapsaveis, drawer mobile, header com notificacoes, visibilidade visual por permissao/departamento/cargo, Home usando a mesma politica dos atalhos, rota `/configuracoes`, abas principais, avatar persistido em backend/storage privado com validacao real e remocao de metadados, sessoes ativas/ultimos acessos em `/me/security`, e bloqueio backend de troca de senha para nao DEV. Ainda falta validar no EasyPanel com usuarios reais, matriz por perfil/departamento/cargo, refresh tokens/auditoria reais, dispositivos reais e aceite UX completo.
 
 Implementar em ordem:
 
-1. Reorganizar sidebar por grupos: Operacao, Gestao, Entrada de Cliente, T.I e Admin.
-2. Garantir drawer mobile.
-3. Ajustar visibilidade por permissao/departamento.
+1. [local concluido; real pendente] Reorganizar sidebar por grupos/submenus: Operacao, Gestao, Entrada de Cliente, T.I e Admin.
+2. [local concluido; real pendente] Garantir drawer mobile.
+3. [local concluido; real pendente] Ajustar visibilidade por permissao/departamento/cargo.
 4. Mover notificacoes para o header com sino, badge e popover.
 5. Criar rota `/configuracoes`.
 6. Implementar abas de Minha conta, Seguranca, Notificacoes e Preferencias.
 7. [local concluido; real pendente] Implementar foto de perfil com validacao segura.
-8. Implementar troca/redefinicao de senha conforme regra MASTER/auditoria.
+8. [local concluido; real pendente] Implementar troca/redefinicao de senha conforme regra DEV/auditoria.
 9. [local concluido; real pendente] Exibir sessoes ativas, ultimos acessos e dispositivos recentes quando houver backend.
 
 Documentos que devem ser atualizados:

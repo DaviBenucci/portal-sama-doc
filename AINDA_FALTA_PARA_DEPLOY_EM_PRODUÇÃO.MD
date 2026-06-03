@@ -78,7 +78,7 @@ Estimativa operacional em 2026-05-28 10:06 -03:00:
 | QA visual | Parcial | Aplicacao publica esta acessivel; o Integra-AI ganhou smoke local de alinhamento com a sidebar em viewport larga. Ainda necessario aprovar desktop/mobile no EasyPanel/navegador real com usuarios e perfis reais. |
 | Dependencia do legado | Parcial | Integra-AI ja possui mutacoes API v2, importacao OFX opt-in atras de feature flag e leiaute Dominio oficial unico no fluxo local. Ainda exige validacao funcional real/backfills, homologacao manual do TXT no Dominio e demais validacoes reais antes de desligar PHP. |
 | Acessorias, entregas e vencimentos | Parcial local; validacao real pendente | A Home local consulta o Acessorias via backend sem expor token no Web; a area `/dev` agora possui botoes para testar, pre-visualizar/importar clientes, responsaveis e entregas, gerar notificacoes manuais e consultar `Status scheduler`, tudo com paginacao ate lista vazia, rate limit e timeout longo no Web; planilhas departamentais aplicam baixas, revisam divergencias e exibem vencimentos oficiais Acessorias no carrossel/workspace; `/departamentos/vencimentos` consolida vencimentos de calendario e Acessorias em tela dedicada. Scheduler seguro existe como opt-in e desabilitado por padrao. Ainda falta executar esses fluxos no EasyPanel com dados reais, registrar evidencia sanitizada, conferir notificacoes/auditoria reais e habilitar scheduler em rollout controlado. |
-| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial, edita, encerra e transfere responsabilidade ativa pela tabela normalizada; o dashboard de carteira do gestor prioriza responsabilidades normalizadas em leitura; transferencias operacionais em lote agora escrevem localmente na tabela normalizada quando ha departamento controlado; existe backfill seguro local para popular responsabilidades a partir de `clients.metadata`; vencimentos/calendario, planilhas departamentais e documentos ja priorizam responsabilidades normalizadas localmente; a Home por perfil consome resumo do Acessorias. A Fase 5 tambem avancou localmente com sidebar agrupada, drawer mobile, notificacoes no header, `/configuracoes`, troca de senha restrita a MASTER, avatar persistido em backend/storage privado com validacao real e sessoes/ultimos acessos em `/me/security`. Falta aplicar migrations/seeds/backfill no MySQL real, validar responsabilidades, transferencias, planilhas, documentos, configuracoes, avatar, sessoes/auditoria e vencimentos reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md`, solicitacoes globais e permissoes guiadas. |
+| UX/UI e governanca operacional | Parcial implementado | `ux-ui-docs/` define navegacao, Home por perfil, wireframes, configuracoes, departamentos, solicitacoes, roles/permissoes e responsabilidade cliente x usuario. As duas primeiras fatias de departamentos controlados foram implementadas localmente para usuarios DEV/Admin e colaboradores; a fundacao backend de `client_department_assignments` cobre transferencia normalizada auditada; `/clientes/:id` agora exibe `Equipe e responsaveis`, cria atribuicao inicial, edita, encerra e transfere responsabilidade ativa pela tabela normalizada; o dashboard de carteira do gestor prioriza responsabilidades normalizadas em leitura; transferencias operacionais em lote agora escrevem localmente na tabela normalizada quando ha departamento controlado; existe backfill seguro local para popular responsabilidades a partir de `clients.metadata`; vencimentos/calendario, planilhas departamentais e documentos ja priorizam responsabilidades normalizadas localmente; a Home por perfil consome resumo do Acessorias. A Fase 5 tambem avancou localmente com sidebar agrupada em submenus colapsaveis, drawer mobile, notificacoes no header, visibilidade visual por permissao/departamento/cargo, atalhos da Home usando a mesma politica, `/configuracoes`, troca de senha restrita a DEV, avatar persistido em backend/storage privado com validacao real e sessoes/ultimos acessos em `/me/security`. Falta aplicar migrations/seeds/backfill no MySQL real, validar responsabilidades, transferencias, planilhas, documentos, configuracoes, avatar, sessoes/auditoria, matriz de menu por perfil/departamento/cargo e vencimentos reais no EasyPanel, executar `ux-ui-docs/09-checklist-aceite.md`, solicitacoes globais e permissoes guiadas. |
 
 ## Atualizacao operacional de 2026-06-03 sessoes e acessos em configuracoes
 
@@ -125,18 +125,19 @@ Foi implementada localmente a primeira fatia da Fase 5 de UX/configuracoes.
 Escopo local concluido:
 
 - sidebar agrupada por Operacao, Gestao, Entrada, T.I e Admin;
+- grupos da sidebar atuam como submenus colapsaveis e ocultam paginas sem permissao/departamento/cargo;
 - drawer mobile acionado por botao hamburguer no header;
 - notificacoes no header com sino, badge, popover e acesso para `/notificacoes`;
 - rota `/configuracoes` com abas Minha conta, Seguranca, Notificacoes, Preferencias e Administracao condicional;
 - foto de perfil com validacao local de PNG/JPG/WebP, limite de 2 MB e bloqueio de SVG;
-- troca de senha no backend restrita a usuarios com papel `MASTER`, mantendo hash e auditoria sem senha bruta.
+- troca de senha no backend restrita a usuarios com papel `DEV`, mantendo hash e auditoria sem senha bruta.
 
 Validacao local executada:
 
 - API: `npm.cmd test -- users.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd test -- --runInBand` com 40 suites/229 testes;
 - Web: `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts` com 13 testes.
 
-Pendencia real remanescente: publicar Web/API, validar no EasyPanel com usuarios reais por perfil, confirmar notificacoes reais no header, testar troca de senha por MASTER real e conferir auditoria persistida. Avatar ainda precisa de endpoint/storage seguro com validacao MIME real no backend, remocao de metadados, otimizacao e persistencia controlada.
+Pendencia real remanescente: publicar Web/API, validar no EasyPanel com usuarios reais por perfil/departamento/cargo, confirmar notificacoes reais no header, testar troca de senha por DEV real e conferir auditoria persistida. Avatar ainda precisa de endpoint/storage seguro com validacao MIME real no backend, remocao de metadados, otimizacao e persistencia controlada.
 
 ## Atualizacao operacional de 2026-06-02 documentos com responsabilidade normalizada
 
@@ -1419,14 +1420,15 @@ Trilha consolidada a partir de `ux-ui-docs/`. O checklist `ux-ui-docs/09-checkli
 
 - [ ] Rodar e marcar o checklist `ux-ui-docs/09-checklist-aceite.md`.
 - [x] Implementar localmente sidebar desktop com hover/foco, agrupamento de rotas e ocultacao de itens sem permissao.
+- [x] Implementar localmente submenus colapsaveis por grupo e visibilidade visual por permissao/departamento/cargo.
 - [x] Implementar localmente mobile com botao hamburguer, drawer e ausencia de quebra/overflow.
 - [ ] Validar Home por perfil no EasyPanel: colaborador com pendencias reais do Acessorias, gestor com carteira/atrasos/riscos e DEV/Admin com diagnostico tecnico.
 - [x] Implementar localmente notificacoes no header: sino, badge, popover e botao para pagina completa.
 - [ ] Validar notificacoes reais no header e pagina completa no EasyPanel com dados reais.
 - [ ] Validar clientes/documentos: Meus Clientes por vinculo, Todos os Clientes por permissao ampla, documentos no painel do cliente, status, auditoria e links publicos expiraveis.
 - [ ] Validar propostas, contratos, assinatura publica e entrada de cliente no fluxo completo.
-- [x] Implementar localmente `/configuracoes`: minha conta, abas, foto com validacao local e troca de senha restrita a MASTER no backend.
-- [ ] Validar `/configuracoes` no EasyPanel: avatar persistido pelo backend, sessoes/ultimos acessos por `/me/security`, troca de senha por MASTER real e auditoria persistida.
+- [x] Implementar localmente `/configuracoes`: minha conta, abas, foto com validacao local e troca de senha restrita a DEV no backend.
+- [ ] Validar `/configuracoes` no EasyPanel: avatar persistido pelo backend, sessoes/ultimos acessos por `/me/security`, troca de senha por DEV real e auditoria persistida.
 - [ ] Validar UX de seguranca: confirmacao em acoes sensiveis, upload com tipo/tamanho, SVG bloqueado para foto, erros sem detalhes internos e sem dados sensiveis em storage do navegador.
 - [x] Implementar catalogo controlado de departamentos no backend com chave tecnica unica.
 - [x] Trocar departamento livre por select no cadastro/edicao de usuarios DEV/Admin.

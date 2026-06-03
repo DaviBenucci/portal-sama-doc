@@ -1,5 +1,17 @@
 # [CONCLUIDO] Decisões de Arquitetura - Portal Sama
 
+## ADR-0034 - Navegacao por politica central e acesso tecnico total somente DEV
+
+- **Data:** 2026-06-03
+- **Status:** Aceita parcialmente
+- **Contexto:** A Fase 5 de UX/UI ja tinha agrupado a sidebar, mas os grupos ainda apareciam como listas planas e a visibilidade dos itens dependia quase somente de permissao bruta. A documentacao em `ux-ui-docs/` define que navegacao deve respeitar departamento e cargo, e o usuario confirmou que `MASTER` e `DEV` estavam sendo confundidos como permissao total.
+- **Decisao:** Centralizar a regra visual de navegacao em `portal-sama-web/src/components/layout/navigation.tsx`, combinando permissao, role, departamento e cargo/funcao para renderizar sidebar e atalhos da Home. A sidebar usa submenus colapsaveis por grupo. A permissao tecnica/total da nova stack passa a ser padronizada como `DEV`; `MASTER` nao deve ser usado como role total em Web/API novos.
+- **Alternativas consideradas:** Manter `PermissionGate` isolado por item; criar regra local apenas no `Sidebar`; manter `MASTER` como alias de `DEV`; mover todo o controle para backend antes de corrigir UX.
+- **Consequencias positivas:** Reduz menu indevido por perfil, evita duplicidade entre Home e sidebar, melhora usabilidade de grupos com muitas paginas e cria um ponto unico para evoluir regras de departamento/cargo.
+- **Consequencias negativas:** A regra visual nao substitui autorizacao backend; ainda falta validar com usuarios reais e matriz 401/403/200 no EasyPanel. Roles legadas `MASTER` ainda podem existir no sistema antigo/documentos historicos ate o corte final.
+- **Arquivos impactados:** `portal-sama-web/src/components/layout/navigation.tsx`, `portal-sama-web/src/components/layout/Sidebar.tsx`, `portal-sama-web/src/pages/home/HomePage.tsx`, `portal-sama-web/src/pages/settings/SettingsPage.tsx`, `portal-sama-api/src/modules/users/users.service.ts`, `portal-sama-api/src/modules/auth/*`.
+- **Referencias:** `ux-ui-docs/02-navegacao-e-rotas.md`, `ux-ui-docs/10-departamentos-solicitacoes-permissoes.md`, `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, `SEGURANCA.md`.
+
 ## ADR-0033 - Integra-AI usa Dominio Importador 01/02/03/99 para Lancamentos em Lote
 
 - **Data:** 2026-05-27

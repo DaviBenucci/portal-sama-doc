@@ -54,7 +54,7 @@
 - Header local possui sino de notificacoes, badge, popover e botao para `/notificacoes`.
 - `/configuracoes` foi criada com abas de conta, seguranca, notificacoes, preferencias e administracao condicional.
 - Foto de perfil tem validacao local de tipo/tamanho e bloqueio de SVG.
-- Backend passou a restringir troca de senha a `MASTER`, com auditoria existente em `users.update`.
+- Backend passou a restringir troca de senha a `DEV`, com auditoria existente em `users.update`.
 - O aceite continua pendente ate validar no EasyPanel com usuarios reais, notificacoes reais, auditoria persistida e avatar no backend real.
 
 ## Status parcial - 2026-06-03 avatar persistido
@@ -69,11 +69,20 @@
 - A API retorna sessoes ativas de `refresh_tokens` e ultimos acessos de `audit_logs`, sem expor token/hash/cookie.
 - O aceite continua pendente ate publicar no EasyPanel e validar com usuario real, refresh tokens reais, auditoria persistida e UX desktop/mobile.
 
+## Status parcial - 2026-06-03 submenu, permissao visual e DEV
+
+- Sidebar local passou a usar grupos como submenus colapsaveis.
+- A visibilidade visual dos itens usa permissao, departamento, cargo e papel tecnico `DEV`.
+- Atalhos inteligentes da Home usam a mesma politica da sidebar.
+- Backend e Web padronizaram a permissao total para `DEV`; `MASTER` nao deve ser usado como equivalente.
+- O aceite continua pendente ate validar no EasyPanel com usuarios reais por perfil/departamento/cargo.
+
 ## Navegacao
 - [x] Sidebar desktop mantem hover/foco.
 - [x] Mobile tem botao hamburguer.
 - [x] Menu mobile abre em drawer.
 - [x] Rotas agrupadas corretamente.
+- [x] Grupos da sidebar funcionam como submenus colapsaveis.
 - [x] Itens sem permissao nao aparecem.
 - [ ] Departamentos especificos respeitam regras.
 
@@ -110,7 +119,7 @@
 - [x] Existe `/configuracoes`.
 - [x] Usuario pode alterar foto persistida localmente.
 - [x] Foto tem validacoes seguras locais.
-- [x] Troca de senha somente MASTER.
+- [x] Troca de senha somente DEV.
 - [x] Troca gera auditoria via `users.update`.
 - [x] Sessoes ativas e ultimos acessos possuem base local em `/me/security`.
 - [ ] Validar sessoes ativas, ultimos acessos e dispositivos recentes no EasyPanel.
@@ -133,12 +142,12 @@
 - [ ] Departamento no cadastro de usuario nao e campo livre.
 - [ ] Departamento vem de lista controlada pelo backend.
 - [ ] Departamento possui chave tecnica unica.
-- [ ] Criacao/edicao de departamento e restrita a MASTER/Admin autorizado.
+- [ ] Criacao/edicao de departamento e restrita a DEV/Admin autorizado.
 - [ ] Departamento no cadastro/edicao de colaboradores usa lista controlada nas telas React principais.
 - [ ] Solicitacoes de Acesso aparecem para todos os usuarios autenticados.
 - [ ] Colaborador consegue criar solicitacao e enviar feedback.
 - [ ] Gestor consegue aprovar solicitacoes do proprio escopo.
-- [ ] T.I./MASTER consegue executar solicitacoes aprovadas.
+- [ ] T.I./DEV consegue executar solicitacoes aprovadas.
 - [ ] Roles exibem nome amigavel, descricao, risco e permissoes criticas.
 - [ ] Permissoes sao agrupadas por modulo e acao.
 - [ ] Chave tecnica da permissao aparece como informacao secundaria.

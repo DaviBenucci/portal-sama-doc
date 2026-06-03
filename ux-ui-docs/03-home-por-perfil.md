@@ -13,6 +13,7 @@ A Home deve ser um Painel do Dia. Ela precisa mostrar o resumo do que o usuario 
 - Atualizacao complementar 2026-06-01: retorno externo `204 No Content`/corpo vazio e tratado como resumo disponivel sem entregas; falhas retornam diagnostico sanitizado para o painel admin.
 - Atualizacao 2026-06-01: o workspace departamental passou a receber vencimentos oficiais de entregas Acessorias sincronizadas; a Home continua pendente de validacao real para consolidar esses vencimentos por perfil.
 - Atualizacao 2026-06-01 Central: a Home/atalhos locais podem apontar para `/departamentos/vencimentos`; aceite segue pendente ate validar com dados reais.
+- Atualizacao 2026-06-03: os atalhos inteligentes passaram a usar a mesma politica visual da sidebar, filtrando por permissao, departamento, cargo e papel `DEV`.
 - Ainda falta validar no EasyPanel com a API real do Acessorias e usuarios reais por perfil.
 
 ## Home - Colaborador
@@ -131,7 +132,7 @@ Diagnostico e manutencao.
 |           | +----------------------+-----------------------+ |
 +-----------+--------------------------------------------------+
 ```
-Agora o MASTER verá somente as específicações mais técnicar sobre a plataforma/aplicação
+Agora o DEV vera somente as especificacoes mais tecnicas sobre a plataforma/aplicacao.
 
 ## Conteudos que nao devem ser foco da Home comum
 - quantidade de permissoes;

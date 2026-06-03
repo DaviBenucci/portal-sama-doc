@@ -1,5 +1,51 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-03 10:15 submenu, visibilidade por cargo/departamento e DEV padrao
+
+### Contexto
+
+- Continuidade da Fase 5: validar submenus da sidebar, visibilidade por permissao/departamento/cargo e padronizacao de acesso tecnico em `DEV`.
+- Escopo local: Web `navigation.tsx`/`Sidebar.tsx`/Home/configuracoes e API `AuthenticatedUser`/JWT/troca de senha administrativa.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- users.service.spec.ts auth.service.spec.ts --runInBand
+npm.cmd run lint
+npm.cmd run build
+git diff --check
+```
+
+No Web:
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts
+git diff --check
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- API: `users.service.spec.ts` e `auth.service.spec.ts` passaram com 2 suites/12 testes.
+- API: lint, build e `git diff --check` passaram.
+- Web: lint, build, Playwright smoke e `git diff --check` passaram.
+- Playwright smoke final passou com 13 testes.
+- Primeira execucao do Playwright falhou porque o seletor `Meus clientes` ficou ambiguo entre KPI e atalho; o teste foi ajustado para buscar explicitamente o link do atalho e a suite passou em nova execucao.
+
+### Pendencias
+
+- Validar no EasyPanel com usuarios reais por perfil/departamento/cargo.
+- Executar matriz 401/403/200 real para garantir que a ocultacao de menu nao substitui autorizacao backend.
+- Conferir UX visual desktop/mobile em navegador real apos deploy.
+
+### Observacao anti-alucinacao
+
+Submenus, filtros visuais de navegacao e padronizacao `DEV` foram implementados e testados localmente. Homologacao real no EasyPanel continua pendente.
+
 ## Execucao 2026-06-03 sessoes e acessos em configuracoes
 
 ### Contexto

@@ -133,7 +133,7 @@ Gerenciar colaboradores internos.
 ## DEV
 
 ### Regra
-Aparece apenas para DEV/MASTER ou ambiente autorizado.
+Aparece apenas para DEV ou ambiente autorizado.
 
 ### Deve conter
 - diagnostico;
@@ -156,7 +156,7 @@ A diferenca nao e quem pode acessar a pagina, mas o que cada perfil pode fazer d
 Colaborador: cria solicitacao, envia feedback e acompanha retorno.
 Gestor: cria solicitacao, solicita pela equipe e aprova dentro do escopo.
 T.I.: executa solicitacoes aprovadas e registra a acao.
-MASTER: gerencia, executa, corrige fluxo e audita.
+DEV: gerencia, executa, corrige fluxo e audita.
 Auditor: consulta historico, quando permitido.
 ```
 

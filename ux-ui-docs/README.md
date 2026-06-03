@@ -34,6 +34,8 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 
 - Avatar persistido foi implementado localmente com backend/storage privado, validacao real de arquivo, remocao de metadados e leitura autenticada.
 - Sessoes ativas e ultimos acessos foram implementados localmente em `/configuracoes` por `GET /api-v2/me/security`, usando `refresh_tokens` e `audit_logs` sem expor token/hash/cookie.
+- Sidebar passou a ter submenus colapsaveis e visibilidade visual por permissao, departamento, cargo e papel `DEV`; atalhos da Home usam a mesma politica.
+- A permissao total foi padronizada em `DEV`; referencias a `MASTER` devem ser tratadas como legado documental.
 - Validacao local passou com teste focado, lint/build API e lint/build Web.
 - O aceite real ainda depende de deploy no EasyPanel, storage real, auditoria persistida e usuarios reais.
 
@@ -56,5 +58,5 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 - No mobile, deve existir botao hamburguer.
 - Departamentos nao devem ser campos livres.
 - Solicitacoes de acesso devem estar disponiveis para todos os usuarios autenticados.
-- Roles e permissoes devem ser configuraveis por MASTER com interface mais descritiva, agrupada e auditada.
+- Roles e permissoes devem ser configuraveis por DEV/Admin autorizado com interface mais descritiva, agrupada e auditada.
 - Responsabilidade de cliente nao deve depender exclusivamente de `clients.metadata`; deve evoluir para entidade propria cliente x departamento x usuario.

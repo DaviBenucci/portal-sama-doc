@@ -4,7 +4,9 @@
 
 Esta documentacao corrige pontos de UX/UI, governanca e seguranca identificados nas telas atuais de usuarios, roles, permissoes, departamentos e solicitacoes de acesso.
 
-O foco e evitar ambiguidade operacional, reduzir erros de cadastro e tornar o modelo de permissao mais compreensivel para usuarios MASTER, gestores e colaboradores.
+O foco e evitar ambiguidade operacional, reduzir erros de cadastro e tornar o modelo de permissao mais compreensivel para usuarios DEV, gestores e colaboradores.
+
+Atualizacao 2026-06-03: a permissao total da aplicacao passa a ser padronizada como `DEV`. Referencias anteriores a `MASTER` devem ser tratadas como legado documental, nao como papel equivalente no produto atual.
 
 Atualizacao 2026-06-02: a criacao inicial de responsabilidade no painel `/clientes/:id` ja usa departamento controlado via `departments.read` e colaborador ativo via `collaborators.read`, gravando em `client_department_assignments` por `POST /api-v2/clients/:clientId/assignments`. A mesma tela agora edita responsabilidade por `PATCH /api-v2/client-assignments/:id`, encerra por `POST /api-v2/client-assignments/:id/end` e transfere responsabilidade ativa por `POST /api-v2/client-assignments/transfer`, exigindo as permissoes `client_assignments.update`, `client_assignments.end` e `client_assignments.transfer` conforme a acao. O dashboard de carteira do gestor, as transferencias operacionais em lote, vencimentos/calendario e planilhas departamentais tambem priorizam responsabilidades ativas de `client_department_assignments` localmente. Backfill, validacao real e corte equivalente de documentos ainda seguem pendentes.
 
@@ -14,9 +16,9 @@ Atualizacao 2026-06-02: a criacao inicial de responsabilidade no painel `/client
 
 ```text
 1. Departamento nao deve ser campo livre.
-2. Departamento deve ser entidade controlada ou lista cadastrada por MASTER.
+2. Departamento deve ser entidade controlada ou lista cadastrada por DEV/Admin autorizado.
 3. Solicitacoes de Acesso devem estar disponiveis para todos os usuarios autenticados.
-4. Roles e permissoes podem continuar configuraveis por MASTER, mas a interface deve ser guiada.
+4. Roles e permissoes podem continuar configuraveis por DEV/Admin autorizado, mas a interface deve ser guiada.
 5. A chave tecnica da permissao pode continuar existindo, mas o usuario deve ver nome amigavel, modulo, acao e descricao clara.
 6. Criacao de permissao deve ser restrita, validada e preferencialmente feita por fluxo assistido.
 ```
@@ -165,7 +167,7 @@ Ou:
 Admin > Usuarios e Permissoes > Departamentos
 ```
 
-Somente MASTER ou permissao equivalente deve criar/editar departamentos.
+Somente DEV ou permissao equivalente explicitamente autorizada deve criar/editar departamentos.
 
 ### 3.7 Campos da tela de departamentos
 
@@ -196,7 +198,7 @@ Permite documentos?
 
 ### 4.1 Decisao funcional
 
-Solicitacoes de Acesso nao devem ser restritas apenas ao T.I. ou a MASTER.
+Solicitacoes de Acesso nao devem ser restritas apenas ao T.I. ou a DEV.
 
 Todos os usuarios autenticados devem conseguir acessar a funcionalidade para:
 
@@ -212,8 +214,8 @@ Todos os usuarios autenticados devem conseguir acessar a funcionalidade para:
 ```text
 Solicitar acesso = todos os usuarios autenticados.
 Aprovar solicitacao = gestores, conforme escopo.
-Executar/liberar acesso = T.I. ou MASTER.
-Auditar solicitacoes = T.I., MASTER ou Auditor.
+Executar/liberar acesso = T.I. ou DEV.
+Auditar solicitacoes = T.I., DEV ou Auditor.
 ```
 
 ### 4.3 Estrutura recomendada
@@ -232,7 +234,7 @@ Solicitacoes
 
 ### 4.4 Visibilidade por perfil
 
-| Guia | Colaborador | Gestor | T.I. | MASTER | Auditor |
+| Guia | Colaborador | Gestor | T.I. | DEV | Auditor |
 |---|---:|---:|---:|---:|---:|
 | Minhas solicitacoes | Sim | Sim | Sim | Sim | Consulta |
 | Nova solicitacao | Sim | Sim | Sim | Sim | Nao |
@@ -278,9 +280,9 @@ Se exigir aprovacao, envia ao gestor
         ↓
 Gestor aprova ou rejeita
         ↓
-Se aprovado, envia ao T.I./MASTER
+Se aprovado, envia ao T.I./DEV
         ↓
-T.I./MASTER executa ou responde
+T.I./DEV executa ou responde
         ↓
 Usuario recebe retorno
         ↓
@@ -294,7 +296,7 @@ Feedback e sugestoes podem usar o mesmo hub de solicitacoes, mas nao devem entra
 Exemplo:
 
 ```text
-Feedback do sistema -> triagem MASTER/T.I.
+Feedback do sistema -> triagem DEV/T.I.
 Solicitacao de acesso -> fluxo de aprovacao e execucao
 ```
 
@@ -314,7 +316,7 @@ calendar.manage
 certificates.download
 ```
 
-Esse modelo e bom para o backend, mas ruim como interface principal para usuario MASTER, porque:
+Esse modelo e bom para o backend, mas ruim como interface principal para usuario DEV/Admin autorizado, porque:
 
 - exige conhecimento tecnico;
 - nao explica impacto operacional;
@@ -514,11 +516,11 @@ Gestor de Departamento
 T.I. Operacional
 Auditor
 Cliente Externo
-MASTER
+DEV
 DEV
 ```
 
-O MASTER pode usar um preset como base e ajustar permissoes.
+O DEV pode usar um preset como base e ajustar permissoes.
 
 ---
 
@@ -553,7 +555,7 @@ Permitir digitar a chave tecnica manualmente apenas em modo avancado:
 [ ] Modo avancado
 ```
 
-Somente MASTER/DEV autorizado deve acessar esse modo.
+Somente DEV autorizado deve acessar esse modo.
 
 ### 7.3 Validacoes obrigatorias
 
@@ -722,7 +724,7 @@ Descricao: acesso operacional limitado ao departamento Fiscal.
 
 ### 9.4 Aviso de risco
 
-Se o MASTER selecionar role critica:
+Se o DEV selecionar role critica:
 
 ```text
 Atencao: esta role contem permissoes criticas.
@@ -738,7 +740,7 @@ Auditar:
 - alteracao de role;
 - ativacao/inativacao de usuario;
 - alteracao de escopo;
-- troca de senha por MASTER.
+- troca de senha por DEV.
 
 ---
 
@@ -749,7 +751,7 @@ Auditar:
 | Role atual | Nome exibido recomendado | Observacao |
 |---|---|---|
 | ACCOUNTING | Contabil | Perfil operacional contabil |
-| ADMIN | Administrador Operacional | Evitar confundir com MASTER absoluto |
+| ADMIN | Administrador Operacional | Evitar confundir com acesso total DEV |
 | AUDITOR | Auditor | Consulta de trilhas e historicos |
 | CLIENT | Cliente Externo | Acesso restrito ao proprio escopo |
 | DEPARTMENT | Colaborador Departamental | Nome atual e generico demais |
@@ -798,11 +800,11 @@ Exemplos:
 - [ ] Departamento no cadastro de usuario nao e campo livre.
 - [ ] Departamento vem de lista controlada pelo backend.
 - [ ] Departamento possui `key` tecnica unica.
-- [ ] Criacao/edicao de departamento e restrita a MASTER/Admin autorizado.
+- [ ] Criacao/edicao de departamento e restrita a DEV/Admin autorizado.
 - [ ] Solicitacoes de Acesso ficam disponiveis para todos os usuarios autenticados.
 - [ ] Colaborador consegue criar solicitacao ou feedback.
 - [ ] Gestor consegue aprovar solicitacoes do proprio escopo.
-- [ ] T.I./MASTER consegue executar solicitacoes aprovadas.
+- [ ] T.I./DEV consegue executar solicitacoes aprovadas.
 - [ ] Roles exibem nome amigavel, descricao, risco e quantidade de permissoes criticas.
 - [ ] Permissoes sao agrupadas por modulo.
 - [ ] Permissoes exibem titulo descritivo em portugues.
@@ -817,7 +819,7 @@ Exemplos:
 
 A melhoria mais importante neste ponto e separar configuracao tecnica de experiencia operacional.
 
-O sistema pode continuar tendo roles e permissoes tecnicas, mas a interface do MASTER precisa ser mais segura, explicativa e guiada.
+O sistema pode continuar tendo roles e permissoes tecnicas, mas a interface do DEV/Admin autorizado precisa ser mais segura, explicativa e guiada.
 
 A regra final recomendada e:
 

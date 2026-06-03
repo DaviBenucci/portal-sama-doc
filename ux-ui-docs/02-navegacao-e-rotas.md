@@ -9,6 +9,14 @@
 - Validacao local: Playwright smoke cobre sidebar desktop, drawer mobile e ausencia de overflow.
 - Aceite real ainda depende de EasyPanel com usuarios reais por perfil e matriz de permissoes real.
 
+## Status local - 2026-06-03
+
+- Grupos da sidebar agora funcionam como submenus colapsaveis.
+- A visibilidade visual das paginas usa politica central por permissao, departamento, cargo e papel tecnico.
+- `DEV` e o unico papel de permissao total da aplicacao; `MASTER` deixa de ser usado como equivalente.
+- Os atalhos da Home usam a mesma politica visual da sidebar.
+- Aceite real ainda depende de EasyPanel com usuarios reais por perfil/departamento/cargo.
+
 ## Estrutura recomendada da sidebar
 
 ```text
@@ -62,18 +70,19 @@ Entrada de Cliente
 | Transferencias | Gestores ou usuários com permissão mais elevada |
 | Historico | Gestores ou usuários com perissão mais elevada |
 | Entrada de Cliente | colaboradores dos departamentos Legalização, financeiro, comercial e gestores de qualquer departamento |
-| Solicitacoes de Acesso | Todos os usuarios autenticados devem acessar para pedir acesso, reportar problema ou enviar feedback. O conteudo interno muda por perfil: colaborador cria e acompanha; gestor aprova no proprio escopo; T.I./MASTER executa; auditor consulta. |
-| Acessos de TI | T.I ou usuários com permissão MASTER |
-| Auditoria | T.I e MASTER |
-| Usuarios e Permissoes | Admin/MASTER |
-| Colaboradores | Admin, RH, gestores e MASTER |
+| Solicitacoes de Acesso | Todos os usuarios autenticados devem acessar para pedir acesso, reportar problema ou enviar feedback. O conteudo interno muda por perfil: colaborador cria e acompanha; gestor aprova no proprio escopo; T.I./DEV executa; auditor consulta. |
+| Acessos de TI | T.I ou usuarios com permissao DEV |
+| Auditoria | T.I, Auditor ou DEV |
+| Usuarios e Permissoes | DEV |
+| Colaboradores | Admin, RH, gestores e DEV |
 | Configuracoes | Todos acessam pessoal; admin depende de permissao |
-| DEV | DEV/MASTER ou ambiente autorizado |
+| DEV | DEV ou ambiente autorizado |
 
 ## Sidebar desktop
 
 Manter:
 - expansao por hover/foco;
+- grupos clicaveis com submenus colapsaveis;
 - icones no estado recolhido;
 - transicao suave;
 - acessibilidade por teclado.
@@ -110,7 +119,7 @@ Gestores:
 - Aprovacoes pendentes;
 - Solicitacoes da equipe.
 
-T.I./MASTER:
+T.I./DEV:
 - Execucao de solicitacoes;
 - Controle tecnico de acessos;
 - Auditoria de acessos.
