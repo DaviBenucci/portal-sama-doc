@@ -6,6 +6,8 @@ O Portal Sama manipula documentos empresariais, contratos, propostas, certificad
 
 Atualizacao em 2026-06-03: avatar de usuario passou a ter upload autenticado em `PATCH /api-v2/me/avatar`, com CSRF, validacao de extensao/MIME/assinatura real/tamanho, bloqueio de SVG, remocao de metadados para PNG/JPG/WebP, storage privado em `STORAGE_PRIVATE_PATH/users/avatars/...` e auditoria `users.avatar.update`. O download usa `GET /api-v2/me/avatar`, autenticado, sem URL publica nem exposicao de `storageKey`. Falta validar no EasyPanel com storage real, auditoria persistida e usuario real.
 
+Atualizacao complementar em 2026-06-03: `GET /api-v2/me/security` passou a retornar contexto de seguranca do usuario autenticado, com sessoes ativas derivadas de `refresh_tokens` e ultimos acessos derivados de `audit_logs`. O contrato nao expoe `tokenHash`, refresh token, cookie, segredo nem metadado sensivel. Falta validar no EasyPanel com usuario real, refresh tokens reais e auditoria persistida.
+
 Arquivos atuais mais relevantes para esta análise:
 
 - `api/auth.php`

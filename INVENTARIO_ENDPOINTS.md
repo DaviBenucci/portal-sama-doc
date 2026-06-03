@@ -15,6 +15,19 @@ Status: inventário em andamento. Inventário baseado nos arquivos PHP reais, na
 - **Riscos de seguranca:** upload malicioso, exposicao de path privado, avatar antigo sem limpeza, volume sem retencao ou auditoria ausente.
 - **Testes necessarios:** validar PATCH/GET com usuario real, 401 sem token, CSRF real, MIME divergente, SVG bloqueado, auditoria persistida e storage real com backup/retencao.
 
+## Endpoint novo: `/api-v2/me/security`
+
+- **Arquivo:** `portal-sama-api/src/modules/auth/me.controller.ts`, `portal-sama-api/src/modules/auth/auth.service.ts`.
+- **Metodo:** GET.
+- **Finalidade:** Listar contexto de seguranca do usuario autenticado: sessoes ativas e ultimos acessos.
+- **Pagina/tela relacionada:** `/configuracoes`, aba Seguranca.
+- **Modulo NestJS alvo:** `AuthModule`/`MeController`.
+- **Permissoes:** usuario autenticado.
+- **Controles implementados:** JWT, leitura somente do proprio usuario, sessoes derivadas de `refresh_tokens`, ultimos acessos derivados de `audit_logs`, sem expor `tokenHash`, refresh token, cookie, segredo ou metadata sensivel.
+- **Status de migracao:** Implementado localmente em 2026-06-03; pendente de deploy/validacao real no EasyPanel.
+- **Riscos de seguranca:** exposicao de dados de sessao de outro usuario ou de token/hash; mitigado por `CurrentUser` e `select` restrito. O endpoint ainda nao identifica a sessao atual individualmente porque o refresh cookie fica restrito ao path `/api-v2/auth`.
+- **Testes necessarios:** validar GET com usuario real, 401 sem token, auditoria real de login/refresh/logout, refresh tokens reais e UX desktop/mobile.
+
 ## Endpoint novo: `/api-v2/integrations/acessorias/scheduler/status`
 
 - **Arquivo:** `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts`, `portal-sama-api/src/modules/integrations/acessorias/acessorias-scheduler.service.ts`.

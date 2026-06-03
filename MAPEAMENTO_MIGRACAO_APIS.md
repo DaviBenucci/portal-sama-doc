@@ -70,6 +70,7 @@ UsersModule
 | Preferencia visual de intro | `/api-v2/me/preferences/intro` | PATCH | Marcar animacao de boas-vindas como vista. |
 | Foto de perfil autenticada | `/api-v2/me/avatar` | PATCH | Salvar avatar em storage privado com CSRF, validacao real e auditoria. |
 | Foto de perfil autenticada | `/api-v2/me/avatar` | GET | Servir avatar autenticado sem URL publica nem storage key. |
+| Seguranca da conta | `/api-v2/me/security` | GET | Retornar sessoes ativas e ultimos acessos do usuario autenticado sem expor token/hash/cookie. |
 
 ---
 

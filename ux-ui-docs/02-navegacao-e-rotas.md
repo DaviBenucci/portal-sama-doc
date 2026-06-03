@@ -12,7 +12,7 @@
 ## Estrutura recomendada da sidebar
 
 ```text
-Operacao
+⬇ {Nome do departamento do usuário}
 - Modelo Dpto
 - Meus Clientes
 - Todos os Clientes
@@ -23,7 +23,7 @@ Operacao
 - Propostas
 - Legalizacao
 
-Gestao
+⬇Gestão
 - Painel do Gestor
 - Carteira de Colaboradores
 - Transferencias
@@ -31,12 +31,12 @@ Gestao
 
 Entrada de Cliente
 
-T.I
+⬇T.I
 - Solicitacoes de Acesso
 - Acessos de TI
 - Auditoria
 
-Admin
+⬇Admin
 - Usuarios e Permissoes
 - Colaboradores
 - Configuracoes

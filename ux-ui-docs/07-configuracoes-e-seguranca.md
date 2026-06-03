@@ -1,12 +1,20 @@
 # [PARCIAL] 07 - Configuracoes e Seguranca
 
-## Status local - 2026-06-03
+## Status local - 2026-06-03 sessoes e acessos
+
+- `/configuracoes` agora consulta `GET /api-v2/me/security` ao abrir a aba Seguranca.
+- O backend retorna sessoes ativas a partir de `refresh_tokens` e ultimos eventos de autenticacao a partir de `audit_logs`.
+- O contrato nao expoe `tokenHash`, refresh token, cookie, segredo nem metadado sensivel.
+- A aba Seguranca exibe expiracao da sessao, ultimo acesso, dispositivo recente, sessoes ativas e ultimos acessos.
+- Pendencias: homologar no EasyPanel com usuario real, refresh tokens reais e auditoria persistida; revogacao individual de sessoes, MFA e preferencias persistidas seguem pendentes.
+
+## Status local - 2026-06-03 avatar persistido
 
 - Foto de perfil agora possui backend/storage local: `PATCH /api-v2/me/avatar` salva em storage privado e `GET /api-v2/me/avatar` serve a imagem autenticada.
 - O backend valida extensao, MIME declarado, assinatura real por magic bytes, limite de 2 MB e bloqueia SVG.
 - PNG, JPG/JPEG e WebP passam por remocao de metadados/chunks auxiliares antes da gravacao.
 - `/configuracoes` envia a foto para a API, atualiza a sessao local e exibe o avatar persistido por blob autenticado.
-- Pendencias: homologar no EasyPanel com storage real, auditoria persistida e usuario real; listar sessoes/dispositivos reais; persistir preferencias dedicadas; executar aceite UX completo.
+- Pendencias: homologar no EasyPanel com storage real, auditoria persistida e usuario real; persistir preferencias dedicadas; executar aceite UX completo.
 
 ## Status local - 2026-06-02
 
@@ -17,7 +25,7 @@
 - Seguranca exibe expiracao da sessao, politica de senha, MFA futuro e formulario de troca de senha.
 - Troca de senha foi reforcada no backend: `UsersService.update()` rejeita alteracao de senha quando o ator nao possui papel `MASTER`; quando permitido, a auditoria existente registra `passwordChanged` sem segredo bruto.
 - Preferencias de notificacoes/visual sao locais ate existir endpoint dedicado.
-- Pendencias: homologar avatar em backend/storage real no EasyPanel, conferir auditoria persistida, avaliar versao otimizada/redimensionada futura, listar sessoes/dispositivos reais e homologar com usuarios reais.
+- Pendencias: homologar avatar e sessoes/acessos no EasyPanel, conferir auditoria persistida, avaliar versao otimizada/redimensionada futura e homologar com usuarios reais.
 
 ## Rota
 Criar base para `/configuracoes`.

@@ -2,6 +2,14 @@
 
 Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`. A prioridade atual e fechar Fase 1 (homologacao operacional), Fase 2 (contrato real do Acessorias), Fase 3 (Acessorias aplicado nas planilhas departamentais/vencimentos) e avancar Fase 4 (responsabilidade normalizada de clientes).
 
+## Atualizacao 2026-06-03 sessoes e acessos em configuracoes
+
+- `portal-sama-api` agora possui `GET /api-v2/me/security`, autenticado por JWT, para retornar sessoes ativas e ultimos acessos do usuario autenticado.
+- O endpoint le somente dados existentes de `refresh_tokens` e `audit_logs`; nao cria migration nova e nao retorna `tokenHash`, refresh token, cookie, segredo ou metadados sensiveis.
+- `/configuracoes` no Web agora carrega esses dados sob demanda na aba Seguranca e exibe resumo de ultimo acesso, dispositivo recente, sessoes ativas e eventos recentes, com estados de carregamento, vazio e erro.
+- Validacoes locais passaram: `npm.cmd test -- auth.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; `npm.cmd run build` e `npm.cmd run lint` no Web.
+- Permanece pendente publicar no EasyPanel e validar com usuario real, refresh tokens reais, auditoria persistida, UX desktop/mobile e criterio de aceite. Revogacao individual de sessoes, MFA e preferencias persistidas continuam pendentes.
+
 ## Atualizacao 2026-06-03 avatar persistido em backend/storage
 
 - `portal-sama-api` agora possui `PATCH /api-v2/me/avatar` e `GET /api-v2/me/avatar`, com JWT, CSRF na mutacao e auditoria `users.avatar.update`.
@@ -10,7 +18,7 @@ Ordem operacional: antes de escolher uma nova pendencia isolada, seguir `ORDEM_I
 - PNG, JPG/JPEG e WebP passam por remocao local de metadados/chunks auxiliares antes da gravacao.
 - `/configuracoes` no Web envia a foto para o backend, atualiza a store de autenticacao e carrega a imagem persistida por blob autenticado.
 - Validacoes locais passaram: `npm.cmd test -- user-avatar.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; `npm.cmd run lint` e `npm.cmd run build` no Web.
-- Permanece pendente validar no EasyPanel com storage real, usuario real, CSRF real, auditoria persistida, backup/retencao do volume e checklist UX completo. Sessoes/dispositivos reais e preferencias persistidas continuam pendentes.
+- Permanece pendente validar no EasyPanel com storage real, usuario real, CSRF real, auditoria persistida, backup/retencao do volume e checklist UX completo. Sessoes/dispositivos receberam base local complementar nesta data, mas ainda precisam de homologacao real; preferencias persistidas continuam pendentes.
 
 ## Atualizacao 2026-06-02 UX estrutural e configuracoes
 

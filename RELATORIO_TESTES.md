@@ -1,5 +1,49 @@
 # [PARCIAL] Relatório de Testes - Portal Sama
 
+## Execucao 2026-06-03 sessoes e acessos em configuracoes
+
+### Contexto
+
+- Continuidade da Fase 5: validar localmente sessoes ativas, ultimos acessos e dispositivos recentes na aba Seguranca de `/configuracoes`.
+- Escopo local: API `GET /api-v2/me/security`, leitura sanitizada de `refresh_tokens` e `audit_logs`, e integracao da tela de configuracoes no Web.
+
+### Comandos executados
+
+Na API:
+
+```bash
+npm.cmd test -- auth.service.spec.ts --runInBand
+npm.cmd run build
+npm.cmd run lint
+```
+
+No Web:
+
+```bash
+npm.cmd run build
+npm.cmd run lint
+```
+
+### Resultado
+
+- **Status geral local:** passou.
+- `auth.service.spec.ts` passou com 4 testes.
+- Build e lint da API passaram.
+- Build e lint do Web passaram.
+- O teste novo cobre listagem de contexto de seguranca sem expor `tokenHash`.
+- A validacao foi local; nao houve execucao contra EasyPanel, usuario real, refresh tokens reais de homologacao ou auditoria persistida no MySQL real.
+
+### Pendencias
+
+- Publicar API/Web e validar `/configuracoes` no EasyPanel com usuario real.
+- Conferir se `audit_logs` possui eventos recentes de login/refresh/logout suficientes para a UX.
+- Executar checklist UX completo em desktop/mobile reais.
+- Revogacao individual de sessoes, MFA e preferencias persistidas continuam pendentes.
+
+### Observacao anti-alucinacao
+
+Sessoes ativas e ultimos acessos foram implementados e testados localmente. Homologacao real no EasyPanel continua pendente.
+
 ## Execucao 2026-06-03 avatar persistido em backend/storage
 
 ### Contexto

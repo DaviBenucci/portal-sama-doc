@@ -1,6 +1,52 @@
 # [PARCIAL] Changelog Técnico - Portal Sama
 
-## 2026-06-03
+## 2026-06-03 - sessoes e acessos em configuracoes
+
+### Arquivos alterados
+
+- `portal-sama-api/src/modules/auth/auth.types.ts`
+- `portal-sama-api/src/modules/auth/auth.service.ts`
+- `portal-sama-api/src/modules/auth/auth.service.spec.ts`
+- `portal-sama-api/src/modules/auth/me.controller.ts`
+- `portal-sama-web/src/types/auth.ts`
+- `portal-sama-web/src/services/auth.service.ts`
+- `portal-sama-web/src/pages/settings/SettingsPage.tsx`
+- `portal-sama-web/src/index.css`
+- Documentacao viva da Fase 5/UX.
+
+### O que mudou
+
+- Criado `GET /api-v2/me/security`, autenticado por JWT, para listar sessoes ativas do usuario e ultimos eventos de autenticacao.
+- A resposta usa `refresh_tokens` e `audit_logs` ja existentes, sem expor `tokenHash`, refresh token, cookie, segredo ou metadata sensivel.
+- `/configuracoes` passou a carregar esses dados na aba Seguranca e exibir expiracao, ultimo acesso, dispositivo recente, sessoes ativas e ultimos acessos.
+- A UI ganhou estados de carregamento, vazio e erro para o novo contrato.
+
+### Motivo da alteracao
+
+Avancar a Fase 5 de `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`, cobrindo o item de sessoes ativas, ultimos acessos e dispositivos recentes na rota `/configuracoes`.
+
+### Impacto esperado
+
+- A aba Seguranca deixa de depender de texto fixo para dispositivo/sessao.
+- O usuario passa a ver informacoes reais de seguranca da propria conta quando API/Web estiverem publicados.
+- Nao ha migration nova nesta fatia.
+
+### Testes executados
+
+- Comando: `npm.cmd test -- auth.service.spec.ts --runInBand`
+- Resultado: passou na API com 4 testes.
+- Comando: `npm.cmd run build`
+- Resultado: passou na API e no Web.
+- Comando: `npm.cmd run lint`
+- Resultado: passou na API e no Web.
+
+### Riscos ou pendencias
+
+- Validar no EasyPanel com usuario real, refresh tokens reais, auditoria persistida e aceite UX desktop/mobile.
+- Revogacao individual de sessoes, MFA e preferencias persistidas continuam pendentes.
+- Como o refresh cookie atual tem path de `/api-v2/auth`, o endpoint `/me/security` nao identifica a sessao atual individualmente; ele lista sessoes ativas do usuario.
+
+## 2026-06-03 - avatar persistido em backend/storage
 
 ### Arquivos alterados
 
@@ -50,7 +96,7 @@ Avancar a pendencia da Fase 5 em `ORDEM_IMPLEMENTACAO_DOCUMENTACOES.md`: foto de
 
 - Validar no EasyPanel com `STORAGE_PRIVATE_PATH` real, usuario real, CSRF real, auditoria persistida e backup/retencao do volume.
 - Confirmar UX desktop/mobile real de upload/leitura do avatar.
-- Sessoes/dispositivos reais e preferencias persistidas continuam fora desta fatia.
+- Sessoes/dispositivos receberam base local na fatia complementar de 2026-06-03; preferencias persistidas continuam fora desta fatia.
 
 ## 2026-06-02 17:05 -03:00
 

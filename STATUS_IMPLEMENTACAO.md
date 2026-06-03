@@ -1,5 +1,14 @@
 # [PARCIAL] Status de Implementação - Portal Sama
 
+## Atualizacao complementar 2026-06-03 sessoes e acessos em configuracoes
+
+- **Responsavel/IA:** Codex
+- **Resumo da alteracao:** Continuidade da Fase 5: a aba Seguranca de `/configuracoes` deixou de exibir apenas placeholder de dispositivo e passou a consumir dados reais sanitizados da API.
+- **Backend/API v2:** criado `GET /api-v2/me/security`, autenticado por JWT, retornando sessoes ativas de `refresh_tokens` e ultimos eventos de autenticacao de `audit_logs`, sem expor `tokenHash`, refresh token, cookie, segredo ou metadado sensivel.
+- **Frontend React:** `/configuracoes` agora busca `fetchCurrentUserSecurity()` ao abrir a aba Seguranca e exibe expiracao da sessao, ultimo acesso, dispositivo recente, sessoes ativas e ultimos acessos com estados de carregamento, vazio e erro.
+- **Validacao local:** passaram `npm.cmd test -- auth.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; no Web passaram `npm.cmd run build` e `npm.cmd run lint`.
+- **Pendente:** publicar API/Web e validar no EasyPanel com usuario real, refresh tokens reais, auditoria persistida e aceite UX desktop/mobile. Revogacao individual de sessoes, preferencias persistidas e MFA continuam pendentes.
+
 ## Atualizacao complementar 2026-06-03 avatar persistido em backend/storage
 
 - **Responsavel/IA:** Codex
@@ -8,7 +17,7 @@
 - **Seguranca/arquivo:** o backend valida tamanho maximo de 2 MB, extensao, MIME declarado, assinatura real por magic bytes e bloqueia SVG. PNG, JPG/JPEG e WebP passam por remocao de metadados/chunks auxiliares antes da gravacao privada.
 - **Frontend React:** `/configuracoes` agora envia a foto por `uploadCurrentUserAvatar()`, atualiza a store de autenticacao com o usuario retornado e carrega a imagem por blob autenticado em `GET /me/avatar`, sem URL publica nem storage key no cliente.
 - **Validacao local:** passaram `npm.cmd test -- user-avatar.service.spec.ts --runInBand`, `npm.cmd run build` e `npm.cmd run lint` na API; no Web passaram `npm.cmd run lint` e `npm.cmd run build`.
-- **Pendente:** publicar API/Web, validar no EasyPanel com `STORAGE_PRIVATE_PATH` real, usuario real, CSRF real e auditoria persistida. Sessoes/dispositivos reais, preferencias persistidas e aceite UX completo continuam pendentes.
+- **Pendente:** publicar API/Web, validar no EasyPanel com `STORAGE_PRIVATE_PATH` real, usuario real, CSRF real e auditoria persistida. Sessoes/dispositivos receberam base local complementar nesta data, mas ainda precisam de homologacao real; preferencias persistidas e aceite UX completo continuam pendentes.
 
 ## Atualizacao complementar 2026-06-02 UX estrutural e configuracoes
 

@@ -33,6 +33,7 @@ Depois da integracao com o Acessorias, este pacote deve orientar a rodada de mel
 ## Status local - 2026-06-03
 
 - Avatar persistido foi implementado localmente com backend/storage privado, validacao real de arquivo, remocao de metadados e leitura autenticada.
+- Sessoes ativas e ultimos acessos foram implementados localmente em `/configuracoes` por `GET /api-v2/me/security`, usando `refresh_tokens` e `audit_logs` sem expor token/hash/cookie.
 - Validacao local passou com teste focado, lint/build API e lint/build Web.
 - O aceite real ainda depende de deploy no EasyPanel, storage real, auditoria persistida e usuarios reais.
 

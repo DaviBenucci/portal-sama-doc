@@ -63,6 +63,12 @@
 - O backend valida tipo real, bloqueia SVG, limita 2 MB, remove metadados/chunks auxiliares e grava em storage privado.
 - O aceite continua pendente ate publicar no EasyPanel e validar storage real, CSRF real, auditoria persistida e UX desktop/mobile com usuario real.
 
+## Status parcial - 2026-06-03 sessoes e acessos em configuracoes
+
+- `/configuracoes` passou a consultar `GET /api-v2/me/security` na aba Seguranca.
+- A API retorna sessoes ativas de `refresh_tokens` e ultimos acessos de `audit_logs`, sem expor token/hash/cookie.
+- O aceite continua pendente ate publicar no EasyPanel e validar com usuario real, refresh tokens reais, auditoria persistida e UX desktop/mobile.
+
 ## Navegacao
 - [x] Sidebar desktop mantem hover/foco.
 - [x] Mobile tem botao hamburguer.
@@ -106,6 +112,8 @@
 - [x] Foto tem validacoes seguras locais.
 - [x] Troca de senha somente MASTER.
 - [x] Troca gera auditoria via `users.update`.
+- [x] Sessoes ativas e ultimos acessos possuem base local em `/me/security`.
+- [ ] Validar sessoes ativas, ultimos acessos e dispositivos recentes no EasyPanel.
 
 ## Seguranca
 - [ ] Acoes sensiveis tem confirmacao.
