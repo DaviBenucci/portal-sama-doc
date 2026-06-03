@@ -34,6 +34,7 @@ docs/02-PLANO-FECHAMENTO-MVP.md
 docs/03-CONTRATO-ACESSORIAS-OPERACIONAL.md
 docs/04-DIVERGENCIAS-DOCS-CODIGO.md
 docs/05-PROMPT-CODEX-FECHAMENTO-MVP.md
+docs/06-NOTIFICACOES-WEB-PUSH-MVP.md
 ```
 
 Documentações antigas devem ser movidas para:
@@ -55,8 +56,9 @@ Quando código e documentação divergirem, seguir esta ordem:
 2. 01-ESTADO-ATUAL-CODIGO-DOCUMENTACAO.md
 3. 02-PLANO-FECHAMENTO-MVP.md
 4. 03-CONTRATO-ACESSORIAS-OPERACIONAL.md
-5. ADRs e decisões técnicas recentes
-6. Documentos arquivados apenas como referência histórica
+5. 06-NOTIFICACOES-WEB-PUSH-MVP.md
+6. ADRs e decisões técnicas recentes
+7. Documentos arquivados apenas como referência histórica
 ```
 
 Se um documento antigo disser “não implementar agora” e o código já tiver implementação parcial, tratar como:
@@ -78,8 +80,10 @@ Está dentro do MVP atual:
 - estabilizar Integra-AI/extratos;
 - estabilizar Central de Vencimentos e obrigações;
 - estabilizar integração Acessórias como fonte de entregas, baixas e vencimentos;
+- consolidar notificações internas como trilha operacional da plataforma;
+- implementar Web Push mínimo e seguro como canal do MVP para eventos críticos;
 - corrigir painéis de gestor, colaborador e operação;
-- melhorar estados de loading e erro;
+- melhorar estados de loading, erro, sucesso e vazio;
 - criar conciliação segura de responsáveis do Acessórias com colaboradores locais;
 - garantir testes mínimos e build de API/Web.
 
@@ -89,9 +93,10 @@ Está dentro do MVP atual:
 
 Não implementar agora, salvo autorização explícita:
 
-- Web Push Notifications;
 - motor de recorrência inteligente avançado;
 - novas integrações externas além do Acessórias;
+- canais externos adicionais além do Web Push mínimo, como WhatsApp, Slack, Teams e SMS;
+- preferências avançadas de notificação, resumo diário inteligente, agrupamentos complexos ou regras por horário;
 - alteração bidirecional de dados no Acessórias;
 - redesign visual amplo;
 - novas telas duplicadas para fluxos já existentes;
@@ -164,7 +169,54 @@ A página de configuração de calendário/vencimentos deve ser apenas configura
 
 ---
 
-## 10. Regra para testes
+## 10. Regra para Notificações internas e Web Push
+
+Notificações internas e Web Push **fazem parte do MVP atual** como camada operacional mínima, porque o Portal Sama precisa avisar colaboradores, gestores, DEV/ADMIN e operação sobre eventos críticos mesmo quando o usuário não estiver olhando a tela.
+
+A regra principal é:
+
+```txt
+Evento operacional relevante
+        -> cria NotificationEvent interno
+        -> exibe na Central de Notificações
+        -> envia Web Push somente se o usuário tiver dispositivo inscrito e preferência ativa
+        -> registra tentativa de entrega
+```
+
+Eventos mínimos do MVP:
+
+- obrigação do Acessórias entregue/concluída;
+- obrigação próxima do prazo;
+- obrigação vencida;
+- falha crítica de sincronização/importação do Acessórias;
+- sincronização/importação concluída;
+- solicitação de acesso criada;
+- solicitação de acesso aguardando validação de gestor;
+- solicitação de acesso encaminhada para DEV/ADMIN/T.I.;
+- solicitação de acesso aprovada ou recusada;
+- contrato enviado, assinado ou pendente;
+- certificado digital próximo do vencimento ou vencido;
+- documento aprovado ou recusado;
+- ação crítica com sucesso ou falha.
+
+O Web Push deve ser seguro e resumido. Detalhes sensíveis ficam apenas dentro do Portal Sama, após autenticação e RBAC.
+
+Exemplo correto de push:
+
+```txt
+Título: Nova solicitação de acesso
+Mensagem: Uma solicitação aguarda validação.
+```
+
+Exemplo proibido:
+
+```txt
+Título: Solicitação de João Silva para Cliente X com CPF/CNPJ completo e credenciais
+```
+
+---
+
+## 11. Regra para testes
 
 Toda tarefa de código deve terminar informando:
 
@@ -181,6 +233,6 @@ Não afirmar que a aplicação está pronta se o build ou testes relevantes não
 
 ---
 
-## 11. Comando padrão para IA/Codex
+## 12. Comando padrão para IA/Codex
 
 Antes de implementar, leia apenas os documentos ativos deste pacote. Não leia `docs/_arquivo` como requisito ativo. Corrija apenas o necessário para o MVP atual e evite criar funcionalidades novas.

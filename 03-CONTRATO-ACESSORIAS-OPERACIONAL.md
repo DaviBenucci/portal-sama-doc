@@ -227,3 +227,48 @@ O frontend não deve receber stack trace nem token.
 - Não expor URL com credencial.
 - Auditoria em sincronização/importação/vínculo.
 - RBAC para preview, sync, backfill, mapeamento e revisão.
+
+---
+
+## 11. Eventos Acessórias que devem gerar notificação
+
+A integração Acessórias deve emitir `NotificationEvent` interno para eventos operacionais relevantes. O Web Push é enviado somente quando o destinatário possuir dispositivo inscrito e preferência ativa.
+
+Eventos mínimos:
+
+```txt
+ACESSORIAS_DELIVERY_COMPLETED
+ACESSORIAS_DELIVERY_DUE_SOON
+ACESSORIAS_DELIVERY_OVERDUE
+ACESSORIAS_SYNC_FAILED
+ACESSORIAS_SYNC_COMPLETED
+ACESSORIAS_BACKFILL_COMPLETED
+ACESSORIAS_BACKFILL_FAILED
+ACESSORIAS_RESPONSIBLE_PENDING_REVIEW
+ACESSORIAS_DIVERGENCE_CREATED
+```
+
+Destinatários sugeridos:
+
+```txt
+Colaborador responsável -> obrigação próxima, vencida ou entregue
+Gestor do departamento -> atrasos, divergências e pendências críticas
+DEV/ADMIN/T.I. -> falha crítica de sync, token inválido, rate limit persistente, erro de backfill
+```
+
+Payload de Web Push deve ser sanitizado.
+
+Permitido:
+
+```txt
+Título: Obrigação próxima do vencimento
+Mensagem: Você possui uma obrigação pendente com prazo próximo.
+```
+
+Proibido:
+
+```txt
+Título ou mensagem com CNPJ/CPF completo, certificado, contrato, documento, token, stack trace ou detalhe fiscal sensível.
+```
+
+Os detalhes completos devem ser carregados apenas dentro do Portal Sama, com autenticação e RBAC.

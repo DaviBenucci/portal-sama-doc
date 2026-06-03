@@ -16,6 +16,7 @@ docs/01-ESTADO-ATUAL-CODIGO-DOCUMENTACAO.md
 docs/02-PLANO-FECHAMENTO-MVP.md
 docs/03-CONTRATO-ACESSORIAS-OPERACIONAL.md
 docs/04-DIVERGENCIAS-DOCS-CODIGO.md
+docs/06-NOTIFICACOES-WEB-PUSH-MVP.md
 ```
 
 Não leia `docs/_arquivo` como requisito ativo. Arquivos arquivados são histórico, não escopo atual.
@@ -32,9 +33,10 @@ Consolidar o MVP do Portal Sama para operação e gestão, com foco em:
 4. consolidar Central de Vencimentos e Obrigações;
 5. vincular responsáveis do Acessórias a colaboradores locais de forma segura;
 6. permitir visão por colaborador para gestão;
-7. manter segurança, RBAC, CSRF e auditoria.
+7. implementar notificações internas e Web Push mínimo para eventos críticos;
+8. manter segurança, RBAC, CSRF e auditoria.
 
-Não implementar Web Push, WhatsApp, recorrência inteligente avançada, novas integrações ou redesign amplo.
+Implementar Web Push somente no escopo mínimo definido em `06-NOTIFICACOES-WEB-PUSH-MVP.md`. Não implementar WhatsApp, Slack, Teams, SMS, recorrência inteligente avançada, novas integrações ou redesign amplo.
 
 ---
 
@@ -397,7 +399,113 @@ Não deixar os dois significados coexistirem.
 Optaremos pela opção B e Removeremos o uso semântico do MASTER.
 ---
 
-## Tarefa 9 — Testes obrigatórios
+## Tarefa 9 — Notificações internas e Web Push mínimo
+
+Arquivos prováveis no backend:
+
+```txt
+portal-sama-api/src/modules/notifications/notifications.module.ts
+portal-sama-api/src/modules/notifications/notifications.service.ts
+portal-sama-api/src/modules/notifications/notification-dispatcher.service.ts
+portal-sama-api/src/modules/notifications/notification-preferences.service.ts
+portal-sama-api/src/modules/notifications/web-push/web-push.module.ts
+portal-sama-api/src/modules/notifications/web-push/web-push.service.ts
+portal-sama-api/src/modules/notifications/web-push/web-push-subscriptions.service.ts
+portal-sama-api/prisma/schema.prisma
+```
+
+Arquivos prováveis no frontend:
+
+```txt
+portal-sama-web/src/services/notifications.service.ts
+portal-sama-web/src/services/web-push.service.ts
+portal-sama-web/src/hooks/useWebPush.ts
+portal-sama-web/src/components/notifications/NotificationBell.tsx
+portal-sama-web/src/components/notifications/NotificationCenter.tsx
+portal-sama-web/src/components/notifications/EnablePushNotificationsButton.tsx
+portal-sama-web/public/service-worker.js
+```
+
+Implementar ou consolidar:
+
+```txt
+NotificationEvent interno persistido
+NotificationDeliveryAttempt por canal
+NotificationPreference básica por usuário/canal
+WebPushSubscription vinculada ao usuário autenticado
+NotificationDispatcherService
+NotificationBell no layout
+Central de Notificações
+botão Ativar notificações neste dispositivo
+```
+
+Endpoints mínimos:
+
+```txt
+GET    /api-v2/notifications
+PATCH  /api-v2/notifications/:id/read
+PATCH  /api-v2/notifications/read-all
+GET    /api-v2/notifications/preferences
+PATCH  /api-v2/notifications/preferences
+POST   /api-v2/notifications/web-push/subscribe
+POST   /api-v2/notifications/web-push/unsubscribe
+GET    /api-v2/notifications/web-push/devices
+DELETE /api-v2/notifications/web-push/devices/:id
+```
+
+Eventos obrigatórios:
+
+```txt
+ACESSORIAS_DELIVERY_COMPLETED
+ACESSORIAS_DELIVERY_DUE_SOON
+ACESSORIAS_DELIVERY_OVERDUE
+ACESSORIAS_SYNC_FAILED
+ACESSORIAS_SYNC_COMPLETED
+ACCESS_REQUEST_CREATED
+ACCESS_REQUEST_MANAGER_REVIEW
+ACCESS_REQUEST_DEV_REVIEW
+ACCESS_REQUEST_APPROVED
+ACCESS_REQUEST_REJECTED
+CONTRACT_SENT
+CONTRACT_SIGNED
+CONTRACT_PENDING
+CERTIFICATE_EXPIRING
+CERTIFICATE_EXPIRED
+DOCUMENT_APPROVED
+DOCUMENT_REJECTED
+SYSTEM_ACTION_SUCCESS
+SYSTEM_ACTION_FAILED
+```
+
+Regras obrigatórias:
+
+```txt
+Criar notificação interna antes de tentar Web Push.
+Falha de push não quebra ação principal.
+Payload de Web Push deve ser curto e sanitizado.
+Detalhes completos só aparecem dentro do Portal Sama autenticado.
+VAPID_PRIVATE_KEY nunca vai para o frontend.
+Subscription pertence ao usuário autenticado.
+Usuário não lista nem revoga dispositivo de outro usuário.
+Não duplicar notificação para o mesmo evento/destinatário.
+```
+
+Exemplos de mensagens seguras:
+
+```txt
+Nova solicitação de acesso
+Uma solicitação aguarda validação.
+
+Obrigação vencida
+Você possui uma obrigação pendente vencida.
+
+Falha de sincronização
+Uma integração precisa de atenção técnica.
+```
+
+---
+
+## Tarefa 10 — Testes obrigatórios
 
 Criar/ajustar testes para:
 
@@ -412,7 +520,12 @@ Criar/ajustar testes para:
 - resolver responsável por username;
 - nome ambíguo vira PENDING_REVIEW/AMBIGUOUS;
 - usuário ativo não é criado automaticamente;
-- gestor consegue filtrar por colaborador.
+- gestor consegue filtrar por colaborador;
+- notificação interna é criada para evento crítico;
+- Web Push não contém dados sensíveis;
+- falha no envio de Web Push não quebra a ação principal;
+- usuário não consegue listar/revogar subscription de outro usuário;
+- VAPID private key não aparece no bundle/frontend.
 ```
 
 Executar:

@@ -19,9 +19,9 @@
 | MASTER | Usuário quer MASTER vendo painéis; doc recente fala DEV técnico total | Código privilegia `ADMIN`/`DEV`, não `MASTER` | Permissões inconsistentes | Decidir oficialmente: formalizar MASTER ou remover uso |
 | Home loading | Deve mostrar carregamento claro | Cards exibem `...` | Parece bug/sem dados | Adicionar skeleton/loading textual |
 | Frontend build | Deve compilar | `IntegraAiPage.tsx` falha por union type | Bloqueia deploy | Corrigir narrow de `IntegraAiExportResponse` |
-| Web Push | Documentado em detalhes | Não deve entrar no fechamento MVP | Escopo cresce | Arquivar como futuro |
+| Web Push | Documentos anteriores tratavam como futuro; decisão atual inclui Web Push mínimo no MVP | Código possui indícios de base parcial (`Notification`, `BrowserPushSubscription`), mas fluxo transversal pode não estar consolidado | Sem push, operação pode perder alertas críticos fora da tela | Implementar notificações internas + Web Push mínimo, sem WhatsApp/Teams/recursos avançados |
 | Recorrência inteligente | Documentada como futuro | Não precisa para MVP | Escopo cresce | Arquivar como futuro |
-| Documentações | Muitas fontes ativas | IA pode se confundir | Retrabalho infinito | Criar pacote ativo e `_arquivo` |
+| Documentações | Muitas fontes ativas | IA pode se confundir | Retrabalho infinito | Criar pacote ativo, incluir contrato Web Push e mover histórico para `_arquivo` |
 
 ---
 
@@ -139,3 +139,63 @@ MANAGER = gestão operacional
 A opção escolhida deve ser aplicada no código, RBAC default e documentação.
 
 Utilizaremos a Opção B e não vamos utilizar o MASTER
+
+---
+
+## 7. Divergência: Web Push agora entra no MVP
+
+### Estado anterior
+
+Os documentos anteriores colocavam Web Push como funcionalidade futura, para depois da integração Acessórias e da Central de Vencimentos.
+
+### Decisão atual
+
+Web Push mínimo entra no MVP porque o Portal Sama será usado como centro operacional da empresa. A plataforma precisa avisar sobre obrigações, acessos, contratos, certificados, documentos, erros e ações críticas sem depender de o usuário estar olhando a tela.
+
+### Correção
+
+Adicionar como requisito ativo:
+
+```txt
+NotificationEvent interno
+Central de Notificações
+sino/contador no layout
+Browser/Web Push subscription por usuário autenticado
+NotificationDispatcherService
+registro de tentativas de entrega
+preferências básicas
+payload de push sanitizado
+```
+
+### Limite do escopo
+
+A inclusão de Web Push **não autoriza**:
+
+```txt
+WhatsApp
+Slack
+Teams
+SMS
+resumo diário inteligente
+agrupamentos avançados
+regras complexas por horário
+payload com dados sensíveis
+```
+
+### Eventos mínimos
+
+```txt
+ACESSORIAS_DELIVERY_COMPLETED
+ACESSORIAS_DELIVERY_DUE_SOON
+ACESSORIAS_DELIVERY_OVERDUE
+ACESSORIAS_SYNC_FAILED
+ACCESS_REQUEST_MANAGER_REVIEW
+ACCESS_REQUEST_DEV_REVIEW
+CONTRACT_SENT
+CONTRACT_SIGNED
+CERTIFICATE_EXPIRING
+DOCUMENT_APPROVED
+DOCUMENT_REJECTED
+SYSTEM_ACTION_SUCCESS
+SYSTEM_ACTION_FAILED
+```

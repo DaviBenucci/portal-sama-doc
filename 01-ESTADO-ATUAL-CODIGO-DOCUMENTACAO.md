@@ -12,7 +12,7 @@ O Portal Sama já possui uma base ampla e funcional para centralizar a operaçã
 
 O ponto crítico atual é que a documentação cresceu mais rápido do que o fechamento técnico. Existem muitos documentos com status semelhante, alguns planejando futuro, outros descrevendo implementações parciais e outros registrando decisões já superadas. Isso aumenta a chance de uma IA ou desenvolvedor tratar backlog futuro como requisito imediato.
 
-A recomendação é congelar o escopo do MVP e consolidar o que já existe.
+A recomendação é congelar o escopo do MVP e consolidar o que já existe. A partir da decisão de produto de 2026-06-03, **Notificações internas e Web Push mínimo entram no MVP**, não como expansão futura ampla, mas como infraestrutura operacional essencial para evitar perda de avisos críticos.
 
 ---
 
@@ -60,7 +60,7 @@ Isso confirma que o Portal Sama já cobre os principais eixos operacionais:
 - solicitações de acesso ao T.I;
 - extratos/Integra-AI;
 - auditoria;
-- notificações.
+- notificações internas e Web Push mínimo.
 
 ---
 
@@ -248,7 +248,60 @@ ou criar um type guard para o caso de erro.
 
 ---
 
-## 8. Estado dos testes/build local
+## 8. Estado atual das notificações e Web Push
+
+O schema Prisma já indica base parcial para notificações, com modelos como:
+
+```txt
+Notification
+BrowserPushSubscription
+```
+
+Isso mostra que a plataforma já caminhou para uma fundação de notificações. Porém, para o MVP operacional, ainda é necessário consolidar semanticamente a camada de notificação como fluxo transversal da aplicação.
+
+### O que precisa existir no MVP
+
+- Central de Notificações acessível no frontend;
+- sino/indicador de notificações no layout;
+- criação de `NotificationEvent` interno antes de qualquer Web Push;
+- inscrição de navegador/dispositivo vinculada ao usuário autenticado;
+- envio de Web Push com payload seguro e sem dados sensíveis;
+- registro de tentativa de entrega por canal;
+- preferência básica por usuário/canal;
+- marcação de notificação como lida;
+- tratamento de falha de push sem quebrar o fluxo principal.
+
+### Eventos mínimos que precisam notificar
+
+```txt
+ACESSORIAS_DELIVERY_COMPLETED
+ACESSORIAS_DELIVERY_DUE_SOON
+ACESSORIAS_DELIVERY_OVERDUE
+ACESSORIAS_SYNC_FAILED
+ACESSORIAS_SYNC_COMPLETED
+ACCESS_REQUEST_CREATED
+ACCESS_REQUEST_MANAGER_REVIEW
+ACCESS_REQUEST_DEV_REVIEW
+ACCESS_REQUEST_APPROVED
+ACCESS_REQUEST_REJECTED
+CONTRACT_SENT
+CONTRACT_SIGNED
+CONTRACT_PENDING
+CERTIFICATE_EXPIRING
+CERTIFICATE_EXPIRED
+DOCUMENT_APPROVED
+DOCUMENT_REJECTED
+SYSTEM_ACTION_SUCCESS
+SYSTEM_ACTION_FAILED
+```
+
+### Lacuna atual
+
+A existência de modelos relacionados a notificações não garante, por si só, que todo evento operacional crítico esteja emitindo notificação interna e Web Push. O MVP precisa padronizar isso via `NotificationDispatcherService` ou serviço equivalente.
+
+---
+
+## 9. Estado dos testes/build local
 
 ### Backend
 
@@ -273,7 +326,7 @@ A validação Prisma não pôde ser concluída no ambiente de análise porque o 
 
 ---
 
-## 9. Estado da documentação
+## 10. Estado da documentação
 
 A documentação é extensa e contém valor, mas está fragmentada.
 
@@ -282,7 +335,7 @@ Problemas encontrados:
 - muitos documentos ativos com status parcial;
 - documentos antigos ainda parecendo mandatórios;
 - escopo futuro misturado com escopo atual;
-- planos de Web Push/recorrência avançada competindo com fechamento do MVP;
+- documentos antigos tratavam Web Push como futuro; a decisão atual coloca Web Push mínimo no MVP, mantendo recorrência avançada como futuro;
 - integração Acessórias documentada como “não implementar agora”, mas já implementada parcialmente;
 - documentos de análise acumulados sem virarem plano de execução fechado.
 
@@ -296,7 +349,7 @@ Criar ADRs curtos para decisões técnicas estáveis
 
 ---
 
-## 10. Conclusão do estado atual
+## 11. Conclusão do estado atual
 
 O Portal Sama não precisa de mais expansão conceitual para o MVP. Precisa de:
 
@@ -307,4 +360,5 @@ O Portal Sama não precisa de mais expansão conceitual para o MVP. Precisa de:
 5. tratamento robusto de erros externos;
 6. central única de vencimentos/obrigações;
 7. vínculo seguro de responsáveis a colaboradores;
-8. documentação ativa menor e objetiva.
+8. notificações internas e Web Push mínimo para eventos críticos;
+9. documentação ativa menor e objetiva.
