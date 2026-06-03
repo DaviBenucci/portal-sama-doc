@@ -2309,3 +2309,152 @@ A principal regra de segurança para Web Push é:
 Notificações Web Push nunca devem expor dados sensíveis; devem apenas avisar o usuário e direcioná-lo ao Portal Sama, onde autenticação e autorização serão validadas pelo backend.
 ```
 
+# Acessórias verificação do código e se o uso dos endpoints está correto [Verificar]
+
+Sim — **em geral vocês estão usando os endpoints certos para o escopo atual da aplicação**. O foco em **empresas/clientes + entregas/obrigações** está alinhado com o que a aplicação faz hoje e com o propósito do Acessórias como plataforma de gestão de prazos/processos e automação de entregas. ([Acessórias][1])
+
+## O que está correto
+
+| Item                                                                                                     | Avaliação                                                                                                      |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `Authorization: Bearer {token}`                                                                          | Correto. O código monta o header via `ACESSORIAS_AUTH_HEADER=Authorization` e `ACESSORIAS_AUTH_SCHEME=Bearer`. |
+| `ACESSORIAS_BASE_URL + path`                                                                             | Correto, desde que `ACESSORIAS_BASE_URL` seja `https://api.acessorias.com`.                                    |
+| `companies/ListAll`                                                                                      | Correto para sincronizar empresas/clientes.                                                                    |
+| `companies/ListAll?obligations&departments&stateRegistrations&registrationData&contacts&Pagina={pagina}` | Correto para trazer dados completos de empresas, incluindo departamentos e contatos.                           |
+| `deliveries/ListAll`                                                                                     | Correto para sincronizar entregas/obrigações.                                                                  |
+| Paginação com `Pagina`                                                                                   | Correto. O código pagina até a API retornar lista vazia.                                                       |
+| Rate limit `95/min`                                                                                      | Boa decisão. Fica abaixo do limite que havíamos considerado de `100/min`.                                      |
+| Não usar escrita no Acessórias                                                                           | Correto para o escopo atual. O código consulta dados e grava apenas localmente.                                |
+| Não usar `/requests`, `/invoices`, `/processes`, `/econtinuo`                                            | Correto. Esses endpoints fugiriam do escopo atual da aplicação.                                                |
+
+## Endpoints que o código usa corretamente
+
+```http
+GET /companies/ListAll?obligations&departments&stateRegistrations&registrationData&contacts&Pagina={pagina}
+```
+
+Usado em `AcessoriasRegistrationsService` para importar clientes e extrair responsáveis/departamentos.
+
+```http
+GET /deliveries/ListAll?DtInitial={data}&DtFinal={data}&DtLastDH={data_hora}&situation=pending,delivered,read&config&Pagina={pagina}
+```
+
+Usado em `AcessoriasDeliveriesService` e `AcessoriasHomeService` para buscar entregas e obrigações.
+
+## Pontos que eu ajustaria
+
+### 1. Primeiro sync pode estar vindo incompleto
+
+Hoje, quando **não existe sincronização anterior**, o código define:
+
+```text
+DtLastDH = ontem 00:00:00
+```
+
+Isso significa que o primeiro sync pode trazer **somente entregas alteradas desde ontem**, e não todas as entregas do período configurado.
+
+O código também envia:
+
+```text
+DtInitial
+DtFinal
+DtLastDH
+```
+
+Se a API aplicar os filtros em conjunto, o resultado será:
+
+```text
+entregas dentro do período
+E alteradas após DtLastDH
+```
+
+Para carga inicial, isso pode deixar muita coisa de fora.
+
+**Ajuste recomendado:**
+
+Na primeira sincronização, quando `incrementalSince` for `null`, eu removeria o `DtLastDH`.
+
+Ficaria assim:
+
+```http
+GET /deliveries/ListAll?DtInitial={data}&DtFinal={data}&situation=pending,delivered,read&config&Pagina={pagina}
+```
+
+Depois da primeira sincronização, aí sim usar:
+
+```http
+GET /deliveries/ListAll?DtInitial={data}&DtFinal={data}&DtLastDH={ultima_sincronizacao}&situation=pending,delivered,read&config&Pagina={pagina}
+```
+
+### 2. Validar se `situation=read` é aceito
+
+O código usa:
+
+```text
+situation=pending,delivered,read
+```
+
+Eu manteria `pending` e `delivered`. Mas validaria se `read` é oficialmente aceito pela API.
+
+Se `read` não estiver documentado, melhor usar:
+
+```text
+situation=pending,delivered
+```
+
+ou remover `situation` e tratar status localmente.
+
+### 3. Cuidado com marcação incremental por `finishedAt`
+
+O código pega a última sincronização de sucesso usando `finishedAt` e manda isso como `DtLastDH`.
+
+Isso funciona, mas tem um risco: se uma entrega for alterada **durante a execução da sincronização**, antes do `finishedAt`, ela pode não entrar na execução atual e também pode ser ignorada na próxima.
+
+**Ajuste mais seguro:**
+
+Usar uma janela com sobreposição:
+
+```text
+DtLastDH = ultima_sincronizacao - 5 minutos
+```
+
+ou salvar o horário de início da execução como referência incremental.
+
+### 4. `config=true` vira `config=`
+
+O código transforma booleano `true` em query vazia:
+
+```http
+config=
+```
+
+Normalmente isso funciona como flag de query string. Mas se a API exigir valor explícito, o ideal seria enviar:
+
+```http
+config=true
+```
+
+Eu só mudaria isso se a API retornar erro ou não trouxer a configuração da entrega.
+
+## Veredito final
+
+**Sim, vocês estão usando os endpoints corretos para a aplicação atual.**
+
+O conjunto certo é:
+
+```http
+GET /companies/ListAll?obligations&departments&stateRegistrations&registrationData&contacts&Pagina={pagina}
+
+GET /deliveries/ListAll?DtInitial={data}&DtFinal={data}&DtLastDH={data_hora}&situation=pending,delivered,read&config&Pagina={pagina}
+```
+
+Mas eu faria estes ajustes antes de considerar a integração “fechada”:
+
+1. **Não enviar `DtLastDH` na primeira sincronização.**
+2. **Validar se `situation=read` é aceito.**
+3. **Usar sobreposição no incremental para evitar perda de alterações.**
+4. **Confirmar se `config=` é aceito ou se precisa ser `config=true`.**
+
+Fora isso, o código está bem alinhado ao escopo: **ler empresas e entregas do Acessórias, sincronizar localmente e aplicar essas informações no workspace operacional/fiscal da aplicação.**
+
+[1]: "Acessórias - Automação e gestão online de prazos e processos para sua ..."
