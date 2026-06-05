@@ -55,17 +55,19 @@ Este status registra o que já foi concluído no código do MVP. Ele não substi
 | Tarefa 7 — Painel do colaborador | Concluída | Painel do colaborador e visão do gestor exibem obrigações e competências por responsável/colaborador. |
 | Tarefa 8 — Resolver decisão MASTER | Concluída | Opção B aplicada: `DEV`, `ADMIN` e `MANAGER`; sem uso semântico de `MASTER`. |
 | Tarefa 9 — Notificações internas e Web Push mínimo | Concluída no código MVP | Central, sino, endpoints mínimos, dispositivos próprios, preferências, tentativas de entrega e payload seguro implementados. |
-| Tarefa 10 — Testes obrigatórios | Parcialmente concluída | API build/test completo e web build/lint passam; não há script `npm test` no frontend. Homologação real ainda pendente. |
+| Tarefa 10 — Testes obrigatórios | Concluída no escopo MVP | API build/test e web build/lint/test passam; o frontend agora possui `npm test` com testes contratuais para Notificações/Web Push e proteção de VAPID private key no bundle. Homologação real ainda pendente. |
 
 ### Evidências de validação
 
 - API: `npm.cmd run build`.
-- API: `npm.cmd test -- --runInBand`.
+- API: `npm.cmd test -- --runInBand` — 42 suites, 251 testes.
 - Web: `npm.cmd run build`.
 - Web: `npm.cmd run lint`.
-- Web: `npm test` não executado porque não existe script `test` no `package.json`.
+- Web: `npm.cmd test -- --runInBand` — 8 testes contratuais.
 
 ### Pendências para aceite final
+
+Não há pendência técnica aberta para as tarefas 1 a 10 no escopo de código/testes do MVP. Permanecem pendências reais de ambiente e homologação:
 
 - Aplicar migrations novas nos ambientes.
 - Rodar seed/sincronização de RBAC e renovar sessões.

@@ -29,6 +29,7 @@ O escopo mínimo de Notificações/Web Push está implementado no código do MVP
 - Endpoint de subscribe exige usuário autenticado e CSRF.
 - Usuário não lista nem revoga dispositivo de outro usuário.
 - VAPID private key permanece somente no backend.
+- Teste contratual frontend via `npm test -- --runInBand` valida endpoints, estados Web Push, service worker e ausência de VAPID private key no bundle.
 
 ### Reaproveitamento adotado
 

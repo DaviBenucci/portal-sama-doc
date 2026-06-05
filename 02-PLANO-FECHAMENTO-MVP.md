@@ -19,9 +19,11 @@ O código do MVP está substancialmente implementado, mas o MVP ainda depende de
 - M5: painel do colaborador e painel do gestor exibem obrigações por colaborador; gestor também revisa responsáveis pendentes.
 - Decisão MASTER: opção B aplicada, usando `DEV`, `ADMIN` e `MANAGER`.
 - M6: notificações internas e Web Push mínimo implementados com Central, sino, dispositivos próprios, preferências, tentativas de entrega, payload sanitizado e endpoints MVP.
-- Builds e testes críticos executados em API e web durante o fechamento.
+- Builds e testes críticos executados em API e web durante o fechamento, incluindo `npm test -- --runInBand` no frontend.
 
 ### Ainda necessário para declarar MVP fechado
+
+As tarefas técnicas 1 a 10 do fechamento estão concluídas no escopo de código/testes. O fechamento final do MVP ainda depende de aceite operacional em ambiente real:
 
 - Rodar migrations pendentes nos ambientes.
 - Rodar seed/sincronização de RBAC e renovar sessões para refletir novas permissões.

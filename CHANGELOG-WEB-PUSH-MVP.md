@@ -17,14 +17,16 @@ Concluído:
 - preferências Web Push por usuário/tipo;
 - tentativas de entrega por canal/provider/status;
 - payload externo sanitizado;
-- testes backend para preferências, tentativas, segurança do payload e escopo de dispositivo.
+- testes backend para preferências, tentativas, segurança do payload e escopo de dispositivo;
+- script `npm test` da web com testes contratuais para endpoints, estados Web Push, service worker e ausência de VAPID private key no bundle.
 
 Validações executadas:
 
 - API build;
 - API tests com `--runInBand`;
 - Web build;
-- Web lint.
+- Web lint;
+- Web tests com `--runInBand`.
 
 Ainda depende de ambiente:
 
