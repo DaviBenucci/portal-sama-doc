@@ -6,6 +6,32 @@
 
 ---
 
+## Status atual em 2026-06-05
+
+O código do MVP está substancialmente implementado, mas o MVP ainda depende de aceite operacional em ambiente real para ser considerado fechado.
+
+### Concluído no código
+
+- M1: build frontend corrigido e tratamento de erros externos do Acessórias estabilizado.
+- M2: sincronização incremental e backfill Acessórias separados, com endpoint manual protegido.
+- M3: Central única de Vencimentos e Obrigações consolidada com filtros, entregues, cancelados, competência, responsável e origem.
+- M4: conciliação de responsáveis Acessórias implementada com `responsibleUserId`, aliases, revisão manual e auditoria.
+- M5: painel do colaborador e painel do gestor exibem obrigações por colaborador; gestor também revisa responsáveis pendentes.
+- Decisão MASTER: opção B aplicada, usando `DEV`, `ADMIN` e `MANAGER`.
+- M6: notificações internas e Web Push mínimo implementados com Central, sino, dispositivos próprios, preferências, tentativas de entrega, payload sanitizado e endpoints MVP.
+- Builds e testes críticos executados em API e web durante o fechamento.
+
+### Ainda necessário para declarar MVP fechado
+
+- Rodar migrations pendentes nos ambientes.
+- Rodar seed/sincronização de RBAC e renovar sessões para refletir novas permissões.
+- Configurar VAPID real no backend, sem expor chave privada.
+- Executar homologação real/EasyPanel dos fluxos listados na fase M7.
+- Validar eventos obrigatórios em fluxo real: Acessórias, solicitações de acesso, contratos, documentos, certificados e sistema.
+- Confirmar que segredos não estão em commit, ZIP, logs ou bundle frontend.
+
+---
+
 ## 1. Definição do MVP
 
 O MVP do Portal Sama deve permitir que a empresa use a plataforma como centro de operação para:

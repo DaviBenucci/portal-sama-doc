@@ -6,6 +6,46 @@
 
 ---
 
+## Status de implementação em 2026-06-05
+
+O escopo mínimo de Notificações/Web Push está implementado no código do MVP.
+
+### Concluído
+
+- Central de Notificações acessível no frontend.
+- Sino/contador no layout.
+- Listagem de notificações internas.
+- Marcação individual como lida.
+- Marcação em massa como lida.
+- SSE/polling para atualização da Central.
+- Web Push por navegador/dispositivo.
+- Service worker de push no frontend.
+- Ativação/desativação de Web Push no navegador.
+- Listagem e revogação dos próprios dispositivos.
+- Preferências Web Push por usuário/tipo de evento.
+- Registro de tentativa de entrega por canal/provider/status.
+- Payload externo sanitizado e genérico.
+- Falha de Web Push não quebra a ação principal.
+- Endpoint de subscribe exige usuário autenticado e CSRF.
+- Usuário não lista nem revoga dispositivo de outro usuário.
+- VAPID private key permanece somente no backend.
+
+### Reaproveitamento adotado
+
+- `Notification` foi usado como evento interno persistido do MVP.
+- `BrowserPushSubscription` foi usado como assinatura Web Push vinculada ao usuário.
+- Foram adicionadas tabelas específicas para `notification_delivery_attempts` e `notification_preferences`.
+
+### Pendente para aceite final
+
+- Aplicar migrations nos ambientes.
+- Configurar VAPID real no backend.
+- Homologar envio Web Push em navegador real.
+- Validar em fluxo real todos os produtores de eventos obrigatórios.
+- Confirmar recebimento por colaborador, gestor e DEV/ADMIN nos cenários operacionais.
+
+---
+
 ## 1. Decisão de produto
 
 Notificações internas e Web Push fazem parte do MVP do Portal Sama.

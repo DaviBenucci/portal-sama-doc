@@ -40,6 +40,41 @@ Implementar Web Push somente no escopo mínimo definido em `06-NOTIFICACOES-WEB-
 
 ---
 
+## Status das tarefas em 2026-06-05
+
+Este status registra o que já foi concluído no código do MVP. Ele não substitui a homologação operacional em ambiente real.
+
+| Tarefa | Status | Observação |
+| --- | --- | --- |
+| Tarefa 1 — Corrigir build frontend | Concluída | `IntegraAiPage` usa narrowing seguro e o build web passa. |
+| Tarefa 2 — Tratar erros externos do Acessórias | Concluída | Serviços Acessórias retornam erros controlados/sanitizados para rede, timeout, auth, rate limit, 5xx e JSON inválido. |
+| Tarefa 3 — Separar incremental e backfill Acessórias | Concluída | Incremental recente e backfill por empresa foram separados; endpoint manual protegido existe. |
+| Tarefa 4 — Central única de Vencimentos e Obrigações | Concluída | Backend e frontend exibem filtros, entregues, cancelados, competência, responsável, origem e status. |
+| Tarefa 5 — Loading correto na Home | Concluída | KPIs usam estado de loading/skeleton, sem `...` como carregamento. |
+| Tarefa 6 — Resolver responsáveis Acessórias | Concluída | Campos, tabela de aliases, resolver, endpoints, RBAC e auditoria foram implementados. |
+| Tarefa 7 — Painel do colaborador | Concluída | Painel do colaborador e visão do gestor exibem obrigações e competências por responsável/colaborador. |
+| Tarefa 8 — Resolver decisão MASTER | Concluída | Opção B aplicada: `DEV`, `ADMIN` e `MANAGER`; sem uso semântico de `MASTER`. |
+| Tarefa 9 — Notificações internas e Web Push mínimo | Concluída no código MVP | Central, sino, endpoints mínimos, dispositivos próprios, preferências, tentativas de entrega e payload seguro implementados. |
+| Tarefa 10 — Testes obrigatórios | Parcialmente concluída | API build/test completo e web build/lint passam; não há script `npm test` no frontend. Homologação real ainda pendente. |
+
+### Evidências de validação
+
+- API: `npm.cmd run build`.
+- API: `npm.cmd test -- --runInBand`.
+- Web: `npm.cmd run build`.
+- Web: `npm.cmd run lint`.
+- Web: `npm test` não executado porque não existe script `test` no `package.json`.
+
+### Pendências para aceite final
+
+- Aplicar migrations novas nos ambientes.
+- Rodar seed/sincronização de RBAC e renovar sessões.
+- Configurar VAPID real no backend.
+- Homologar fluxos reais no EasyPanel: Acessórias, Central, gestor/colaborador, notificações, Web Push, contratos, documentos, certificados, onboarding, T.I e Integra-AI.
+- Confirmar produtores de todos os eventos obrigatórios em cenário real.
+
+---
+
 ## Tarefa 1 — Corrigir build frontend
 
 Arquivo provável:
