@@ -1,7 +1,7 @@
 # 01 — Estado atual do código e da documentação — Portal Sama
 
 **Status:** fonte ativa  
-**Data:** 2026-06-03  
+**Data:** 2026-06-08  
 **Base analisada:** `portal-sama-docs.zip`, `portal-sama-api.zip`, `portal-sama-web.zip`
 
 ---
@@ -108,34 +108,36 @@ A estrutura demonstra que o produto já ultrapassou a fase de protótipo. O trab
 
 ### 4.1 O que já existe
 
-O código já possui:
+O código já possui uma base relevante para a integração:
 
 - cliente/serviço backend para consultar Acessórias;
 - Home com resumo do Acessórias;
 - preview/importação de empresas e responsáveis;
-- sincronização de entregas;
-- persistência local em `acessorias_deliveries`;
-- registro de sync runs em `acessorias_delivery_sync_runs`;
+- importação de empresas via `companies/ListAll` com parâmetros cadastrais como `obligations`, `departments`, `stateRegistrations`, `registrationData` e, no código atual, `contacts`;
+- extração de responsáveis a partir de `Departamentos[].RespNome` e `Departamentos[].RespEmail`;
+- sincronização operacional de entregas via `deliveries`;
+- separação entre incremental recente e backfill por empresa em parte do fluxo;
+- persistência local em `clients`, `acessorias_deliveries`, aliases de responsáveis e sync runs;
 - mapeamento de entregas para colunas operacionais;
 - aplicação conservadora de baixas em workspace;
 - divergências para casos inseguros;
 - scheduler opcional por variável de ambiente;
-- tentativas de rate limit e paginação;
+- tratamento de rate limit, paginação e erros externos em serviços críticos;
 - rota React `/departamentos/vencimentos`.
 
-### 4.2 O que ainda está incompleto
+### 4.2 O que ainda precisa ser consolidado
 
-A integração ainda não está fechada para operação plena porque:
+A integração deve ser ajustada/documentada para operação plena com a arquitetura híbrida:
 
-- `deliveries/ListAll` está sendo usado como se pudesse servir para carga completa em alguns fluxos;
-- não existe backfill robusto por empresa usando `companies/ListAll` + `deliveries/{Identificador}`;
-- erros de rede/timeout em alguns serviços podem subir como erro inesperado;
-- a Central de Vencimentos exclui `DELIVERED` e `CANCELED` em parte do backend;
-- a Central ainda não exibe de forma completa competência, entregue em, responsável e status externo/interno;
-- responsáveis do Acessórias ainda não são vinculados de forma segura a usuários locais por `responsibleUserId`;
-- não há tabela de aliases/responsáveis pendentes para revisão;
-- o papel `MASTER` está semanticamente inconsistente entre conversa, documentação e código;
-- a Home exibe `...` enquanto carrega, gerando percepção de erro.
+- tratar `companies/ListAll?obligations&departments&registrationData` como carga cadastral mestre;
+- persistir `companies[].Obrigacoes` em catálogo/snapshot local próprio, separado de `AcessoriasDelivery`;
+- manter `deliveries/ListAll` apenas para incremental recente com `DtLastDH` de hoje ou ontem;
+- manter/consolidar backfill operacional por empresa usando `companies/ListAll` + `deliveries/{Identificador}`;
+- garantir que telas, filtros e notificações consultem somente o banco local, não o Acessórias em tempo real;
+- tornar `contacts` carga detalhada/manual ou configurável, evitando trazer dados pessoais sem finalidade clara;
+- exibir última sincronização e aviso de dado desatualizado na Central quando necessário;
+- manter responsáveis externos como aliases pendentes até revisão segura;
+- confirmar em homologação real/EasyPanel que token, logs, ZIPs e variáveis não expõem segredo.
 
 ---
 
@@ -147,57 +149,64 @@ Existe a rota:
 /departamentos/vencimentos
 ```
 
-Ela já consolida parte dos vencimentos internos e itens do Acessórias, mas o backend filtra entregas externas apenas com status:
+A Central deve ser a tela operacional única para vencimentos internos e itens vindos do Acessórias. Ela precisa trabalhar com dados persistidos localmente, principalmente `AcessoriasDelivery`, `Client`, catálogo local de obrigações e vínculos/aliases de responsáveis.
+
+A Central deve listar e filtrar:
 
 ```txt
 PENDING
-DUE_SOON
+DUE_SOON / READ
 OVERDUE
+DELIVERED
+CANCELED
 UNKNOWN
 ```
 
-Isso exclui:
+Regra importante:
 
 ```txt
-DELIVERED
-CANCELED
+DELIVERED e CANCELED aparecem no histórico e nos filtros,
+mas não bloqueiam célula de vencimento aberto.
 ```
 
-Na prática, a tela vira uma lista de pendências/vencimentos, não uma central completa de obrigações por competência.
-
-Para o MVP, a Central precisa listar também obrigações entregues/concluídas e canceladas/dispensadas, com filtros.
+Também deve exibir última sincronização e aviso de dado desatualizado quando o Acessórias estiver indisponível ou o SLA de sync for ultrapassado.
 
 ---
 
 ## 6. Estado atual dos responsáveis Acessórias
 
-O código já extrai nomes de responsáveis das entregas, especialmente de campos como:
+As fontes de responsáveis são:
 
 ```txt
-Config.RespEntrega
-RespEntrega
-Config.RespPrazo
-RespPrazo
+companies/ListAll + departments:
+- Departamentos[].RespNome
+- Departamentos[].RespEmail
+
+deliveries + config:
+- Config.RespEntrega
+- Config.RespPrazo
 ```
 
-Também há extração de responsáveis das empresas/departamentos em importação quando `ACESSORIAS_COLLABORATORS_PATH` está vazio.
+O Portal Sama deve resolver responsável local por ordem de confiança:
 
-Porém, o dado ainda fica principalmente como texto:
+```txt
+e-mail exato -> username -> alias confirmado -> nome + departamento único -> revisão manual
+```
+
+Quando não houver match seguro, o dado externo deve virar alias pendente, não usuário ativo automático.
+
+Campos esperados na entrega persistida:
 
 ```txt
 responsibleName
 responsibleUsername
+responsibleUserId
+responsibleMatchStatus
+responsibleMatchScore
+responsibleMatchReason
 ```
 
-Ainda falta o vínculo operacional seguro:
-
-```txt
-responsibleName/responsibleUsername
-        -> resolver colaborador local
-        -> salvar responsibleUserId
-        -> permitir filtro por colaborador
-        -> exibir painel do colaborador com obrigações entregues, pendentes e vencidas
-```
+A tela do gestor e a Central devem conseguir filtrar por colaborador quando `responsibleUserId` estiver resolvido.
 
 ---
 

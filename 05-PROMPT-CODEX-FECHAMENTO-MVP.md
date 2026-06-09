@@ -29,7 +29,7 @@ Consolidar o MVP do Portal Sama para operação e gestão, com foco em:
 
 1. corrigir build frontend;
 2. estabilizar erros externos do Acessórias;
-3. corrigir estratégia de sincronização Acessórias;
+3. corrigir estratégia híbrida de sincronização Acessórias e persistência local;
 4. consolidar Central de Vencimentos e Obrigações;
 5. vincular responsáveis do Acessórias a colaboradores locais de forma segura;
 6. permitir visão por colaborador para gestão;
@@ -48,7 +48,7 @@ Este status registra o que já foi concluído no código do MVP. Ele não substi
 | --- | --- | --- |
 | Tarefa 1 — Corrigir build frontend | Concluída | `IntegraAiPage` usa narrowing seguro e o build web passa. |
 | Tarefa 2 — Tratar erros externos do Acessórias | Concluída | Serviços Acessórias retornam erros controlados/sanitizados para rede, timeout, auth, rate limit, 5xx e JSON inválido. |
-| Tarefa 3 — Separar incremental e backfill Acessórias | Concluída | Incremental recente e backfill por empresa foram separados; endpoint manual protegido existe. |
+| Tarefa 3 — Separar cadastro, incremental e backfill Acessórias | Parcial/consolidar | Incremental recente e backfill por empresa existem; consolidar `companies/ListAll` como carga cadastral mestre com persistência local de obrigações, departamentos, responsáveis, regime e grupos. |
 | Tarefa 4 — Central única de Vencimentos e Obrigações | Concluída | Backend e frontend exibem filtros, entregues, cancelados, competência, responsável, origem e status. |
 | Tarefa 5 — Loading correto na Home | Concluída | KPIs usam estado de loading/skeleton, sem `...` como carregamento. |
 | Tarefa 6 — Resolver responsáveis Acessórias | Concluída | Campos, tabela de aliases, resolver, endpoints, RBAC e auditoria foram implementados. |
@@ -143,17 +143,34 @@ Nunca expor token, headers ou stack trace no frontend.
 
 ---
 
-## Tarefa 3 — Separar incremental e backfill Acessórias
+## Tarefa 3 — Separar cadastro, incremental e backfill Acessórias
 
-Arquivo principal:
+Arquivos principais:
 
 ```txt
 portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts
+portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts
+portal-sama-api/prisma/schema.prisma
 ```
 
-Implementar:
+Consolidar três fluxos distintos:
+
+```txt
+1. Carga cadastral mestre
+   companies/ListAll?obligations&departments&registrationData&stateRegistrations&Pagina=N
+
+2. Incremental operacional recente
+   deliveries/ListAll?DtLastDH=hoje/ou/ontem&config&Pagina=N
+
+3. Backfill operacional por empresa
+   companies/ListAll?departments&Pagina=N
+     -> deliveries/{Identificador}?DtInitial=...&DtFinal=...&config&Pagina=N
+```
+
+Implementar/consolidar:
 
 ```ts
+syncCompaniesCatalog()
 syncIncrementalFromListAll()
 backfillDeliveriesByCompany()
 ```
@@ -161,19 +178,23 @@ backfillDeliveriesByCompany()
 Regra:
 
 ```txt
-ListAll só pode usar DtLastDH hoje ou ontem.
+ListAll de deliveries só pode usar DtLastDH hoje ou ontem.
 Se último sync bem-sucedido for mais antigo, não usar como DtLastDH.
 Executar backfill por empresa.
 ```
 
-Backfill:
+Persistência obrigatória:
 
 ```txt
-companies/ListAll?departments&Pagina=N
-  -> deliveries/{Identificador}?DtInitial=...&DtFinal=...&config=true&Pagina=N
+Client <- dados da empresa, regime e grupo
+Client.metadata.acessorias <- snapshot cadastral controlado
+AcessoriasCompanyObligationCatalog <- companies[].Obrigacoes
+AcessoriasResponsibleAlias <- responsáveis de companies[].Departamentos quando não houver match seguro
+AcessoriasDelivery <- deliveries[].Entregas
+AcessoriasDeliverySyncRun / sync run cadastral <- métricas e auditoria da execução
 ```
 
-Adicionar endpoint protegido, se ainda não existir:
+Endpoint protegido de backfill, se ainda não existir:
 
 ```txt
 POST /api-v2/integrations/acessorias/deliveries/backfill
@@ -184,6 +205,8 @@ Permissão sugerida:
 ```txt
 integrations.acessorias.deliveries.sync_manual
 ```
+
+A Central, os painéis e as notificações devem consultar o banco local. Não renderizar telas operacionais consultando `api.acessorias.com` diretamente.
 
 ---
 

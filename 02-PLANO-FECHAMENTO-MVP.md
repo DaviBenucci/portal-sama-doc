@@ -1,7 +1,7 @@
 # 02 — Plano de fechamento do MVP — Portal Sama
 
 **Status:** fonte ativa  
-**Data:** 2026-06-03  
+**Data:** 2026-06-08  
 **Objetivo:** fechar um MVP operacional, estável e seguro para centralizar o fluxo de trabalho da empresa.
 
 ---
@@ -13,7 +13,7 @@ O código do MVP está substancialmente implementado, mas o MVP ainda depende de
 ### Concluído no código
 
 - M1: build frontend corrigido e tratamento de erros externos do Acessórias estabilizado.
-- M2: sincronização incremental e backfill Acessórias separados, com endpoint manual protegido.
+- M2: sincronização Acessórias separada em carga cadastral (`companies`), incremental recente (`deliveries/ListAll`) e backfill por empresa (`deliveries/{Identificador}`), com persistência local obrigatória.
 - M3: Central única de Vencimentos e Obrigações consolidada com filtros, entregues, cancelados, competência, responsável e origem.
 - M4: conciliação de responsáveis Acessórias implementada com `responsibleUserId`, aliases, revisão manual e auditoria.
 - M5: painel do colaborador e painel do gestor exibem obrigações por colaborador; gestor também revisa responsáveis pendentes.
@@ -128,38 +128,51 @@ Garantir que o projeto compile e erros externos não virem `500` genérico.
 
 ---
 
-## 5. Fase M2 — Aquisição correta de dados do Acessórias
+## 5. Fase M2 — Aquisição correta e persistente de dados do Acessórias
 
 ### Objetivo
 
-Separar carga completa de sincronização incremental.
+Separar carga cadastral, carga operacional incremental e backfill, garantindo que todos os dados úteis do Acessórias sejam persistidos no banco local do Portal Sama.
 
 ### Decisão técnica
 
 ```txt
-deliveries/ListAll = incremental recente
-companies/ListAll + deliveries/{Identificador} = backfill completo por empresa
+companies/ListAll?obligations&departments&registrationData
+= carga cadastral mestre: empresas, regime tributário, grupos, departamentos, responsáveis e catálogo de obrigações.
+
+deliveries/ListAll
+= incremental recente de entregas/vencimentos, limitado a DtLastDH de hoje ou ontem.
+
+companies/ListAll + deliveries/{Identificador}
+= backfill operacional completo por empresa.
 ```
+
+O Acessórias é a fonte externa de origem, mas o Portal Sama deve ser a camada operacional local. A Central de Vencimentos, painéis, filtros e notificações devem consultar o banco local, não a API externa em tempo real.
 
 ### Tarefas
 
-1. Criar método `syncIncrementalFromListAll()`.
-2. Criar método `backfillDeliveriesByCompany()`.
-3. Impedir uso de `DtLastDH` antigo em `deliveries/ListAll`.
-4. Quando não houver sync recente, rodar backfill por empresa ou exigir ação manual autorizada.
-5. Usar `companies/ListAll` paginado até lista vazia.
-6. Para cada empresa, chamar `deliveries/{CNPJ/CPF}` no período desejado.
-7. Salvar/atualizar entregas por `externalId` estável.
-8. Registrar sync run com totais e erro resumido.
+1. Manter método `syncIncrementalFromListAll()` para entregas recentes.
+2. Manter/criar método `backfillDeliveriesByCompany()` para carga operacional por empresa.
+3. Criar ou consolidar método de carga cadastral `syncCompaniesCatalog()` usando `companies/ListAll` com `obligations`, `departments`, `registrationData` e `stateRegistrations`.
+4. Impedir uso de `DtLastDH` antigo em `deliveries/ListAll`.
+5. Quando não houver sync recente, rodar backfill por empresa ou exigir ação manual autorizada.
+6. Usar `companies/ListAll` paginado até lista vazia.
+7. Para cada empresa, fazer upsert de `Client`, regime tributário, grupo, snapshot cadastral, departamentos e responsáveis.
+8. Persistir `companies[].Obrigacoes` como catálogo/snapshot local de obrigações da empresa, separado de `AcessoriasDelivery`.
+9. Para cada empresa em backfill, chamar `deliveries/{CNPJ/CPF}` no período desejado.
+10. Salvar/atualizar entregas por `externalId` estável.
+11. Registrar sync run com totais, janela, página, empresa atual, erro resumido e usuário executor quando manual.
+12. Exibir nas telas a data da última sincronização e alerta de dado desatualizado quando ultrapassar o SLA.
 
 ### Critério de aceite
 
 - Carga inicial não depende de `deliveries/ListAll` com `DtLastDH` antigo.
 - Incremental usa somente hoje/ontem quando `Identificador=ListAll`.
+- `companies/ListAll` alimenta a base local de empresas, regime, grupos, departamentos, responsáveis e catálogo de obrigações.
+- `companies[].Obrigacoes` não é tratado como entrega operacional; é catálogo/snapshot cadastral.
 - Backfill pode ser executado manualmente por perfil autorizado.
-- API externa fora do ar não quebra operação local.
-
----
+- API externa fora do ar não quebra operação local: a aplicação usa os últimos dados persistidos e exibe aviso de sincronização.
+- Nenhuma tela operacional depende de chamada direta ao domínio `api.acessorias.com`.
 
 ## 6. Fase M3 — Central única de Vencimentos e Obrigações
 

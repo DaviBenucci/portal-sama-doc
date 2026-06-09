@@ -1,7 +1,7 @@
 # 00 — Leia-me obrigatório para IA — Fechamento do MVP Portal Sama
 
 **Status:** fonte ativa para execução do MVP  
-**Data:** 2026-06-03  
+**Data:** 2026-06-08  
 **Objetivo:** impedir perda de foco, reduzir conflito entre documentações antigas e orientar IA/desenvolvedor para consolidar o Portal Sama.
 
 ---
@@ -79,7 +79,7 @@ Está dentro do MVP atual:
 - estabilizar onboarding/entrada de cliente;
 - estabilizar Integra-AI/extratos;
 - estabilizar Central de Vencimentos e obrigações;
-- estabilizar integração Acessórias como fonte de entregas, baixas e vencimentos;
+- estabilizar integração Acessórias como fonte cadastral e operacional, persistindo empresas, regime, grupos, departamentos, responsáveis, catálogo de obrigações, entregas, baixas e vencimentos no banco local;
 - consolidar notificações internas como trilha operacional da plataforma;
 - implementar Web Push mínimo e seguro como canal do MVP para eventos críticos;
 - corrigir painéis de gestor, colaborador e operação;
@@ -110,11 +110,11 @@ Não implementar agora, salvo autorização explícita:
 Integrações externas devem seguir:
 
 ```txt
-API externa = fonte de dados
-Portal Sama = camada operacional, auditável, segura e resiliente
+API externa = fonte de origem dos dados
+Portal Sama = camada operacional local, persistida, auditável, segura e resiliente
 ```
 
-O Portal Sama não deve depender da disponibilidade externa para continuar operando. Deve salvar dados localmente, exibir última sincronização e tratar indisponibilidade com erro controlado.
+O Portal Sama não deve depender da disponibilidade externa para continuar operando. Deve salvar dados localmente, exibir última sincronização, sinalizar dado desatualizado e tratar indisponibilidade com erro controlado. Para o Acessórias, `companies` alimenta cadastro/configuração e `deliveries` alimenta operação/vencimentos.
 
 ---
 
