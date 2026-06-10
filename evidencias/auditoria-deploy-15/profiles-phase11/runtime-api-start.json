@@ -1,0 +1,15 @@
+﻿{
+    "apiPid":  516,
+    "apiPort":  3120,
+    "schedulerDisabled":  true,
+    "restartedAfterDocumentScopeFix":  true,
+    "started":  true,
+    "health":  {
+                   "ok":  true,
+                   "service":  "portal-sama-api",
+                   "database":  "up",
+                   "storage":  "up",
+                   "timestamp":  "2026-06-10T19:57:51.059Z"
+               },
+    "generated_at":  "2026-06-10T19:57:51.0669445Z"
+}

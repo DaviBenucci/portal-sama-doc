@@ -1,0 +1,983 @@
+{
+  "generated_at": "2026-06-10T20:01:07.353Z",
+  "ok": true,
+  "mode": "playwright_chromium_headless_real_local_api_profiles_phase11",
+  "baseUrl": "http://localhost:4176",
+  "profiles": {
+    "dev": {
+      "role": "DEV",
+      "login": {
+        "ok": true,
+        "currentPath": "/home"
+      },
+      "routes": {
+        "/home": {
+          "urlPath": "/home",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 4 DF DEV Fase 11 Sair Administracao Seja bem-vindo, DEV Fase 11 Diagnostico do cache local Acessorias para a Home Diagnostico tecnico Base local OK Dados sincronizados Atrasos 2 Entregas vencidas Pendencias 4 Abertas no banco local Clientes 4 Com entregas no resumo Diagnostico Acessorias Fonte da Home Banco local Sincronizacao local Atualizada Ultima sincronizacao: 10/06/2026, 16:51 ACESSORIAS_HOME_LOCAL_CACHE - caminho acessorias_deliveries Atrasos e riscos Obrigacao Fiscal Phase11 Cliente Proprio Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Obrigacao Fiscal Phase11 Fiscal Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Obrigacao Contabil Phase11 Contabil Proximo Vencimento: 13/06/2026 Competencia: 2026-06 Responsavel: Contabil Fase 11 Obrigacao Legalizacao Phase11 Legal Proximo Vencimento: 13/06/2026 Competencia: 2026-06 Responsavel: Legalizacao Fase 11 Acoes relacionadas Usuarios Auditoria Vencimentos Solicitacoes",
+          "hasPermissionFallback": false
+        },
+        "/clientes": {
+          "urlPath": "/clientes",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 4 DF DEV Fase 11 Sair Base operacional Clientes Cadastro, consulta e manutencao de empresas cliente. Visao geral Novo cliente Registros 4 Ativos na pagina 4 Em grupo 0 Arquivados 0 Buscar Status Todos Ativo Inativo Bloqueado Arquivado CNPJ Cidade Grupo Arquivados CLIENTE CNPJ CONTATO CIDADE STATUS GRUPO ATUALIZADO ACOES Phase11 Cliente Proprio LTDA Phase11 Cliente Proprio 11.222.333/0001-81 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Phase11 Contabil LTDA Phase11 Contabil 30.303.030/0001-30 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Phase11 Fiscal LTDA Phase11 Fiscal 10.101.010/0001-10 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Phase11 Legalizacao LTDA Phase11 Legal 20.202.020/0001-20 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Exibindo 1-4 de 4 Anterior Proxima",
+          "hasPermissionFallback": false
+        },
+        "/documentos": {
+          "urlPath": "/documentos",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 4 DF DEV Fase 11 Sair Storage privado Documentos Consulta, envio, revisao e links publicos de documentos de clientes. 6 em revisao Registros 6 Aprovados na pagina 0 Rejeitados na pagina 0 Pendencias de clientes 4 Enviar documento Cliente Selecione Phase11 Cliente Proprio Phase11 Contabil Phase11 Fiscal Phase11 Legal Tipo Departamento Nao informado Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Arquivo Enviar Extensoes permitidas: pdf, jpg, jpeg, png, doc, docx, xls, xlsx, csv, ofx, txt, zip, rar Cliente Todos Phase11 Cliente Proprio Phase11 Contabil Phase11 Fiscal Phase11 Legal Tipo Departamento Todos Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Status Todos Em revisao Aprovado Rejeitado Arquivado Limpar DOCUMENTO CLIENTE DEPARTAMENTO STATUS ARQUIVO ENVIO ACOES contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:59 contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:54 contrato_social phase11-local Phase11 Cliente Proprio phase11-user-client Fiscal Em r",
+          "hasPermissionFallback": false
+        },
+        "/auditoria": {
+          "urlPath": "/auditoria",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 4 DF DEV Fase 11 Sair Rastreabilidade Auditoria Consulta protegida de eventos gravados pela API v2. Somente leitura Registros 44 Na pagina 44 Modulos 4 Acoes 7 Acao Modulo Entidade ID entidade ID usuario Inicio Fim Janela 7 dias 30 dias 90 dias 180 dias 365 dias Personalizada Mostrar tudo Filtrar Limpar Exportar CSV Logs DATA USUARIO MODULO ACAO ENTIDADE IP METADADOS ACOES 10/06/2026, 17:01 167a6adc-447e-4277-8e8d-71aa0b2ae1e3 phase11.dev phase11-user-dev auth auth.refresh.success - ::ffff:127.0.0.1 { \"username\": \"phase11.dev\" } 10/06/2026, 17:01 4429adf8-f255-4eb1-8ee9-491a3922da04 phase11.dev phase11-user-dev auth auth.refresh.success - ::ffff:127.0.0.1 { \"username\": \"phase11.dev\" } 10/06/2026, 17:01 f0ba087b-d42f-40d3-bbbb-31bde4ab2dc7 phase11.dev phase11-user-dev auth auth.refresh.success - ::ffff:127.0.0.1 { \"username\": \"phase11.dev\" } 10/06/2026, 17:01 ed39d1e3-dd08-4b98-afdb-46886ff2dd36 phase11.dev phase11-user-dev auth auth.refresh.success - ::ffff:127.0.0.1 { \"username\": \"phase11.dev\" } 10/06/2026, 17:01 3928f8ac-aeaf-4021-8291-1a1e4eea2789 phase11.dev phase11-user-dev auth auth.login.success - ::ffff:127.0.0.1 { \"username\": \"phase11.dev\" } ",
+          "hasPermissionFallback": false
+        }
+      },
+      "storage": {
+        "sensitiveLocalStorageKeys": [],
+        "sensitiveSessionStorageKeys": []
+      },
+      "refreshCookie": {
+        "present": true,
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      },
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        }
+      ],
+      "apiResponses": [
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/login"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents/required-pending-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents/public-tokens"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/audit/logs"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/logout"
+        }
+      ],
+      "screenshots": {
+        "/home": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-dev-home.png",
+        "/clientes": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-dev-clientes.png",
+        "/documentos": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-dev-documentos.png",
+        "/auditoria": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-dev-auditoria.png"
+      },
+      "checks": [
+        {
+          "name": "login redirect home",
+          "pass": true
+        },
+        {
+          "name": "no sensitive localStorage keys",
+          "pass": true
+        },
+        {
+          "name": "no sensitive sessionStorage keys",
+          "pass": true
+        },
+        {
+          "name": "refresh cookie httpOnly",
+          "pass": true
+        },
+        {
+          "name": "logout redirect login",
+          "pass": true
+        }
+      ],
+      "ok": true
+    },
+    "manager": {
+      "role": "MANAGER",
+      "login": {
+        "ok": true,
+        "currentPath": "/home"
+      },
+      "routes": {
+        "/home": {
+          "urlPath": "/home",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 2 GF Gestor Fase 11 Sair Gestao Seja bem-vindo, Gestor Fase 11 Fiscal Visao do gestor Responsaveis 1 Carteira retornada Clientes 2 Com obrigacoes Atrasos 2 Entregas vencidas Riscos 0 Vencem em ate 7 dias Carteira por responsavel Colaborador Fiscal Fase 11 phase11.collab 2 entregas 2 pendentes 2 atrasadas 0 baixadas Gargalos sincronizados Obrigacao Fiscal Phase11 Cliente Proprio Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Obrigacao Fiscal Phase11 Fiscal Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Acoes relacionadas Carteira Vencimentos Transferencias Solicitacoes",
+          "hasPermissionFallback": false
+        },
+        "/clientes": {
+          "urlPath": "/clientes",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 2 GF Gestor Fase 11 Sair Base operacional Clientes Cadastro, consulta e manutencao de empresas cliente. Visao geral Registros 2 Ativos na pagina 2 Em grupo 0 Arquivados 0 Sua sessao permite consulta, mas nao cadastro de clientes. Buscar Status Todos Ativo Inativo Bloqueado Arquivado CNPJ Cidade Grupo Arquivados CLIENTE CNPJ CONTATO CIDADE STATUS GRUPO ATUALIZADO ACOES Phase11 Cliente Proprio LTDA Phase11 Cliente Proprio 11.222.333/0001-81 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Phase11 Fiscal LTDA Phase11 Fiscal 10.101.010/0001-10 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Exibindo 1-2 de 2 Anterior Proxima",
+          "hasPermissionFallback": false
+        },
+        "/documentos": {
+          "urlPath": "/documentos",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 2 GF Gestor Fase 11 Sair Storage privado Documentos Consulta, envio, revisao e links publicos de documentos de clientes. 4 em revisao Registros 4 Aprovados na pagina 0 Rejeitados na pagina 0 Pendencias de clientes 4 Sua sessao permite consulta, mas nao envio de documentos. Cliente Todos Phase11 Cliente Proprio Phase11 Fiscal Tipo Departamento Todos Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Status Todos Em revisao Aprovado Rejeitado Arquivado Limpar DOCUMENTO CLIENTE DEPARTAMENTO STATUS ARQUIVO ENVIO ACOES contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:59 contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:54 contrato_social phase11-local Phase11 Cliente Proprio phase11-user-client Fiscal Em revisao phase11-phase11-user-client.pdf 51 B phase11.dev 10/06/2026, 16:51 contrato_social phase11-local Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-phase11-client-fiscal.pdf 53 B phase11.dev 10/06/2026, 16:51 Exibindo 1-4 de 4 Anterior Proxima Links publicos ",
+          "hasPermissionFallback": false
+        },
+        "/auditoria": {
+          "urlPath": "/auditoria",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 2 GF Gestor Fase 11 Sair Sua sessao nao possui permissao para consultar auditoria.",
+          "hasPermissionFallback": true
+        }
+      },
+      "storage": {
+        "sensitiveLocalStorageKeys": [],
+        "sensitiveSessionStorageKeys": []
+      },
+      "refreshCookie": {
+        "present": true,
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      },
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        }
+      ],
+      "apiResponses": [
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/login"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents/required-pending-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents/public-tokens"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/logout"
+        }
+      ],
+      "screenshots": {
+        "/home": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-manager-home.png",
+        "/clientes": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-manager-clientes.png",
+        "/documentos": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-manager-documentos.png",
+        "/auditoria": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-manager-auditoria.png"
+      },
+      "checks": [
+        {
+          "name": "login redirect home",
+          "pass": true
+        },
+        {
+          "name": "no sensitive localStorage keys",
+          "pass": true
+        },
+        {
+          "name": "no sensitive sessionStorage keys",
+          "pass": true
+        },
+        {
+          "name": "refresh cookie httpOnly",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Legal",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Contabil",
+          "pass": true
+        },
+        {
+          "name": "logout redirect login",
+          "pass": true
+        }
+      ],
+      "ok": true
+    },
+    "collaborator": {
+      "role": "DEPARTMENT",
+      "login": {
+        "ok": true,
+        "currentPath": "/home"
+      },
+      "routes": {
+        "/home": {
+          "urlPath": "/home",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 1 CF Colaborador Fiscal Fase 11 Sair Operacao Seja bem-vindo, Colaborador Fiscal Fase 11 Fiscal Painel do dia Meus clientes 2 Com obrigacoes Entregas pendentes 2 Abertas no banco local Vencimentos 0 Proximos 7 dias Atrasos 2 Exigem acao Minhas pendencias Obrigacao Fiscal Phase11 Cliente Proprio Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Obrigacao Fiscal Phase11 Fiscal Atrasado Vencimento: 07/06/2026 Competencia: 2026-06 Responsavel: Colaborador Fiscal Fase 11 Baixas sincronizadas Sem baixas recentes A base local nao tem baixas recentes neste resumo. Acoes relacionadas Vencimentos Meus clientes Solicitacoes",
+          "hasPermissionFallback": false
+        },
+        "/departamentos/clientes": {
+          "urlPath": "/departamentos/clientes",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 1 CF Colaborador Fiscal Fase 11 Sair Departamento Clientes do departamento Fiscal Fiscal Cadastro Visao geral Registros 2 Ativos na pagina 2 Com responsavel 0 Sem responsavel 2 Buscar Departamento Fiscal Fiscal Status Todos Ativo Inativo Bloqueado Grupo Sem responsavel CLIENTE CNPJ CONTATO ENDERECO GRUPO RESPONSAVEL ATUALIZADO STATUS ACOES Phase11 Cliente Proprio Phase11 Cliente Proprio LTDA - 11.222.333/0001-81 - [email] Sao Paulo / SP - Nao vinculado 10/06/2026, 16:51 Ativo Phase11 Fiscal Phase11 Fiscal LTDA - 10.101.010/0001-10 - [email] Sao Paulo / SP - Nao vinculado 10/06/2026, 16:51 Ativo Exibindo 1-2 de 2 Anterior Proxima",
+          "hasPermissionFallback": false
+        },
+        "/documentos": {
+          "urlPath": "/documentos",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 1 CF Colaborador Fiscal Fase 11 Sair Storage privado Documentos Consulta, envio, revisao e links publicos de documentos de clientes. 4 em revisao Registros 4 Aprovados na pagina 0 Rejeitados na pagina 0 Pendencias de clientes 0 Enviar documento Cliente Selecione Phase11 Cliente Proprio Phase11 Fiscal Tipo Departamento Nao informado Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Arquivo Enviar Extensoes permitidas: pdf, jpg, jpeg, png, doc, docx, xls, xlsx, csv, ofx, txt, zip, rar Cliente Todos Phase11 Cliente Proprio Phase11 Fiscal Tipo Departamento Todos Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Status Todos Em revisao Aprovado Rejeitado Arquivado Limpar DOCUMENTO CLIENTE DEPARTAMENTO STATUS ARQUIVO ENVIO ACOES contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:59 contrato_social manual Phase11 Fiscal phase11-client-fiscal Fiscal Em revisao phase11-upload.pdf 24 B phase11.collab 10/06/2026, 16:54 contrato_social phase11-local Phase11 Cliente Proprio phase11-user-client Fiscal Em revisao phase11-phase11-user-client.pdf 51 B pha",
+          "hasPermissionFallback": false
+        },
+        "/auditoria": {
+          "urlPath": "/auditoria",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional 1 CF Colaborador Fiscal Fase 11 Sair Sua sessao nao possui permissao para consultar auditoria.",
+          "hasPermissionFallback": true
+        }
+      },
+      "storage": {
+        "sensitiveLocalStorageKeys": [],
+        "sensitiveSessionStorageKeys": []
+      },
+      "refreshCookie": {
+        "present": true,
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      },
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        }
+      ],
+      "apiResponses": [
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/login"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/logout"
+        }
+      ],
+      "screenshots": {
+        "/home": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-collaborator-home.png",
+        "/departamentos/clientes": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-collaborator-departamentos_clientes.png",
+        "/documentos": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-collaborator-documentos.png",
+        "/auditoria": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-collaborator-auditoria.png"
+      },
+      "checks": [
+        {
+          "name": "login redirect home",
+          "pass": true
+        },
+        {
+          "name": "no sensitive localStorage keys",
+          "pass": true
+        },
+        {
+          "name": "no sensitive sessionStorage keys",
+          "pass": true
+        },
+        {
+          "name": "refresh cookie httpOnly",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Legal",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Contabil",
+          "pass": true
+        },
+        {
+          "name": "logout redirect login",
+          "pass": true
+        }
+      ],
+      "ok": true
+    },
+    "client": {
+      "role": "CLIENT",
+      "login": {
+        "ok": true,
+        "currentPath": "/home"
+      },
+      "routes": {
+        "/home": {
+          "urlPath": "/home",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional CF Cliente Fase 11 Sair Operacao Seja bem-vindo, Cliente Fase 11 Prioridades sincronizadas no banco local Painel do dia Meus clientes 0 Com obrigacoes Entregas pendentes 0 Abertas no banco local Vencimentos 0 Proximos 7 dias Atrasos 0 Exigem acao Minhas pendencias Sem entregas pendentes A base local nao tem entregas pendentes para este escopo. Baixas sincronizadas Sem baixas recentes A base local nao tem baixas recentes neste resumo. Acoes relacionadas Meus clientes Solicitacoes",
+          "hasPermissionFallback": false
+        },
+        "/clientes": {
+          "urlPath": "/clientes",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional CF Cliente Fase 11 Sair Base operacional Clientes Cadastro, consulta e manutencao de empresas cliente. Visao geral Registros 1 Ativos na pagina 1 Em grupo 0 Arquivados 0 Sua sessao permite consulta, mas nao cadastro de clientes. Buscar Status Todos Ativo Inativo Bloqueado Arquivado CNPJ Cidade Grupo Arquivados CLIENTE CNPJ CONTATO CIDADE STATUS GRUPO ATUALIZADO ACOES Phase11 Cliente Proprio LTDA Phase11 Cliente Proprio 11.222.333/0001-81 [email] - Sao Paulo / SP Ativo - 10/06/2026, 16:51 Exibindo 1-1 de 1 Anterior Proxima",
+          "hasPermissionFallback": false
+        },
+        "/documentos": {
+          "urlPath": "/documentos",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional CF Cliente Fase 11 Sair Storage privado Documentos Consulta, envio, revisao e links publicos de documentos de clientes. 1 em revisao Registros 1 Aprovados na pagina 0 Rejeitados na pagina 0 Pendencias de clientes 0 Enviar documento Cliente Selecione Phase11 Cliente Proprio Tipo Departamento Nao informado Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Arquivo Enviar Extensoes permitidas: pdf, jpg, jpeg, png, doc, docx, xls, xlsx, csv, ofx, txt, zip, rar Cliente Todos Phase11 Cliente Proprio Tipo Departamento Todos Contabil Fiscal Legalizacao Pessoal Financeiro Comercial TI Master Status Todos Em revisao Aprovado Rejeitado Arquivado Limpar DOCUMENTO CLIENTE DEPARTAMENTO STATUS ARQUIVO ENVIO ACOES contrato_social phase11-local Phase11 Cliente Proprio phase11-user-client Fiscal Em revisao phase11-phase11-user-client.pdf 51 B phase11.dev 10/06/2026, 16:51 Exibindo 1-1 de 1 Anterior Proxima",
+          "hasPermissionFallback": false
+        },
+        "/auditoria": {
+          "urlPath": "/auditoria",
+          "heading": "Painel operacional",
+          "textSample": "Portal Sama Painel operacional CF Cliente Fase 11 Sair Sua sessao nao possui permissao para consultar auditoria.",
+          "hasPermissionFallback": true
+        }
+      },
+      "storage": {
+        "sensitiveLocalStorageKeys": [],
+        "sensitiveSessionStorageKeys": []
+      },
+      "refreshCookie": {
+        "present": true,
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      },
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        },
+        {
+          "type": "warning",
+          "text": "No `HydrateFallback` element provided to render during initial hydration"
+        }
+      ],
+      "apiResponses": [
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/login"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/integrations/acessorias/home-summary"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/documents"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/clients"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/refresh"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications/stream"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/notifications"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "path": "/api-v2/auth/csrf"
+        },
+        {
+          "status": 200,
+          "method": "POST",
+          "path": "/api-v2/auth/logout"
+        }
+      ],
+      "screenshots": {
+        "/home": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-client-home.png",
+        "/clientes": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-client-clientes.png",
+        "/documentos": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-client-documentos.png",
+        "/auditoria": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\profiles-phase11\\browser-client-auditoria.png"
+      },
+      "checks": [
+        {
+          "name": "login redirect home",
+          "pass": true
+        },
+        {
+          "name": "no sensitive localStorage keys",
+          "pass": true
+        },
+        {
+          "name": "no sensitive sessionStorage keys",
+          "pass": true
+        },
+        {
+          "name": "refresh cookie httpOnly",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Fiscal",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Legal",
+          "pass": true
+        },
+        {
+          "name": "browser text does not expose Phase11 Contabil",
+          "pass": true
+        },
+        {
+          "name": "logout redirect login",
+          "pass": true
+        }
+      ],
+      "ok": true
+    }
+  },
+  "summary": {
+    "profiles": 4,
+    "failed": 0
+  },
+  "limitations": [
+    "Validacao de navegador em ambiente local controlado com dados sint?ticos da Fase 11.",
+    "Nao substitui homologacao assistida com usuarios reais em ambiente HTTPS de homologacao/producao."
+  ]
+}
