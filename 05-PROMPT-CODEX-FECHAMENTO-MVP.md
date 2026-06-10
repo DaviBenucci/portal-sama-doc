@@ -17,6 +17,7 @@ docs/02-PLANO-FECHAMENTO-MVP.md
 docs/03-CONTRATO-ACESSORIAS-OPERACIONAL.md
 docs/04-DIVERGENCIAS-DOCS-CODIGO.md
 docs/06-NOTIFICACOES-WEB-PUSH-MVP.md
+docs/07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md
 ```
 
 Não leia `docs/_arquivo` como requisito ativo. Arquivos arquivados são histórico, não escopo atual.
@@ -30,13 +31,18 @@ Consolidar o MVP do Portal Sama para operação e gestão, com foco em:
 1. corrigir build frontend;
 2. estabilizar erros externos do Acessórias;
 3. corrigir estratégia híbrida de sincronização Acessórias e persistência local;
-4. consolidar Central de Vencimentos e Obrigações;
-5. vincular responsáveis do Acessórias a colaboradores locais de forma segura;
-6. permitir visão por colaborador para gestão;
-7. implementar notificações internas e Web Push mínimo para eventos críticos;
-8. manter segurança, RBAC, CSRF e auditoria.
+4. implementar pipeline robusta de Acessórias com fila global, persistência por página, checkpoints, jobs por frequência e push técnico DEV-only;
+5. consolidar Central de Vencimentos e Obrigações;
+6. vincular responsáveis do Acessórias a colaboradores locais de forma segura;
+7. permitir visão por colaborador para gestão;
+8. implementar notificações internas e Web Push mínimo para eventos críticos;
+9. manter segurança, RBAC, CSRF e auditoria.
 
 Implementar Web Push somente no escopo mínimo definido em `06-NOTIFICACOES-WEB-PUSH-MVP.md`. Não implementar WhatsApp, Slack, Teams, SMS, recorrência inteligente avançada, novas integrações ou redesign amplo.
+
+Para a nova etapa de estabilidade do Acessórias, seguir obrigatoriamente `07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md`. Esse documento detalha fila global de rate limit, fallback seguro de `429`, persistência por página/empresa, frequência dos jobs, reconciliação diária e push técnico exclusivo para usuários `DEV`.
+
+
 
 ---
 
@@ -142,6 +148,31 @@ UnauthorizedException/ForbiddenException quando token inválido
 Nunca expor token, headers ou stack trace no frontend.
 
 ---
+
+## Tarefa 3A — Pipeline robusta Acessórias, rate limit e persistência progressiva
+
+Antes de alterar fluxos individuais, leia e implemente a instrução detalhada em:
+
+```txt
+docs/07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md
+```
+
+Resumo obrigatório:
+
+```txt
+- criar fila global única para chamadas ao Acessórias;
+- reduzir rate limit interno para 45/min ou 60/min;
+- em 429 sem Retry-After, aguardar pelo menos 65s em jobs pesados;
+- aumentar tentativas transitórias para 5;
+- impedir jobs pesados concorrentes;
+- persistir cada página/empresa imediatamente;
+- categorizar registros por empresa, departamento, obrigação, responsável e status no momento da ingestão;
+- manter checkpoints para retomada;
+- rodar incremental de entregas a cada 30 minutos;
+- rodar carga cadastral/reconciliação pesada no fim do dia ou madrugada;
+- enviar Web Push somente para usuários DEV em eventos técnicos pesados;
+- manter Home/Central consultando banco local.
+```
 
 ## Tarefa 3 — Separar cadastro, incremental e backfill Acessórias
 

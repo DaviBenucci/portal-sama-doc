@@ -35,6 +35,7 @@ docs/03-CONTRATO-ACESSORIAS-OPERACIONAL.md
 docs/04-DIVERGENCIAS-DOCS-CODIGO.md
 docs/05-PROMPT-CODEX-FECHAMENTO-MVP.md
 docs/06-NOTIFICACOES-WEB-PUSH-MVP.md
+docs/07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md
 ```
 
 Documentações antigas devem ser movidas para:
@@ -57,8 +58,9 @@ Quando código e documentação divergirem, seguir esta ordem:
 3. 02-PLANO-FECHAMENTO-MVP.md
 4. 03-CONTRATO-ACESSORIAS-OPERACIONAL.md
 5. 06-NOTIFICACOES-WEB-PUSH-MVP.md
-6. ADRs e decisões técnicas recentes
-7. Documentos arquivados apenas como referência histórica
+6. 07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md
+7. ADRs e decisões técnicas recentes
+8. Documentos arquivados apenas como referência histórica
 ```
 
 Se um documento antigo disser “não implementar agora” e o código já tiver implementação parcial, tratar como:
@@ -115,6 +117,9 @@ Portal Sama = camada operacional local, persistida, auditável, segura e resilie
 ```
 
 O Portal Sama não deve depender da disponibilidade externa para continuar operando. Deve salvar dados localmente, exibir última sincronização, sinalizar dado desatualizado e tratar indisponibilidade com erro controlado. Para o Acessórias, `companies` alimenta cadastro/configuração e `deliveries` alimenta operação/vencimentos.
+
+Para a próxima implementação dirigida da integração Acessórias, seguir também `07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md`, que define fila global, backoff correto para `429`, persistência por página, checkpoints, jobs por frequência e push técnico somente para usuários `DEV`.
+
 
 ---
 
