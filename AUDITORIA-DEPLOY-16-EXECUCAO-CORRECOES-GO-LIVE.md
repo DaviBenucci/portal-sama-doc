@@ -157,3 +157,39 @@ Leitura:
   maior.
 - Ainda falta executar uma bateria Acessorias real/local completa apos as fases seguintes, pois a
   release ainda depende de E2E API/Web, artefatos limpos, audit `qs` e provas operacionais.
+
+## Fase 5 - Corrigir E2E API Web Push/CSRF
+
+Status: implementada e validada. Gate E2E API esta verde no codigo local.
+
+Arquivo alterado:
+
+- `portal-sama-api/test/app.e2e-spec.ts`
+
+Mudanca aplicada:
+
+- O setup E2E agora define explicitamente variaveis de cookie/CSRF antes de importar o
+  `AppModule`:
+  - `CSRF_SECRET=test_csrf_secret_with_at_least_32_chars`
+  - `COOKIE_DOMAIN=''`
+  - `COOKIE_SECURE=false`
+  - `COOKIE_SAME_SITE=lax`
+- Isso impede que a suite E2E herde `COOKIE_DOMAIN`, `COOKIE_SECURE`, `COOKIE_SAME_SITE` ou
+  segredo CSRF do `.env` local/real.
+- O comportamento de producao nao foi alterado; a mudanca fica restrita ao ambiente de teste.
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `npm.cmd run test:e2e` | OK: 1 suite, 136 testes |
+| `npm.cmd run lint` | OK |
+| `npm.cmd run build` | OK |
+| `npm.cmd test -- --runInBand` | OK: 44 suites, 272 testes |
+| `git diff --check` em `portal-sama-api` | OK |
+
+Leitura:
+
+- Os dois testes que falhavam em Web Push/CSRF agora passam.
+- Os testes negativos de CSRF continuam passando com `403` quando nao ha token/cookie valido.
+- O bloqueio `QA-API-01` esta corrigido no codigo local.
