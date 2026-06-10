@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "soft": false,
+  "dryRun": false,
+  "completedAt": "2026-06-10T18:49:56.780Z",
+  "backupId": "portal-sama-20260610T184955Z-e76aef",
+  "backupDir": "/evidence/backups/portal-sama-20260610T184955Z-e76aef",
+  "failed": 0,
+  "warnings": 2,
+  "checks": [
+    {
+      "details": {
+        "failed": 0,
+        "warnings": 1
+      },
+      "message": "Backup verification passed with warnings.",
+      "name": "backup-verification",
+      "status": "warning"
+    },
+    {
+      "details": {
+        "target": "mysql://root:***@127.0.0.1:3306/portal_sama_backup_drill_restore",
+        "warnings": [
+          "target database is on the same host as DATABASE_URL; confirm it is a separate isolated database."
+        ]
+      },
+      "message": "Target database is isolated by database name, with host warnings.",
+      "name": "database-target",
+      "status": "warning"
+    },
+    {
+      "details": {
+        "targetStoragePath": "/tmp/portal-sama-storage-restore",
+        "exists": false
+      },
+      "message": "Target storage path is isolated from STORAGE_PRIVATE_PATH.",
+      "name": "storage-target",
+      "status": "passed"
+    },
+    {
+      "message": "Explicit restore drill confirmation phrase was provided.",
+      "name": "confirmation",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:56.754Z",
+      "message": "database.sql.gz was imported into the isolated target database.",
+      "name": "database-restore",
+      "startedAt": "2026-06-10T18:49:56.627Z",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:56.779Z",
+      "message": "storage.tar.gz was extracted into the isolated target storage path.",
+      "name": "storage-restore",
+      "startedAt": "2026-06-10T18:49:56.754Z",
+      "status": "passed"
+    }
+  ]
+}

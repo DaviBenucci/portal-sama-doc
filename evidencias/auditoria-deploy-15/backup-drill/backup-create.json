@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "backupId": "portal-sama-20260610T184955Z-e76aef",
+  "outputDir": "/evidence/backups/portal-sama-20260610T184955Z-e76aef",
+  "metadataFile": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/metadata.json",
+  "failed": 0,
+  "warnings": 0,
+  "steps": [
+    {
+      "completedAt": "2026-06-10T18:49:55.964Z",
+      "message": "Database dump created at /evidence/backups/portal-sama-20260610T184955Z-e76aef/database.sql.gz.",
+      "name": "database-dump",
+      "startedAt": "2026-06-10T18:49:55.808Z",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:55.972Z",
+      "message": "Storage manifest created with 1 file(s).",
+      "name": "storage-manifest",
+      "startedAt": "2026-06-10T18:49:55.964Z",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:56.021Z",
+      "message": "Storage archive created at /evidence/backups/portal-sama-20260610T184955Z-e76aef/storage.tar.gz.",
+      "name": "storage-archive",
+      "startedAt": "2026-06-10T18:49:55.972Z",
+      "status": "passed"
+    }
+  ]
+}

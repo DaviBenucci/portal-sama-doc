@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-06-10T18:49:55.966Z",
+  "storageRoot": "/tmp/portal-sama-storage-source",
+  "files": 1,
+  "directories": 1,
+  "totalBytes": 41,
+  "entries": [
+    {
+      "mtime": "2026-06-10T18:49:55.669Z",
+      "path": "client-a/readme.txt",
+      "sizeBytes": 41,
+      "type": "file"
+    }
+  ]
+}

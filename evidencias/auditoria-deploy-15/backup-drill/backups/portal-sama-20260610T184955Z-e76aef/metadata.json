@@ -1,0 +1,55 @@
+{
+  "backupId": "portal-sama-20260610T184955Z-e76aef",
+  "startedAt": "2026-06-10T18:49:55.801Z",
+  "completedAt": "2026-06-10T18:49:56.022Z",
+  "hostname": "2d070743b988",
+  "node": "v16.20.2",
+  "app": {
+    "name": "portal-sama-api",
+    "version": "0.1.0"
+  },
+  "outputDir": "/evidence/backups/portal-sama-20260610T184955Z-e76aef",
+  "database": {
+    "database": "portal_sama_backup_drill_source",
+    "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/database.sql.gz",
+    "sha256": "06bacf777370570bb1abda6c22dd9e188b1b42f3c3c18c2e91b1d38ee511305d",
+    "sizeBytes": 821,
+    "tool": "/usr/bin/mysqldump"
+  },
+  "storage": {
+    "directories": 1,
+    "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/storage-manifest.json",
+    "files": 1,
+    "sha256": "2e3f32038258cd6937c2be31d48ddc8c550b4b552db0a51b7726201e96e65c0e",
+    "totalBytes": 41,
+    "archive": {
+      "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/storage.tar.gz",
+      "sha256": "ea109325de5a999145e8a34e1d9a4bdf6b201d3ab22834af7112b71d0e754a38",
+      "sizeBytes": 207,
+      "tool": "/usr/bin/tar"
+    }
+  },
+  "steps": [
+    {
+      "completedAt": "2026-06-10T18:49:55.964Z",
+      "message": "Database dump created at /evidence/backups/portal-sama-20260610T184955Z-e76aef/database.sql.gz.",
+      "name": "database-dump",
+      "startedAt": "2026-06-10T18:49:55.808Z",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:55.972Z",
+      "message": "Storage manifest created with 1 file(s).",
+      "name": "storage-manifest",
+      "startedAt": "2026-06-10T18:49:55.964Z",
+      "status": "passed"
+    },
+    {
+      "completedAt": "2026-06-10T18:49:56.021Z",
+      "message": "Storage archive created at /evidence/backups/portal-sama-20260610T184955Z-e76aef/storage.tar.gz.",
+      "name": "storage-archive",
+      "startedAt": "2026-06-10T18:49:55.972Z",
+      "status": "passed"
+    }
+  ]
+}

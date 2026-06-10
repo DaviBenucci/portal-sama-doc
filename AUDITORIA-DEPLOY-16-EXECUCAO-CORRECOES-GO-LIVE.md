@@ -7,10 +7,18 @@ Escopo: registro incremental da execucao das fases planejadas em
 
 ## Ferramentas locais usadas nesta rodada
 
-- Docker: nao foi necessario nesta etapa.
+- Docker: usado na Fase 8 com a imagem local `portal-sama-api:clamav-runtime` para validar
+  ClamAV strict/EICAR em container efemero, sem instalar ClamAV no Windows host.
 - Instalacoes/execucoes auxiliares: foi usado `npx.cmd prettier@3.8.4` de forma transitoria
   para formatacao. O primeiro uso no frontend baixou o pacote via `npx`; nao houve alteracao
   intencional de `package.json` ou `package-lock.json`.
+- Fase 7: foi usado `npm.cmd audit fix` no `portal-sama-api`, atualizando a dependencia
+  transitiva local `qs` de `6.15.1` para `6.15.2` e o `package-lock.json`.
+- Fase 8: foi executado `npm run ops:clamav:update` dentro do container para atualizar
+  assinaturas antes do readiness strict.
+- Fase 9: foi usado Docker com o MySQL local `portal-sama-audit-mysql` e a imagem `mysql:8.4`.
+  Dentro do container efemero foi instalado `nodejs` e `which` via `microdnf` para rodar os
+  scripts Node com os clientes MySQL 8.4 nativos. Nada foi instalado no Windows host.
 
 ## Fase 0 - Preparacao operacional
 
@@ -193,3 +201,181 @@ Leitura:
 - Os dois testes que falhavam em Web Push/CSRF agora passam.
 - Os testes negativos de CSRF continuam passando com `403` quando nao ha token/cookie valido.
 - O bloqueio `QA-API-01` esta corrigido no codigo local.
+
+## Fase 6 - Corrigir E2E Web Home
+
+Status: implementada e validada. Gate E2E Web esta verde no codigo local.
+
+Arquivo alterado:
+
+- `portal-sama-web/tests/e2e/smoke.spec.ts`
+
+Mudancas aplicadas:
+
+- O mock global de notificacoes do Playwright agora cobre tambem
+  `/api-v2/notifications/stream?take=20` como `text/event-stream`.
+- O mock de sessao autenticada agora cobre `/api-v2/me/security`, evitando chamadas reais/proxy
+  durante os testes de paginas autenticadas.
+- O E2E da Home admin foi alinhado aos textos atuais da UI:
+  - `Diagnostico Acessorias`;
+  - atalhos visiveis no perfil mockado: `Vencimentos` e `Solicitacoes`.
+- O E2E da Home colaborador foi alinhado ao bloco atual `Baixas sincronizadas`.
+- Nao houve alteracao de comportamento de producao; a correcao ficou restrita aos testes E2E.
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `npm.cmd run test:e2e` em `portal-sama-web` | OK: 13 passaram, 1 skip |
+| `npm.cmd run lint` em `portal-sama-web` | OK |
+| `npm.cmd run build` em `portal-sama-web` | OK |
+| `npm.cmd test -- --runInBand` em `portal-sama-web` | OK: 9 contratos |
+| `git diff --check` em `portal-sama-web` | OK |
+
+Leitura:
+
+- As duas falhas conhecidas da Home Web foram corrigidas sem reabrir a auditoria desde o inicio.
+- O ruido de proxy para `notifications/stream` e `me/security` deixou de aparecer na execucao E2E.
+- Docker nao foi usado nesta fase; nenhuma instalacao local nova foi necessaria.
+
+## Fase 7 - Corrigir vulnerabilidade `qs`
+
+Status: implementada e validada. `npm audit` da API esta sem vulnerabilidades moderadas ou
+superiores no codigo local.
+
+Arquivo alterado:
+
+- `portal-sama-api/package-lock.json`
+
+Mudanca aplicada:
+
+- Executado `npm.cmd audit fix` no `portal-sama-api`.
+- A resolucao transitiva de `qs` foi atualizada de `6.15.1` para `6.15.2`.
+- `package.json` nao foi alterado.
+- O `package-lock.json` tambem recebeu o metadado `hasInstallScript: true` na raiz, gerado pelo
+  npm por existir `postinstall`.
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `npm.cmd audit --audit-level=moderate` em `portal-sama-api` | OK: 0 vulnerabilidades |
+| `npm.cmd run lint` em `portal-sama-api` | OK |
+| `npm.cmd run build` em `portal-sama-api` | OK |
+| `npm.cmd test -- --runInBand` em `portal-sama-api` | OK: 44 suites, 272 testes |
+| `npm.cmd run test:e2e` em `portal-sama-api` | OK: 1 suite, 136 testes |
+| `git diff --check` em `portal-sama-api` | OK |
+
+Leitura:
+
+- O achado `DEP-01`/`SEC-07` de `qs` foi corrigido no lockfile local.
+- A correcao nao exigiu mudanca em codigo-fonte nem atualizacao direta de dependencias.
+- Docker nao foi usado nesta fase.
+
+## Fase 8 - Validar ClamAV strict
+
+Status: validada localmente em container efemero. Ambiente de homologacao/producao ainda deve
+replicar a configuracao `SAMA_UPLOAD_SCAN_MODE=strict` com ClamAV instalado no runtime correto.
+
+Arquivos alterados/adicionados:
+
+- `portal-sama-api/src/modules/documents/document-upload-scanner.service.spec.ts`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/clamav-strict-readiness.json`
+
+Mudancas aplicadas:
+
+- Adicionados testes focados do `DocumentUploadScannerService` em modo `strict`:
+  - upload limpo e aceito quando o scanner externo retorna sucesso;
+  - upload com assinatura tipo EICAR rejeitado quando o scanner externo retorna deteccao;
+  - arquivo rejeitado permanece em quarentena para analise.
+- Gerada evidencia operacional com Docker usando a imagem local `portal-sama-api:clamav-runtime`.
+- Dentro do container, `freshclam` foi executado via `npm run ops:clamav:update` antes do
+  readiness.
+- O readiness foi executado com `SAMA_UPLOAD_SCAN_MODE=strict`, `--skip-env` e `--skip-database`
+  para isolar storage + ClamAV/EICAR sem depender de segredos ou banco real.
+
+Evidencia preservada:
+
+- `evidencias/auditoria-deploy-15/clamav-strict-readiness.json`
+  - `ok: true`
+  - `failed: 0`
+  - `clamav-eicar: passed`
+  - scanner: `/usr/bin/clamscan`
+  - `backup-rollback: warning`, esperado porque backup/restore e tratado na Fase 9.
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `docker run --rm portal-sama-api:clamav-runtime sh -lc "node --version && clamscan --version"` | OK: Node 22 e ClamAV 1.4.4 |
+| `docker run --rm portal-sama-api:clamav-runtime sh -lc "npm run ops:clamav:update"` | OK: `daily`, `main` e `bytecode` atualizados; aviso esperado de `clamd` nao rodando |
+| readiness strict em container com `SAMA_UPLOAD_SCAN_MODE=strict --skip-env --skip-database` | OK: `clamav-eicar` passou; evidencia JSON salva |
+| `npm.cmd test -- --runInBand src/modules/documents/document-upload-scanner.service.spec.ts` | OK: 1 suite, 5 testes |
+| `npm.cmd run lint` em `portal-sama-api` | OK |
+| `npm.cmd run build` em `portal-sama-api` | OK |
+| `npm.cmd test -- --runInBand` em `portal-sama-api` | OK: 44 suites, 274 testes |
+| `npm.cmd run test:e2e` em `portal-sama-api` | OK: 1 suite, 136 testes |
+| `npm.cmd audit --audit-level=moderate` em `portal-sama-api` | OK: 0 vulnerabilidades |
+| `git diff --check` em `portal-sama-api` | OK |
+
+Leitura:
+
+- A ausencia de ClamAV no host Windows foi contornada por validacao em container, sem instalacao
+  permanente na maquina.
+- O modo strict esta coberto por teste automatizado e por evidencia operacional EICAR.
+- A warning restante do readiness e sobre backup/rollback, que permanece como escopo da Fase 9.
+
+## Fase 9 - Provar backup, verify e restore drill
+
+Status: validada localmente contra alvo isolado em Docker. Nenhum banco de producao ou `.env`
+real foi usado.
+
+Ambiente isolado:
+
+- Container MySQL local: `portal-sama-audit-mysql`.
+- Banco origem do drill: `portal_sama_backup_drill_source`.
+- Banco alvo do restore: `portal_sama_backup_drill_restore`.
+- Tabela sentinela: `backup_probe`, com `sentinel_label=fase-9-drill-source`.
+- Storage origem: fixture temporaria criada dentro do container.
+- Storage alvo: `/tmp/portal-sama-storage-restore`, dentro do container efemero.
+
+Evidencias preservadas:
+
+- `evidencias/auditoria-deploy-15/backup-drill/backup-create.json`
+- `evidencias/auditoria-deploy-15/backup-drill/backup-verify.json`
+- `evidencias/auditoria-deploy-15/backup-drill/restore-drill.json`
+- `evidencias/auditoria-deploy-15/backup-drill/restore-target-check.json`
+- `evidencias/auditoria-deploy-15/backup-drill/backup-artifacts.sha256`
+- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/`
+
+Resultados:
+
+- Backup criado com `ok: true`, `failed: 0`, `warnings: 0`.
+- Artefatos criados:
+  - `database.sql.gz`;
+  - `metadata.json`;
+  - `storage-manifest.json`;
+  - `storage.tar.gz`.
+- Verify executado com `ok: true`, `failed: 0`, `warnings: 1`.
+  - A warning e o lembrete padrao de que restore drill real ainda precisa ser feito; ela foi
+    sanada na etapa seguinte desta mesma fase.
+- Restore drill executado com `dryRun: false`, `ok: true`, `failed: 0`, `warnings: 2`.
+  - `database-restore`: passou.
+  - `storage-restore`: passou.
+  - Warnings esperadas:
+    - verify tinha aviso antes do restore real;
+    - banco alvo usa o mesmo host Docker da origem, mas banco distinto e isolado.
+- Checagem pos-restore confirmou `rows_count: 1` e
+  `sentinel_label: fase-9-drill-source` no banco `portal_sama_backup_drill_restore`.
+- Checksums SHA-256 dos quatro artefatos principais foram salvos em
+  `backup-artifacts.sha256`.
+
+Observacoes operacionais:
+
+- A imagem `portal-sama-api:backup-runtime` possui cliente MariaDB, que nao conseguiu autenticar
+  contra MySQL 8.4 com `caching_sha2_password`. Para evitar alterar o servidor, a validacao final
+  usou a imagem oficial `mysql:8.4`, com `nodejs` e `which` instalados apenas no container
+  efemero.
+- Busca nas evidencias nao encontrou senha local gravada.
+- Para homologacao/producao, repetir contra destino externo/seguro de backup e alvo de restore
+  isolado equivalente ao ambiente real.
