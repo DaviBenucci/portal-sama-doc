@@ -14,6 +14,8 @@
 | SEC-06 | Média | Criptografia de senha de certificado cai para segredo JWT se `CERTIFICATE_ENCRYPTION_KEY` faltar. | `certificate-crypto.service.ts` usa fallback para `JWT_REFRESH_SECRET`/`JWT_ACCESS_SECRET`. | Exigir chave dedicada em produção e falhar readiness se ausente. |
 | SEC-07 | Média | Vulnerabilidade moderada em dependência `qs`. | `npm audit` da API reportou DoS moderado com fix disponível. | Rodar `npm audit fix` ou atualizar lock/dependência compatível e repetir testes. |
 | SEC-08 | Média | Backup/restore não provado no ambiente atual. | Readiness informa que backup e rollback precisam ser validados fora do container/app. | Executar `ops:backup:create`, `ops:backup:verify` e `ops:restore:drill` em alvo isolado. |
+| SEC-09 | Crítica | Acessórias Home aceita `profile=admin` vindo do cliente sem validar role/permissão. | `acessorias-home.controller.ts` repassa query `profile`; `PermissionsGuard` libera rota sem `@Permissions`; serviço retorna todos os itens para perfil admin. | Derivar perfil no backend, exigir permissão para visão admin e adicionar testes negativos. |
+| SEC-10 | Alta | Roteiro local contém credencial demo em texto puro. | `C:\Users\Sama Contabilidade\Desktop\Rodar-local-Portal-sama.md` registra usuário/senha demo para acesso. Valores não reproduzidos nesta auditoria. | Remover credencial do Markdown, usar variáveis/secret manager e redefinir se já usada em ambiente real. |
 
 ## Detalhe do achado SEC-02
 
@@ -42,6 +44,26 @@ Correção recomendada:
 
 ## Controles positivos encontrados
 
+## Detalhe do achado SEC-09
+
+Pontos de código:
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts:20` expõe `GET home-summary`.
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.controller.ts:22` aceita `profile` por query.
+- `portal-sama-api/src/common/guards/permissions.guard.ts:21` permite endpoints sem `@Permissions`.
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.service.ts:91` não aplica filtro departamental quando o perfil normalizado é `admin`.
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-home.service.ts:202` retorna todos os itens quando o perfil é `admin`.
+
+Impacto: qualquer usuário autenticado pode tentar consultar `/api-v2/integrations/acessorias/home-summary?profile=admin` e obter visão administrativa do cache local Acessórias, com nomes/documentos de clientes, obrigações, departamentos, responsáveis e vencimentos.
+
+Correção recomendada: o backend deve derivar o perfil pelo usuário autenticado. A query `profile` não deve elevar privilégio. Se a visão admin existir, exigir `ADMIN`/`DEV` ou permissão específica e cobrir com testes negativos para `CLIENT`, `DEPARTMENT`, `ACCOUNTING`, `LEGALIZATION` e `MANAGER`.
+
+## Detalhe do achado SEC-10
+
+O roteiro `Rodar-local-Portal-sama.md`, localizado no Desktop, contém credencial demo em texto puro. Ainda que seja um arquivo local, ele pode ser copiado, compartilhado ou sincronizado fora do computador.
+
+Correção recomendada: manter o roteiro apenas com placeholders e orientar o uso de `SAMA_BOOTSTRAP_ADMIN_USERNAME`, `SAMA_BOOTSTRAP_ADMIN_PASSWORD`, `SAMA_BOOTSTRAP_ADMIN_ROLE` e demais variáveis no shell ou no gerenciador de segredos do ambiente. Caso a credencial demo tenha sido usada em qualquer banco real, redefinir a senha ou remover o usuário.
+
 | Controle | Evidência |
 | --- | --- |
 | Headers de segurança | API usa `helmet()`. |
@@ -69,4 +91,3 @@ Decisão: **tratar como incidente de vazamento de artefato** caso o ZIP tenha si
 ## Conclusão de segurança
 
 A base de segurança é boa, mas os dois pontos críticos (`.env` no ZIP e escopo de clientes) impedem produção. Depois das correções, repetir audit, E2E, readiness e homologação manual.
-

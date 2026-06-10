@@ -34,6 +34,22 @@ Critério de aceite:
 - `git ls-files` segue rastreando somente `.env.example`.
 - Segredos antigos não funcionam mais.
 
+### 1.1. Remover credenciais demo de roteiros Markdown
+
+Prioridade: alta.
+
+Ações:
+
+1. Remover usuário/senha do arquivo `C:\Users\Sama Contabilidade\Desktop\Rodar-local-Portal-sama.md`.
+2. Trocar por placeholders sem segredo real.
+3. Orientar bootstrap somente por variáveis `SAMA_BOOTSTRAP_ADMIN_*`.
+4. Redefinir/remover a credencial caso ela tenha sido usada em qualquer ambiente real.
+
+Critério de aceite:
+
+- Nenhum roteiro Markdown contém usuário/senha reutilizável.
+- Bootstrap admin usa apenas variáveis de ambiente ou secret manager.
+
 ### 2. Corrigir escopo de clientes
 
 Prioridade: crítica.
@@ -54,6 +70,25 @@ Critério de aceite:
 
 - Testes negativos passam.
 - QA manual confirma isolamento entre departamentos.
+
+### 2.1. Corrigir escalada de perfil na Home Acessórias
+
+Prioridade: crítica.
+
+Ações:
+
+1. Remover confiança no parâmetro `profile` vindo do cliente para determinar visão administrativa.
+2. Derivar `admin`, `manager` ou `collaborator` no backend usando roles/permissões.
+3. Exigir `ADMIN`/`DEV` ou permissão explícita para visão global.
+4. Adicionar testes:
+   - `CLIENT` com `profile=admin` não recebe dados globais.
+   - `DEPARTMENT` com `profile=admin` não recebe outro departamento.
+   - `MANAGER` sem role admin não recebe visão global.
+
+Critério de aceite:
+
+- Nenhum usuário consegue elevar perfil apenas alterando query string.
+- E2E API cobre tentativa de bypass.
 
 ### 3. Fechar E2E API
 
@@ -115,13 +150,14 @@ Ações:
 1. Subir ambiente de homologação com MySQL real.
 2. Rodar `npm.cmd run prisma:migrate:status`.
 3. Rodar `npm.cmd run prisma:migrate:deploy`.
-4. Rodar seed/bootstrap RBAC.
-5. Rodar `npm.cmd run ops:readiness`.
-6. Validar ClamAV:
+4. Rodar `npm.cmd run prisma:seed`.
+5. Rodar `npm.cmd run prisma:bootstrap-admin` com `SAMA_BOOTSTRAP_ADMIN_*` via secret manager/shell.
+6. Rodar `npm.cmd run ops:readiness`.
+7. Validar ClamAV:
    - `npm.cmd run ops:clamav:update`
    - EICAR bloqueado.
    - `SAMA_UPLOAD_SCAN_MODE=strict`.
-7. Validar backup/restore:
+8. Validar backup/restore:
    - `npm.cmd run ops:backup:create`
    - `npm.cmd run ops:backup:verify`
    - `npm.cmd run ops:restore:drill`
@@ -156,14 +192,16 @@ Critério de aceite:
 | --- | --- | --- |
 | ZIP sem `.env` | No-Go | Artefatos limpos e segredos rotacionados. |
 | Escopo de clientes | No-Go | Testes negativos e QA manual verdes. |
+| Acessórias Home sem profile escalation | No-Go | Backend deriva perfil e bloqueia `profile=admin` indevido. |
 | API build/lint/unit | Go | Já passou; repetir após correções. |
 | API E2E | No-Go | 100% verde. |
 | Web build/lint/contratos | Go | Já passou; repetir após correções. |
 | Web E2E | No-Go | 100% verde. |
 | DB/migrações | No-Go | `migrate status/deploy` verdes no alvo. |
 | RBAC seed | No-Go | Permissões conferidas no banco real. |
+| Bootstrap admin | No-Go | Usuário `ADMIN`/`DEV` criado por secret manager, login real validado e senha demo removida. |
 | ClamAV strict | No-Go | EICAR bloqueado em produção/homologação. |
-| Web Push | No-Go | VAPID real e navegador real validados. |
+| Web Push | No-Go | Testes locais/contratuais passaram; Go somente com VAPID real, navegador real e E2E API verde. |
 | Acessórias | No-Go | Token real, backfill e incremental validados. |
 | Backup/restore | No-Go | Backup verificado e restore drill concluído. |
 | UX mobile | Parcial | Rodada manual sem quebra visual. |
@@ -177,4 +215,3 @@ Critério de aceite:
 5. Liberar primeiro para grupo piloto interno.
 6. Monitorar logs, auditoria, notificações, uploads, Acessórias e consumo de banco.
 7. Só então liberar para clientes reais.
-

@@ -16,6 +16,8 @@ O Portal Sama está tecnicamente próximo de uma homologação controlada: API e
 | --- | --- | --- | --- |
 | Crítica | `C:\Users\Sama Contabilidade\Desktop\portal-sama-api.zip` contém `portal-sama-api/.env`. | Segredos podem ter sido empacotados e compartilhados fora do Git. | Remover o ZIP, recriar pacote sem `.env` e rotacionar segredos potencialmente expostos. |
 | Crítica | Escopo de leitura de clientes permite que qualquer perfil com `clients.read` liste/veja qualquer cliente. | Vazamento de cadastro, CNPJ, contato/localização e contadores operacionais entre departamentos. | Corrigir `ClientsService` para respeitar responsável/departamento/atribuições e adicionar testes negativos. |
+| Crítica | `GET /integrations/acessorias/home-summary` aceita `profile=admin` vindo da query sem validar role/permissão. | Usuário autenticado pode tentar obter visão global de entregas Acessórias fora do escopo. | Derivar perfil no backend, exigir role/permissão para visão admin e adicionar testes negativos. |
+| Alta | Roteiro local de execução contém credencial demo em texto puro. | Se reaproveitada ou compartilhada, pode virar acesso conhecido ao ambiente. | Remover usuário/senha do Markdown e usar apenas variáveis de ambiente/secret manager. |
 | Alta | E2E da API falha em Web Push/CSRF no ambiente atual. | Gate automatizado de release não fecha. | Isolar `.env` nos testes ou zerar `COOKIE_DOMAIN` no setup E2E; manter cookie seguro em produção. |
 | Alta | E2E web falha em duas validações da Home/Acessórias. | Gate visual/funcional do front não fecha. | Atualizar expectativas/mocks ou corrigir UI se os textos esperados forem contrato de produto. |
 | Alta | Banco, migrações, RBAC seed e usuários privilegiados não foram provados porque MySQL não respondeu localmente. | Não há evidência de cutover seguro em ambiente alvo. | Rodar readiness/migrate/status/seed em EasyPanel ou homologação com DB real. |
@@ -31,6 +33,8 @@ O Portal Sama está tecnicamente próximo de uma homologação controlada: API e
 | API | `npm.cmd run build` | Passou |
 | API | `npm.cmd test -- --runInBand` | 44 suites, 264 testes passaram |
 | API | `npm.cmd run test:e2e` | Falhou: 2 testes Web Push/CSRF; 134 passaram |
+| API | `npm.cmd test -- --runInBand src/modules/notifications/notifications.service.spec.ts src/modules/notifications/notifications-push.service.spec.ts` | Passou: 2 suites, 28 testes focados |
+| API | `npm.cmd test -- --runInBand src/modules/rbac/default-rbac.spec.ts src/config/env.schema.spec.ts` | Passou: 2 suites, 8 testes focados |
 | API | `npm.cmd audit --audit-level=moderate` | 1 vulnerabilidade moderada em `qs` |
 | API | `npm.cmd run prisma:migrate:status` | Falhou: DB MySQL indisponível |
 | API | `node -r dotenv/config scripts/validate-operational-readiness.js --soft` | Falhou em DB; avisos de ClamAV e backup/restore |
@@ -65,4 +69,8 @@ O Portal Sama está tecnicamente próximo de uma homologação controlada: API e
 - `AUDITORIA-DEPLOY-03-FRONTEND-UI-UX.md`
 - `AUDITORIA-DEPLOY-04-BACKEND-API-INTEGRACOES.md`
 - `AUDITORIA-DEPLOY-05-PLANO-CORRECAO-CHECKLIST-PRODUCAO.md`
-
+- `AUDITORIA-DEPLOY-06-MATRIZ-RASTREABILIDADE-E-CONTINUACAO.md`
+- `AUDITORIA-DEPLOY-07-STATUS-ETAPAS-CUMPRIDAS.md`
+- `AUDITORIA-DEPLOY-08-MATRIZ-ROTAS-ENDPOINTS-PERMISSOES.md`
+- `AUDITORIA-DEPLOY-09-WEB-PUSH-NOTIFICACOES.md`
+- `AUDITORIA-DEPLOY-10-BANCO-MIGRACOES-RBAC-BOOTSTRAP.md`

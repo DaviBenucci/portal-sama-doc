@@ -13,6 +13,8 @@
 | Lint | Passou |
 | Prisma validate | Passou |
 | Testes unitários | 44 suites, 264 testes passaram |
+| Testes focados notificações/Web Push | 2 suites, 28 testes passaram |
+| Testes focados RBAC/env | 2 suites, 8 testes passaram |
 | E2E API | 134 passaram, 2 falharam |
 | Health local | 200 |
 | Migrações | Não validadas: banco indisponível |
@@ -107,6 +109,8 @@ Pendências:
 Resultados:
 
 - `prisma validate` passou.
+- Catálogo RBAC/env passou em testes focados.
+- Foram encontrados 29 diretórios de migrations versionadas.
 - `prisma migrate status` não conseguiu consultar o banco configurado.
 - Readiness com `.env` carregado:
   - ambiente: warning por scanner não strict;
@@ -121,4 +125,3 @@ Conclusão: não há evidência suficiente para afirmar que o banco de produçã
 ## Conclusão backend
 
 Backend compila e tem boa cobertura, mas **não fecha produção** por causa de escopo de clientes, E2E vermelho, banco/readiness não provados, ClamAV não validado e artefato com segredo.
-
