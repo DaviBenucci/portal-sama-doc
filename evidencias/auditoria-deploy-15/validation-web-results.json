@@ -1,0 +1,38 @@
+﻿[
+    {
+        "area":  "web-env",
+        "command":  "node -v; npm.cmd -v",
+        "exitCode":  0,
+        "details":  "durationSec=0.6"
+    },
+    {
+        "area":  "web-lint",
+        "command":  "npm.cmd run lint",
+        "exitCode":  0,
+        "details":  "durationSec=29.9"
+    },
+    {
+        "area":  "web-build",
+        "command":  "npm.cmd run build",
+        "exitCode":  0,
+        "details":  "durationSec=24.7"
+    },
+    {
+        "area":  "web-unit",
+        "command":  "npm.cmd test -- --runInBand",
+        "exitCode":  0,
+        "details":  "durationSec=0.7"
+    },
+    {
+        "area":  "web-audit",
+        "command":  "npm.cmd audit --audit-level=moderate",
+        "exitCode":  0,
+        "details":  "durationSec=1.7"
+    },
+    {
+        "area":  "web-e2e",
+        "command":  "npm.cmd run test:e2e",
+        "exitCode":  1,
+        "details":  "durationSec=62.7"
+    }
+]
