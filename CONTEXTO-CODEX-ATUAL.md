@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
 Atualizado em: 2026-06-11
-Sessao atual: Homologacao EasyPanel Acessorias - execucao inicial das auditorias 17, 18 e 19
+Sessao atual: Homologacao EasyPanel Acessorias - terceira leva com E2E/Playwright local
 
 ## Objetivo ativo
 
@@ -70,6 +70,19 @@ Concluida.
   - match exato por email/username so auto-confirma se o departamento local combina com o departamento fonte;
   - alias confirmado tambem passa a respeitar departamento;
   - divergencia vira `PENDING_REVIEW`.
+- Clientes:
+  - `ListClientsDto` ganhou `scope`, `mine`, `myClientsOnly` e `my_clients_only`;
+  - `scope=mine` restringe a cliente proprio ou atribuicoes ativas onde o usuario e responsavel/gestor;
+  - `scope=all` continua significando "todos permitidos pelo backend", sem acesso global para perfil nao privilegiado.
+- Colaboradores:
+  - `GET /collaborators/public` e `visibility=company_public` implementados;
+  - payload publico interno nao retorna roles, permissions, metadata, phone/telefone;
+  - continua exigindo `collaborators.read`, mantendo cliente externo bloqueado por RBAC.
+- Notificacoes:
+  - `MAX_TAKE` reduzido para 100;
+  - criacao/teste de notificacao agora poda excedentes por chave operacional;
+  - `PATCH /notifications/alert-all` implementado para confirmar alertas em massa;
+  - evento SSE `notifications.clear_alerts` adicionado.
 
 ### Web
 
@@ -82,6 +95,23 @@ Concluida.
   - gestor pode selecionar o proprio usuario ativo para solicitar acesso para si;
   - painel de aprovacoes usa `PENDING_MANAGER` para gestor e `PENDING_DEV` para DEV/ADMIN/TI;
   - estatisticas consideram `PENDING_MANAGER` + `PENDING_DEV`.
+- Clientes:
+  - `ClientsOverviewPage` ganhou toggle `Todos permitidos` / `Ver meus clientes`;
+  - services/types enviam `scope=mine` ao backend.
+- Colaboradores:
+  - services/types conhecem `listPublicCollaborators()` e `visibility=company_public`.
+- Notificacoes:
+  - pagina ganhou botao `Confirmar alertas`;
+  - service chama `PATCH /notifications/alert-all`;
+  - stream invalida cache tambem para `notifications.clear_alerts`.
+- Toasts globais:
+  - `NotificationToasts` tambem invalida cache ao receber `notifications.clear_alerts`.
+- Playwright:
+  - criada `tests/e2e/access-requests.spec.ts`;
+  - cobre gestor solicitando para si com status `PENDING_DEV`;
+  - cobre DEV aprovando solicitacao `PENDING_DEV`;
+  - cobre painel DEV expondo `Integrar` sem botoes dispersos de previa/importacao/backfill;
+  - cobre contratos de `Ver meus clientes` e `Confirmar alertas`.
 
 ### Docs
 
@@ -96,9 +126,11 @@ Concluida.
 - `npm.cmd run prisma:validate` - OK. O Prisma carregou `.env`, sem imprimir valores.
 - `npm.cmd test -- --runInBand src/modules/access-requests/access-requests.service.spec.ts` - OK.
 - `npm.cmd test -- --runInBand src/modules/access-requests/access-requests.service.spec.ts src/modules/integrations/acessorias/acessorias-responsible-resolver.service.spec.ts` - OK, 2 suites e 10 testes.
+- `npm.cmd test -- --runInBand src/modules/clients/clients.service.spec.ts src/modules/collaborators/collaborators.service.spec.ts src/modules/notifications/notifications.service.spec.ts` - OK, 3 suites e 36 testes.
 - `npm.cmd run lint` - OK.
 - `npm.cmd run build` - OK.
-- `npm.cmd test -- --runInBand` - OK, 44 suites e 278 testes.
+- `npm.cmd test -- --runInBand` - OK, 44 suites e 283 testes.
+- `npm.cmd run test:e2e` - OK, 1 suite e 136 testes.
 - `git diff --check` - OK.
 
 ### Web
@@ -106,12 +138,12 @@ Concluida.
 - `npm.cmd run lint` - OK.
 - `npm.cmd run build` - OK.
 - `npm.cmd test -- --runInBand` - OK, 9 testes de contrato.
+- `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` - OK, 4 testes.
+- `npm.cmd run test:e2e -- --reporter=line` - OK, 17 testes passaram e 1 skip.
 - `git diff --check` - OK.
 
 ## Nao executado nesta sessao
 
-- `npm.cmd run test:e2e` da API.
-- Playwright/E2E Web.
 - Smoke EasyPanel real.
 - `prisma migrate deploy` contra banco alvo.
 - Docker.
@@ -124,15 +156,37 @@ Concluida.
 - `M prisma/schema.prisma`
 - `M src/modules/access-requests/access-requests.service.spec.ts`
 - `M src/modules/access-requests/access-requests.service.ts`
+- `M src/modules/clients/dto/list-clients.dto.ts`
+- `M src/modules/clients/clients.service.ts`
+- `M src/modules/clients/clients.service.spec.ts`
+- `M src/modules/collaborators/dto/list-collaborators.dto.ts`
+- `M src/modules/collaborators/collaborators.controller.ts`
+- `M src/modules/collaborators/collaborators.service.ts`
+- `M src/modules/collaborators/collaborators.service.spec.ts`
+- `M src/modules/collaborators/collaborators.types.ts`
 - `M src/modules/integrations/acessorias/acessorias-responsible-resolver.service.spec.ts`
 - `M src/modules/integrations/acessorias/acessorias-responsible-resolver.service.ts`
+- `M src/modules/notifications/notifications.controller.ts`
+- `M src/modules/notifications/notifications.service.ts`
+- `M src/modules/notifications/notifications.service.spec.ts`
+- `M src/modules/notifications/notifications.types.ts`
 - `?? prisma/migrations/20260611130000_add_access_request_pending_dev/`
 
 ### portal-sama-web
 
 - `M src/pages/access-requests/AccessRequestPage.tsx`
+- `M src/components/notifications/NotificationToasts.tsx`
+- `M src/pages/clients/ClientsOverviewPage.tsx`
 - `M src/pages/dev/DevAdminPage.tsx`
+- `M src/pages/notifications/NotificationsPage.tsx`
+- `M src/services/clients.service.ts`
+- `M src/services/collaborators.service.ts`
+- `M src/services/notifications.service.ts`
 - `M src/types/access-requests.ts`
+- `M src/types/clients.ts`
+- `M src/types/collaborators.ts`
+- `M src/types/notifications.ts`
+- `?? tests/e2e/access-requests.spec.ts`
 
 ### portal-sama-docs
 
@@ -143,27 +197,21 @@ Concluida.
 ## Pendencias principais
 
 1. Aplicar a migration `20260611130000_add_access_request_pending_dev` em banco controlado antes de testar o fluxo novo.
-2. Rodar API E2E.
-3. Rodar Playwright Web, com foco em:
-   - painel DEV Acessorias;
-   - solicitacoes de acesso;
-   - calendario multi-dia;
-   - gestor solicitando para si;
-   - aprovacao DEV.
-4. Continuar fases pendentes do plano:
+2. Continuar validacao real/controlada das fases pendentes:
    - Home DEV/Gestor;
-   - Clientes / Ver meus clientes;
-   - colaboradores publicos internos;
-   - notificacoes e preferencias;
+   - Home DEV/Gestor em Playwright/smoke com dados reais;
+   - Clientes / Ver meus clientes em Playwright/smoke;
+   - colaboradores publicos internos em Playwright/smoke;
+   - notificacoes e preferencias em Playwright/smoke;
    - revisao final da conciliacao nominal por nome + departamento, se exigida pelo plano.
-5. Depois de build/deploy controlado, executar smoke EasyPanel real.
+3. Depois de build/deploy controlado, executar smoke EasyPanel real.
 
 ## Veredito atual
 
 `Nao pronto para usuarios reais`.
 
-A primeira leva de correcoes esta implementada e verde em validacoes locais, mas ainda faltam
-migration aplicada em ambiente alvo, E2E, Playwright, smoke EasyPanel e fases funcionais pendentes.
+As correcoes estao implementadas e verdes em validacoes locais, incluindo API E2E e Playwright Web.
+Ainda faltam migration aplicada em ambiente alvo e smoke EasyPanel com dados reais.
 
 ## Cuidados
 

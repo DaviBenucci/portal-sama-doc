@@ -19,15 +19,15 @@ Registrar a execucao das correcoes e testes definidos em:
 
 | Frente | Status | Observacao |
 |---|---|---|
-| Home DEV/Gestor | Pendente | Nao alterada nesta rodada. Precisa validacao/correcao de escopo e numeros reais. |
+| Home DEV/Gestor | Validado local | Nao alterada nesta segunda leva; suite completa confirmou testes existentes de escopo local. |
 | Botao Integrar Acessorias | Implementado local | Painel DEV passou a expor um unico botao externo/API: `Integrar`. |
 | Conciliacao de responsaveis | Parcial implementado local | Bloqueio por divergencia de departamento aplicado a matches exatos e alias confirmados. |
-| Clientes / Ver meus clientes | Pendente | Ainda nao corrigido/validado nesta rodada. |
-| Colaboradores publicos internos | Pendente | Ainda nao corrigido/validado nesta rodada. |
-| Notificacoes | Pendente | Ainda nao corrigido/validado nesta rodada. |
-| Preferencias/configuracoes | Pendente | Ainda nao corrigido/validado nesta rodada. |
+| Clientes / Ver meus clientes | Parcial implementado local | Backend ganhou `scope=mine`/aliases e Web ganhou toggle `Ver meus clientes`. |
+| Colaboradores publicos internos | Parcial implementado local | API ganhou visao publica interna sem roles/permissoes/metadata/telefone; Web service conhece o endpoint. |
+| Notificacoes | Parcial implementado local | `MAX_TAKE=100`, retencao por quantidade e `alert-all` implementados. |
+| Preferencias/configuracoes | Validado local | Preferencias Web Push ja persistiam via API; testes existentes seguem verdes. |
 | Solicitacoes de acesso | Implementado local | Fluxo passou para dois estagios: gestor encaminha para DEV, DEV decide final. |
-| Playwright | Pendente | Testes unitarios/contratos passaram; E2E web nao foi executado nesta rodada. |
+| Playwright | OK local | Suite local passou com 17 testes OK e 1 skip; adicionada spec de solicitacoes/clientes/notificacoes/dev. |
 | Smoke EasyPanel | Pendente | Nao executado nesta rodada. |
 
 ## 3. Fase 0 - Preparacao e reproducao
@@ -95,7 +95,7 @@ portal-sama-web/src/pages/dev/DevAdminPage.tsx
 
 ### Pendencias
 
-- Executar Playwright visual/funcional para confirmar que somente o botao `Integrar` ficou exposto no browser.
+- Playwright local confirmou que o painel DEV expoe `Integrar` e nao expoe acoes dispersas de previa/importacao/backfill.
 - Executar smoke EasyPanel apos deploy.
 
 ## 5. Fase 2 - Conciliacao de responsaveis
@@ -128,47 +128,86 @@ portal-sama-api/src/modules/integrations/acessorias/acessorias-responsible-resol
 
 ## 6. Fase 3 - Home DEV/Gestor
 
-Status: pendente
+Status: validado local sem alteracao de codigo nesta leva
 
 ### Evidencias de escopo
 
 | Perfil | Resultado esperado | Resultado obtido |
 |---|---|---|
-| DEV | Global | Nao validado/corrigido nesta rodada. |
-| Gestor | Departamento/responsabilidade | Nao validado/corrigido nesta rodada. |
-| Colaborador | Responsabilidade direta | Nao validado/corrigido nesta rodada. |
+| DEV | Global | Coberto por `acessorias-home.service.spec.ts`; full API test OK. |
+| Gestor | Departamento/responsabilidade | Coberto por `acessorias-home.service.spec.ts`; full API test OK. |
+| Colaborador | Responsabilidade direta | Coberto por `acessorias-home.service.spec.ts`; full API test OK. |
 
 ## 7. Fase 4 - Clientes e colaboradores
 
-Status: pendente
+Status: parcialmente implementado local
+
+Arquivos alterados nesta leva:
+
+```txt
+portal-sama-api/src/modules/clients/dto/list-clients.dto.ts
+portal-sama-api/src/modules/clients/clients.service.ts
+portal-sama-api/src/modules/clients/clients.service.spec.ts
+portal-sama-api/src/modules/collaborators/dto/list-collaborators.dto.ts
+portal-sama-api/src/modules/collaborators/collaborators.controller.ts
+portal-sama-api/src/modules/collaborators/collaborators.service.ts
+portal-sama-api/src/modules/collaborators/collaborators.service.spec.ts
+portal-sama-api/src/modules/collaborators/collaborators.types.ts
+portal-sama-web/src/pages/clients/ClientsOverviewPage.tsx
+portal-sama-web/src/services/clients.service.ts
+portal-sama-web/src/services/collaborators.service.ts
+portal-sama-web/src/types/clients.ts
+portal-sama-web/src/types/collaborators.ts
+```
 
 ### Clientes
 
 | Cenario | Resultado |
 |---|---|
-| DEV ve todos permitidos | Nao validado/corrigido nesta rodada. |
-| Gestor `Ver meus clientes` | Nao validado/corrigido nesta rodada. |
-| Colaborador `Ver meus clientes` | Nao validado/corrigido nesta rodada. |
-| URL fora de escopo bloqueada | Nao validado/corrigido nesta rodada. |
+| DEV ve todos permitidos | Mantido pelo escopo privilegiado existente. |
+| Gestor `Ver meus clientes` | Implementado via `scope=mine` e toggle Web. |
+| Colaborador `Ver meus clientes` | Implementado via `scope=mine` para responsabilidade direta/proprio cliente. |
+| URL fora de escopo bloqueada | Mantido por `assertCanReadClient`; suite existente segue verde. |
 
 ### Colaboradores
 
 | Cenario | Resultado |
 |---|---|
-| Usuario interno ve dados publicos | Nao validado/corrigido nesta rodada. |
-| Dados sensiveis ausentes | Nao validado/corrigido nesta rodada. |
-| Cliente externo bloqueado | Nao validado/corrigido nesta rodada. |
+| Usuario interno ve dados publicos | Implementado em `GET /collaborators/public` e `visibility=company_public`. |
+| Dados sensiveis ausentes | Teste cobre ausencia de roles, permissions, metadata, phone/telefone. |
+| Cliente externo bloqueado | Mantido por permissao `collaborators.read`; sem teste E2E dedicado nesta leva. |
+
+### Testes
+
+| Teste | Resultado |
+|---|---|
+| `npm.cmd test -- --runInBand src/modules/clients/clients.service.spec.ts src/modules/collaborators/collaborators.service.spec.ts src/modules/notifications/notifications.service.spec.ts` | OK; 3 suites, 36 testes. |
+| `npm.cmd test -- --runInBand` API | OK; 44 suites, 283 testes. |
+| `npm.cmd run build` Web | OK. |
 
 ## 8. Fase 5 - Notificacoes e preferencias
 
-Status: pendente
+Status: parcialmente implementado local
 
 | Cenario | Resultado |
 |---|---|
-| Ler todas | Nao validado/corrigido nesta rodada. |
-| Confirmar todos os alertas | Nao validado/corrigido nesta rodada. |
-| Retencao maxima 100 | Nao validado/corrigido nesta rodada. |
-| Preferencias persistidas apos reload | Nao validado/corrigido nesta rodada. |
+| Ler todas | Mantido por `PATCH /notifications/read-all`; testes existentes verdes. |
+| Confirmar todos os alertas | Implementado em `PATCH /notifications/alert-all` e botao Web `Confirmar alertas`. |
+| Retencao maxima 100 | Implementado: listagem limitada a 100 e poda por chave operacional apos criacao. |
+| Preferencias persistidas apos reload | Mantido por `GET/PATCH /notifications/preferences`; testes existentes verdes. |
+
+Arquivos alterados nesta leva:
+
+```txt
+portal-sama-api/src/modules/notifications/notifications.controller.ts
+portal-sama-api/src/modules/notifications/notifications.service.ts
+portal-sama-api/src/modules/notifications/notifications.service.spec.ts
+portal-sama-api/src/modules/notifications/notifications.types.ts
+portal-sama-web/src/pages/notifications/NotificationsPage.tsx
+portal-sama-web/src/components/notifications/NotificationToasts.tsx
+portal-sama-web/src/services/notifications.service.ts
+portal-sama-web/src/types/notifications.ts
+```
 
 ## 9. Fase 6 - Solicitacoes de acesso
 
@@ -182,7 +221,7 @@ Status: implementado local
 | Gestor solicita para si | `PENDING_DEV` | Implementado: API inicia pedido de gestor como pendente DEV e web permite selecionar o proprio gestor. |
 | DEV aprova | `APPROVED` | Implementado e coberto por teste. |
 | DEV rejeita | `DECLINED` | Implementado pela mesma regra de decisao privilegiada; sem teste dedicado novo. |
-| Calendario multi-dia | OK | Implementado no frontend sem calendario nativo; pendente Playwright visual. |
+| Calendario multi-dia | OK | Implementado no frontend sem calendario nativo e coberto por Playwright local. |
 
 ## 10. Fase 7 - Testes locais
 
@@ -194,8 +233,8 @@ Status: implementado local
 | `npx.cmd prisma generate` | OK; client gerado apos novo enum. O Prisma carregou `.env`, sem imprimir valores. |
 | `npm.cmd run lint` | OK |
 | `npm.cmd run build` | OK |
-| `npm.cmd test -- --runInBand` | OK; 44 suites, 278 testes. |
-| `npm.cmd run test:e2e` | Nao executado nesta rodada. |
+| `npm.cmd test -- --runInBand` | OK; 44 suites, 283 testes. |
+| `npm.cmd run test:e2e` | OK; 1 suite, 136 testes. |
 | `node scripts/validate-operational-readiness.js --soft` | Nao executado nesta rodada. |
 
 ### Web
@@ -205,9 +244,9 @@ Status: implementado local
 | `npm.cmd run lint` | OK |
 | `npm.cmd run build` | OK |
 | `npm.cmd test -- --runInBand` | OK; 9 testes de contrato. |
-| `npm.cmd run test:e2e -- --reporter=line` | Nao executado nesta rodada. |
-| `npx.cmd playwright test tests/e2e/smoke.spec.ts --reporter=line` | Nao executado nesta rodada. |
-| `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` | Nao executado nesta rodada. |
+| `npm.cmd run test:e2e -- --reporter=line` | OK; 17 testes passaram e 1 skip. |
+| `npx.cmd playwright test tests/e2e/smoke.spec.ts --reporter=line` | Coberto pela suite completa; smoke local OK. |
+| `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` | OK; 4 testes passaram. |
 
 Checagens adicionais:
 
@@ -242,14 +281,36 @@ src/modules/access-requests/access-requests.service.ts
 src/modules/access-requests/access-requests.service.spec.ts
 src/modules/integrations/acessorias/acessorias-responsible-resolver.service.ts
 src/modules/integrations/acessorias/acessorias-responsible-resolver.service.spec.ts
+src/modules/clients/dto/list-clients.dto.ts
+src/modules/clients/clients.service.ts
+src/modules/clients/clients.service.spec.ts
+src/modules/collaborators/dto/list-collaborators.dto.ts
+src/modules/collaborators/collaborators.controller.ts
+src/modules/collaborators/collaborators.service.ts
+src/modules/collaborators/collaborators.service.spec.ts
+src/modules/collaborators/collaborators.types.ts
+src/modules/notifications/notifications.controller.ts
+src/modules/notifications/notifications.service.ts
+src/modules/notifications/notifications.service.spec.ts
+src/modules/notifications/notifications.types.ts
 ```
 
 ### portal-sama-web
 
 ```txt
 src/pages/access-requests/AccessRequestPage.tsx
+src/components/notifications/NotificationToasts.tsx
 src/pages/dev/DevAdminPage.tsx
 src/types/access-requests.ts
+src/pages/clients/ClientsOverviewPage.tsx
+src/pages/notifications/NotificationsPage.tsx
+src/services/clients.service.ts
+src/services/collaborators.service.ts
+src/services/notifications.service.ts
+src/types/clients.ts
+src/types/collaborators.ts
+src/types/notifications.ts
+tests/e2e/access-requests.spec.ts
 ```
 
 ### portal-sama-docs
@@ -265,6 +326,7 @@ CONTEXTO-CODEX-ATUAL.md
 Nenhuma evidencia externa nova foi gerada nesta rodada.
 Foram usadas as evidencias fornecidas em evidencias/entrada/ e evidencias/screenshots/.
 Os resultados de validacao local estao registrados neste documento.
+Artefatos temporarios de Playwright em `test-results/` foram removidos apos validacao.
 ```
 
 ## 14. Pendencias restantes
@@ -272,12 +334,10 @@ Os resultados de validacao local estao registrados neste documento.
 | Pendencia | Severidade | Bloqueia homologacao? | Proxima acao |
 |---|---|---|---|
 | Aplicar migration `20260611130000_add_access_request_pending_dev` no banco alvo | Alta | Sim | Rodar `prisma migrate deploy` no ambiente controlado antes de testar fluxo novo. |
-| Executar API E2E apos migration | Alta | Sim | Rodar `npm.cmd run test:e2e` em ambiente local/controlado. |
-| Executar Playwright Web, especialmente solicitacoes de acesso e painel DEV | Alta | Sim | Rodar smoke/access-requests com browser e revisar screenshot. |
 | Smoke EasyPanel apos deploy | Critica | Sim | Validar health, login, home, Integrar, solicitacao e notificacoes no dominio real. |
-| Home DEV/Gestor | Alta | Sim | Corrigir/validar escopo e numeros por perfil. |
-| Clientes / Ver meus clientes / colaboradores publicos internos | Alta | Sim | Implementar fase 4 do plano. |
-| Notificacoes e preferencias | Media/Alta | Sim | Implementar fase 5 do plano. |
+| Home DEV/Gestor | Alta | Sim | Rodar Playwright/smoke com dados reais para confirmar numeros por perfil. |
+| Clientes / Ver meus clientes / colaboradores publicos internos | Alta | Sim | Local Playwright cobriu `Ver meus clientes`; falta smoke EasyPanel e avaliar uso visual da listagem publica. |
+| Notificacoes e preferencias | Media/Alta | Sim | Local Playwright cobriu `Confirmar alertas`; falta smoke EasyPanel e reload real de preferencias. |
 | Conciliacao por nome + departamento | Media/Alta | Parcial | Revisar se a regra nominal precisa ficar explicita alem dos matches exatos/alias. |
 
 ## 15. Veredito
@@ -293,8 +353,7 @@ Veredito selecionado: `Nao pronto para usuarios reais`
 Justificativa:
 
 ```txt
-A primeira leva de correcoes esta implementada e verde em lint/build/test locais.
-Ainda faltam migration aplicada em ambiente alvo, E2E API, Playwright Web,
-smoke EasyPanel e as fases pendentes de Home, Clientes/Colaboradores,
-Notificacoes/Preferencias.
+As correcoes estao implementadas e verdes em lint/build/test/E2E locais.
+Ainda faltam migration aplicada em ambiente alvo, smoke EasyPanel e validacao real
+das fases Home, Clientes/Colaboradores, Notificacoes/Preferencias.
 ```
