@@ -1,0 +1,60 @@
+﻿{
+  "ok": true,
+  "soft": false,
+  "checkedAt": "2026-06-10T18:31:41.319Z",
+  "failed": 0,
+  "warnings": 1,
+  "checks": [
+    {
+      "message": "Environment validation skipped by --skip-env.",
+      "name": "environment",
+      "status": "skipped"
+    },
+    {
+      "message": "Database checks skipped by --skip-database.",
+      "name": "database",
+      "status": "skipped"
+    },
+    {
+      "message": "Production schema checks skipped by --skip-database.",
+      "name": "production-schema",
+      "status": "skipped"
+    },
+    {
+      "message": "Migration checks skipped by --skip-database.",
+      "name": "migrations",
+      "status": "skipped"
+    },
+    {
+      "message": "RBAC checks skipped by --skip-database.",
+      "name": "rbac",
+      "status": "skipped"
+    },
+    {
+      "message": "Privileged user checks skipped by --skip-database.",
+      "name": "privileged-users",
+      "status": "skipped"
+    },
+    {
+      "details": {
+        "path": "/tmp/portal-sama-readiness"
+      },
+      "message": "Storage is writable and readable.",
+      "name": "storage",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "binary": "/usr/bin/clamscan"
+      },
+      "message": "ClamAV detected the EICAR test file.",
+      "name": "clamav-eicar",
+      "status": "passed"
+    },
+    {
+      "message": "Backups and rollback cannot be fully proven from inside the app container; run npm run ops:backup:create, verify artifacts with npm run ops:backup:verify, run npm run ops:restore:drill against an isolated target, copy artifacts/evidence out and validate EasyPanel snapshots/exports.",
+      "name": "backup-rollback",
+      "status": "warning"
+    }
+  ]
+}

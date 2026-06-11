@@ -1,0 +1,541 @@
+{
+  "generated_at": "2026-06-10T19:36:57.344Z",
+  "ok": true,
+  "mode": "local_browser_persistent_headed_real_api_vite_proxy_localhost_secure_context_final",
+  "browser": {
+    "engine": "chromium",
+    "headless": false,
+    "persistentProfile": true
+  },
+  "urls": {
+    "web": "http://localhost:4174",
+    "apiViaProxy": "http://localhost:4174/api-v2"
+  },
+  "checks": {
+    "login": {
+      "ok": true,
+      "currentPath": "/home"
+    },
+    "notificationsPage": {
+      "ok": true
+    },
+    "browserInitial": {
+      "supported": true,
+      "permission": "granted",
+      "secureContext": true,
+      "serviceWorkerRegistered": false,
+      "serviceWorkerScope": null,
+      "subscribed": false,
+      "endpointOrigin": null,
+      "endpointLength": 0,
+      "p256dhLength": 0,
+      "authLength": 0,
+      "visibleNotifications": 0,
+      "visibleNotificationTitles": []
+    },
+    "subscribeApi": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "enabled": true,
+        "subscribed": true,
+        "subscription_id": "3fb26f54-d09c-462f-a0d5-46fb4c6fc074",
+        "generated_at": "2026-06-10T19:37:37.572Z"
+      }
+    },
+    "subscribeMessage": "Web Push ativado neste navegador.",
+    "browserAfterSubscribe": {
+      "supported": true,
+      "permission": "granted",
+      "secureContext": true,
+      "serviceWorkerRegistered": true,
+      "serviceWorkerScope": "http://localhost:4174/",
+      "subscribed": true,
+      "endpointOrigin": "https://jmt17.google.com",
+      "endpointLength": 186,
+      "p256dhLength": 87,
+      "authLength": 22,
+      "visibleNotifications": 0,
+      "visibleNotificationTitles": []
+    },
+    "preferenceToggle": {
+      "attemptedViaUi": true,
+      "initialChecked": true,
+      "checkedAfterClick": true,
+      "apiStatus": 200,
+      "bodyOk": true
+    },
+    "testPushApi": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "data": {
+          "id": "1",
+          "notification_id": "1",
+          "legacy_id": 1,
+          "username": "phase10.dev",
+          "usuario": "phase10.dev",
+          "dept": "T.I",
+          "departamento": "T.I",
+          "title": "Teste de Web Push",
+          "titulo": "Teste de Web Push",
+          "body": "Teste enviado pelo Portal Sama para validar as notificacoes deste navegador.",
+          "corpo": "Teste enviado pelo Portal Sama para validar as notificacoes deste navegador.",
+          "level": "info",
+          "nivel": "info",
+          "read": false,
+          "lida": false,
+          "alerted": false,
+          "alertada": false,
+          "meta": {
+            "actor_username": "portal-sama",
+            "actor": {
+              "id": "portal-sama",
+              "username": "portal-sama",
+              "name": "Portal Sama"
+            },
+            "requested_by": {
+              "id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+              "username": "phase10.dev",
+              "name": "DEV Web Push Fase 10"
+            },
+            "purpose": "web_push_manual_validation"
+          },
+          "metadata": {
+            "actor_username": "portal-sama",
+            "actor": {
+              "id": "portal-sama",
+              "username": "portal-sama",
+              "name": "Portal Sama"
+            },
+            "requested_by": {
+              "id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+              "username": "phase10.dev",
+              "name": "DEV Web Push Fase 10"
+            },
+            "purpose": "web_push_manual_validation"
+          },
+          "eventType": "notification.push_test",
+          "event_type": "notification.push_test",
+          "module": "notifications",
+          "modulo": "notifications",
+          "entityType": "user",
+          "entity_type": "user",
+          "entityId": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+          "entity_id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+          "dedupeKey": null,
+          "dedupe_key": null,
+          "expiresAt": "2026-06-11T19:37:41.414Z",
+          "expires_at": "2026-06-11T19:37:41.414Z",
+          "alertedAt": null,
+          "alerted_at": null,
+          "readAt": null,
+          "read_at": null,
+          "createdAt": "2026-06-10T19:37:41.414Z",
+          "created_at": "2026-06-10T19:37:41.414Z"
+        },
+        "notification": {
+          "id": "1",
+          "notification_id": "1",
+          "legacy_id": 1,
+          "username": "phase10.dev",
+          "usuario": "phase10.dev",
+          "dept": "T.I",
+          "departamento": "T.I",
+          "title": "Teste de Web Push",
+          "titulo": "Teste de Web Push",
+          "body": "Teste enviado pelo Portal Sama para validar as notificacoes deste navegador.",
+          "corpo": "Teste enviado pelo Portal Sama para validar as notificacoes deste navegador.",
+          "level": "info",
+          "nivel": "info",
+          "read": false,
+          "lida": false,
+          "alerted": false,
+          "alertada": false,
+          "meta": {
+            "actor_username": "portal-sama",
+            "actor": {
+              "id": "portal-sama",
+              "username": "portal-sama",
+              "name": "Portal Sama"
+            },
+            "requested_by": {
+              "id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+              "username": "phase10.dev",
+              "name": "DEV Web Push Fase 10"
+            },
+            "purpose": "web_push_manual_validation"
+          },
+          "metadata": {
+            "actor_username": "portal-sama",
+            "actor": {
+              "id": "portal-sama",
+              "username": "portal-sama",
+              "name": "Portal Sama"
+            },
+            "requested_by": {
+              "id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+              "username": "phase10.dev",
+              "name": "DEV Web Push Fase 10"
+            },
+            "purpose": "web_push_manual_validation"
+          },
+          "eventType": "notification.push_test",
+          "event_type": "notification.push_test",
+          "module": "notifications",
+          "modulo": "notifications",
+          "entityType": "user",
+          "entity_type": "user",
+          "entityId": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+          "entity_id": "67b9f9cb-bf03-43b1-9d2f-ddb28d9bc17f",
+          "dedupeKey": null,
+          "dedupe_key": null,
+          "expiresAt": "2026-06-11T19:37:41.414Z",
+          "expires_at": "2026-06-11T19:37:41.414Z",
+          "alertedAt": null,
+          "alerted_at": null,
+          "readAt": null,
+          "read_at": null,
+          "createdAt": "2026-06-10T19:37:41.414Z",
+          "created_at": "2026-06-10T19:37:41.414Z"
+        },
+        "generated_at": "2026-06-10T19:37:41.455Z",
+        "push": {
+          "enabled": true,
+          "attempted": 1,
+          "sent": 1,
+          "failed": 0
+        }
+      }
+    },
+    "testPushMessage": "Teste Web Push: 1/1 enviados.",
+    "browserAfterTestPush": {
+      "supported": true,
+      "permission": "granted",
+      "secureContext": true,
+      "serviceWorkerRegistered": true,
+      "serviceWorkerScope": "http://localhost:4174/",
+      "subscribed": true,
+      "endpointOrigin": "https://jmt17.google.com",
+      "endpointLength": 186,
+      "p256dhLength": 87,
+      "authLength": 22,
+      "visibleNotifications": 1,
+      "visibleNotificationTitles": [
+        "Atualizacao do Portal Sama"
+      ]
+    },
+    "unsubscribeApi": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "unsubscribed": true,
+        "updated": 1,
+        "generated_at": "2026-06-10T19:37:49.466Z"
+      }
+    },
+    "unsubscribeMessage": "Web Push desativado neste navegador.",
+    "browserAfterUnsubscribe": {
+      "supported": true,
+      "permission": "granted",
+      "secureContext": true,
+      "serviceWorkerRegistered": true,
+      "serviceWorkerScope": "http://localhost:4174/",
+      "subscribed": false,
+      "endpointOrigin": null,
+      "endpointLength": 0,
+      "p256dhLength": 0,
+      "authLength": 0,
+      "visibleNotifications": 1,
+      "visibleNotificationTitles": [
+        "Atualizacao do Portal Sama"
+      ]
+    }
+  },
+  "responses": [
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "POST",
+      "url": "http://localhost:4174/api-v2/auth/login"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "POST",
+      "url": "http://localhost:4174/api-v2/auth/refresh"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/public-key"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/devices"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/preferences"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "POST",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/subscribe"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/devices"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "PATCH",
+      "url": "http://localhost:4174/api-v2/notifications/preferences"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/preferences"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "POST",
+      "url": "http://localhost:4174/api-v2/notifications/push/test"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/public-key"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/devices"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/preferences"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/stream"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/auth/csrf"
+    },
+    {
+      "status": 200,
+      "method": "POST",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/unsubscribe"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "http://localhost:4174/api-v2/notifications/web-push/devices"
+    }
+  ],
+  "console": [
+    {
+      "type": "warning",
+      "text": "No `HydrateFallback` element provided to render during initial hydration"
+    },
+    {
+      "type": "warning",
+      "text": "[Portal Sama Intro] Configuracao da intro indisponivel; usando fallback estatico. TypeError: Failed to fetch\n    at fetchIntroJson (http://localhost:4174/src/features/intro/intro-assets.ts:17:25)\n    at loadIntroConfig (http://localhost:4174/src/features/intro/components/PortalSamaSceneRenderer.tsx:26:124)\n    at http://localhost:4174/src/features/intro/components/PortalSamaSceneRenderer.tsx:47:8\n    at Object.react_stack_bottom_frame (http://localhost:4174/node_modules/.vite/deps/react-dom_clie"
+    },
+    {
+      "type": "warning",
+      "text": "No `HydrateFallback` element provided to render during initial hydration"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://localhost:4174/brand/sama-logo-symbol.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    }
+  ],
+  "limitations": [
+    "A execucao usa localhost HTTP, que o Chromium trata como secure context para Service Worker/Push API; HTTPS publico/confiavel ainda exige ambiente real de homologacao/producao.",
+    "Chromium headless forcou Notification.permission=denied; Chromium non-persistent/incognito bloqueou Push API. A validacao de navegador usou perfil persistente temporario e headed, removido ao final.",
+    "Clique em notificacao nativa do sistema operacional ainda precisa ser confirmado em ambiente real assistido."
+  ],
+  "artifacts": {
+    "screenshot": "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-docs\\evidencias\\auditoria-deploy-15\\webpush-phase10\\notifications-webpush-final.png"
+  }
+}

@@ -1,0 +1,1178 @@
+{
+  "generated_at": "2026-06-10T19:59:11.033Z",
+  "ok": true,
+  "baseUrl": "http://localhost:3120/api-v2",
+  "database": "portal_sama_profiles_phase11",
+  "profiles": {
+    "dev": {
+      "role": "DEV",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.dev",
+          "roles": [
+            "DEV"
+          ],
+          "permissionsCount": 91,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "DEV",
+          "expected": "DEV"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "acessorias dev profile",
+          "pass": true,
+          "actual": "admin",
+          "expected": "admin"
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ]
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-client-contabil",
+            "phase11-client-fiscal",
+            "phase11-client-legal",
+            "phase11-user-client"
+          ]
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "admin",
+          "departments": [
+            "Contabil",
+            "Fiscal",
+            "Legalizacao"
+          ],
+          "total": 4
+        },
+        "notifications": {
+          "status": 200,
+          "titles": [
+            "DEV direto",
+            "Documento enviado",
+            "Legalizacao departamento"
+          ]
+        },
+        "audit": {
+          "status": 200,
+          "count": 5
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "manager": {
+      "role": "MANAGER",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.manager",
+          "roles": [
+            "MANAGER"
+          ],
+          "permissionsCount": 40,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "MANAGER",
+          "expected": "MANAGER"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "client out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "document out-of-scope detail status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "acessorias manager profile downgrade",
+          "pass": true,
+          "actual": "manager",
+          "expected": "manager"
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenClient": {
+          "id": "phase11-client-legal",
+          "status": 403
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenDocument": {
+          "id": "phase11-doc-client-legal",
+          "status": 403
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "manager",
+          "departments": [
+            "Fiscal"
+          ],
+          "total": 2
+        },
+        "notifications": {
+          "status": 200,
+          "titles": [
+            "Documento enviado"
+          ]
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "collaborator": {
+      "role": "DEPARTMENT",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.collab",
+          "roles": [
+            "DEPARTMENT"
+          ],
+          "permissionsCount": 20,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "DEPARTMENT",
+          "expected": "DEPARTMENT"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "client out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "document out-of-scope detail status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "collaborator upload own department status",
+          "pass": true,
+          "actual": 201,
+          "expected": 201
+        },
+        {
+          "name": "collaborator upload out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "acessorias collaborator profile downgrade",
+          "pass": true,
+          "actual": "collaborator",
+          "expected": "collaborator"
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenClient": {
+          "id": "phase11-client-legal",
+          "status": 403
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-client-fiscal",
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenDocument": {
+          "id": "phase11-doc-client-legal",
+          "status": 403
+        },
+        "uploadOwnScope": {
+          "status": 201,
+          "ok": true
+        },
+        "uploadOutOfScope": {
+          "status": 403
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "collaborator",
+          "departments": [
+            "Fiscal"
+          ],
+          "total": 2
+        },
+        "notifications": {
+          "status": 200,
+          "titles": [
+            "Fiscal direto"
+          ]
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "client": {
+      "role": "CLIENT",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "11222333000181",
+          "roles": [
+            "CLIENT"
+          ],
+          "permissionsCount": 8,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "CLIENT",
+          "expected": "CLIENT"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "client out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "client own client status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-user-client"
+          ],
+          "expected": [
+            "phase11-user-client"
+          ]
+        },
+        {
+          "name": "document out-of-scope detail status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "client own document download status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenClient": {
+          "id": "phase11-client-fiscal",
+          "status": 403
+        },
+        "ownClient": {
+          "status": 200,
+          "id": "phase11-user-client"
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-user-client"
+          ]
+        },
+        "forbiddenDocument": {
+          "id": "phase11-doc-client-fiscal",
+          "status": 403
+        },
+        "ownDownload": {
+          "status": 200,
+          "contentType": "application/pdf"
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "collaborator",
+          "departments": [],
+          "total": 0
+        },
+        "notifications": {
+          "status": 200,
+          "titles": []
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "accounting": {
+      "role": "ACCOUNTING",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.accounting",
+          "roles": [
+            "ACCOUNTING"
+          ],
+          "permissionsCount": 20,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "ACCOUNTING",
+          "expected": "ACCOUNTING"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-contabil"
+          ],
+          "expected": [
+            "phase11-client-contabil"
+          ]
+        },
+        {
+          "name": "client out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-contabil"
+          ],
+          "expected": [
+            "phase11-client-contabil"
+          ]
+        },
+        {
+          "name": "document out-of-scope detail status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-client-contabil"
+          ]
+        },
+        "forbiddenClient": {
+          "id": "phase11-client-legal",
+          "status": 403
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-client-contabil"
+          ]
+        },
+        "forbiddenDocument": {
+          "id": "phase11-doc-client-legal",
+          "status": 403
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "collaborator",
+          "departments": [
+            "Contabil"
+          ],
+          "total": 1
+        },
+        "notifications": {
+          "status": 200,
+          "titles": []
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "legalization": {
+      "role": "LEGALIZATION",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.legal",
+          "roles": [
+            "LEGALIZATION"
+          ],
+          "permissionsCount": 29,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "LEGALIZATION",
+          "expected": "LEGALIZATION"
+        },
+        {
+          "name": "clients list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "clients list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-legal"
+          ],
+          "expected": [
+            "phase11-client-legal"
+          ]
+        },
+        {
+          "name": "client out-of-scope status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "documents list scope",
+          "pass": true,
+          "actual": [
+            "phase11-client-legal"
+          ],
+          "expected": [
+            "phase11-client-legal"
+          ]
+        },
+        {
+          "name": "document out-of-scope detail status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 200,
+          "ids": [
+            "phase11-client-legal"
+          ]
+        },
+        "forbiddenClient": {
+          "id": "phase11-client-contabil",
+          "status": 403
+        },
+        "documents": {
+          "status": 200,
+          "clientIds": [
+            "phase11-client-legal"
+          ]
+        },
+        "forbiddenDocument": {
+          "id": "phase11-doc-client-contabil",
+          "status": 403
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "collaborator",
+          "departments": [
+            "Legalizacao"
+          ],
+          "total": 1
+        },
+        "notifications": {
+          "status": 200,
+          "titles": [
+            "Legalizacao departamento"
+          ]
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "ti": {
+      "role": "TI",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.ti",
+          "roles": [
+            "TI"
+          ],
+          "permissionsCount": 11,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "TI",
+          "expected": "TI"
+        },
+        {
+          "name": "clients list forbidden/status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list forbidden/status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 403,
+          "ids": []
+        },
+        "documents": {
+          "status": 403,
+          "clientIds": []
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "manager",
+          "departments": [],
+          "total": 0
+        },
+        "notifications": {
+          "status": 200,
+          "titles": []
+        },
+        "audit": {
+          "status": 403,
+          "count": null
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    },
+    "auditor": {
+      "role": "AUDITOR",
+      "login": {
+        "csrfStatus": 200,
+        "loginStatus": 200,
+        "user": {
+          "username": "phase11.auditor",
+          "roles": [
+            "AUDITOR"
+          ],
+          "permissionsCount": 3,
+          "hasAccessToken": true
+        }
+      },
+      "checks": [
+        {
+          "name": "login status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "role in session",
+          "pass": true,
+          "actual": "AUDITOR",
+          "expected": "AUDITOR"
+        },
+        {
+          "name": "clients list forbidden/status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "documents list forbidden/status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "acessorias home status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "notifications status",
+          "pass": true,
+          "actual": 403,
+          "expected": 403
+        },
+        {
+          "name": "audit status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout status",
+          "pass": true,
+          "actual": 200,
+          "expected": 200
+        },
+        {
+          "name": "logout authenticated false",
+          "pass": true,
+          "actual": false,
+          "expected": false
+        }
+      ],
+      "samples": {
+        "clients": {
+          "status": 403,
+          "ids": []
+        },
+        "documents": {
+          "status": 403,
+          "clientIds": []
+        },
+        "acessoriasHome": {
+          "status": 200,
+          "effectiveProfile": "collaborator",
+          "departments": [],
+          "total": 0
+        },
+        "notifications": {
+          "status": 403,
+          "titles": []
+        },
+        "audit": {
+          "status": 200,
+          "count": 5
+        }
+      },
+      "logout": {
+        "status": 200,
+        "authenticated": false
+      },
+      "ok": true
+    }
+  },
+  "protectedRoute": {
+    "route": "GET /clients sem token",
+    "status": 401,
+    "expected": 401,
+    "pass": true
+  },
+  "summary": {
+    "checks": 102,
+    "failed": 0
+  },
+  "appliedFixes": [
+    "MANAGER removido de PRIVILEGED_DOCUMENT_ROLES; leitura/download de documentos agora segue escopo."
+  ],
+  "limitations": [
+    "Validacao local controlada em API real; nao substitui homologacao em ambiente real com usuarios reais e dados produtivos sanitizados.",
+    "Segredo de teste usado apenas em runtime local, nao gravado na evidencia."
+  ]
+}

@@ -1,0 +1,60 @@
+﻿{
+    "generatedAtUtc":  "2026-06-11T11:50:58.2552514Z",
+    "updatedAtUtc":  "2026-06-11T12:46:01.5948091Z",
+    "oldKnownZipPresent":  false,
+    "safeArtifacts":  [
+                          {
+                              "name":  "portal-sama-api.safe.zip",
+                              "path":  "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-api.safe.zip",
+                              "sha256":  "852022dcac4512a0fe30a52a3744353a4e67589c22f5dfdf159f571732575822",
+                              "preciseFilter":  "passed",
+                              "prismaMigrationSqlAllowed":  true,
+                              "outputSizeBytes":  740328
+                          },
+                          {
+                              "name":  "portal-sama-web.safe.zip",
+                              "path":  "C:\\Users\\Sama Contabilidade\\Desktop\\portal-sama-web.safe.zip",
+                              "sha256":  "374c369d37f1cfa68c4eeb1f11f729d98763e103185a9d12e8d75991f4248d29",
+                              "preciseFilter":  "passed",
+                              "prismaMigrationSqlAllowed":  true
+                          }
+                      ],
+    "desktopPortalSamaZips":  [
+                                  {
+                                      "name":  "portal-sama-api.safe.zip",
+                                      "length":  740328,
+                                      "lastWriteTime":  "2026-06-11T09:45:21.0748433-03:00"
+                                  },
+                                  {
+                                      "name":  "portal-sama-web.safe.zip",
+                                      "length":  7577470,
+                                      "lastWriteTime":  "2026-06-11T08:49:25.6318542-03:00"
+                                  }
+                              ],
+    "docsBackupBinaryArtifactsRemoved":  true,
+    "rotationReported":  [
+                             {
+                                 "item":  "real administrative credential shared in chat on 2026-06-11",
+                                 "status":  "reported_rotated_by_user",
+                                 "verifiedByLogin":  false,
+                                 "recordedEvidence":  "admin-credential-rotation-reported.json"
+                             }
+                         ],
+    "secretRotationCheck":  {
+                                "tool":  "npm run ops:secrets:check",
+                                "syntheticEvidence":  "secret-rotation-check-synthetic.json",
+                                "status":  "validated_with_synthetic_env",
+                                "sensitiveValuesStored":  false
+                            },
+    "rotationStillRequired":  [
+                                  "JWT_ACCESS_SECRET",
+                                  "JWT_REFRESH_SECRET",
+                                  "CSRF_SECRET",
+                                  "DATABASE_URL",
+                                  "ACESSORIAS_TOKEN",
+                                  "Web Push/VAPID keys",
+                                  "CERTIFICATE_ENCRYPTION_KEY",
+                                  "external service tokens"
+                              ],
+    "sensitiveValuesStored":  false
+}

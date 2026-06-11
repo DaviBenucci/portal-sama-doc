@@ -1,0 +1,62 @@
+﻿{
+  "ok": true,
+  "soft": false,
+  "publicUrl": "https://portal.samacontabil.com.br",
+  "apiBaseUrl": "https://portal.samacontabil.com.br/api-v2",
+  "corsOrigin": "https://portal.samacontabil.com.br",
+  "timeoutMs": 10000,
+  "checks": [
+    {
+      "durationMs": 304,
+      "message": "Public frontend responded.",
+      "name": "public-web",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br",
+      "warnings": []
+    },
+    {
+      "details": {
+        "database": "up",
+        "storage": "up"
+      },
+      "durationMs": 135,
+      "message": "API health responded with database=up storage=up.",
+      "name": "api-health",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/health",
+      "warnings": []
+    },
+    {
+      "details": {
+        "allowCredentials": "true",
+        "allowHeaders": "authorization",
+        "allowMethods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+        "allowOrigin": "https://portal.samacontabil.com.br",
+        "expectedOrigin": "https://portal.samacontabil.com.br"
+      },
+      "durationMs": 131,
+      "message": "CORS preflight accepted the public origin with credentials.",
+      "name": "cors-preflight",
+      "status": "passed",
+      "statusCode": 204,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/me",
+      "warnings": []
+    },
+    {
+      "details": {
+        "hasCsrfCookie": true,
+        "hasCsrfToken": true
+      },
+      "durationMs": 128,
+      "message": "CSRF endpoint issued JSON token and cookie.",
+      "name": "auth-csrf",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/csrf",
+      "warnings": []
+    }
+  ],
+  "warnings": []
+}

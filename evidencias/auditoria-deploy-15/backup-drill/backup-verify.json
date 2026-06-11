@@ -1,0 +1,79 @@
+{
+  "ok": true,
+  "soft": false,
+  "checkedAt": "2026-06-10T18:49:56.320Z",
+  "backupId": "portal-sama-20260610T184955Z-e76aef",
+  "backupDir": "/evidence/backups/portal-sama-20260610T184955Z-e76aef",
+  "metadataFile": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/metadata.json",
+  "failed": 0,
+  "warnings": 1,
+  "checks": [
+    {
+      "details": {
+        "backupId": "portal-sama-20260610T184955Z-e76aef",
+        "sizeBytes": 1942
+      },
+      "message": "metadata.json is readable and complete.",
+      "name": "metadata",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/database.sql.gz",
+        "sizeBytes": 821,
+        "sha256": "06bacf777370570bb1abda6c22dd9e188b1b42f3c3c18c2e91b1d38ee511305d"
+      },
+      "message": "Backup artifact exists and matches recorded integrity metadata.",
+      "name": "database-artifact",
+      "status": "passed"
+    },
+    {
+      "message": "database.sql.gz can be decompressed successfully.",
+      "name": "database-gzip",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/storage-manifest.json",
+        "sizeBytes": 310,
+        "sha256": "2e3f32038258cd6937c2be31d48ddc8c550b4b552db0a51b7726201e96e65c0e"
+      },
+      "message": "Backup artifact exists and matches recorded integrity metadata.",
+      "name": "storage-manifest",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "files": 1,
+        "totalBytes": 41
+      },
+      "message": "storage-manifest.json content is internally consistent.",
+      "name": "storage-manifest-content",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "file": "/evidence/backups/portal-sama-20260610T184955Z-e76aef/storage.tar.gz",
+        "sizeBytes": 207,
+        "sha256": "ea109325de5a999145e8a34e1d9a4bdf6b201d3ab22834af7112b71d0e754a38"
+      },
+      "message": "Backup artifact exists and matches recorded integrity metadata.",
+      "name": "storage-archive",
+      "status": "passed"
+    },
+    {
+      "details": {
+        "archiveFiles": 2,
+        "manifestFiles": 1
+      },
+      "message": "storage.tar.gz can be listed and matches the storage manifest file count.",
+      "name": "storage-archive-list",
+      "status": "passed"
+    },
+    {
+      "message": "Integrity verification passed only against backup artifacts; production still needs a real restore drill in an isolated database/storage target.",
+      "name": "restore-drill",
+      "status": "warning"
+    }
+  ]
+}

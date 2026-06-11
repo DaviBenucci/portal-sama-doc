@@ -1,0 +1,80 @@
+﻿[
+    {
+        "area":  "api-env",
+        "command":  "node -v; npm.cmd -v",
+        "exitCode":  0,
+        "details":  "durationSec=0.5"
+    },
+    {
+        "area":  "api-prisma",
+        "command":  "npm.cmd run prisma:validate",
+        "exitCode":  0,
+        "details":  "durationSec=3.1"
+    },
+    {
+        "area":  "api-lint",
+        "command":  "npm.cmd run lint",
+        "exitCode":  0,
+        "details":  "durationSec=29.1"
+    },
+    {
+        "area":  "api-build",
+        "command":  "npm.cmd run build",
+        "exitCode":  0,
+        "details":  "durationSec=14"
+    },
+    {
+        "area":  "api-unit",
+        "command":  "npm.cmd test -- --runInBand",
+        "exitCode":  0,
+        "details":  "durationSec=23.8"
+    },
+    {
+        "area":  "api-audit",
+        "command":  "npm.cmd audit --audit-level=moderate",
+        "exitCode":  1,
+        "details":  "durationSec=2.3"
+    },
+    {
+        "area":  "api-db-reset",
+        "command":  "DROP/CREATE portal_sama_validation",
+        "exitCode":  0,
+        "details":  "durationSec=0.3"
+    },
+    {
+        "area":  "api-db",
+        "command":  "npm.cmd run prisma:migrate:deploy",
+        "exitCode":  0,
+        "details":  "durationSec=10.2"
+    },
+    {
+        "area":  "api-db",
+        "command":  "npm.cmd run prisma:migrate:status",
+        "exitCode":  0,
+        "details":  "durationSec=1.7"
+    },
+    {
+        "area":  "api-db",
+        "command":  "npm.cmd run prisma:seed",
+        "exitCode":  0,
+        "details":  "durationSec=3.1"
+    },
+    {
+        "area":  "api-db",
+        "command":  "npm.cmd run prisma:bootstrap-admin",
+        "exitCode":  0,
+        "details":  "durationSec=3.8"
+    },
+    {
+        "area":  "api-readiness",
+        "command":  "node scripts/validate-operational-readiness.js --soft",
+        "exitCode":  0,
+        "details":  "durationSec=0.4"
+    },
+    {
+        "area":  "api-e2e",
+        "command":  "npm.cmd run test:e2e",
+        "exitCode":  1,
+        "details":  "durationSec=10.8"
+    }
+]

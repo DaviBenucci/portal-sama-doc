@@ -1,0 +1,105 @@
+﻿{
+  "ok": true,
+  "soft": false,
+  "apiBaseUrl": "https://portal.samacontabil.com.br/api-v2",
+  "corsOrigin": "https://portal.samacontabil.com.br",
+  "timeoutMs": 10000,
+  "username": "ad***",
+  "checks": [
+    {
+      "details": {
+        "hasCsrfCookie": true,
+        "hasCsrfToken": true
+      },
+      "durationMs": 123,
+      "message": "CSRF token and cookie issued.",
+      "name": "auth-csrf-login",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/csrf"
+    },
+    {
+      "details": {
+        "hasAccessToken": true,
+        "hasRefreshCookie": true,
+        "hasRotatedCsrfCookie": true,
+        "refreshCookiePolicyOk": true,
+        "refreshCookieHttpOnly": true,
+        "refreshCookieSameSite": "Lax",
+        "refreshCookieSecure": true,
+        "permissionsCount": 91
+      },
+      "durationMs": 462,
+      "message": "Login returned an access token and refresh cookie.",
+      "name": "auth-login",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/login"
+    },
+    {
+      "details": {
+        "permissionsCount": 91,
+        "role": null,
+        "username": "ad***"
+      },
+      "durationMs": 15,
+      "message": "Authenticated user endpoint returned the current user.",
+      "name": "auth-me-after-login",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/me"
+    },
+    {
+      "details": {
+        "hasCsrfCookie": true,
+        "hasCsrfToken": true
+      },
+      "durationMs": 11,
+      "message": "CSRF token and cookie issued.",
+      "name": "auth-csrf-refresh",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/csrf"
+    },
+    {
+      "details": {
+        "hasAccessToken": true,
+        "hasRefreshCookie": true,
+        "refreshCookiePolicyOk": true,
+        "refreshCookieHttpOnly": true,
+        "refreshCookieSameSite": "Lax",
+        "refreshCookieSecure": true
+      },
+      "durationMs": 87,
+      "message": "Refresh rotated the session and returned a new access token.",
+      "name": "auth-refresh",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/refresh"
+    },
+    {
+      "details": {
+        "permissionsCount": 91,
+        "role": null,
+        "username": "ad***"
+      },
+      "durationMs": 15,
+      "message": "Authenticated user endpoint returned the current user.",
+      "name": "auth-me-after-refresh",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/me"
+    },
+    {
+      "details": {
+        "clearedCookiesCount": 2
+      },
+      "durationMs": 74,
+      "message": "Logout completed and returned anonymous state.",
+      "name": "auth-logout",
+      "status": "passed",
+      "statusCode": 200,
+      "url": "https://portal.samacontabil.com.br/api-v2/auth/logout"
+    }
+  ]
+}

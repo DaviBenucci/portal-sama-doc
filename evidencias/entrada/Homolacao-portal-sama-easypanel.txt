@@ -1,0 +1,30 @@
+HOME:
+
+Vamos começar pela página de HOME na visão do DEV, aonde após a nova formatação ele não está puxando devidamente e está inconsistente com o que é apresentado no acessórias.
+
+Na página Home da visão de gestor está com alguns mesmos erros que o DEV, aonde aparentemente ele não sincroniza.
+
+Responsáveis(Acessórias): 
+
+Aparentemente ele não está fazendo a devida conciliação dos responsáveis dos clientes, isso é para ser tratado quando fossemos sincronizar o sistema do acessórias para que seja tratado junto com as verificações.
+
+Poderíamos remover esse monte de botão que temos na integração com o acessórias e deixarmos somente os botões que fazem mais sentido, e fazer com que o único botão que utilize a API do acessórias seja um escrito "Integrar" Aonde ele buscará todas as informações do acessórias e fará a tratativa delas no nosso banco de dados, aonde nesse ele utilizará o que já estamos utilizando que é ele ler a primeira página que for retornada da API e tratar ela separando as informações que ela recebe. Pois a tratativa não está funcionando, e os outros botões seriam somente para fazer a validação local, para conciliar os responsáveis a conciliação poderia ser feita automaticamente com os usuários comparando os nomes dos usuários cadastrados com os usuários responsáveis por cada empresa que foi puxado. Como também ele está pegando usuários que são de departamentos diferentes. Faça com que a conciliação seja bem rigorosa com o departamento e o nome. E como  a conciliação dos responsáveis não está consistente ele às planilhas de departamento não retornam nada.
+
+Como também poderia haver um botão de reconciliação de vencimento para que possa ser feita a conciliação dos departamentos localmente.
+
+A ideia seria que teria um botão único de "Integração" Aonde somente por meio desse botão poderíamos consultar a API do acessórias e tratar as informações que vem de lá no nosso banco de dados, com isso os outros botões poderiam ser para sincronizar as informações já tratadas do acessórias que foram colocadas no banco de dados, e sincronizar com o que já temos na aplicação, aonde cada botão vai sincronizar uma parte, obrigações, responsáveis, vencimentos, documentos ( se houver ).
+
+Clientes:
+
+Somente o usuário DEV está conseguindo ver todos os clientes que foram puxados pelo acessórias, e os outros usuários não estão conseguindo verificar isso. Como também na aba de colaboradores eles os usuários só conseguem ver os colaboradores do próprio o ideal seria que eles possam ver todos os colaboradores que há na empresa e consigam ver as informações publicas de cada um deles.
+Agora juntar a aba de todos os clientes e a aba de meus clientes em uma só e colocar somente o nome clientes, e que nessa página tenha um filtro aonde quando o usuário marcar "ver meus clientes" apareça somente os clientes daquele usuário/colaborador (Contudo para isso funcionar devidamente a conciliação de responsáveis tem que funcionar, pois esse filtro pode somente pegar uma informação que já vai estar no cliente, que é o responsável de determinado departamento, como só se pode ter um responsável por departamento o filtro pode pegar daí.)
+
+Notificações: 
+
+Na apa de notificações poderíamos ter um ler todas, mesmo no ícone também, e de confirmar todos os alerta, e também por causa de alguns erros nas obrigações e nos clientes que foram citados anteriormente não se é possível fazer o teste para verificarmos se as obrigações estão retornando erros nas notificações. Como também poderíamos ter um limite de quantas notificações podem tanto ficar em uma única página, quanto ficarem no banco de dados, com o limite de no máximo 100 notificações e que ele apague do banco de dados sempre as mais antigas quando passarem de 100 notificações. Como também nas configurações de perfil dos usuários não se é possível salvar as alterações de config.
+
+Solicitações:
+
+Nas páginas de solicitação de acesso no caso dos gestores só se é possível enviar se eles selecionarem um colaborador, como também a formatação deles no front-end é bugada, e a seleção de dias de acesso bastante, faça que ao abrir o calendário eles possam selecionar diversos dias e que ao clicar em um dia que já foi selecionado esse dia venha ser desmarcado, e faça com que tenha a opção do gestor selecionar a si mesmo, para que ele possa enviar uma solicitação de acesso para si mesmo também, e estilize mais os calendários para que possam ficar com a cara da Sama Contabilidade.
+
+Como também quando o usuário envia uma solicitação de acesso, ele dá diretamente que ela foi aceita, isso está errado, faça com que tenha um campo para usuário DEV na solicitação do usuário, aonde ele possa aprovar a solicitação do Gestor ou não. E que ao aprovar ou não, venha chegar uma notificação para o usuário que a solicitação dele foi aceita ou declinada. Tanto para quando o DEV aceitar ou declinar a solicitação do gestor, quanto quando o gestor aceitar ou declinar a solicitação do colaborador para ser enviada ao DEV.

@@ -1,0 +1,528 @@
+{
+  "generatedAt": "2026-06-10T14:29:28.615Z",
+  "environment": {
+    "apiBase": "http://localhost:3100/api-v2",
+    "database": "mysql://root:[redacted]@127.0.0.1:3308/portal_sama_audit",
+    "maxPages": "1",
+    "schedulerDisabled": true
+  },
+  "dbCounts": [
+    {
+      "stage": "before_api_calls",
+      "clients": 0,
+      "users": 1,
+      "acessoriasCompanyObligationCatalog": 0,
+      "acessoriasDeliveries": 0,
+      "acessoriasDeliverySyncRuns": 0,
+      "acessoriasSyncRuns": 0,
+      "acessoriasExternalJobLocks": 0,
+      "acessoriasFiscalDivergences": 0,
+      "acessoriasResponsibleAliases": 0,
+      "acessoriasDeliveryColumnMappings": 0,
+      "auditLogs": 3
+    },
+    {
+      "stage": "after_registrations_sync",
+      "clients": 20,
+      "users": 1,
+      "acessoriasCompanyObligationCatalog": 892,
+      "acessoriasDeliveries": 0,
+      "acessoriasDeliverySyncRuns": 0,
+      "acessoriasSyncRuns": 0,
+      "acessoriasExternalJobLocks": 0,
+      "acessoriasFiscalDivergences": 0,
+      "acessoriasResponsibleAliases": 25,
+      "acessoriasDeliveryColumnMappings": 0,
+      "auditLogs": 5
+    },
+    {
+      "stage": "after_catalog_sync",
+      "clients": 20,
+      "users": 1,
+      "acessoriasCompanyObligationCatalog": 892,
+      "acessoriasDeliveries": 0,
+      "acessoriasDeliverySyncRuns": 0,
+      "acessoriasSyncRuns": 1,
+      "acessoriasExternalJobLocks": 0,
+      "acessoriasFiscalDivergences": 0,
+      "acessoriasResponsibleAliases": 25,
+      "acessoriasDeliveryColumnMappings": 0,
+      "auditLogs": 6
+    },
+    {
+      "stage": "after_deliveries_sync",
+      "clients": 20,
+      "users": 1,
+      "acessoriasCompanyObligationCatalog": 892,
+      "acessoriasDeliveries": 50,
+      "acessoriasDeliverySyncRuns": 1,
+      "acessoriasSyncRuns": 2,
+      "acessoriasExternalJobLocks": 0,
+      "acessoriasFiscalDivergences": 0,
+      "acessoriasResponsibleAliases": 34,
+      "acessoriasDeliveryColumnMappings": 0,
+      "auditLogs": 7
+    },
+    {
+      "stage": "after_reconciliation",
+      "clients": 20,
+      "users": 1,
+      "acessoriasCompanyObligationCatalog": 892,
+      "acessoriasDeliveries": 50,
+      "acessoriasDeliverySyncRuns": 1,
+      "acessoriasSyncRuns": 3,
+      "acessoriasExternalJobLocks": 0,
+      "acessoriasFiscalDivergences": 100,
+      "acessoriasResponsibleAliases": 34,
+      "acessoriasDeliveryColumnMappings": 0,
+      "auditLogs": 7
+    }
+  ],
+  "calls": [
+    {
+      "label": "health",
+      "method": "GET",
+      "route": "/health",
+      "status": 200,
+      "ok": true,
+      "durationMs": 169,
+      "summary": {
+        "ok": true,
+        "service": "portal-sama-api"
+      }
+    },
+    {
+      "label": "auth.csrf",
+      "method": "GET",
+      "route": "/auth/csrf",
+      "status": 200,
+      "ok": true,
+      "durationMs": 42,
+      "summary": {
+        "ok": true
+      }
+    },
+    {
+      "label": "auth.login",
+      "method": "POST",
+      "route": "/auth/login",
+      "status": 200,
+      "ok": true,
+      "durationMs": 497,
+      "summary": {
+        "ok": true
+      }
+    },
+    {
+      "label": "auth.me",
+      "method": "GET",
+      "route": "/auth/me",
+      "status": 200,
+      "ok": true,
+      "durationMs": 6,
+      "summary": {
+        "ok": true,
+        "username": "audit.admin.local",
+        "roles": [
+          "DEV"
+        ],
+        "permissionCount": 91
+      }
+    },
+    {
+      "label": "acessorias.scheduler.status.before",
+      "method": "GET",
+      "route": "/integrations/acessorias/scheduler/status",
+      "status": 200,
+      "ok": true,
+      "durationMs": 10,
+      "summary": {
+        "ok": true,
+        "enabled": false,
+        "running": false,
+        "companyCatalogSyncEnabled": false,
+        "reconciliationEnabled": false,
+        "nextRunAt": null,
+        "lastStatus": "IDLE",
+        "lastDeliverySyncRun": null
+      }
+    },
+    {
+      "label": "acessorias.rate-limiter.status.before",
+      "method": "GET",
+      "route": "/integrations/acessorias/rate-limiter/status",
+      "status": 200,
+      "ok": true,
+      "durationMs": 4,
+      "summary": {
+        "ok": true,
+        "concurrency": 1,
+        "rateLimitPerMinute": 30,
+        "retryAttempts": 0,
+        "queued": 0,
+        "active": 0,
+        "completedTotal": 0,
+        "failedTotal": 0,
+        "rateLimitedTotal": 0
+      }
+    },
+    {
+      "label": "acessorias.sync-runs.before",
+      "method": "GET",
+      "route": "/integrations/acessorias/sync-runs?take=10",
+      "status": 200,
+      "ok": true,
+      "durationMs": 23,
+      "summary": {
+        "ok": true,
+        "total": 0,
+        "returned": 0,
+        "statuses": [],
+        "meta": {
+          "total": 0,
+          "skip": 0,
+          "take": 10
+        }
+      }
+    },
+    {
+      "label": "acessorias.deliveries.list.before",
+      "method": "GET",
+      "route": "/integrations/acessorias/deliveries?take=10",
+      "status": 200,
+      "ok": true,
+      "durationMs": 10,
+      "summary": {
+        "ok": true,
+        "total": 0,
+        "returned": 0
+      }
+    },
+    {
+      "label": "acessorias.home-summary.admin.before",
+      "method": "GET",
+      "route": "/integrations/acessorias/home-summary?profile=admin",
+      "status": 200,
+      "ok": true,
+      "durationMs": 29,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "unavailable": false,
+        "dataSource": "local",
+        "lastSyncAt": null,
+        "dataStale": true,
+        "totals": {
+          "deliveries": 0,
+          "clients": 0,
+          "pending": 0,
+          "overdue": 0,
+          "due_soon": 0,
+          "delivered": 0,
+          "canceled": 0
+        },
+        "itemCount": 0
+      }
+    },
+    {
+      "label": "acessorias.registrations.preview.clients",
+      "method": "GET",
+      "route": "/integrations/acessorias/registrations/preview?entity=clients",
+      "status": 200,
+      "ok": true,
+      "durationMs": 3542,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "dryRun": true,
+        "overwriteLocal": false,
+        "summaries": {
+          "arrayLength": 1
+        },
+        "itemCount": 20
+      }
+    },
+    {
+      "label": "acessorias.registrations.sync.clients.dry-run",
+      "method": "POST",
+      "route": "/integrations/acessorias/registrations/sync",
+      "status": 201,
+      "ok": true,
+      "durationMs": 3170,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "dryRun": true,
+        "overwriteLocal": false,
+        "summaries": {
+          "arrayLength": 1
+        },
+        "itemCount": 20
+      }
+    },
+    {
+      "label": "acessorias.registrations.sync.clients.persist",
+      "method": "POST",
+      "route": "/integrations/acessorias/registrations/sync",
+      "status": 201,
+      "ok": true,
+      "durationMs": 28304,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "dryRun": false,
+        "overwriteLocal": false,
+        "summaries": {
+          "arrayLength": 1
+        },
+        "itemCount": 20
+      }
+    },
+    {
+      "label": "acessorias.companies.catalog.sync.persist",
+      "method": "POST",
+      "route": "/integrations/acessorias/companies/catalog/sync",
+      "status": 201,
+      "ok": true,
+      "durationMs": 23197,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "dryRun": false,
+        "overwriteLocal": false,
+        "summaries": {
+          "arrayLength": 1
+        },
+        "itemCount": 20,
+        "syncRun": {
+          "id": "[id]",
+          "jobType": "ACESSORIAS_COMPANY_CATALOG_SYNC",
+          "status": "SUCCESS",
+          "fetched": 20,
+          "created": 0,
+          "updated": 20,
+          "skipped": 0,
+          "failed": 0
+        }
+      }
+    },
+    {
+      "label": "acessorias.deliveries.preview",
+      "method": "GET",
+      "route": "/integrations/acessorias/deliveries/preview",
+      "status": 200,
+      "ok": true,
+      "durationMs": 2779,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "summary": {
+          "fetched": 50,
+          "normalized": 50,
+          "skipped": 0,
+          "clients": 19,
+          "pending": 0,
+          "delivered": 50,
+          "overdue": 0,
+          "canceled": 0,
+          "unknown": 0
+        }
+      }
+    },
+    {
+      "label": "acessorias.deliveries.sync.persist",
+      "method": "POST",
+      "route": "/integrations/acessorias/deliveries/sync",
+      "status": 201,
+      "ok": true,
+      "durationMs": 3447,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "summary": {
+          "fetched": 50,
+          "created": 50,
+          "updated": 0,
+          "skipped": 0,
+          "failed": 0
+        },
+        "run": {
+          "id": "[id]",
+          "status": "SUCCESS",
+          "fetched": 50,
+          "created": 50,
+          "updated": 0,
+          "skipped": 0
+        },
+        "syncRun": {
+          "id": "[id]",
+          "jobType": "ACESSORIAS_DELIVERIES_INCREMENTAL_SYNC",
+          "status": "SUCCESS",
+          "fetched": 50,
+          "created": 50,
+          "updated": 0,
+          "skipped": 0,
+          "failed": 0
+        }
+      }
+    },
+    {
+      "label": "acessorias.reconciliation.run",
+      "method": "POST",
+      "route": "/integrations/acessorias/reconciliation/run",
+      "status": 201,
+      "ok": true,
+      "durationMs": 2147,
+      "summary": {
+        "ok": true,
+        "summary": {
+          "catalog_checked": 892,
+          "deliveries_checked": 50,
+          "pending_responsible_aliases": 34,
+          "stale_deliveries": 0,
+          "divergences_created": 100
+        },
+        "run": {
+          "id": "[id]",
+          "jobType": "ACESSORIAS_RECONCILIATION_JOB",
+          "status": "SUCCESS",
+          "fetched": 976,
+          "created": 100,
+          "updated": 0,
+          "skipped": 0,
+          "failed": 0
+        }
+      }
+    },
+    {
+      "label": "acessorias.scheduler.status.after",
+      "method": "GET",
+      "route": "/integrations/acessorias/scheduler/status",
+      "status": 200,
+      "ok": true,
+      "durationMs": 9,
+      "summary": {
+        "ok": true,
+        "enabled": false,
+        "running": false,
+        "companyCatalogSyncEnabled": false,
+        "reconciliationEnabled": false,
+        "nextRunAt": null,
+        "lastStatus": "IDLE",
+        "lastDeliverySyncRun": {
+          "status": "SUCCESS",
+          "fetched": 50,
+          "created": 50,
+          "updated": 0,
+          "skipped": 0
+        }
+      }
+    },
+    {
+      "label": "acessorias.rate-limiter.status.after",
+      "method": "GET",
+      "route": "/integrations/acessorias/rate-limiter/status",
+      "status": 200,
+      "ok": true,
+      "durationMs": 9,
+      "summary": {
+        "ok": true,
+        "concurrency": 1,
+        "rateLimitPerMinute": 30,
+        "retryAttempts": 0,
+        "queued": 0,
+        "active": 0,
+        "completedTotal": 6,
+        "failedTotal": 0,
+        "rateLimitedTotal": 0
+      }
+    },
+    {
+      "label": "acessorias.sync-runs.after",
+      "method": "GET",
+      "route": "/integrations/acessorias/sync-runs?take=10",
+      "status": 200,
+      "ok": true,
+      "durationMs": 12,
+      "summary": {
+        "ok": true,
+        "total": 3,
+        "returned": 3,
+        "statuses": [
+          {
+            "jobType": "ACESSORIAS_RECONCILIATION_JOB",
+            "status": "SUCCESS",
+            "fetched": 976,
+            "created": 100,
+            "updated": 0,
+            "skipped": 0,
+            "failed": 0
+          },
+          {
+            "jobType": "ACESSORIAS_DELIVERIES_INCREMENTAL_SYNC",
+            "status": "SUCCESS",
+            "fetched": 50,
+            "created": 50,
+            "updated": 0,
+            "skipped": 0,
+            "failed": 0
+          },
+          {
+            "jobType": "ACESSORIAS_COMPANY_CATALOG_SYNC",
+            "status": "SUCCESS",
+            "fetched": 20,
+            "created": 0,
+            "updated": 20,
+            "skipped": 0,
+            "failed": 0
+          }
+        ],
+        "meta": {
+          "total": 3,
+          "skip": 0,
+          "take": 10
+        }
+      }
+    },
+    {
+      "label": "acessorias.deliveries.list.after",
+      "method": "GET",
+      "route": "/integrations/acessorias/deliveries?take=10",
+      "status": 200,
+      "ok": true,
+      "durationMs": 15,
+      "summary": {
+        "ok": true,
+        "total": 50,
+        "returned": 10
+      }
+    },
+    {
+      "label": "acessorias.home-summary.admin.after",
+      "method": "GET",
+      "route": "/integrations/acessorias/home-summary?profile=admin",
+      "status": 200,
+      "ok": true,
+      "durationMs": 18,
+      "summary": {
+        "ok": true,
+        "configured": true,
+        "unavailable": false,
+        "dataSource": "local",
+        "lastSyncAt": "2026-06-10T14:30:33.848Z",
+        "dataStale": false,
+        "totals": {
+          "deliveries": 50,
+          "clients": 19,
+          "pending": 0,
+          "overdue": 0,
+          "due_soon": 0,
+          "delivered": 50,
+          "canceled": 0
+        },
+        "itemCount": 20
+      }
+    }
+  ],
+  "notes": []
+}
