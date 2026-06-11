@@ -1,0 +1,27 @@
+﻿{
+    "generatedAtUtc":  "2026-06-11T12:07:41.9892828Z",
+    "target":  {
+                   "publicUrl":  "https://portal.samacontabil.com.br",
+                   "apiBaseUrl":  "https://portal.samacontabil.com.br/api-v2"
+               },
+    "browser":  "chromium-real",
+    "command":  "npm.cmd run test:e2e:real",
+    "status":  "passed",
+    "tests":  1,
+    "sensitiveArtifacts":  {
+                               "trace":  "off",
+                               "screenshot":  "off",
+                               "video":  "off",
+                               "testResultsRemoved":  true
+                           },
+    "covered":  [
+                    "login via tela React",
+                    "chegada na Home autenticada",
+                    "sem chaves sensiveis em localStorage/sessionStorage",
+                    "refresh cookie nao exposto em document.cookie",
+                    "refresh cookie HttpOnly/SameSite/Secure em HTTPS",
+                    "logout via UI com retorno ao login"
+                ],
+    "note":  "Primeira tentativa falhou por contrato textual desatualizado (Sessao ativa); teste foi ajustado para usar botao Sair como sinal autenticado e passou.",
+    "sensitiveValuesStored":  false
+}

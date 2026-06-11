@@ -1,12 +1,16 @@
 # AUDITORIA DEPLOY 16 - Execucao das correcoes Go-Live
 
 Data: 10/06/2026
+Atualizado em: 11/06/2026
 
 Escopo: registro incremental da execucao das fases planejadas em
 `AUDITORIA-DEPLOY-15-PREPARACAO-CORRECOES-GO-LIVE.md`.
 
 ## Ferramentas locais usadas nesta rodada
 
+- Fase 1: foram usados PowerShell e APIs .NET locais (`System.IO.Compression.ZipFile`) para criar
+  ZIPs seguros e validar suas entradas. Nenhuma dependencia npm nova e nenhuma instalacao
+  permanente foram adicionadas.
 - Docker: usado na Fase 8 com a imagem local `portal-sama-api:clamav-runtime` para validar
   ClamAV strict/EICAR em container efemero, sem instalar ClamAV no Windows host.
 - Instalacoes/execucoes auxiliares: foi usado `npx.cmd prettier@3.8.4` de forma transitoria
@@ -45,6 +49,93 @@ Branch de trabalho criada nos tres repositorios:
 - `portal-sama-docs`: `fix/deploy-readiness-go-live`
 - `portal-sama-api`: `fix/deploy-readiness-go-live`
 - `portal-sama-web`: `fix/deploy-readiness-go-live`
+
+## Fase 1 - Higienizar artefatos e tratar segredos
+
+Status: parcialmente implementada. O processo seguro de empacotamento foi criado e validado, os
+ZIPs seguros foram gerados, artefatos binarios de backup foram removidos do repositorio de docs, e
+a rotacao da credencial administrativa compartilhada no chat foi informada pelo usuario em
+11/06/2026. A rotacao externa dos demais segredos continua pendente e bloqueia o go-live.
+
+Arquivos alterados:
+
+- `portal-sama-api/scripts/create-safe-package.ps1`
+- `portal-sama-api/scripts/validate-secret-rotation.js`
+- `portal-sama-api/package.json`
+- `portal-sama-api/README.md`
+- `portal-sama-web/scripts/create-safe-package.ps1`
+- `portal-sama-web/package.json`
+- `portal-sama-web/README.md`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/phase1-artifacts/api-safe-package.json`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/phase1-artifacts/web-safe-package.json`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/phase1-artifacts/package-validation-summary.json`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/phase1-artifacts/admin-credential-rotation-reported.json`
+- `portal-sama-docs/evidencias/auditoria-deploy-15/phase1-artifacts/secret-rotation-check-synthetic.json`
+
+Artefatos removidos do repositorio de docs:
+
+- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/database.sql.gz`
+- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/metadata.json`
+- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/storage-manifest.json`
+- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/storage.tar.gz`
+
+Mudancas aplicadas:
+
+- Adicionado `npm.cmd run package:safe` na API e no Web.
+- O script cria ZIP em staging temporario e valida as entradas do proprio ZIP antes de finalizar.
+- Padroes bloqueados no pacote:
+  - `.env` e `.env.*`, incluindo `.env.example`;
+  - `.git`, `.ai-tests`, `node_modules`, `dist`, `coverage`, logs, dumps, backups e artefatos de
+    teste;
+  - arquivos `.pem`, `.key`, `.p12`, `.pfx`, `.tar`, `.tgz`, `.gz`, `.zip`, `.7z`, `.rar`, `.bak`,
+    `.backup`, `.dump`;
+  - arquivos `.sql`, exceto migrations Prisma versionadas em `prisma/migrations/*/migration.sql`,
+    que sao fonte necessaria para deploy/migracao e nao dump de banco.
+- Os READMEs da API e do Web passaram a documentar o comando de pacote seguro e a opcao de gerar
+  evidencia JSON.
+- A pasta `backup-drill/backups/` foi removida do docs para evitar versionar backup binario. As
+  evidencias resumidas da Fase 9 permanecem: JSONs de execucao, manifesto resumido e hashes.
+- Adicionado `npm run ops:secrets:check` na API para validar higiene/rotacao de segredos a partir
+  de `process.env`, sem carregar `.env` e sem imprimir valores.
+- O preflight de segredos checa presenca, tamanho minimo, padroes obvios de placeholder,
+  reutilizacao de valores entre chaves, `DATABASE_URL`, `ACESSORIAS_TOKEN`, Web Push/VAPID e
+  marcador opcional `SAMA_SECRET_ROTATION_CONFIRMED_AT`.
+
+Artefatos seguros gerados fora dos repositorios:
+
+| Artefato | SHA-256 | Resultado |
+|---|---|---|
+| `C:\Users\Sama Contabilidade\Desktop\portal-sama-api.safe.zip` | `852022dcac4512a0fe30a52a3744353a4e67589c22f5dfdf159f571732575822` | OK |
+| `C:\Users\Sama Contabilidade\Desktop\portal-sama-web.safe.zip` | `374c369d37f1cfa68c4eeb1f11f729d98763e103185a9d12e8d75991f4248d29` | OK |
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `npm.cmd run package:safe -- -EvidencePath ..\portal-sama-docs\evidencias\auditoria-deploy-15\phase1-artifacts\api-safe-package.json` | OK: 350 arquivos incluidos, 32198 excluidos, validacao interna passou |
+| `npm.cmd run package:safe -- -EvidencePath ..\portal-sama-docs\evidencias\auditoria-deploy-15\phase1-artifacts\web-safe-package.json` | OK: 184 arquivos incluidos, 13008 excluidos, validacao interna passou |
+| Filtro independente com `tar -tf` no ZIP seguro da API | OK: sem `.env`, `.git`, `.ai-tests`, `node_modules`, logs, dumps, backups, chaves ou certificados; migrations Prisma permitidas |
+| Filtro independente com `tar -tf` no ZIP seguro do Web | OK: sem `.env`, `.git`, `.ai-tests`, `node_modules`, logs, dumps, backups, chaves ou certificados |
+| Inventario do Desktop para `portal-sama*.zip` | OK: apenas `portal-sama-api.safe.zip` e `portal-sama-web.safe.zip`; `portal-sama-api.zip` antigo nao existe localmente |
+| `node scripts/validate-secret-rotation.js --json --require-integrations --require-web-push` com variaveis sinteticas em memoria | OK: 0 falhas, 0 warnings, sem valores sensiveis na evidencia |
+| `npm.cmd run lint` em `portal-sama-api` | OK |
+| `node scripts/validate-secret-rotation.js --help` | OK |
+
+Pendencias de seguranca:
+
+- Segredos potencialmente expostos pelo ZIP antigo ainda precisam de rotacao no ambiente real:
+  `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CSRF_SECRET`, `DATABASE_URL`, `ACESSORIAS_TOKEN`,
+  chaves Web Push/VAPID, `CERTIFICATE_ENCRYPTION_KEY` e tokens de servicos externos.
+- A credencial administrativa real enviada no chat em 11/06/2026 foi informada pelo usuario como
+  rotacionada em 11/06/2026. A nova credencial nao foi fornecida, persistida nem verificada por
+  novo login nesta rodada.
+
+Leitura:
+
+- O achado de artefato contaminado foi mitigado localmente pelo novo processo de pacote seguro e
+  pelos ZIPs limpos gerados.
+- A Fase 1 ainda nao pode ser marcada como concluida enquanto a rotacao externa dos demais
+  segredos nao for confirmada.
 
 ## Decisao operacional para Fase 3
 
@@ -356,7 +447,6 @@ Evidencias preservadas:
 - `evidencias/auditoria-deploy-15/backup-drill/restore-drill.json`
 - `evidencias/auditoria-deploy-15/backup-drill/restore-target-check.json`
 - `evidencias/auditoria-deploy-15/backup-drill/backup-artifacts.sha256`
-- `evidencias/auditoria-deploy-15/backup-drill/backups/portal-sama-20260610T184955Z-e76aef/`
 
 Resultados:
 
@@ -379,6 +469,8 @@ Resultados:
   `sentinel_label: fase-9-drill-source` no banco `portal_sama_backup_drill_restore`.
 - Checksums SHA-256 dos quatro artefatos principais foram salvos em
   `backup-artifacts.sha256`.
+- Em 11/06/2026, os artefatos binarios do backup drill foram removidos do repositorio de docs
+  durante a Fase 1. Permanecem apenas evidencias resumidas sem o dump/storage em si.
 
 Observacoes operacionais:
 
@@ -594,5 +686,84 @@ Limitacoes e leitura:
   concluir a fase.
 - A pendencia externa da Fase 10 permanece: HTTPS publico/confiavel, VAPID oficial e clique nativo
   assistido.
-- A Fase 1 segue critica para go-live: ZIP limpo e rotacao externa de segredos potencialmente
-  expostos ainda precisam ser tratados.
+- A Fase 1 segue critica para go-live: os ZIPs seguros ja foram gerados e validados, mas a
+  rotacao externa de segredos potencialmente expostos ainda precisa ser tratada.
+
+## Homologacao real parcial - dominio publico
+
+Status: validada parcialmente em 11/06/2026 contra `https://portal.samacontabil.com.br`.
+Foram cobertos frontend publico, health da API, CORS/CSRF, autenticacao HTTP real e autenticacao
+via navegador real. Esta etapa nao substitui a matriz completa por perfis reais nem a homologacao
+Web Push com clique nativo.
+
+Arquivos alterados:
+
+- `portal-sama-web/tests/e2e/real-auth.spec.ts`
+
+Motivo do ajuste:
+
+- A primeira execucao do Playwright real autenticou e chegou na Home, mas falhou porque o contrato
+  ainda esperava o texto `Sessao ativa`, que nao esta presente na Home real atual.
+- O teste foi ajustado para usar um sinal autenticado mais estavel: banner, titulo de boas-vindas
+  e botao `Sair` visivel.
+- Apos o ajuste, o E2E real passou.
+
+Evidencias preservadas:
+
+- `evidencias/auditoria-deploy-15/real-homologation-20260611/smoke-public.json`
+- `evidencias/auditoria-deploy-15/real-homologation-20260611/smoke-auth-admin.json`
+- `evidencias/auditoria-deploy-15/real-homologation-20260611/playwright-real-auth-summary.json`
+- `evidencias/auditoria-deploy-15/real-homologation-20260611/smoke-public-after-admin-rotation.json`
+
+Resultados:
+
+- Smoke publico real:
+  - frontend publico respondeu `200`;
+  - `GET /api-v2/health` respondeu `ok=true`, `database=up`, `storage=up`;
+  - preflight CORS aceitou `https://portal.samacontabil.com.br` com credenciais;
+  - endpoint CSRF emitiu token e cookie.
+- Smoke publico pos-rotacao informada:
+  - repetido apos o usuario informar a rotacao da credencial administrativa;
+  - frontend publico, health, CORS e CSRF permaneceram OK.
+- Smoke de autenticacao HTTP real com usuario administrativo:
+  - CSRF inicial OK;
+  - login OK;
+  - refresh cookie com `HttpOnly`, `Secure` e `SameSite=Lax`;
+  - `auth/me` apos login e refresh OK;
+  - refresh OK;
+  - logout OK, com cookies limpos.
+- Playwright real:
+  - login pela tela React OK;
+  - chegada na Home autenticada OK;
+  - sem chaves sensiveis em `localStorage`/`sessionStorage`;
+  - refresh cookie nao apareceu em `document.cookie`;
+  - politica do refresh cookie validada como `HttpOnly`/`SameSite`/`Secure` em HTTPS;
+  - logout pela UI retornou para Login.
+
+Validacoes executadas:
+
+| Comando | Resultado |
+|---|---|
+| `node scripts/portal-public-smoke.mjs --json` | OK |
+| `node scripts/portal-auth-smoke.mjs --json` | OK |
+| `npm.cmd run test:e2e:real` | OK: 1 teste passou |
+| `npm.cmd run lint` em `portal-sama-web` | OK |
+| `npm.cmd test` em `portal-sama-web` | OK: 9 contratos |
+| Varredura das evidencias reais por senha/token/CSRF/access/refresh | OK: sem ocorrencias sensiveis |
+| `node scripts/portal-public-smoke.mjs --json` apos rotacao administrativa informada | OK |
+
+Cuidados aplicados:
+
+- A credencial real foi usada somente via variaveis de ambiente do processo e removida apos os
+  comandos.
+- `trace`, `screenshot` e `video` estavam desligados no Playwright real.
+- `test-results` local foi removido ao final para nao manter snapshot de pagina autenticada.
+- A credencial administrativa compartilhada no chat foi informada pelo usuario como rotacionada em
+  11/06/2026. O valor novo nao foi fornecido nem salvo.
+
+Limitacoes:
+
+- Nao foi executada matriz de permissoes por perfis reais, pois ha apenas uma credencial
+  administrativa disponivel.
+- Nao foi homologado Web Push externo com clique nativo.
+- Nao foi confirmada rotacao externa dos demais segredos.
