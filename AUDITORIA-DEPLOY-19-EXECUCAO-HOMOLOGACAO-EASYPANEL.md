@@ -5,7 +5,7 @@ Branch API: `main`
 Branch Web: `main`
 Branch Docs: `fix/deploy-readiness-go-live`
 Ambiente local: Windows / PowerShell
-Ambiente EasyPanel: nao executado nesta rodada
+Ambiente EasyPanel: smoke publico nao autenticado executado; smoke autenticado pendente
 Responsavel pela execucao: Codex
 
 ## 1. Objetivo
@@ -19,16 +19,17 @@ Registrar a execucao das correcoes e testes definidos em:
 
 | Frente | Status | Observacao |
 |---|---|---|
-| Home DEV/Gestor | Validado local | Nao alterada nesta segunda leva; suite completa confirmou testes existentes de escopo local. |
-| Botao Integrar Acessorias | Implementado local | Painel DEV passou a expor um unico botao externo/API: `Integrar`. |
-| Conciliacao de responsaveis | Parcial implementado local | Bloqueio por divergencia de departamento aplicado a matches exatos e alias confirmados. |
-| Clientes / Ver meus clientes | Parcial implementado local | Backend ganhou `scope=mine`/aliases e Web ganhou toggle `Ver meus clientes`. |
-| Colaboradores publicos internos | Parcial implementado local | API ganhou visao publica interna sem roles/permissoes/metadata/telefone; Web service conhece o endpoint. |
-| Notificacoes | Parcial implementado local | `MAX_TAKE=100`, retencao por quantidade e `alert-all` implementados. |
-| Preferencias/configuracoes | Validado local | Preferencias Web Push ja persistiam via API; testes existentes seguem verdes. |
+| Home DEV/Gestor | Implementado e validado local | Escopo agora prioriza `responsibleUserId` e alerta pendencias/desatualizacao local. |
+| Botao Integrar Acessorias | Implementado local | `Integrar` chama o endpoint operacional unico `POST /integrations/acessorias/operational-sync`. |
+| Conciliacao de responsaveis | Implementado local | Responsaveis conciliados podem alimentar `client_department_assignments` sem sobrescrever conflitos. |
+| Clientes / Ver meus clientes | Implementado local | Navegacao consolidada em `Clientes`; `scope=all`/`scope=mine` na tela principal. |
+| Colaboradores publicos internos | Implementado local | API permite usuario interno sem `collaborators.read`; Web usa payload publico seguro por padrao. |
+| Notificacoes | Implementado local | Header e pagina possuem `Ler todas` e `Confirmar alertas`, com invalidacao de cache/SSE. |
+| Preferencias/configuracoes | Implementado local | `GET/PATCH /me/preferences` persiste preferencias visuais em `metadata.portalPreferences`. |
 | Solicitacoes de acesso | Implementado local | Fluxo passou para dois estagios: gestor encaminha para DEV, DEV decide final. |
-| Playwright | OK local | Suite local passou com 17 testes OK e 1 skip; adicionada spec de solicitacoes/clientes/notificacoes/dev. |
-| Smoke EasyPanel | Pendente | Nao executado nesta rodada. |
+| Migration `PENDING_DEV` | OK em banco controlado | Docker MySQL local descartavel; 30 migrations aplicadas e schema em dia. Banco alvo ainda pendente. |
+| Playwright | OK local | Suite local passou com 21 testes OK e 1 skip; spec cobre solicitacoes, clientes, colaboradores, notificacoes, preferencias e DEV. |
+| Smoke EasyPanel | Parcial publico OK | Frontend, health, CORS e CSRF passaram no dominio real. Fluxos autenticados ainda pendentes. |
 
 ## 3. Fase 0 - Preparacao e reproducao
 
@@ -231,6 +232,8 @@ Status: implementado local
 |---|---|
 | `npm.cmd run prisma:validate` | OK; schema valido. O Prisma carregou `.env`, sem imprimir valores. |
 | `npx.cmd prisma generate` | OK; client gerado apos novo enum. O Prisma carregou `.env`, sem imprimir valores. |
+| `npx.cmd prisma migrate deploy --schema prisma/schema.prisma` com `DATABASE_URL` sintetica para MySQL Docker local | OK; 30 migrations aplicadas, incluindo `20260611130000_add_access_request_pending_dev`. |
+| `npx.cmd prisma migrate status --schema prisma/schema.prisma` com `DATABASE_URL` sintetica para MySQL Docker local | OK; database schema up to date. |
 | `npm.cmd run lint` | OK |
 | `npm.cmd run build` | OK |
 | `npm.cmd test -- --runInBand` | OK; 44 suites, 283 testes. |
@@ -253,15 +256,34 @@ Checagens adicionais:
 ```txt
 portal-sama-api: git diff --check OK
 portal-sama-web: git diff --check OK
+portal-sama-api: coluna `access_requests.status` validada em MySQL Docker local com enum
+`PENDING_MANAGER`, `PENDING_DEV`, `APPROVED`, `DECLINED`, `ARCHIVED`
 ```
+
+### Validacao de migration em Docker local
+
+Status: concluida em 2026-06-11 14:24 -03:00
+
+Uso de Docker nesta etapa:
+
+- Docker Desktop foi iniciado localmente porque o daemon estava parado.
+- Foi criado o container descartavel `portal-sama-homolog-mysql`, com MySQL 8.4 e banco sintetico `portal_sama_homolog_migration`.
+- O `DATABASE_URL` usado nesta validacao apontou explicitamente para esse banco local; a `.env` real nao foi usada como destino da migration.
+- `prisma migrate deploy` aplicou as 30 migrations do projeto com sucesso.
+- `prisma migrate status` retornou schema atualizado.
+- A coluna `access_requests.status` ficou com o enum esperado, incluindo `PENDING_DEV` e default `PENDING_MANAGER`.
+- O container `portal-sama-homolog-mysql` foi removido ao final da validacao.
 
 ## 11. Fase 8 - Smoke EasyPanel
 
-Status: pendente
+Status: parcial publico OK; autenticado pendente
 
 | Cenario | Resultado | Evidencia sanitizada |
 |---|---|---|
-| Health | Nao executado nesta rodada. | - |
+| Frontend publico | OK; HTTP 200. | `npm.cmd run smoke:public` no dominio real. |
+| Health | OK; HTTP 200, `database=up`, `storage=up`. | `GET https://portal.samacontabil.com.br/api-v2/health`. |
+| CORS | OK; preflight HTTP 204 com credenciais e origem esperada. | Origem `https://portal.samacontabil.com.br`. |
+| CSRF | OK; HTTP 200 com token JSON e cookie CSRF. | Sem registrar token/cookie. |
 | Login DEV | Nao executado nesta rodada. | - |
 | Home DEV | Nao executado nesta rodada. | - |
 | Dev Integrar/status local | Nao executado nesta rodada. | - |
@@ -323,21 +345,24 @@ CONTEXTO-CODEX-ATUAL.md
 ## 13. Evidencias geradas
 
 ```txt
-Nenhuma evidencia externa nova foi gerada nesta rodada.
+Nao foram gerados prints ou arquivos externos novos nesta rodada.
+Foi usada validacao operacional em Docker local para a migration `PENDING_DEV`.
 Foram usadas as evidencias fornecidas em evidencias/entrada/ e evidencias/screenshots/.
 Os resultados de validacao local estao registrados neste documento.
 Artefatos temporarios de Playwright em `test-results/` foram removidos apos validacao.
+O container Docker descartavel `portal-sama-homolog-mysql` foi removido apos a checagem.
+Smoke publico real executado sem credenciais contra `https://portal.samacontabil.com.br`.
 ```
 
 ## 14. Pendencias restantes
 
 | Pendencia | Severidade | Bloqueia homologacao? | Proxima acao |
 |---|---|---|---|
-| Aplicar migration `20260611130000_add_access_request_pending_dev` no banco alvo | Alta | Sim | Rodar `prisma migrate deploy` no ambiente controlado antes de testar fluxo novo. |
-| Smoke EasyPanel apos deploy | Critica | Sim | Validar health, login, home, Integrar, solicitacao e notificacoes no dominio real. |
-| Home DEV/Gestor | Alta | Sim | Rodar Playwright/smoke com dados reais para confirmar numeros por perfil. |
-| Clientes / Ver meus clientes / colaboradores publicos internos | Alta | Sim | Local Playwright cobriu `Ver meus clientes`; falta smoke EasyPanel e avaliar uso visual da listagem publica. |
-| Notificacoes e preferencias | Media/Alta | Sim | Local Playwright cobriu `Confirmar alertas`; falta smoke EasyPanel e reload real de preferencias. |
+| Aplicar migration `20260611130000_add_access_request_pending_dev` no banco alvo | Alta | Sim | Migration validada em MySQL Docker local; rodar `prisma migrate deploy` no ambiente alvo antes do smoke real. |
+| Smoke EasyPanel autenticado apos deploy | Critica | Sim | Health publico passou; validar login, home, Integrar, solicitacao e notificacoes no dominio real com credenciais atuais. |
+| Home DEV/Gestor com dados reais | Alta | Sim | Local coberto por unit/Playwright; falta confirmar numeros no EasyPanel apos deploy. |
+| Clientes / Ver meus clientes / colaboradores publicos internos em EasyPanel | Alta | Sim | Local Playwright cobriu `scope=mine` e listagem publica; falta smoke real. |
+| Notificacoes e preferencias em EasyPanel | Media/Alta | Sim | Local Playwright cobriu header, pagina e preferencias; falta reload/smoke real. |
 | Conciliacao por nome + departamento | Media/Alta | Parcial | Revisar se a regra nominal precisa ficar explicita alem dos matches exatos/alias. |
 
 ## 15. Veredito
@@ -354,6 +379,62 @@ Justificativa:
 
 ```txt
 As correcoes estao implementadas e verdes em lint/build/test/E2E locais.
-Ainda faltam migration aplicada em ambiente alvo, smoke EasyPanel e validacao real
-das fases Home, Clientes/Colaboradores, Notificacoes/Preferencias.
+A migration foi validada em MySQL Docker local controlado e o smoke publico real
+passou no dominio `portal.samacontabil.com.br`. Ainda falta aplicar a migration
+no banco alvo, executar smoke autenticado e validar em dados reais as fases Home,
+Clientes/Colaboradores e Notificacoes/Preferencias.
 ```
+
+## 16. Continuidade 2026-06-12 - Fechamento das pendencias do TXT
+
+Status: implementado e validado local
+
+### Mudancas aplicadas
+
+- Criado orquestrador backend `POST /integrations/acessorias/operational-sync`.
+- Criada aplicacao local de responsaveis conciliados para `client_department_assignments`, sem sobrescrever responsavel ativo divergente.
+- Criado endpoint local `POST /integrations/acessorias/responsibles/apply-client-assignments`.
+- Criado endpoint local `POST /integrations/acessorias/deliveries/apply-to-workspace/bulk`.
+- Home Acessorias passou a priorizar `responsibleUserId` e a retornar aviso quando ha responsaveis pendentes/dados locais defasados.
+- Painel DEV manteve `Integrar` como acao externa unica e adicionou `Aplicar vencimentos` como acao local.
+- Navegacao de clientes foi consolidada em uma unica pagina `Clientes`; rotas antigas redirecionam para `/clientes` ou `/clientes?scope=mine`.
+- Tela `Clientes` passou a usar `scope=all` e `scope=mine`.
+- `GET /collaborators/public` passou a permitir usuario interno autenticado sem `collaborators.read`; cliente externo continua bloqueado.
+- Tela `Colaboradores` usa payload publico para usuario interno sem permissao administrativa e oculta perfis, permissoes, metadados e telefone.
+- Header de notificacoes ganhou `Ler todas` e `Confirmar alertas`.
+- Pagina de notificacoes renomeou `Limpar nao lidas` para `Ler todas`.
+- Criado `GET/PATCH /me/preferences`, persistindo `density`, `startPage` e `reducedMotion` em `user.metadata.portalPreferences`.
+- Tela `Configuracoes` passou a salvar preferencias visuais reais e consumir preferencias de notificacao por tipo.
+- Testes cobrem rejeicao do gestor, rejeicao DEV, calendario desmarcando dia, notificacao final, colaboradores publicos, preferencias e endpoints DEV.
+
+### Validacoes 2026-06-12
+
+| Comando | Resultado |
+|---|---|
+| API `npm.cmd run prisma:validate` | OK; schema valido. O Prisma carregou `.env`, sem imprimir valores. |
+| API `npm.cmd run lint` | OK |
+| API `npm.cmd run build` | OK |
+| API `npm.cmd test -- --runInBand` | OK; 44 suites, 290 testes. |
+| API `npm.cmd run test:e2e` | OK; 1 suite, 136 testes. |
+| Web `npm.cmd run lint` | OK |
+| Web `npm.cmd run build` | OK |
+| Web `npm.cmd test -- --runInBand` | OK; 12 testes de contrato. |
+| Web `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` | OK; 8 testes. |
+| Web `npm.cmd run test:e2e -- --reporter=line` | OK; 21 testes passaram e 1 skip. |
+| `git diff --check` em docs/API/Web | OK |
+
+### Ambiente
+
+- Nenhuma dependencia nova foi instalada nesta rodada.
+- Docker nao foi usado nesta rodada de 2026-06-12.
+- Nao houve smoke autenticado real nesta rodada.
+- Nao houve `prisma migrate deploy` contra banco alvo nesta rodada.
+
+### Veredito apos a continuidade
+
+`Pronto para homologacao controlada`, condicionado a:
+
+- aplicar migrations pendentes no banco alvo;
+- realizar deploy controlado;
+- executar smoke autenticado EasyPanel com credenciais atuais;
+- validar contadores Home/Clientes/Colaboradores/Notificacoes com dados reais.
