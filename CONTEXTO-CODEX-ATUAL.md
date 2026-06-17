@@ -297,3 +297,48 @@ Ainda falta aplicar migration/deploy no ambiente alvo e executar smoke EasyPanel
 - Nao expor nem ler valores de `.env`.
 - A credencial administrativa informada em chat anterior foi rotacionada pelo usuario; nao salvar credenciais em docs/evidencias.
 - Docker ja foi usado nesta etapa para validacao controlada; se usar novamente ou instalar algo em proximas etapas, registrar neste contexto e na auditoria 19.
+
+## Atualizacao 2026-06-12 - Integra-AI busca digitavel de empresa
+
+Status: implementado e validado localmente.
+
+### Mudancas aplicadas
+
+- Web `src/pages/accounting/IntegraAiPage.tsx`:
+  - substituido o select de empresa do importador por um combobox digitavel;
+  - substituido tambem o filtro de empresa da pagina por combobox digitavel com opcao `Todas`;
+  - a busca usa `GET /accounting/integra-ai/workspaces` com `search`, `take=30` e `jobsTake=1`;
+  - a lista inicial continua curta para performance;
+  - ao digitar, o usuario consegue localizar empresas fora da primeira carga;
+  - o import continua enviando o mesmo `company_id`, sem alterar o contrato do upload.
+- Web `tests/e2e/smoke.spec.ts`:
+  - mock do workspace passou a simular carteira limitada na primeira carga;
+  - novo Playwright valida que uma empresa fora da primeira carga aparece ao digitar e fica selecionada.
+- API `src/modules/accounting/accounting.service.spec.ts`:
+  - adicionado teste garantindo que o workspace filtra empresas por `search` e respeita `take`, sem depender da carteira inteira.
+
+### Validacoes executadas nesta rodada
+
+| Projeto | Comando | Resultado |
+|---|---|---|
+| API | `npm.cmd test -- accounting.service.spec.ts --runInBand` | OK; 1 suite, 12 testes. |
+| API | `npm.cmd run lint` | OK |
+| API | `npm.cmd run build` | OK |
+| Web | `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts --grep "Integra-AI"` | OK; 3 testes Playwright. |
+| Web | `npm.cmd run lint` | OK |
+| Web | `npm.cmd run build` | OK |
+| Web | `npm.cmd test` | OK; 12 testes de contrato. |
+| Web | `git diff --check` | OK |
+
+### Ambiente desta rodada
+
+- Nenhuma dependencia nova foi instalada.
+- Docker nao foi usado.
+- Nao houve smoke autenticado real.
+- Nao houve alteracao em `.env`, secrets, cookies ou credenciais.
+
+### Status atual dos arquivos
+
+- `portal-sama-api`: alteracao local em `src/modules/accounting/accounting.service.spec.ts`.
+- `portal-sama-web`: alteracoes locais em `src/pages/accounting/IntegraAiPage.tsx` e `tests/e2e/smoke.spec.ts`.
+- `portal-sama-docs`: `CONTEXTO-CODEX-ATUAL.md` atualizado nesta rodada; auditoria 19 tambem deve refletir esta rodada.

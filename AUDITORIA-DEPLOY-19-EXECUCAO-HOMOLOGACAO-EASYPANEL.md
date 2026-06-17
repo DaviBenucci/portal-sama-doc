@@ -438,3 +438,51 @@ Status: implementado e validado local
 - realizar deploy controlado;
 - executar smoke autenticado EasyPanel com credenciais atuais;
 - validar contadores Home/Clientes/Colaboradores/Notificacoes com dados reais.
+
+## 17. Continuidade 2026-06-12 - Integra-AI busca digitavel de empresas
+
+Status: implementado e validado localmente
+
+### Problema tratado
+
+No fluxo `Contabil > Integra-AI > Importar extrato`, o campo de empresa carregava apenas uma lista limitada. A limitacao e boa para performance, mas impedia localizar uma empresa especifica quando ela nao estava entre os primeiros resultados.
+
+### Mudancas aplicadas
+
+- Web `src/pages/accounting/IntegraAiPage.tsx`:
+  - criado combobox digitavel de empresas reaproveitando o contrato do workspace do Integra-AI;
+  - campo de empresa do importador agora permite digitar e buscar empresas fora da lista inicial;
+  - filtro de empresa da pagina tambem passou a usar combobox digitavel, com opcao `Todas`;
+  - busca remota usa `GET /accounting/integra-ai/workspaces` com `search`, `take=30` e `jobsTake=1`;
+  - upload continua enviando `company_id`, sem alterar o contrato de importacao.
+- Web `tests/e2e/smoke.spec.ts`:
+  - mock passou a simular primeira carga curta;
+  - adicionado Playwright cobrindo empresa que aparece apenas apos digitar no campo.
+- API `src/modules/accounting/accounting.service.spec.ts`:
+  - adicionado teste de contrato do filtro `search` para empresas do workspace.
+
+### Validacoes 2026-06-12
+
+| Comando | Resultado |
+|---|---|
+| API `npm.cmd test -- accounting.service.spec.ts --runInBand` | OK; 1 suite, 12 testes. |
+| API `npm.cmd run lint` | OK |
+| API `npm.cmd run build` | OK |
+| Web `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts --grep "Integra-AI"` | OK; 3 testes Playwright. |
+| Web `npm.cmd run lint` | OK |
+| Web `npm.cmd run build` | OK |
+| Web `npm.cmd test` | OK; 12 testes de contrato. |
+| Web `git diff --check` | OK |
+
+### Ambiente
+
+- Nenhuma dependencia nova foi instalada.
+- Docker nao foi usado nesta rodada.
+- Nao houve smoke autenticado real nesta rodada.
+- Nao houve registro de senha, token, cookie, CNPJ completo de cliente real ou payload bruto de integracao.
+
+### Pendencias apos esta rodada
+
+- Fazer deploy controlado para o ambiente alvo.
+- Executar smoke autenticado real no Integra-AI apos deploy, validando a busca de empresa em carteira grande.
+- Commitar as alteracoes desta rodada quando aprovado.
