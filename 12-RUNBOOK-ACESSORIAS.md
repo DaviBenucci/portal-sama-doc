@@ -67,3 +67,14 @@ Validações obrigatórias:
 - teste unitário ou integração garantindo filtro do mês atual para colaboradores/responsáveis;
 - teste com payload antigo confirmando que dados obsoletos são ignorados;
 - registro dos parâmetros de janela em `AcessoriasSyncRun.metadata`.
+
+## Implementação local - Fase 6
+
+- O sync operacional de entregas em `deliveries/ListAll` envia `DtInitial` como `01/01` do ano atual, `DtFinal` como `31/12` do ano atual e `DtLastDH` limitado ao mesmo ano operacional.
+- Entregas recebidas fora da janela operacional são descartadas antes de `upsert`, usando vencimento, entrega, última alteração externa ou competência como evidência.
+- Backfill histórico de entregas exige `dt_initial` e `dt_final` explícitos; sem datas, o backend retorna `ACESSORIAS_BACKFILL_DATE_WINDOW_REQUIRED`.
+- O sync direto de colaboradores envia `DtInitial`/`DtFinal` do mês atual, mesmo em caminho customizado sem paginação.
+- Colaboradores inativos/desligados antigos são filtrados antes da criação/atualização local. Colaboradores ativos com admissão antiga não são descartados apenas por data de admissão.
+- Responsáveis extraídos de departamentos carregam datas de alteração/desligamento quando o payload da empresa/departamento fornece essa evidência.
+- `AcessoriasSyncRun.metadata` e auditoria registram política de janela, datas, contadores e parâmetros operacionais.
+- Locks de sync pesado foram cobertos por teste unitário para concorrência, expiração por TTL e release.

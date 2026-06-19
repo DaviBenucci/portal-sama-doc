@@ -261,3 +261,306 @@ npm.cmd run build
 - Nenhum segredo real foi lido ou registrado.
 - Campos de acesso do cliente nao armazenam segredo em claro; a modelagem aceita somente `secretCipher` ou `secretRef`.
 - Permissoes de revelacao sensivel foram criadas, mas nao foram concedidas a perfis operacionais comuns como `LEGALIZATION`.
+
+## Proxima fase autorizada
+
+Com a Fase 2 concluida, a continuidade seguiu para a Fase 3 do guia, mantendo a regra de backend antes de frontend final.
+
+## Fase 3 - Fundacao de seguranca do backend
+
+Status final da fase: `CONCLUIDA`
+
+Imprevisto corrigido: a primeira execucao de `npm.cmd run lint` falhou por detalhes nas specs novas (`unbound-method` ao ler metadata de throttle e variaveis descartadas em destructuring). As specs foram ajustadas por descriptor e por `Record<string, unknown>` com `delete`; lint passou em seguida.
+
+Sub-etapa corretiva da Etapa 3.6: as rotas dedicadas de ZapSign sync/webhook ainda nao existem no backend atual e pertencem a Fase 7 do guia. Para nao criar endpoint fora de ordem, a Fase 3 registrou a pendencia como requisito bloqueante da Fase 7: qualquer controller ZapSign criado depois deve nascer com `@Throttle`, CSRF quando autenticado e auditoria. Nesta fase foram limitadas as rotas sensiveis ja existentes: login, refresh, uploads autenticados, assinatura publica interna e sync Acessorias.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 3.1 Validar bootstrap da API | `CONCLUIDA` | `src/app.bootstrap.ts` revisado: prefixo `api-v2`, Helmet, cookie parser, CORS com credenciais, `ValidationPipe`, `HttpExceptionFilter`, `RequestIdInterceptor` e Swagger apenas fora de producao. |
+| 3.2 Revisar schema de ambiente | `CONCLUIDA` | `env.schema.ts` agora exige `CSRF_SECRET` e `CERTIFICATE_ENCRYPTION_KEY` em producao, segredos JWT distintos, cookies seguros em producao e `COOKIE_SECURE=true` quando `COOKIE_SAME_SITE=none`; specs adicionadas. |
+| 3.3 Revisar JWT e refresh token | `CONCLUIDA` | `AuthService` ja mantinha access token curto, refresh rotativo e hash HMAC no banco; `auth.service.spec.ts` e e2e permanecem verdes. |
+| 3.4 Revisar CSRF | `CONCLUIDA` | Mutacoes autenticadas auditadas por varredura de controllers e e2e; `csrf.service.spec.ts` e `test:e2e` validam rejeicao sem token. |
+| 3.5 Revisar guards de permissao | `CONCLUIDA` | Controllers de dominio usam `JwtAuthGuard` + `PermissionsGuard`; e2e validou 401 sem bearer e 403 sem permissao. Excecao justificada: `integrations/acessorias/home-summary` e autenticada, read-only e sem `@Permissions` explicito para servir a Home por perfil. |
+| 3.6 Adicionar rate limit em rotas sensiveis | `CONCLUIDA` | Adicionados throttles explicitos para `auth/refresh`, uploads de documentos/certificados/PDF de contrato e sync/backfill Acessorias; `rate-limit-metadata.spec.ts` cobre login, refresh, upload, assinatura publica e sync Acessorias. |
+| 3.7 Padronizar erros | `CONCLUIDA` | `HttpExceptionFilter` passou a sanitizar mensagens/detalhes antes da resposta; `http-exception.filter.spec.ts` cobre CPF, bearer token e payload longo. |
+| 3.8 Adicionar sanitizacao de logs | `CONCLUIDA` | Criado `common/security/sensitive-data.ts`; `AuditService` reutiliza a sanitizacao para metadados. Specs cobrem keys sensiveis, token bearer, JWT, CPF e base64 longo. |
+| 3.9 Revisar auditoria | `CONCLUIDA` | Auditoria de login/refresh/logout, exports de auditoria, downloads e mutacoes sensiveis revisada; falha de persistencia continua nao quebrando fluxo critico. |
+| 3.10 Executar testes de seguranca base | `CONCLUIDA` | Specs focadas, lint, build e e2e passaram; resultados listados abaixo. |
+
+### Arquivos alterados na Fase 3
+
+- `portal-sama-api/src/common/security/sensitive-data.ts`
+- `portal-sama-api/src/common/security/sensitive-data.spec.ts`
+- `portal-sama-api/src/common/security/rate-limit-metadata.spec.ts`
+- `portal-sama-api/src/common/filters/http-exception.filter.ts`
+- `portal-sama-api/src/common/filters/http-exception.filter.spec.ts`
+- `portal-sama-api/src/config/env.schema.ts`
+- `portal-sama-api/src/config/env.schema.spec.ts`
+- `portal-sama-api/src/modules/audit/audit.service.ts`
+- `portal-sama-api/src/modules/audit/audit.service.spec.ts`
+- `portal-sama-api/src/modules/auth/auth.controller.ts`
+- `portal-sama-api/src/modules/certificates/certificates.controller.ts`
+- `portal-sama-api/src/modules/contracts/contracts.controller.ts`
+- `portal-sama-api/src/modules/documents/documents.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-pipeline.controller.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.controller.ts`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+
+### Comandos da Fase 3
+
+```powershell
+npm.cmd test -- env.schema.spec.ts sensitive-data.spec.ts http-exception.filter.spec.ts audit.service.spec.ts rate-limit-metadata.spec.ts csrf.service.spec.ts auth.service.spec.ts
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+npm.cmd test
+rg -n "@Controller|@UseGuards\(JwtAuthGuard, PermissionsGuard\)|@Public\(|@Throttle|csrfService\.assertValidRequest|@Permissions\(" src\modules -g "*.controller.ts"
+git diff --check
+git status --short
+git diff --stat
+```
+
+### Resultado da Fase 3
+
+- Specs focadas: passaram, 7 suites e 32 testes.
+- `npm.cmd run lint`: falhou inicialmente por specs novas; corrigido e passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run test:e2e`: passou, 1 suite e 136 testes.
+- `npm.cmd test`: passou, 48 suites e 311 testes; uma rodada inicial avisou sobre worker aberto, mas a suite completa posterior executada na Fase 4 passou sem repetir o aviso.
+- `git diff --check`: passou em API e Docs.
+- Varredura de controllers: confirmou guards/permissoes/CSRF nas rotas de dominio e throttles nas rotas sensiveis existentes.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Observacoes de seguranca da Fase 3
+
+- A sanitizacao comum cobre chaves sensiveis, bearer tokens, JWTs, CPF completo e payloads longos com formato base64/base64url.
+- Producoes sem `CSRF_SECRET` dedicado ou sem `CERTIFICATE_ENCRYPTION_KEY` dedicada passam a falhar cedo no bootstrap de configuracao.
+- A excecao `integrations/acessorias/home-summary` permanece apenas autenticada e read-only; caso vire mutavel ou exponha dados administrativos, deve receber permissao explicita antes de avancar.
+- O aviso inicial de worker aberto do Jest nao se repetiu na rodada completa posterior.
+
+## Proxima fase autorizada
+
+Com a Fase 3 concluida, a continuidade deve seguir pela Fase 4 do guia: Clientes, colaboradores e responsabilidades.
+
+## Fase 4 - Clientes, colaboradores e responsabilidades
+
+Status final da fase: `CONCLUIDA`
+
+Imprevistos corrigidos:
+
+- Etapa 4.6: transferencia e encerramento de responsabilidade aceitavam `reason/motivo` vazio. O servico passou a exigir motivo e recebeu testes de rejeicao.
+- Etapa 4.8: Vida da empresa existia apenas como `POST managers/company-life` com permissao generica de historico. Foram adicionados `GET/PATCH managers/company-life/:companyId` e a permissao propria `company_life.read/write`.
+- Etapa 4.9: o dominio `ClientAccessCredential` ja existia no Prisma/RBAC, mas nao tinha API. Foram criados controller, service, DTOs, tipos e testes com listagem mascarada e auditoria.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 4.1 Validar CRUD/listagem de clientes | `CONCLUIDA` | `ClientsService` ja cobria filtros, paginacao, status, soft delete e escopo; `clients.service.spec.ts` permaneceu verde. |
+| 4.2 Validar dashboard de cliente | `CONCLUIDA` | `GET /clients/:id/dashboard` consolidado com documentos, certificados, propostas e contratos; e2e protege rota por bearer/permissao. |
+| 4.3 Completar dados da aba Geral | `CONCLUIDA` | DTO/response de cliente ja retorna atividade, grupo, status, timestamps e aliases legados; specs de cliente verdes. |
+| 4.4 Validar colaboradores ativos | `CONCLUIDA` | `ClientAssignmentsService` usa somente usuarios ativos e internos; adicionado teste que rejeita responsavel inativo antes de gravar responsabilidade. |
+| 4.5 Validar responsabilidades por departamento | `CONCLUIDA` | Create, update, transfer, end e listagem por escopo permanecem cobertos por `client-assignments.service.spec.ts`. |
+| 4.6 Exigir motivo em transferencia/encerramento | `CONCLUIDA` | `reason/motivo` agora e obrigatorio em `end` e `transfer`; specs rejeitam payload sem motivo. |
+| 4.7 Auditar alteracao de responsabilidade | `CONCLUIDA` | Auditoria de create/update/end/transfer mantida; metadados passam pela sanitizacao global da Fase 3. |
+| 4.8 Criar endpoints da Vida da empresa | `CONCLUIDA` | Adicionados `GET managers/company-life/:companyId` e `PATCH managers/company-life/:companyId`; `POST managers/company-life` passou a usar `company_life.write`; e2e cobre bearer/permissao/CSRF. |
+| 4.9 Criar endpoints de acessos do cliente | `CONCLUIDA` | Criados `GET/POST /clients/:clientId/access-credentials`, alias `GET /clients/:clientId/accesses`, `PATCH/DELETE /client-access-credentials/:id`; respostas nunca incluem `secretCipher` nem `secretRef`. |
+| 4.10 Testar escopo mine/all | `CONCLUIDA` | Specs de clientes validam `scope=mine`, leitura por responsavel direto e 403 fora de escopo; acessos do cliente reaproveitam `ClientsService.getById` para escopo. |
+
+### Arquivos alterados na Fase 4
+
+- `portal-sama-api/src/modules/client-assignments/client-assignments.service.ts`
+- `portal-sama-api/src/modules/client-assignments/client-assignments.service.spec.ts`
+- `portal-sama-api/src/modules/clients/client-access-credentials.controller.ts`
+- `portal-sama-api/src/modules/clients/client-access-credentials.service.ts`
+- `portal-sama-api/src/modules/clients/client-access-credentials.service.spec.ts`
+- `portal-sama-api/src/modules/clients/client-access-credentials.types.ts`
+- `portal-sama-api/src/modules/clients/clients.module.ts`
+- `portal-sama-api/src/modules/clients/dto/create-client-access-credential.dto.ts`
+- `portal-sama-api/src/modules/clients/dto/list-client-access-credentials.dto.ts`
+- `portal-sama-api/src/modules/clients/dto/update-client-access-credential.dto.ts`
+- `portal-sama-api/src/modules/managers/managers.controller.ts`
+- `portal-sama-api/src/modules/managers/managers.service.ts`
+- `portal-sama-api/test/app.e2e-spec.ts`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+
+### Comandos da Fase 4
+
+```powershell
+npm.cmd test -- client-access-credentials.service.spec.ts client-assignments.service.spec.ts clients.service.spec.ts
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+npm.cmd test
+git diff --check
+git status --short
+```
+
+### Resultado da Fase 4
+
+- Specs focadas: passaram, 3 suites e 26 testes.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run test:e2e`: passou, 1 suite e 147 testes.
+- `npm.cmd test`: passou, 49 suites e 320 testes.
+- `git diff --check`: passou na API e Docs.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Observacoes de seguranca da Fase 4
+
+- Endpoints de acessos do cliente nao retornam `secretCipher` nem `secretRef`; retornam apenas `hasSecret`, `hasSecretCipher`, `hasSecretRef` e `secretHint`.
+- Criacao, rotacao e arquivamento de acessos registram auditoria especifica em `ClientAccessCredentialAudit` e auditoria global em `AuditService`.
+- Revelacao sensivel continua nao exposta nesta fase; `client_accesses.reveal_sensitive` permanece permissao reservada para fluxo auditado futuro.
+
+## Proxima fase autorizada
+
+Com a Fase 4 concluida, a continuidade deve seguir pela Fase 5 do guia: Documentos, certificados e storage privado.
+
+## Fase 5 - Documentos, certificados e storage privado
+
+Status final da fase: `CONCLUIDA`
+
+Imprevistos corrigidos:
+
+- Etapa 5.6/5.9: o schema atual de `DigitalCertificate` nao possui coluna propria de validade. Para nao abrir migracao fora de necessidade imediata, a validade foi implementada em `metadata.validUntil`, com status derivado nas respostas e alertas no dashboard do cliente.
+- Etapa 5.10: uma rodada completa inicial de `npm.cmd test` passou, mas avisou worker aberto por streams de storage em specs novas. As specs passaram a destruir explicitamente os streams e a suite completa posterior passou sem o aviso.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 5.1 Revisar configuracao de storage | `CONCLUIDA` | Storages de documentos e certificados gravam sob raiz privada, geram somente storage keys relativas, bloqueiam path traversal e aplicam modo restrito best-effort em diretorios/arquivos. Specs novas cobrem armazenamento e rejeicao fora da raiz. |
+| 5.2 Validar upload de documentos | `CONCLUIDA` | `DocumentFileValidatorService` ja validava extensao, MIME, magic bytes, tamanho e hash; `documents.service.spec.ts` e `document-file-validator.service.spec.ts` permaneceram verdes. |
+| 5.3 Validar scanner de malware | `CONCLUIDA` | Scanner existente mantem modos `off`, `best_effort` e `strict`, staging em quarentena, regras estaticas e fallback ClamAV; specs focadas permaneceram verdes. |
+| 5.4 Validar download protegido | `CONCLUIDA` | Criado `buildPrivateDownloadHeaders`; downloads de documentos e certificados usam `private, no-store`, `Pragma`, `Expires`, `nosniff` e `Content-Disposition` com `filename*`. |
+| 5.5 Completar checklist de documentos do cliente | `CONCLUIDA` | Resumo de pendencias agora aceita filtro `department`, separa `required_uploaded` de `required_approved`, retorna `pending_badge`, `pending_departments` e status por pendencia. |
+| 5.6 Validar certificados digitais | `CONCLUIDA` | Certificados aceitam `validUntil/valid_until`, persistem validade em metadata, retornam `status`, `expiresInDays`, `expired` e `expiresSoon`; validacao de arquivo PKCS#12 segue por extensao, MIME, tamanho, hash e assinatura. |
+| 5.7 Validar criptografia de senha de certificado | `CONCLUIDA` | AES-256-GCM permanece em `CertificateCryptoService`, chave fora do banco por `CERTIFICATE_ENCRYPTION_KEY`; listagem/detalhe continuam sem `passwordCipher`. |
+| 5.8 Implementar revelacao auditada | `CONCLUIDA` | Criado `POST /certificates/:id/reveal-password`, exigindo `certificates.manage` + `sensitive.reveal`, CSRF, throttle e auditoria `certificates.password.reveal` sem registrar a senha revelada. |
+| 5.9 Criar alertas de vencimento | `CONCLUIDA` | Dashboard do cliente passou a retornar contadores `certificates.expiring_soon`, `expired` e `validity_not_informed` a partir da validade em metadata. |
+| 5.10 Executar testes do modulo | `CONCLUIDA` | Specs focadas, lint, build, e2e e suite completa passaram; resultados listados abaixo. |
+
+### Arquivos alterados na Fase 5
+
+- `portal-sama-api/src/common/security/download-headers.ts`
+- `portal-sama-api/src/common/security/download-headers.spec.ts`
+- `portal-sama-api/src/common/security/rate-limit-metadata.spec.ts`
+- `portal-sama-api/src/modules/documents/document-storage.service.ts`
+- `portal-sama-api/src/modules/documents/document-storage.service.spec.ts`
+- `portal-sama-api/src/modules/documents/documents.controller.ts`
+- `portal-sama-api/src/modules/documents/documents.service.ts`
+- `portal-sama-api/src/modules/documents/documents.service.spec.ts`
+- `portal-sama-api/src/modules/documents/documents.types.ts`
+- `portal-sama-api/src/modules/documents/dto/required-pending-summary.dto.ts`
+- `portal-sama-api/src/modules/certificates/certificate-storage.service.ts`
+- `portal-sama-api/src/modules/certificates/certificate-storage.service.spec.ts`
+- `portal-sama-api/src/modules/certificates/certificates.controller.ts`
+- `portal-sama-api/src/modules/certificates/certificates.service.ts`
+- `portal-sama-api/src/modules/certificates/certificates.service.spec.ts`
+- `portal-sama-api/src/modules/certificates/certificates.types.ts`
+- `portal-sama-api/src/modules/certificates/dto/create-certificate.dto.ts`
+- `portal-sama-api/src/modules/certificates/dto/update-certificate.dto.ts`
+- `portal-sama-api/src/modules/clients/clients.service.ts`
+- `portal-sama-api/src/modules/clients/clients.service.spec.ts`
+- `portal-sama-api/src/modules/clients/clients.types.ts`
+- `portal-sama-api/test/app.e2e-spec.ts`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+
+### Comandos da Fase 5
+
+```powershell
+npm.cmd test -- download-headers.spec.ts document-storage.service.spec.ts certificate-storage.service.spec.ts documents.service.spec.ts certificates.service.spec.ts clients.service.spec.ts rate-limit-metadata.spec.ts
+npm.cmd test -- document-storage.service.spec.ts certificate-storage.service.spec.ts
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+npm.cmd test
+git diff --check
+git status --short
+```
+
+### Resultado da Fase 5
+
+- Specs focadas: passaram, 7 suites e 67 testes.
+- Specs de storage apos fechamento explicito de stream: passaram, 2 suites e 4 testes.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run test:e2e`: passou, 1 suite e 148 testes.
+- `npm.cmd test`: passou, 52 suites e 330 testes.
+- `git diff --check`: passou na API e Docs.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Observacoes de seguranca da Fase 5
+
+- Download direto por URL publica continua inexistente: arquivos ficam atras de controllers autenticados, com permissao especifica ou token publico apenas para upload/checklist, nao para download.
+- A senha revelada de certificado retorna somente no endpoint dedicado; o audit log recebe apenas metadados e `hasPassword`, nunca o valor sensivel.
+- `sensitive.reveal` permanece permissao altamente restrita; perfis operacionais comuns como `LEGALIZATION` nao recebem essa permissao pelo RBAC padrao.
+- O modo POSIX restrito de arquivo/diretorio e best-effort para Windows e filesystems que ignoram `chmod`, mas a protecao principal continua sendo storage fora de rotas publicas e path traversal bloqueado.
+
+## Proxima fase autorizada
+
+Com a Fase 5 concluida, a continuidade deve seguir pela Fase 6 do guia: Integracao Acessorias com janela temporal correta.
+
+## Fase 6 - Integracao Acessorias com janela temporal correta
+
+Status final da fase: `CONCLUIDA`
+
+Imprevistos corrigidos:
+
+- Etapa 6.2/6.4: o incremental antigo podia pular o sync quando `DtLastDH` ficava velho e exigir backfill. O fluxo operacional agora sempre usa a janela do ano atual, clampando `DtLastDH` para `01/01` do ano corrente quando necessario.
+- Etapa 6.6: o lock ja existia no servico, mas faltava spec unitario direto para concorrencia, expiracao por TTL e release. Foi criado `acessorias-sync-lock.service.spec.ts`.
+- Etapa 6.10: a suite completa paralela passou, mas emitiu aviso transitorio de worker. A rodada posterior com `--runInBand --detectOpenHandles` passou sem apontar handles abertos.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 6.1 Ler runbook Acessorias | `CONCLUIDA` | `12-RUNBOOK-ACESSORIAS.md` revisado e atualizado com a implementacao local da janela temporal. |
+| 6.2 Corrigir janela padrao de obrigacoes | `CONCLUIDA` | `AcessoriasDeliveriesService` envia `DtInitial` em `01/01` do ano atual, `DtFinal` em `31/12` e `DtLastDH` limitado ao ano operacional; spec valida os parametros. |
+| 6.3 Corrigir janela de colaboradores/responsaveis | `CONCLUIDA` | `AcessoriasRegistrationsService` envia `DtInitial/DtFinal` do mes atual para colaboradores e filtra inativos/desligados antigos antes de persistir. |
+| 6.4 Separar backfill historico de sync operacional | `CONCLUIDA` | Backfill de entregas exige `dt_initial` e `dt_final`; sem janela explicita retorna `ACESSORIAS_BACKFILL_DATE_WINDOW_REQUIRED`. |
+| 6.5 Validar filtros pos-consulta | `CONCLUIDA` | Specs cobrem payload antigo de entregas e colaborador desligado antigo; ambos sao contados como `skipped` e nao persistidos no workspace operacional. |
+| 6.6 Validar rate limit e lock | `CONCLUIDA` | Specs de rate limiter permanecem verdes e novo spec do lock cobre concorrencia, TTL e release. |
+| 6.7 Auditar sync | `CONCLUIDA` | Sync runs/auditoria registram politica de janela, datas, contadores, max pages e rate limit; erros continuam sanitizados. |
+| 6.8 Notificar falhas criticas | `CONCLUIDA` | Specs de notificacao DEV permanecem verdes e fluxo de falha incremental continua notificando falhas pesadas/rate limit sem vazar segredo. |
+| 6.9 Atualizar docs do Acessorias | `CONCLUIDA` | Runbook documenta ano atual para entregas, mes atual para colaboradores, backfill manual e filtros pos-consulta. |
+| 6.10 Executar testes Acessorias | `CONCLUIDA` | Specs focadas, lint, build, e2e, suite completa e detectOpenHandles passaram; resultados listados abaixo. |
+
+### Arquivos alterados na Fase 6
+
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-deliveries.service.spec.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-registrations.service.spec.ts`
+- `portal-sama-api/src/modules/integrations/acessorias/acessorias-sync-lock.service.spec.ts`
+- `portal-sama-docs/12-RUNBOOK-ACESSORIAS.md`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+
+### Comandos da Fase 6
+
+```powershell
+npm.cmd test -- acessorias-deliveries.service.spec.ts acessorias-registrations.service.spec.ts acessorias-sync-lock.service.spec.ts acessorias-rate-limiter.service.spec.ts acessorias-scheduler.service.spec.ts acessorias-dev-notification.service.spec.ts
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+npm.cmd test
+npm.cmd test -- --runInBand --detectOpenHandles
+git diff --check
+git status --short
+```
+
+### Resultado da Fase 6
+
+- Specs focadas: passaram, 6 suites e 33 testes.
+- `npm.cmd run lint`: passou.
+- `npm.cmd run build`: passou.
+- `npm.cmd run test:e2e`: passou, 1 suite e 148 testes.
+- `npm.cmd test`: passou, 53 suites e 335 testes; a rodada paralela emitiu aviso de worker encerrado a forca.
+- `npm.cmd test -- --runInBand --detectOpenHandles`: passou, 53 suites e 335 testes, sem handles abertos reportados.
+- `git diff --check`: passou na API e Docs.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Observacoes da Fase 6
+
+- A janela operacional de entregas nao usa mais "ultimos 12 meses"; ela e anual, sempre do ano corrente.
+- Historico antigo deve continuar entrando apenas por backfill manual com datas explicitas e revisao antes de alimentar qualquer fluxo operacional.
+- Colaboradores ativos nao sao descartados apenas por admissao antiga; o filtro mira desligamento/inatividade antiga e datas de alteracao antigas.
+
+## Proxima fase autorizada
+
+Com a Fase 6 concluida, a continuidade deve seguir pela Fase 7 do guia: Contratos, Legalizacao e ZapSign.
