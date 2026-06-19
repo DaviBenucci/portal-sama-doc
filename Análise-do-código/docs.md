@@ -350,7 +350,7 @@ Modelos importantes encontrados:
 
 ### 1. Remover e rotacionar segredos
 
-O ZIP da API contém `.env` com múltiplos valores sensíveis configurados. Isso é o bloqueador mais crítico.
+Há `.env` real nos diretórios locais do legado e da API, com múltiplas credenciais e chaves sensíveis. Os ZIPs atuais visíveis em `portal-sama` não confirmaram `.env`, `.git`, `node_modules` ou `dist`, mas qualquer histórico de pacote, backup compartilhado ou artefato gerado antes da revisão deve ser tratado como risco. Isso continua sendo o bloqueador mais crítico.
 
 Ação necessária:
 
@@ -916,14 +916,14 @@ A documentação também acerta ao dizer que o projeto já passou da fase de “
 1. **Docs arquivadas podem confundir**
    A pasta `_arquivo` contém histórico útil, mas pode levar alguém a acreditar que integrações antigas, como ZapSign PHP, ainda existem.
 
-2. **Algumas informações estão desatualizadas**
+2. **Algumas informações estavam desatualizadas**
    A nova rodada comprovou TypeScript, build Vite, testes contratuais e Playwright local/real. O cuidado pendente deixou de ser "build não comprovado" e passou a ser "build reproduzível em CI/CD com instalação limpa e pacote seguro".
 
 3. **A documentação reconhece o incidente do `.env`**
-   Isso é positivo, mas o projeto ainda precisa tratar isso como bloqueador real, não apenas observação.
+   Isso é positivo, mas o projeto ainda precisa tratar rotação, pacote seguro e registro de incidente como bloqueadores reais, não apenas observações.
 
-4. **Falta matriz final de aceite**
-   Eu adicionaria uma documentação objetiva de go-live:
+4. **Matriz final de aceite criada**
+   A rodada de correção criou documentação objetiva de go-live:
 
    ```md
    docs/08-CHECKLIST-GO-LIVE.md
@@ -934,6 +934,8 @@ A documentação também acerta ao dizer que o projeto já passou da fase de “
    docs/13-RUNBOOK-BACKUP-RESTORE.md
    docs/14-TESTES-HOMOLOGACAO-MVP.md
    ```
+
+   Esses documentos devem virar a fonte operacional de aceite. O `docs.md` continua como diagnóstico executivo e não deve carregar detalhes sensíveis nem evidências brutas.
 
 ---
 
