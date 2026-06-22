@@ -26,7 +26,7 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 
 - Fases 0 a 8: registradas como concluidas no acompanhamento.
 - Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
-- Fase 9: `EM_EXECUCAO`; primeira entrega web de smoke backend implementada e validada localmente em 2026-06-22.
+- Fase 9: `EM_EXECUCAO`; tela web de smoke backend, e2e real da rota e runner autenticado `smoke:phase9` implementados/validados em 2026-06-22.
 - Fase 10: ainda nao autorizada enquanto a Fase 9 nao tiver smoke real/evidencia final.
 
 Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
@@ -59,6 +59,10 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - Navegacao admin recebeu item `Smoke F9`.
 - Teste de contrato web passou a validar a rota e os servicos da Fase 9.
 - `test:e2e:real` passou a cobrir tambem a rota `/dev/fase-9-smoke` apos login real.
+- Criado `scripts/portal-phase9-smoke.mjs` e script `npm.cmd run smoke:phase9` para validar, contra o dominio publico, rota `/dev/fase-9-smoke`, CSRF/login, `/auth/me`, `GET /health`, clientes, contratos, Acessorias e documentos.
+- `smoke:phase9` nunca imprime senha, tokens, CSRF, cookies ou corpo bruto de respostas; a saida fica limitada a status, contagens e ids nao sensiveis.
+- O runner suporta modo read-only por padrao e acoes controladas somente com `--apply-actions` ou `PORTAL_PHASE9_APPLY_ACTIONS=1`: criar contrato `INTERNAL`, contrato `ZAPSIGN` sandbox, sync Acessorias sem aplicar workspace e upload valido/invalido.
+- `homologation:real` passou a incluir `smoke:phase9`, com `--skip-phase9` para rodadas publicas sem credenciais.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -98,6 +102,9 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `npm.cmd run build` - OK apos Fase 9 smoke.
 - `npm.cmd test -- --runInBand` - OK, 13 testes de contrato.
 - `npm.cmd run test:e2e:real` sem credenciais - OK como diagnostico, 2 testes pulados por env ausente.
+- `node --check scripts/portal-phase9-smoke.mjs` - OK.
+- `node --check scripts/portal-real-homologation.mjs` - OK.
+- `npm.cmd run smoke:phase9 -- --json --soft --skip-zapsign --skip-acessorias-sync` - `phase9-route-shell` passou contra `https://portal.samacontabil.com.br/dev/fase-9-smoke`; falhou apenas em `credentials` por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
 - `git diff --check` - OK.
 - Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
 
@@ -106,8 +113,10 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` contra `https://portal.samacontabil.com.br` retornou `ok=true`.
 - Checks publicos aprovados: `public-web` HTTP 200, `api-health` HTTP 200 com `database=up` e `storage=up`, `cors-preflight` HTTP 204, `auth-csrf` HTTP 200 com token/cookie.
 - Checagem Playwright anonima em `https://portal.samacontabil.com.br/dev/fase-9-smoke` redirecionou corretamente para `https://portal.samacontabil.com.br/login` e exibiu `Entrar no portal`.
-- Runner completo `npm.cmd run homologation:real -- --json --soft --evidence-dir .ai-tests/homologation-real-phase9` manteve Fase 9 `EM_EXECUCAO`: `smoke:public` passou, mas `smoke:auth`, `smoke:permissions` e `test:e2e:real` ficaram `blocked` por ausencia local de credenciais/matriz (`PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_REAL_E2E`, `PORTAL_E2E_USERNAME`, `PORTAL_E2E_PASSWORD`, matriz de permissoes).
-- Evidencias locais ignoradas pelo git: `.ai-tests/homologation-real-phase9/homologation-real-20260622T172552Z.json` e `.ai-tests/homologation-real-phase9/homologation-real-20260622T172645Z.json`.
+- `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --skip-phase9 --evidence-dir .ai-tests/homologation-real-phase9` retornou `ok=true` para rodada publica sem credenciais.
+- `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` retornou `ok=false` somente porque `smoke:phase9` ficou `blocked` por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`; `smoke:public` passou.
+- Runner completo sem skips manteve Fase 9 `EM_EXECUCAO`: autenticacao, matriz de permissoes e e2e real ainda dependem de variaveis locais reais (`PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_REAL_E2E`, `PORTAL_E2E_USERNAME`, `PORTAL_E2E_PASSWORD`, matriz de permissoes).
+- Evidencias locais ignoradas pelo git incluem `.ai-tests/homologation-real-phase9/homologation-real-20260622T172552Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T172645Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T195241Z.json` e `.ai-tests/homologation-real-phase9/homologation-real-20260622T195316Z.json`.
 
 ### Operacional Fase 8
 
@@ -157,22 +166,24 @@ Ultimo commit registrado:
 Ultimo commit registrado:
 
 - `b17a167 test: cover phase 9 smoke route in real e2e`
+- `d3bd23e test: add phase 9 authenticated smoke runner`
 
 ### `portal-sama-docs`
 
 Ultimo commit registrado antes desta atualizacao de Fase 9:
 
-- `18b2566 docs: mark phase 8 operational gate complete`
+- `190f815 docs: record phase 9 post deploy smoke`
 
 ## Proximo chat deve fazer
 
 1. Ler primeiro os documentos da raiz listados em `Precedencia obrigatoria`.
 2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
-4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a primeira entrega web esta no commit `73da23f`.
-5. Para concluir formalmente a Fase 9, executar smoke real autenticado com usuario autorizado, preferencialmente `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
-6. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
-7. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a tela/runner web estao nos commits `73da23f`, `b17a167` e `d3bd23e`.
+5. Para concluir formalmente a Fase 9, executar smoke real autenticado com usuario autorizado, preferencialmente `npm.cmd run smoke:phase9 -- --json --soft` primeiro em modo read-only e depois com `PORTAL_PHASE9_APPLY_ACTIONS=1` para as acoes controladas, sem imprimir valores de credenciais.
+6. Depois, executar `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
+7. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
+8. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
