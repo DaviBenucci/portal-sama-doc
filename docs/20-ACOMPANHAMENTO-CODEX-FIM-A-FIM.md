@@ -794,6 +794,7 @@ Commit web:
 - `b17a167 test: cover phase 9 smoke route in real e2e`
 - `d3bd23e test: add phase 9 authenticated smoke runner`
 - `6961179 fix: avoid homologation evidence filename collisions`
+- `f8ebcfa test: write phase 9 smoke evidence files`
 
 | Etapa | Status atual | Evidencia |
 | --- | --- | --- |
@@ -816,6 +817,7 @@ npm.cmd test -- --runInBand
 npm.cmd run build
 npm.cmd run smoke:phase9 -- --json --soft --skip-zapsign --skip-acessorias-sync
 npm.cmd run smoke:phase9 -- --json --soft
+npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke
 npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --skip-phase9 --evidence-dir .ai-tests/homologation-real-phase9
 npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9
 git diff --check
@@ -831,6 +833,8 @@ Resultado dos comandos:
 - `node --check scripts/portal-real-homologation.mjs` - OK.
 - `npm.cmd run smoke:phase9 -- --json --soft --skip-zapsign --skip-acessorias-sync` - `phase9-route-shell` passou contra `https://portal.samacontabil.com.br/dev/fase-9-smoke`; `credentials` falhou somente por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
 - Apos deploy informado em 2026-06-22, `npm.cmd run smoke:phase9 -- --json --soft` confirmou `/dev/fase-9-smoke` em HTTP 200 servindo shell HTML em producao; o unico bloqueio foi ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
+- `smoke:phase9` passou a aceitar `--evidence-dir`/`PORTAL_PHASE9_EVIDENCE_DIR` e gravar JSON sanitizado proprio da Fase 9.
+- `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou `.ai-tests/phase9-smoke/phase9-smoke-20260622T200528083Z.json`; rota publica passou e o unico bloqueio foi ausencia local de credenciais.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --skip-phase9 --evidence-dir .ai-tests/homologation-real-phase9` - OK para smoke publico sem credenciais.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` - `ok=false` somente por `smoke:phase9` bloqueado por credenciais ausentes; `smoke:public` passou.
 - Correcao de robustez do `homologation:real`: o arquivo de evidencia agora inclui milissegundos e tenta sufixo seguro para evitar colisao quando rodadas iniciam no mesmo segundo.
@@ -872,14 +876,14 @@ Comando recomendado para destravar primeiro a parte autenticada read-only sem ex
 ```powershell
 $env:PORTAL_AUTH_USERNAME = '<usuario-teste>'
 $env:PORTAL_AUTH_PASSWORD = '<senha-teste>'
-npm.cmd run smoke:phase9 -- --json --soft
+npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke
 ```
 
 Comando recomendado para as acoes controladas da Fase 9:
 
 ```powershell
 $env:PORTAL_PHASE9_APPLY_ACTIONS = '1'
-npm.cmd run smoke:phase9 -- --json --soft
+npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke
 ```
 
 Para pular uma integracao especifica durante diagnostico controlado, usar `--skip-acessorias-sync` ou `--skip-zapsign`.
@@ -930,4 +934,4 @@ Pendencias imediatas nao bloqueantes:
 2. Registrar rotacao de secrets em controle externo.
 3. Avaliar hardening de tamanho de `CERTIFICATE_ENCRYPTION_KEY` e `ACESSORIAS_TOKEN`.
 4. Registrar que o restore drill usou banco isolado por nome no mesmo host.
-5. Rodar `npm.cmd run smoke:phase9 -- --json --soft` e depois configurar `PORTAL_PHASE9_APPLY_ACTIONS=1` antes de repetir o mesmo comando, com credenciais de teste configuradas por variaveis de ambiente.
+5. Rodar `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` e depois configurar `PORTAL_PHASE9_APPLY_ACTIONS=1` antes de repetir o mesmo comando, com credenciais de teste configuradas por variaveis de ambiente.
