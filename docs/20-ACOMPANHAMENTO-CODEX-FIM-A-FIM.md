@@ -795,6 +795,7 @@ Commit web:
 - `d3bd23e test: add phase 9 authenticated smoke runner`
 - `6961179 fix: avoid homologation evidence filename collisions`
 - `f8ebcfa test: write phase 9 smoke evidence files`
+- `605453f test: include sanitized phase 9 failure details`
 
 | Etapa | Status atual | Evidencia |
 | --- | --- | --- |
@@ -835,6 +836,10 @@ Resultado dos comandos:
 - Apos deploy informado em 2026-06-22, `npm.cmd run smoke:phase9 -- --json --soft` confirmou `/dev/fase-9-smoke` em HTTP 200 servindo shell HTML em producao; o unico bloqueio foi ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
 - `smoke:phase9` passou a aceitar `--evidence-dir`/`PORTAL_PHASE9_EVIDENCE_DIR` e gravar JSON sanitizado proprio da Fase 9.
 - `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou `.ai-tests/phase9-smoke/phase9-smoke-20260622T200528083Z.json`; rota publica passou e o unico bloqueio foi ausencia local de credenciais.
+- Rodadas autenticadas com `PORTAL_PHASE9_APPLY_ACTIONS=1` criaram `.ai-tests/phase9-smoke/phase9-smoke-20260622T205252516Z.json` e `.ai-tests/phase9-smoke/phase9-smoke-20260622T205313213Z.json`.
+- Nessas rodadas autenticadas passaram: rota `/dev/fase-9-smoke`, CSRF/login, `/auth/me`, health, clientes, contratos, resumo Acessorias, documentos, contrato `INTERNAL`, contrato `ZAPSIGN` sandbox, rejeicao do SVG invalido e logout.
+- Permaneceram falhas: `acessorias-controlled-sync` HTTP 409 e `upload-valid-document` HTTP 503. A Fase 9 segue `EM_EXECUCAO` ate diagnostico/correcao desses dois pontos.
+- O runner do commit `605453f` passou a anexar `code/message/details` publicos e sanitizados nas falhas para a proxima rodada identificar a causa sem imprimir corpo bruto.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --skip-phase9 --evidence-dir .ai-tests/homologation-real-phase9` - OK para smoke publico sem credenciais.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` - `ok=false` somente por `smoke:phase9` bloqueado por credenciais ausentes; `smoke:public` passou.
 - Correcao de robustez do `homologation:real`: o arquivo de evidencia agora inclui milissegundos e tenta sufixo seguro para evitar colisao quando rodadas iniciam no mesmo segundo.
@@ -865,10 +870,11 @@ Evidencia de bloqueio autenticado:
 
 Pendencias para concluir formalmente a Fase 9:
 
-- Se o smoke for executado dentro do container/servico web, fazer deploy do web contendo os commits `d3bd23e` e `6961179`; se for executado localmente, o runner ja consegue bater no dominio publico.
+- Se o smoke for executado dentro do container/servico web, fazer deploy do web contendo os commits `d3bd23e`, `6961179`, `f8ebcfa` e `605453f`; se for executado localmente, o runner ja consegue bater no dominio publico.
 - Executar smoke autenticado com usuario autorizado em `/dev/fase-9-smoke`.
 - Registrar evidencia visual/logica autenticada de: health, `/auth/me`, clientes, contratos, Acessorias e documentos.
-- Executar pelo menos um teste controlado de contrato interno, um contrato ZapSign sandbox/mock se o ambiente permitir, um sync Acessorias sem aplicar workspace e um upload valido/invalido.
+- Corrigir ou justificar os failures atuais: sync Acessorias controlado HTTP 409 e upload PDF valido HTTP 503.
+- Executar novamente as acoes controladas com o runner `605453f` para capturar detalhes sanitizados e confirmar contrato interno, contrato ZapSign sandbox, sync Acessorias sem aplicar workspace e upload valido/invalido.
 - Registrar screenshots ou logs sem segredos.
 
 Comando recomendado para destravar primeiro a parte autenticada read-only sem expor valores no output:
