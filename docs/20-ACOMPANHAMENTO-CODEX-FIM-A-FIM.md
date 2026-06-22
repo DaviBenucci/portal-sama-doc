@@ -768,7 +768,65 @@ npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-
 
 ## Proxima fase autorizada
 
-Pela precedencia dos documentos da raiz, a Fase 9 passa a estar formalmente autorizada apos a conclusao real da Fase 8. A continuidade deve iniciar a Fase 9 seguindo o guia raiz, sem pular subetapas e preservando as evidencias operacionais.
+Pela precedencia dos documentos da raiz, a Fase 9 passou a estar formalmente autorizada apos a conclusao real da Fase 8. Em 2026-06-22, a Fase 9 foi iniciada com uma tela operacional de smoke backend no frontend.
+
+## Fase 9 - Frontend minimo apenas para validar backend
+
+Status atual da fase: `EM_EXECUCAO`
+
+Status tecnico local: primeira entrega implementada e validada no `portal-sama-web`. Status formal: pendente de smoke real apos deploy, com evidencia de tela/logs sem segredos.
+
+Arquivos alterados:
+
+- `portal-sama-web/src/pages/dev/Phase9SmokePage.tsx`
+- `portal-sama-web/src/services/health.service.ts`
+- `portal-sama-web/src/types/health.ts`
+- `portal-sama-web/src/app/router.tsx`
+- `portal-sama-web/src/components/layout/navigation.tsx`
+- `portal-sama-web/scripts/web-contract-tests.mjs`
+
+Commit web:
+
+- `73da23f feat: add phase 9 backend smoke screen`
+
+| Etapa | Status atual | Evidencia |
+| --- | --- | --- |
+| 9.1 Criar tela simples de health | `CONCLUIDA` local | Rota `/dev/fase-9-smoke` chama `GET /health` via `checkApiHealth`, preservando status HTTP para exibir `503` sem mascarar falha. |
+| 9.2 Criar login simples | `CONCLUIDA` local | Login existente segue em `LoginPage`; smoke valida sessao com `/auth/me` via `loadCurrentUser`. |
+| 9.3 Criar tela simples de clientes | `CONCLUIDA` local | Smoke lista clientes via `listClients({ take: 5 })` e exibe total/linhas retornadas. |
+| 9.4 Criar tela simples de contrato | `CONCLUIDA` local | Smoke lista contratos e cria contrato de validacao com provider `INTERNAL` ou `ZAPSIGN` sandbox por clique explicito. |
+| 9.5 Criar tela simples Acessorias | `CONCLUIDA` local | Smoke consulta `getAcessoriasHomeSummary` e oferece sync controlado com `runAcessoriasOperationalSync({ applyWorkspace: false })`, protegido por confirmacao. |
+| 9.6 Criar tela simples de upload | `CONCLUIDA` local | Smoke lista documentos e envia arquivo com `uploadClientDocument` para cliente selecionado. |
+| 9.7 Nao polir layout ainda | `CONCLUIDA` local | Implementacao usa componentes existentes (`panel`, `stat-grid`, `StatusBadge`) e nao cria design system final. |
+| 9.8 Registrar evidencias | `EM_EXECUCAO` | Evidencias locais registradas abaixo; falta evidencia real em ambiente alvo apos deploy. |
+
+Comandos executados:
+
+```powershell
+npm.cmd run lint
+npm.cmd test -- --runInBand
+npm.cmd run build
+git diff --check
+```
+
+Resultado dos comandos:
+
+- `npm.cmd run lint` - OK.
+- `npm.cmd test -- --runInBand` - OK, 13 testes de contrato.
+- `npm.cmd run build` - OK.
+- `git diff --check` - OK.
+
+Pendencias para concluir formalmente a Fase 9:
+
+- Fazer deploy do web contendo o commit `73da23f`.
+- Acessar `/dev/fase-9-smoke` com usuario autorizado.
+- Registrar evidencia visual/logica de: health, `/auth/me`, clientes, contratos, Acessorias e documentos.
+- Executar pelo menos um teste controlado de contrato interno, um contrato ZapSign sandbox/mock se o ambiente permitir, um sync Acessorias sem aplicar workspace e um upload valido/invalido.
+- Registrar screenshots ou logs sem segredos.
+
+## Proxima fase autorizada
+
+A Fase 10 ainda nao esta formalmente autorizada. Pela regra do guia raiz, ela so pode iniciar depois que a Fase 9 estiver `CONCLUIDA`, com smoke real e evidencia registrada.
 
 ## Contexto para o proximo chat
 
@@ -790,8 +848,8 @@ Estado atual para continuidade:
 - Fase 7 ZapSign foi implementada e validada localmente.
 - Fase 8 foi concluida com evidencia real no EasyPanel: `ok=true`, `failed=0`, `blocked=0`.
 - Existe `npm.cmd run ops:phase8`/`npm run ops:phase8` para reexecutar os gates reais; ele nao libera Fase 8 com skips/dry-run.
-- Fase 9 esta autorizada formalmente como proxima fase.
-- O proximo trabalho deve iniciar Fase 9 conforme o guia raiz e preservar/copy-out da evidencia operacional da Fase 8.
+- Fase 9 esta `EM_EXECUCAO`; rota `/dev/fase-9-smoke` foi implementada no web e validada localmente.
+- O proximo trabalho deve fazer deploy do web e executar smoke real da Fase 9, preservando/copy-out da evidencia operacional da Fase 8.
 - Nao usar docs auxiliares para sobrepor a raiz.
 - Nao iniciar nova fase sem registrar status, escopo, comandos e evidencias.
 
@@ -801,3 +859,4 @@ Pendencias imediatas nao bloqueantes:
 2. Registrar rotacao de secrets em controle externo.
 3. Avaliar hardening de tamanho de `CERTIFICATE_ENCRYPTION_KEY` e `ACESSORIAS_TOKEN`.
 4. Registrar que o restore drill usou banco isolado por nome no mesmo host.
+5. Fazer deploy do commit web `73da23f` e rodar `/dev/fase-9-smoke` contra o ambiente alvo.

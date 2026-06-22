@@ -26,7 +26,8 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 
 - Fases 0 a 8: registradas como concluidas no acompanhamento.
 - Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
-- Fase 9: formalmente autorizada como proxima fase do roteiro, respeitando a ordem e os escopos do guia raiz.
+- Fase 9: `EM_EXECUCAO`; primeira entrega web de smoke backend implementada e validada localmente em 2026-06-22.
+- Fase 10: ainda nao autorizada enquanto a Fase 9 nao tiver smoke real/evidencia final.
 
 Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
@@ -48,6 +49,15 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - Tela de contratos exibe provider, ambiente, status/link ZapSign, envio externo e sincronizacao.
 - Pagina publica de assinatura trata contrato ZapSign como assinatura externa.
 - Services, tipos e schemas de contrato foram atualizados para provider/envelope ZapSign.
+
+### Web - Fase 9 smoke backend
+
+- Criada rota autenticada `/dev/fase-9-smoke`.
+- Criados `src/services/health.service.ts` e `src/types/health.ts` para consultar `GET /health` sem mascarar HTTP 503.
+- Criada `src/pages/dev/Phase9SmokePage.tsx` com checks de health, `/auth/me`, clientes, contratos, Acessorias e documentos.
+- A tela lista dados via backend e deixa acoes mutaveis sob clique explicito: criar contrato `INTERNAL`/`ZAPSIGN` sandbox, executar sync Acessorias controlado sem aplicar workspace, e enviar documento para cliente.
+- Navegacao admin recebeu item `Smoke F9`.
+- Teste de contrato web passou a validar a rota e os servicos da Fase 9.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -83,9 +93,9 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 
 ### Web
 
-- `npm.cmd run lint` - OK na rodada da Fase 7.
-- `npm.cmd run build` - OK na rodada da Fase 7.
-- `npm.cmd test -- --runInBand` - OK, 12 testes de contrato.
+- `npm.cmd run lint` - OK apos Fase 9 smoke.
+- `npm.cmd run build` - OK apos Fase 9 smoke.
+- `npm.cmd test -- --runInBand` - OK, 13 testes de contrato.
 - `git diff --check` - OK.
 - Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
 
@@ -136,22 +146,23 @@ Ultimo commit registrado:
 
 Ultimo commit registrado:
 
-- `137b8fd feat: surface zapsign contract flow`
+- `73da23f feat: add phase 9 backend smoke screen`
 
 ### `portal-sama-docs`
 
-Ultimo commit registrado antes desta atualizacao de evidencia:
+Ultimo commit registrado antes desta atualizacao de Fase 9:
 
-- `fece4cc docs: record phase 8 gate status`
+- `18b2566 docs: mark phase 8 operational gate complete`
 
 ## Proximo chat deve fazer
 
 1. Ler primeiro os documentos da raiz listados em `Precedencia obrigatoria`.
 2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
-4. Antes de iniciar Fase 9, garantir que este registro de evidencia tenha sido commitado no `portal-sama-docs`.
-5. Se a Fase 9 for iniciada, seguir o guia raiz, sem pular subetapas e sem ignorar os avisos nao bloqueantes listados acima.
-6. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a primeira entrega web esta no commit `73da23f`.
+5. Para concluir formalmente a Fase 9, executar smoke real apos deploy em `/dev/fase-9-smoke` com usuario autorizado, registrando resultado/screenshot/logs sem segredos.
+6. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
+7. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
