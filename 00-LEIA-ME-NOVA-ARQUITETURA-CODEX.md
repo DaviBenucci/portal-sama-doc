@@ -18,6 +18,16 @@ Este pacote documental foi criado para orientar a conclusão da nova arquitetura
 5. [`19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`](./19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md)
 6. [`20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`](./20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md)
 
+## Precedencia documental
+
+Os documentos Markdown localizados na raiz deste workspace sao a fonte normativa principal para produto, arquitetura, seguranca, QA e continuidade do Codex. Em caso de conflito, eles prevalecem sobre documentos auxiliares em `docs/`, `evidencias/`, auditorias antigas ou registros de acompanhamento.
+
+Precedencia pratica:
+
+1. Documentos de decisao da raiz: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
+2. Guia operacional da raiz: `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, usado para ordenar fases, status permitidos e evidencias.
+3. Documentos em `docs/`, usados como acompanhamento, matriz, checklist e evidencias; eles nao podem liberar uma fase se conflitarem com os documentos de maior precedencia.
+
 ## Decisão central
 
 A nova arquitetura não deve reescrever o Portal Sama ignorando o legado. O legado deve ser tratado como **fonte de regra de negócio, fluxo operacional e UX validada**, enquanto a nova arquitetura deve ser tratada como **fundação técnica segura, testável e escalável**.

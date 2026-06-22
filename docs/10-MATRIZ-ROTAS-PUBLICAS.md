@@ -6,9 +6,16 @@ Status base: smoke público real aprovado em 2026-06-19 para frontend, health, C
 
 | Fluxo | Rota frontend atual | Endpoint API relacionado | Estado |
 | --- | --- | --- | --- |
-| Assinatura pública | `/assinatura/:token` | `/api-v2/public/signatures/:token` | API existe; link backend corrigido em 2026-06-19 |
+| Assinatura publica interna | `/assinatura/:token` | `/api-v2/public/signatures/:token` e `/api-v2/public/signatures/:token/sign` | Provider `INTERNAL`; API existe; link backend corrigido em 2026-06-19 |
+| Assinatura ZapSign | `/assinatura/:token` redireciona/mostra link externo | `/api-v2/public/signatures/:token` | Provider `ZAPSIGN`; POST interno de assinatura e bloqueado |
 | Proposta pública | `/onboarding/publico/proposta/:token` | `/api-v2/public/proposals/:token` | API existe; link backend corrigido em 2026-06-19 |
 | Documentos públicos | `/onboarding/publico/documentos/:token` | `/api-v2/public/onboarding/documents/:token` | Rota atual usada no frontend |
+
+## Rotas publicas externas
+
+| Origem | Endpoint API | Estado |
+| --- | --- | --- |
+| ZapSign webhook | `POST /api-v2/webhooks/zapsign` | Implementado em 2026-06-22; exige segredo em header e aplica throttle 20/min |
 
 ## Links legados encontrados
 
@@ -29,6 +36,7 @@ Status base: smoke público real aprovado em 2026-06-19 para frontend, health, C
 - [ ] Auditoria de IP, user-agent e evento.
 - [ ] Mensagens de erro não devem revelar se entidade interna existe.
 - [ ] Bot protection em ações sensíveis antes de produção ampla.
+- [x] Webhook ZapSign rejeita chamada sem segredo configurado/valido.
 
 ## Testes de aceite
 
@@ -37,6 +45,7 @@ Status base: smoke público real aprovado em 2026-06-19 para frontend, health, C
 - [x] Token revogado mostra estado amigável e não expõe dados em smoke Playwright mockado.
 - [ ] Upload público rejeita extensão, MIME e assinatura inválidos.
 - [ ] Assinatura pública registra evidência e revoga token quando aplicável.
+- [x] Contrato `ZAPSIGN` bloqueia assinatura publica interna e preserva link externo do provedor.
 - [ ] Proposta pública registra aceite/ajuste/rejeição com auditoria.
 
 ## Implementações iniciadas em 2026-06-19

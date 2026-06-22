@@ -1,13 +1,13 @@
 # Checklist Go-Live Portal Sama
 
-Status base: atualização Codex de 2026-06-19.
+Status base: atualizacao Codex de 2026-06-22.
 
 ## Já comprovado
 
 - [x] API NestJS compila.
 - [x] ESLint da API passa.
-- [x] Testes unitários da API passam: 44 suítes / 291 testes.
-- [x] E2E da API passa: 1 suíte / 136 testes.
+- [x] Testes unitarios da API passam: 56 suites / 347 testes.
+- [x] E2E da API passa: 1 suite / 148 testes.
 - [x] `prisma validate` passa.
 - [x] Migrações aplicam em MySQL descartável: 30 migrações.
 - [x] Seed/RBAC aplica em MySQL descartável.
@@ -28,11 +28,12 @@ Status base: atualização Codex de 2026-06-19.
 - [ ] Validar `prisma migrate deploy` no banco alvo.
 - [ ] Validar seed/RBAC no banco alvo.
 - [ ] Desativar, trocar ou restringir bootstrap admin.
-- [ ] Validar `ops:readiness` no ambiente alvo.
+- [ ] Validar `ops:readiness` no ambiente alvo; rodada local de 2026-06-22 passou em banco/migrations/RBAC/storage, mas falta usuario DEV/ADMIN ativo, HTTPS/CORS produtivo e ClamAV strict.
+- [ ] Executar `ops:phase8` no ambiente alvo com backup real, verify e restore drill apply em banco/storage isolados; o comando existe desde 2026-06-22 e bloqueia skips/dry-run.
 - [ ] Colocar scanner de upload em modo `strict` e comprovar ClamAV/EICAR.
-- [ ] Executar backup, verify e restore drill.
+- [ ] Executar backup, verify e restore drill com dump real; ensaio local sintetico de storage passou em 2026-06-22 com `--skip-database`.
 - [x] Corrigir links públicos gerados pelo backend para rotas React atuais.
-- [ ] Decidir ZapSign: implementar agora ou retirar do escopo MVP.
+- [x] ZapSign implementado no MVP com provider externo, webhook, sync e bloqueio de assinatura interna para contratos `ZAPSIGN`.
 - [ ] Homologar Acessórias com token/payload real e volume representativo.
 - [ ] Revisar escopo por objeto/cliente nos endpoints com IDs.
 - [ ] Rodar matriz completa de permissões por perfil.
@@ -52,3 +53,11 @@ Status base: atualização Codex de 2026-06-19.
 - [x] Backend passou a gerar `/onboarding/publico/proposta/:token` para propostas públicas.
 - [x] Frontend ganhou redirects compatíveis para `/Legalizacao/assinatura.html?token=...` e `/Onboarding/proposta-cliente.html?token=...`.
 - [x] `.dockerignore` da API e do Web endurecidos contra `.env`, `.git`, pacotes, dumps, backups, logs e artefatos de teste.
+
+## Implementacoes iniciadas em 2026-06-22
+
+- [x] ZapSign conectado a contratos por `POST /api-v2/contracts/:id/send-signature`, `POST /api-v2/contracts/:id/zapsign/sync` e `POST /api-v2/webhooks/zapsign`.
+- [x] Contrato de API para frontend congelado em `docs/21-CONTRATO-API-FRONTEND.md`.
+- [x] Orquestrador `npm.cmd run ops:phase8` criado para consolidar readiness/schema/secrets/backup/verify/restore sem liberar Fase 8 com skips.
+- [x] `ops:secrets:check` passou a validar ZapSign com `--require-zapsign`.
+- [ ] Homologar ZapSign com token e webhook reais no ambiente alvo.

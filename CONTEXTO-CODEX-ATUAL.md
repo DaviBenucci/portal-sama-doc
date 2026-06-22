@@ -1,344 +1,199 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-06-12 11:40 -03:00
-Sessao atual: Homologacao EasyPanel Acessorias - fechamento local das pendencias do TXT
+Atualizado em: 2026-06-22
+Sessao atual: continuidade da implementacao fim a fim do Portal Sama apos conciliacao de precedencia documental.
 
-## Objetivo ativo
+## Precedencia obrigatoria
 
-Continuar a homologacao EasyPanel pos-integracao da Acessorias, seguindo:
+Os documentos Markdown da raiz do workspace tem precedencia sobre registros auxiliares em `docs/`, `evidencias/` e auditorias antigas.
 
-- `README-HOMOLOGACAO-EASYPANEL.md`
-- `PROMPT-CODEX-HOMOLOGACAO-EASYPANEL-ACESSORIAS.md`
-- `AUDITORIA-DEPLOY-17-HOMOLOGACAO-EASYPANEL-ACESSORIAS-POS-INTEGRACAO.md`
-- `AUDITORIA-DEPLOY-18-PLANO-CORRECAO-HOMOLOGACAO-EASYPANEL.md`
-- `AUDITORIA-DEPLOY-19-TEMPLATE-EXECUCAO-HOMOLOGACAO-EASYPANEL.md`
-- registro em `AUDITORIA-DEPLOY-19-EXECUCAO-HOMOLOGACAO-EASYPANEL.md`
+Ordem pratica:
 
-Nao recomecar a auditoria do zero. Prosseguir das pendencias listadas abaixo.
+1. `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`
+2. `12-RUNBOOK-ACESSORIAS.md`
+3. `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`
+4. `16-BACKEND-API-BANCO-DETALHADO.md`
+5. `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`
+6. `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`
+7. `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`
+8. `CONTEXTO-CODEX-ATUAL.md`
+9. `Testes-da-aplicação-DEPLOY.md`
+10. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
 
-## Branches atuais
+Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase se conflitarem com a raiz.
 
-- `portal-sama-docs`: `main`
-- `portal-sama-api`: `main`
-- `portal-sama-web`: `main`
+## Estado formal do roteiro
 
-## Contexto lido nesta etapa
+- Fases 0 a 7: registradas como concluidas no acompanhamento.
+- Fase 8: `BLOQUEADA` formalmente apos conciliacao.
+- Fase 9: nao esta formalmente autorizada enquanto a Fase 8 seguir bloqueada.
 
-- `README-HOMOLOGACAO-EASYPANEL.md`
-- `PROMPT-CODEX-HOMOLOGACAO-EASYPANEL-ACESSORIAS.md`
-- `AUDITORIA-DEPLOY-17-HOMOLOGACAO-EASYPANEL-ACESSORIAS-POS-INTEGRACAO.md`
-- `AUDITORIA-DEPLOY-18-PLANO-CORRECAO-HOMOLOGACAO-EASYPANEL.md`
-- `AUDITORIA-DEPLOY-19-TEMPLATE-EXECUCAO-HOMOLOGACAO-EASYPANEL.md`
-- `00-LEIA-ME-PARA-IA-MVP.md`
-- `01-ESTADO-ATUAL-CODIGO-DOCUMENTACAO.md`
-- `02-PLANO-FECHAMENTO-MVP.md`
-- `03-CONTRATO-ACESSORIAS-OPERACIONAL.md`
-- `04-DIVERGENCIAS-DOCS-CODIGO.md`
-- `05-PROMPT-CODEX-FECHAMENTO-MVP.md`
-- `06-NOTIFICACOES-WEB-PUSH-MVP.md`
-- `07-PROMPT-CODEX-PIPELINE-ACESSORIAS-PERSISTENCIA-PUSH-DEV.md`
-- `AUDITORIA-DEPLOY-13-HOMOLOGACAO-LOCAL-ACESSORIAS-DOCKER.md`
-- `AUDITORIA-DEPLOY-16-EXECUCAO-CORRECOES-GO-LIVE.md`
-- `evidencias/entrada/Homolacao-portal-sama-easypanel.txt`
-- screenshots em `evidencias/screenshots/`
+Motivo do bloqueio: as validacoes locais da Fase 8 foram executadas, mas o criterio da raiz exige readiness, schema, secrets, backup e restore drill reais no ambiente alvo ou bloqueio externo explicitamente aceito.
 
-## Fase 0
+## Implementado recentemente
 
-Concluida.
+### API - Fase 7 ZapSign
 
-- Worktrees conferidos em docs/API/web.
-- Validacao inicial da API: lint OK, build OK, testes OK.
-- Validacao inicial do Web: lint OK, build OK, contratos OK.
-- Screenshots/evidencias analisados para reproduzir os sintomas documentados.
+- Provider ZapSign criado em `portal-sama-api/src/modules/contracts/providers/zapsign/`.
+- `ZapsignClient`, mapper, service, controller de webhook e specs unitarios adicionados.
+- `ContractsModule` passou a suportar `INTERNAL` e `ZAPSIGN`.
+- `POST /contracts/:id/send-signature` envia internamente ou via ZapSign.
+- `POST /contracts/:id/zapsign/sync` sincroniza status externo.
+- `POST /webhooks/zapsign` publico exige segredo por header, aplica throttle e confirma status via consulta ativa.
+- Assinatura publica interna e bloqueada para contrato `ZAPSIGN`.
+- Auditoria ZapSign registra eventos started/succeeded/failed/webhook/signed sem token bruto.
 
-## Implementado nesta sessao
+### Web - Fase 7 ZapSign
 
-### API
+- Tela de contratos exibe provider, ambiente, status/link ZapSign, envio externo e sincronizacao.
+- Pagina publica de assinatura trata contrato ZapSign como assinatura externa.
+- Services, tipos e schemas de contrato foram atualizados para provider/envelope ZapSign.
 
-- Adicionado status Prisma `PENDING_DEV` em `AccessRequestStatus`.
-- Criada migration:
-  `prisma/migrations/20260611130000_add_access_request_pending_dev/migration.sql`.
-- Fluxo de solicitacoes de acesso atualizado:
-  - colaborador cria `PENDING_MANAGER`;
-  - gestor aprova colaborador e encaminha para `PENDING_DEV`;
-  - gestor solicitando para si cria pedido `PENDING_DEV`;
-  - DEV/ADMIN/TI fazem aprovacao/rejeicao final;
-  - listagem de pendencias separa `PENDING_MANAGER` para gestor e `PENDING_DEV` para decisores privilegiados.
-- `getMyLatest` passou a contemplar tambem solicitacoes feitas por gestor.
-- Notificacoes do fluxo foram ajustadas para diferenciar aprovacao do gestor e aprovacao final.
-- Conciliacao de responsaveis Acessorias ficou mais restrita:
-  - match exato por email/username so auto-confirma se o departamento local combina com o departamento fonte;
-  - alias confirmado tambem passa a respeitar departamento;
-  - divergencia vira `PENDING_REVIEW`.
-- Clientes:
-  - `ListClientsDto` ganhou `scope`, `mine`, `myClientsOnly` e `my_clients_only`;
-  - `scope=mine` restringe a cliente proprio ou atribuicoes ativas onde o usuario e responsavel/gestor;
-  - `scope=all` continua significando "todos permitidos pelo backend", sem acesso global para perfil nao privilegiado.
-- Colaboradores:
-  - `GET /collaborators/public` e `visibility=company_public` implementados;
-  - payload publico interno nao retorna roles, permissions, metadata, phone/telefone;
-  - apos a continuidade de 2026-06-12, usuario interno autenticado sem `collaborators.read` pode usar a visao publica; cliente externo segue bloqueado.
-- Notificacoes:
-  - `MAX_TAKE` reduzido para 100;
-  - criacao/teste de notificacao agora poda excedentes por chave operacional;
-  - `PATCH /notifications/alert-all` implementado para confirmar alertas em massa;
-  - evento SSE `notifications.clear_alerts` adicionado.
+### Docs - Fase 8 e conciliacao
 
-### Web
+- Criado `docs/21-CONTRATO-API-FRONTEND.md`.
+- Atualizados `docs/08-CHECKLIST-GO-LIVE.md`, `docs/09-MATRIZ-PERMISSOES-RBAC.md`, `docs/10-MATRIZ-ROTAS-PUBLICAS.md` e `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`.
+- `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md` recebeu a secao `Precedencia documental`.
+- `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` foi corrigido: Fase 8 reclassificada para `BLOQUEADA`, e Fase 9 marcada como nao autorizada formalmente.
 
-- Tela DEV Acessorias simplificada:
-  - somente um botao externo/API de integracao ficou exposto: `Integrar`;
-  - demais botoes visiveis agora sao diagnosticos, locais ou reconciliacoes internas.
-- Tipo `AccessRequestStatus` passou a incluir `PENDING_DEV`.
-- Tela de solicitacao de acesso:
-  - calendario multi-dia proprio substituiu o date picker nativo;
-  - gestor pode selecionar o proprio usuario ativo para solicitar acesso para si;
-  - painel de aprovacoes usa `PENDING_MANAGER` para gestor e `PENDING_DEV` para DEV/ADMIN/TI;
-  - estatisticas consideram `PENDING_MANAGER` + `PENDING_DEV`.
-- Clientes:
-  - a pagina principal `/clientes` ganhou toggle `Todos permitidos` / `Ver meus clientes`;
-  - `/clientes/visao-geral` redireciona para `/clientes`;
-  - `/departamentos/clientes` redireciona para `/clientes?scope=mine`;
-  - services/types enviam `scope=mine` ao backend.
-- Colaboradores:
-  - services/types conhecem `listPublicCollaborators()` e `visibility=company_public`.
-- Notificacoes:
-  - pagina ganhou botao `Confirmar alertas`;
-  - service chama `PATCH /notifications/alert-all`;
-  - stream invalida cache tambem para `notifications.clear_alerts`.
-- Toasts globais:
-  - `NotificationToasts` tambem invalida cache ao receber `notifications.clear_alerts`.
-- Playwright:
-  - criada `tests/e2e/access-requests.spec.ts`;
-  - cobre gestor solicitando para si com status `PENDING_DEV`;
-  - cobre DEV aprovando solicitacao `PENDING_DEV`;
-  - cobre painel DEV expondo `Integrar` sem botoes dispersos de previa/importacao/backfill;
-  - cobre contratos de `Ver meus clientes` e `Confirmar alertas`.
+### API - Orquestracao operacional Fase 8
 
-### Docs
+- Criado `portal-sama-api/scripts/run-operational-phase8.js`.
+- Adicionado `npm.cmd run ops:phase8`.
+- Corrigida a invocacao dos sub-scripts no Windows: o orquestrador agora usa `npm_execpath` quando disponivel e `cmd.exe /c npm.cmd` como fallback, evitando `spawnSync npm.cmd EINVAL`.
+- O parse das saidas JSON dos subchecks foi endurecido: o orquestrador agora parseia a saida bruta antes de sanitizar/truncar e sanitiza recursivamente o objeto parseado, evitando falso positivo se a saida real ultrapassar o limite textual.
+- O comando orquestra readiness, schema, secrets, backup, verify e restore drill.
+- Ele exige `ops:secrets:check` com `--require-integrations`, `--require-web-push` e `--require-zapsign`.
+- Ele exige backup com dump de banco e storage archive, alem de restore drill em modo apply para banco e storage isolados.
+- Skips, alvo ausente ou dry-run deixam a Fase 8 `BLOQUEADA`; isso e intencional para nao liberar Fase 9 por acidente.
+- `ops:secrets:check` passou a aceitar `--require-zapsign` e validar `ZAPSIGN_API_TOKEN`, `ZAPSIGN_API_TOKEN_SANDBOX` quando aplicavel e `ZAPSIGN_WEBHOOK_SECRET`, sem imprimir valores.
 
-- Criado `AUDITORIA-DEPLOY-19-EXECUCAO-HOMOLOGACAO-EASYPANEL.md`.
-- Este `CONTEXTO-CODEX-ATUAL.md` foi atualizado para a nova frente 17-19.
-
-## Continuidade executada nesta etapa
-
-- `git status --short --branch` foi conferido em docs/API/web.
-- Os tres repositorios estavam limpos antes da atualizacao documental desta etapa.
-- Docker estava instalado, mas o daemon estava parado.
-- Docker Desktop foi iniciado localmente.
-- Foi criado um MySQL 8.4 descartavel em `portal-sama-homolog-mysql`, com banco sintetico `portal_sama_homolog_migration`.
-- `prisma migrate deploy` foi executado contra esse banco local controlado, usando `DATABASE_URL` sintetica apontada explicitamente para `127.0.0.1:33307`.
-- As 30 migrations foram aplicadas com sucesso, incluindo `20260611130000_add_access_request_pending_dev`.
-- `prisma migrate status` retornou schema atualizado.
-- A coluna `access_requests.status` foi conferida no MySQL local e contem `PENDING_MANAGER`, `PENDING_DEV`, `APPROVED`, `DECLINED`, `ARCHIVED`, com default `PENDING_MANAGER`.
-- O container descartavel `portal-sama-homolog-mysql` foi removido ao final.
-- O container antigo `portal-sama-audit-mysql`, ja existente no ambiente, nao foi alterado.
-- Smoke publico real foi executado contra `https://portal.samacontabil.com.br`, sem credenciais e sem alteracao de dados.
-- Resultado do smoke publico: frontend HTTP 200, `/api-v2/health` HTTP 200 com `database=up` e `storage=up`, CORS preflight HTTP 204 com credenciais, CSRF HTTP 200 com token/cookie presentes sem registrar os valores.
-
-## Continuidade executada em 2026-06-12
-
-- Implementado `POST /integrations/acessorias/operational-sync` como orquestrador operacional unico do botao `Integrar`.
-- Implementado `POST /integrations/acessorias/responsibles/apply-client-assignments` para criar atribuicoes ativas em `client_department_assignments` a partir de entregas conciliadas.
-- Implementado `POST /integrations/acessorias/deliveries/apply-to-workspace/bulk` para aplicar vencimentos locais por mes/departamento, sem chamar API externa.
-- Painel DEV:
-  - `Integrar` chama `operational-sync`;
-  - `Aplicar vencimentos` chama somente aplicacao local;
-  - acoes diagnosticas/localizadas permanecem separadas.
-- Home Acessorias:
-  - escopo por usuario prioriza `responsibleUserId`;
-  - nome/username ficam como fallback;
-  - avisos indicam responsaveis pendentes ou dados locais desatualizados.
-- Clientes:
-  - menu mostra uma unica entrada `Clientes`;
-  - `/clientes` e a tela principal;
-  - `/clientes/visao-geral` redireciona para `/clientes`;
-  - `/departamentos/clientes` redireciona para `/clientes?scope=mine`;
-  - tela usa `scope=all` e `scope=mine`.
-- Colaboradores:
-  - `GET /collaborators/public` permite usuario interno autenticado sem `collaborators.read`;
-  - role `CLIENT` continua bloqueada;
-  - tela usa payload publico quando o usuario nao tem permissao administrativa;
-  - colunas sensiveis ficam ocultas no modo publico.
-- Notificacoes:
-  - sininho do header ganhou `Ler todas` e `Confirmar alertas`;
-  - pagina renomeou `Limpar nao lidas` para `Ler todas`;
-  - cache de header/pagina e eventos SSE cobrem clear unread/alerts.
-- Configuracoes:
-  - `GET/PATCH /me/preferences` persistem `density`, `startPage`, `reducedMotion` em `user.metadata.portalPreferences`;
-  - tela salva preferencias visuais com feedback;
-  - tela consome preferencias reais de notificacao por tipo.
-- Solicitacoes de acesso:
-  - testes agora cobrem gestor rejeitando colaborador;
-  - DEV rejeitando solicitacao `PENDING_DEV`;
-  - calendario desmarcando dia selecionado;
-  - notificacao final de aceite/declinio.
-
-## Validacoes executadas em 2026-06-12
+## Validacoes executadas recentemente
 
 ### API
 
-- `npm.cmd run prisma:validate` - OK. O Prisma carregou `.env`, sem imprimir valores.
 - `npm.cmd run lint` - OK.
 - `npm.cmd run build` - OK.
-- `npm.cmd test -- --runInBand src/modules/integrations/acessorias/acessorias-responsible-resolver.service.spec.ts src/modules/collaborators/collaborators.service.spec.ts src/modules/auth/auth.service.spec.ts src/modules/access-requests/access-requests.service.spec.ts src/modules/notifications/notifications.service.spec.ts` - OK, 5 suites e 46 testes.
-- `npm.cmd test -- --runInBand` - OK, 44 suites e 290 testes.
-- `npm.cmd run test:e2e` - OK, 1 suite e 136 testes.
+- `npm.cmd test -- --runInBand` - OK, 56 suites e 347 testes.
+- `npm.cmd run test:e2e` - OK, 1 suite e 148 testes.
+- `npm.cmd run prisma:validate` - OK na rodada da Fase 7.
+- Specs focadas contratos/ZapSign - OK, 4 suites e 20 testes.
+- Spec de rate limit - OK, 1 suite e 6 testes.
 - `git diff --check` - OK.
 
 ### Web
 
-- `npm.cmd run lint` - OK.
-- `npm.cmd run build` - OK.
+- `npm.cmd run lint` - OK na rodada da Fase 7.
+- `npm.cmd run build` - OK na rodada da Fase 7.
 - `npm.cmd test -- --runInBand` - OK, 12 testes de contrato.
-- `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` - OK, 8 testes.
-- `npm.cmd run test:e2e -- --reporter=line` - OK, 21 testes passaram e 1 skip.
 - `git diff --check` - OK.
+- Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
 
-### Ambiente 2026-06-12
+### Operacional Fase 8
 
-- Nenhuma dependencia nova foi instalada.
-- Docker nao foi usado nesta rodada.
-- Nao foi executado smoke autenticado real.
-- Nao foi executado `prisma migrate deploy` no banco alvo.
+- `npm.cmd run ops:readiness -- --soft --json` sem env carregado apontou env incompleto e banco inacessivel pelo hostname de container.
+- Segunda rodada local com env sintetico e MySQL em `127.0.0.1:3306` confirmou:
+  - database OK;
+  - migrations aplicadas: 32;
+  - RBAC: 99 permissoes e 9 papeis;
+  - storage sintetico OK.
+- Readiness local continuou falhando por ausencia de usuario ativo DEV/ADMIN e ClamAV ausente.
+- `npm.cmd run ops:schema:check -- --soft --json` contra MySQL local passou com `critical=0`, `warnings=1`; aviso de collation default do database.
+- `npm.cmd run ops:secrets:check -- --soft --json` passou com secrets sinteticos fortes e URL remota sintetica.
+- Backup/verify/restore drill sintetico passou com storage em `.ai-tests`, `--include-storage-archive` e `--skip-database`.
+- `node --check scripts/run-operational-phase8.js` - OK.
+- `node --check scripts/validate-secret-rotation.js` - OK.
+- `npm.cmd run ops:phase8 -- --help` - OK.
+- `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-readiness --skip-schema --skip-secrets --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` - OK como diagnostico bloqueado: `ok=false`, `blocked=8`.
+- Apos a correcao Windows, `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` executou os subchecks reais; resultado esperado neste terminal sem env alvo: `ok=false`, `failed=3`, `blocked=5`, com readiness/schema/secrets falhando por ambiente/banco/secrets ausentes.
+- Apos hardening do parse/sanitizacao, tanto `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` quanto `node scripts/run-operational-phase8.js --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` mantiveram resultado esperado `ok=false`, `failed=3`, `blocked=5`.
+- `ops:secrets:check -- --require-integrations --require-web-push --require-zapsign` com secrets sinteticos fortes - OK, `failed=0`, `warnings=0`, sem valores sensiveis na saida.
 
-## Validacoes executadas
+## Bloqueios formais da Fase 8
 
-### API
+1. Rodar `ops:readiness` no ambiente alvo com:
+   - `NODE_ENV=production`;
+   - HTTPS/CORS produtivo;
+   - usuario DEV/ADMIN ativo e controlado;
+   - ClamAV instalado;
+   - `SAMA_UPLOAD_SCAN_MODE=strict`;
+   - storage real privado.
+2. Rodar `ops:schema:check` no ambiente alvo e decidir sobre a collation default do database.
+3. Rodar `ops:secrets:check` com secrets reais do ambiente alvo sem imprimir valores.
+4. Criar backup real com dump de banco e storage alvo.
+5. Rodar `ops:backup:verify` nos artefatos reais.
+6. Rodar `ops:restore:drill` em banco/storage isolados reais.
+7. Registrar evidencias sem segredos.
 
-- `npx.cmd prisma generate` - OK. O Prisma carregou `.env`, sem imprimir valores.
-- `npm.cmd run prisma:validate` - OK. O Prisma carregou `.env`, sem imprimir valores.
-- `npx.cmd prisma migrate deploy --schema prisma/schema.prisma` com MySQL Docker local - OK, 30 migrations aplicadas.
-- `npx.cmd prisma migrate status --schema prisma/schema.prisma` com MySQL Docker local - OK, schema atualizado.
-- `npm.cmd test -- --runInBand src/modules/access-requests/access-requests.service.spec.ts` - OK.
-- `npm.cmd test -- --runInBand src/modules/access-requests/access-requests.service.spec.ts src/modules/integrations/acessorias/acessorias-responsible-resolver.service.spec.ts` - OK, 2 suites e 10 testes.
-- `npm.cmd test -- --runInBand src/modules/clients/clients.service.spec.ts src/modules/collaborators/collaborators.service.spec.ts src/modules/notifications/notifications.service.spec.ts` - OK, 3 suites e 36 testes.
-- `npm.cmd run lint` - OK.
-- `npm.cmd run build` - OK.
-- `npm.cmd test -- --runInBand` - OK, 44 suites e 283 testes.
-- `npm.cmd run test:e2e` - OK, 1 suite e 136 testes.
-- `git diff --check` - OK.
+Comando consolidado preferencial para tentar desbloquear:
 
-### Web
+```powershell
+npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED
+```
 
-- `npm.cmd run lint` - OK.
-- `npm.cmd run build` - OK.
-- `npm.cmd test -- --runInBand` - OK, 9 testes de contrato.
-- `npx.cmd playwright test tests/e2e/access-requests.spec.ts --reporter=line` - OK, 4 testes.
-- `npm.cmd run test:e2e -- --reporter=line` - OK, 17 testes passaram e 1 skip.
-- `npm.cmd run smoke:public -- --url https://portal.samacontabil.com.br --api-url https://portal.samacontabil.com.br/api-v2 --origin https://portal.samacontabil.com.br --timeout 10000` - OK.
-- `git diff --check` - OK.
+O comando deve rodar no container/ambiente alvo com variaveis reais ja carregadas pelo provedor/secret manager. Nao usar `.env` impresso ou copiado para evidencia.
 
-## Nao executado nesta sessao
+Enquanto esses itens estiverem pendentes, nao iniciar Fase 9 como fase formal.
 
-- Smoke EasyPanel autenticado/por perfil e fluxos reais.
-- `prisma migrate deploy` contra banco alvo.
-- Instalacao de dependencias novas.
+## Status dos worktrees
 
-## Ferramentas/ambiente usados nesta etapa
+### `portal-sama-api`
 
-- Docker Desktop foi iniciado para validacao controlada.
-- Container criado e removido: `portal-sama-homolog-mysql`.
-- Banco sintetico usado: `portal_sama_homolog_migration`.
-- Nenhuma dependencia nova foi instalada.
+Alteracoes locais nao commitadas da Fase 7/Fase 8:
 
-## Status atual dos arquivos
+- `package.json`
+- `scripts/run-operational-phase8.js`
+- `scripts/validate-secret-rotation.js`
+- `src/common/security/rate-limit-metadata.spec.ts`
+- `src/modules/contracts/contracts.controller.ts`
+- `src/modules/contracts/contracts.module.ts`
+- `src/modules/contracts/contracts.service.spec.ts`
+- `src/modules/contracts/contracts.service.ts`
+- `src/modules/contracts/contracts.types.ts`
+- `src/modules/contracts/dto/create-contract.dto.ts`
+- `src/modules/contracts/dto/list-contracts.dto.ts`
+- `src/modules/contracts/dto/send-signature.dto.ts`
+- `src/modules/contracts/providers/`
 
-### portal-sama-api
+### `portal-sama-web`
 
-- Ha alteracoes locais de implementacao/testes ainda nao commitadas:
-- arquivos de auth/preferencias;
-- colaboradores publicos;
-- endpoints e services Acessorias;
-- testes de solicitacoes, auth, colaboradores, Home Acessorias e responsaveis.
+Alteracoes locais nao commitadas da Fase 7:
 
-### portal-sama-web
+- `src/pages/contracts/ContractPage.tsx`
+- `src/pages/contracts/PublicSignaturePage.tsx`
+- `src/schemas/contract.schema.ts`
+- `src/services/contracts.service.ts`
+- `src/types/contracts.ts`
 
-- Ha alteracoes locais de implementacao/testes ainda nao commitadas:
-- navegacao/rotas de clientes;
-- header de notificacoes;
-- pagina Clientes;
-- pagina Colaboradores;
-- painel DEV;
-- Configuracoes;
-- testes Playwright/contratos.
+### `portal-sama-docs`
 
-### portal-sama-docs
+Alteracoes locais nao commitadas:
 
-- Alteracoes documentais ainda nao commitadas:
-- `M AUDITORIA-DEPLOY-19-EXECUCAO-HOMOLOGACAO-EASYPANEL.md`
-- `M CONTEXTO-CODEX-ATUAL.md`
+- `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`
+- `CONTEXTO-CODEX-ATUAL.md`
+- `docs/08-CHECKLIST-GO-LIVE.md`
+- `docs/09-MATRIZ-PERMISSOES-RBAC.md`
+- `docs/10-MATRIZ-ROTAS-PUBLICAS.md`
+- `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+- `docs/21-CONTRATO-API-FRONTEND.md`
 
-## Pendencias principais
+## Proximo chat deve fazer
 
-1. Aplicar a migration `20260611130000_add_access_request_pending_dev` no banco alvo/EasyPanel. Ela ja foi validada em MySQL Docker local controlado.
-2. Fazer deploy controlado com as alteracoes locais de API/Web.
-3. Executar smoke EasyPanel autenticado com credenciais atuais:
-   - login DEV;
-   - Home DEV/Gestor com dados reais;
-   - painel DEV `Integrar` e `Aplicar vencimentos`;
-   - Clientes `scope=all`/`scope=mine`;
-   - Colaboradores publico interno;
-   - Notificacoes `Ler todas`/`Confirmar alertas`;
-   - Configuracoes salvando preferencias e recarregando.
-4. Revisar se a conciliacao nominal por nome + departamento precisa de regra adicional alem dos matches exatos/alias e da aplicacao local por `responsibleUserId`.
-5. Para smoke autenticado, usar somente credenciais atuais de homologacao; a credencial administrativa antiga foi rotacionada e nao deve ser reutilizada.
-
-## Veredito atual
-
-`Pronto para homologacao controlada`.
-
-As correcoes do TXT ficaram implementadas e verdes em lint/build/test/E2E locais.
-Ainda falta aplicar migration/deploy no ambiente alvo e executar smoke EasyPanel autenticado com dados reais antes de liberar usuarios reais.
+1. Ler primeiro os documentos da raiz listados em `Precedencia obrigatoria`.
+2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
+3. Confirmar que a Fase 8 esta `BLOQUEADA`.
+4. Nao iniciar Fase 9 formalmente enquanto os bloqueios da Fase 8 nao forem resolvidos ou declarados como bloqueio externo pelo usuario.
+5. Se o usuario fornecer acesso/configuracao do ambiente alvo, executar os checks operacionais reais na ordem:
+   - preferencialmente `npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED`;
+   - ou, se precisar depurar, executar readiness, schema, secrets, backup real, verify e restore drill isolado separadamente.
+6. Se o usuario nao fornecer ambiente alvo, manter o bloqueio registrado e limitar alteracoes a documentacao, scripts de apoio ou correcoes que nao finjam liberar a Fase 8.
+7. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
-- Nao reverter mudancas locais.
-- Nao expor nem ler valores de `.env`.
-- A credencial administrativa informada em chat anterior foi rotacionada pelo usuario; nao salvar credenciais em docs/evidencias.
-- Docker ja foi usado nesta etapa para validacao controlada; se usar novamente ou instalar algo em proximas etapas, registrar neste contexto e na auditoria 19.
-
-## Atualizacao 2026-06-12 - Integra-AI busca digitavel de empresa
-
-Status: implementado e validado localmente.
-
-### Mudancas aplicadas
-
-- Web `src/pages/accounting/IntegraAiPage.tsx`:
-  - substituido o select de empresa do importador por um combobox digitavel;
-  - substituido tambem o filtro de empresa da pagina por combobox digitavel com opcao `Todas`;
-  - a busca usa `GET /accounting/integra-ai/workspaces` com `search`, `take=30` e `jobsTake=1`;
-  - a lista inicial continua curta para performance;
-  - ao digitar, o usuario consegue localizar empresas fora da primeira carga;
-  - o import continua enviando o mesmo `company_id`, sem alterar o contrato do upload.
-- Web `tests/e2e/smoke.spec.ts`:
-  - mock do workspace passou a simular carteira limitada na primeira carga;
-  - novo Playwright valida que uma empresa fora da primeira carga aparece ao digitar e fica selecionada.
-- API `src/modules/accounting/accounting.service.spec.ts`:
-  - adicionado teste garantindo que o workspace filtra empresas por `search` e respeita `take`, sem depender da carteira inteira.
-
-### Validacoes executadas nesta rodada
-
-| Projeto | Comando | Resultado |
-|---|---|---|
-| API | `npm.cmd test -- accounting.service.spec.ts --runInBand` | OK; 1 suite, 12 testes. |
-| API | `npm.cmd run lint` | OK |
-| API | `npm.cmd run build` | OK |
-| Web | `npm.cmd run test:e2e -- tests/e2e/smoke.spec.ts --grep "Integra-AI"` | OK; 3 testes Playwright. |
-| Web | `npm.cmd run lint` | OK |
-| Web | `npm.cmd run build` | OK |
-| Web | `npm.cmd test` | OK; 12 testes de contrato. |
-| Web | `git diff --check` | OK |
-
-### Ambiente desta rodada
-
-- Nenhuma dependencia nova foi instalada.
-- Docker nao foi usado.
-- Nao houve smoke autenticado real.
-- Nao houve alteracao em `.env`, secrets, cookies ou credenciais.
-
-### Status atual dos arquivos
-
-- `portal-sama-api`: alteracao local em `src/modules/accounting/accounting.service.spec.ts`.
-- `portal-sama-web`: alteracoes locais em `src/pages/accounting/IntegraAiPage.tsx` e `tests/e2e/smoke.spec.ts`.
-- `portal-sama-docs`: `CONTEXTO-CODEX-ATUAL.md` atualizado nesta rodada; auditoria 19 tambem deve refletir esta rodada.
+- Nao ler nem imprimir `.env` real ou secrets.
+- Nao reverter alteracoes locais.
+- Nao usar `prisma db push` em ambiente compartilhado/producao.
+- Nao mascarar falha operacional com `--skip-*` para liberar fase.
+- Nao considerar backup valido sem restore drill.
+- Nao iniciar frontend completo antes dos gates formais.

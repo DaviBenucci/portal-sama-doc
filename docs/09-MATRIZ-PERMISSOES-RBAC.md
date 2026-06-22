@@ -1,6 +1,6 @@
 # Matriz de Permissões RBAC
 
-Status base: catálogo default validado em 2026-06-19 com 91 permissões e 9 papéis no MySQL descartável.
+Status base: catalogo default validado em 2026-06-22 com 99 permissoes e 9 papeis no MySQL local.
 
 ## Perfis principais
 
@@ -24,7 +24,7 @@ Status base: catálogo default validado em 2026-06-19 com 91 permissões e 9 pap
 | MANAGER | `/managers`, `/transfers`, `/clients`, `/documents`, `/access-requests/manager/approvals` | Administração global de usuários sem permissão explícita |
 | DEPARTMENT | `/home`, `/clients?scope=mine`, `/documents`, `/departments/vencimentos` | Clientes fora do escopo operacional |
 | TI | `/access-requests`, `/audit/logs` conforme permissão | Módulos financeiros/contábeis sem permissão |
-| LEGALIZATION | `/legalization/processes`, `/contracts`, `/proposals` | Administração técnica |
+| LEGALIZATION | `/legalization/processes`, `/contracts`, `/contracts/:id/zapsign/sync`, `/proposals` | Administracao tecnica e uso de `SANDBOX` sem papel DEV/ADMIN |
 | ACCOUNTING | `/accounting/integra-ai`, dados necessários ao processamento | Auditoria/admin sem permissão |
 | Anônimo | Rotas públicas por token válido | Qualquer rota autenticada |
 
@@ -37,6 +37,7 @@ Status base: catálogo default validado em 2026-06-19 com 91 permissões e 9 pap
 - [ ] Testes de escopo por objeto: cliente, documento, certificado, contrato e proposta.
 - [x] Escopo por objeto aplicado e testado para gestão de links públicos de documentos por MANAGER.
 - [ ] Testes de token expirado/revogado em rotas públicas.
+- [x] Catalogo RBAC inclui `contracts.zapsign.send` e `contracts.zapsign.sync`; readiness local validou 99 permissoes e 9 papeis em 2026-06-22.
 
 ## Observações
 

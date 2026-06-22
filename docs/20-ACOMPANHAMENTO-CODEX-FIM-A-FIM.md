@@ -564,3 +564,232 @@ git status --short
 ## Proxima fase autorizada
 
 Com a Fase 6 concluida, a continuidade deve seguir pela Fase 7 do guia: Contratos, Legalizacao e ZapSign.
+
+## Fase 7 - Contratos, Legalizacao e ZapSign
+
+Status final da fase: `CONCLUIDA`
+
+Premissa reaproveitada:
+
+- A modelagem de banco para coexistencia `INTERNAL`/`ZAPSIGN` ja existia na migration `20260619143000_add_contract_signature_provider`, criada em fase anterior. Nesta rodada nao houve migration nova; a validacao foi por `prisma validate`, build, testes unitarios/e2e e contratos frontend.
+
+Imprevistos corrigidos:
+
+- Os arquivos novos do provider ZapSign foram inicialmente criados no path do reposititorio de docs por causa do cwd da sessao; eles foram movidos para `portal-sama-api/src/modules/contracts/providers/zapsign` e a arvore acidental em docs foi removida antes da validacao final.
+- `git diff --check` apontou whitespace em `src/database/prisma.service.ts`; a linha foi limpa sem mudanca funcional.
+- O lint do web apontou uso direto de `sendForm.watch`; foi substituido por `useWatch`.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 7.1 Revisar modulo atual de contratos | `CONCLUIDA` | Endpoints revisados: `GET/POST/PATCH /contracts`, `POST /contracts/:id/generate`, `POST /contracts/:id/render-pdf`, `POST /contracts/:id/send-signature`, upload/download de PDF e assinatura publica. |
+| 7.2 Adicionar provider de assinatura | `CONCLUIDA` | DTOs, tipos API/Web e payloads aceitam `INTERNAL`/`ZAPSIGN` e `BR`/`SANDBOX`; migration existente validada por Prisma. |
+| 7.3 Criar cliente ZapSign | `CONCLUIDA` | `ZapsignClient` isolado com base URL por ambiente, token sanitizado, timeout, erro HTTP controlado e testes unitarios. |
+| 7.4 Implementar criacao de documento ZapSign | `CONCLUIDA` | `ZapsignService` le PDF privado do storage, converte para base64, normaliza signatarios e chama `POST /docs/` via client mockado em spec. |
+| 7.5 Implementar persistencia do envelope | `CONCLUIDA` | Envelope, signatarios, status normalizado, URL de assinatura e payload seguro persistidos; resposta nao expõe token externo bruto. |
+| 7.6 Implementar sincronizacao | `CONCLUIDA` | `POST /contracts/:id/zapsign/sync` consulta ZapSign, atualiza envelope/signatarios e marca contrato como `SIGNED` quando aplicavel. |
+| 7.7 Implementar webhook | `CONCLUIDA` | `POST /webhooks/zapsign` publico com secret/header, throttle, validacao de payload, auditoria de rejeicao/recebimento e confirmacao ativa via GET doc. |
+| 7.8 Bloquear assinatura interna para ZapSign | `CONCLUIDA` | `signPublic` retorna erro controlado para contratos `ZAPSIGN`; spec cobre bloqueio. |
+| 7.9 Auditar eventos ZapSign | `CONCLUIDA` | Eventos `create.started/succeeded/failed`, `sync.started/succeeded/failed`, `webhook.received/rejected` e `signed` implementados sem token bruto. |
+| 7.10 Atualizar frontend minimo de contrato | `CONCLUIDA` | Tela de contratos exibe provider, status/link ZapSign, signatario, envio externo e sincronizacao; pagina publica trata contrato ZapSign como assinatura externa. |
+| 7.11 Executar suite de contratos | `CONCLUIDA` | Specs ZapSign/contratos, suite completa API, e2e API, lint/build API, lint/build/test Web e `git diff --check` passaram. |
+
+### Arquivos alterados na Fase 7
+
+- `portal-sama-api/src/modules/contracts/providers/zapsign/*`
+- `portal-sama-api/src/modules/contracts/contracts.service.ts`
+- `portal-sama-api/src/modules/contracts/contracts.controller.ts`
+- `portal-sama-api/src/modules/contracts/contracts.module.ts`
+- `portal-sama-api/src/modules/contracts/contracts.types.ts`
+- `portal-sama-api/src/modules/contracts/dto/*.ts`
+- `portal-sama-api/src/modules/contracts/contracts.service.spec.ts`
+- `portal-sama-api/src/common/security/rate-limit-metadata.spec.ts`
+- `portal-sama-web/src/pages/contracts/ContractPage.tsx`
+- `portal-sama-web/src/pages/contracts/PublicSignaturePage.tsx`
+- `portal-sama-web/src/services/contracts.service.ts`
+- `portal-sama-web/src/types/contracts.ts`
+- `portal-sama-web/src/schemas/contract.schema.ts`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+
+### Comandos da Fase 7
+
+```powershell
+npx.cmd tsc --noEmit --pretty false
+npm.cmd test -- --runInBand src/modules/contracts/contracts.service.spec.ts src/modules/contracts/providers/zapsign/zapsign.client.spec.ts src/modules/contracts/providers/zapsign/zapsign.mapper.spec.ts src/modules/contracts/providers/zapsign/zapsign.service.spec.ts
+npm.cmd test -- --runInBand src/common/security/rate-limit-metadata.spec.ts
+npm.cmd run prisma:validate
+npm.cmd run lint
+npm.cmd run build
+npm.cmd test -- --runInBand
+npm.cmd run test:e2e
+npm.cmd test -- --runInBand
+git diff --check
+git status --short
+```
+
+### Resultado da Fase 7
+
+- API specs focadas de contratos/ZapSign: passaram, 4 suites e 20 testes.
+- API spec de rate limit: passou, 1 suite e 6 testes.
+- `npm.cmd run prisma:validate`: passou.
+- API `npm.cmd run lint`: passou.
+- API `npm.cmd run build`: passou.
+- API `npm.cmd test -- --runInBand`: passou, 56 suites e 347 testes.
+- API `npm.cmd run test:e2e`: passou, 1 suite e 148 testes.
+- Web `npm.cmd run lint`: passou.
+- Web `npm.cmd run build`: passou.
+- Web `npm.cmd test -- --runInBand`: passou, 12 testes de contrato.
+- `git diff --check`: passou na API e Web.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Observacoes da Fase 7
+
+- O envio ZapSign exige PDF privado salvo (`pdfStorageKey`) antes de criar documento externo.
+- `SANDBOX` foi restringido a usuarios `DEV` ou `ADMIN`.
+- Webhook exige `ZAPSIGN_WEBHOOK_SECRET`; sem secret configurado, rejeita a chamada.
+- Tokens ZapSign permanecem apenas em variaveis de ambiente e nao aparecem em logs, auditoria ou resposta frontend.
+- A homologacao real ainda depende de configurar `ZAPSIGN_API_TOKEN`, `ZAPSIGN_API_TOKEN_SANDBOX` quando aplicavel e `ZAPSIGN_WEBHOOK_SECRET` no ambiente alvo.
+- Se a migration `20260619143000_add_contract_signature_provider` ainda nao estiver aplicada no banco alvo, aplicar via deploy controlado antes do smoke real.
+
+## Proxima fase autorizada
+
+Com a Fase 7 concluida, a continuidade deve seguir pela Fase 8 do guia: backend completo, readiness e qualidade antes do frontend final.
+
+## Conciliacao de precedencia documental - 2026-06-22
+
+Precedencia formal adotada a partir desta revisao:
+
+1. Documentos de decisao na raiz do workspace: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
+2. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md` na raiz, como roteiro operacional de fases, status permitidos e criterios de evidencia.
+3. Arquivos em `docs/`, incluindo este acompanhamento, como evidencias e matrizes auxiliares subordinadas aos documentos acima.
+
+Consequencia: a anotacao anterior de "concluida com ressalvas" para a Fase 8 foi reclassificada. Pelo guia raiz, status intermediarios como `CONCLUIDA COM RESSALVA` nao liberam avanco formal. As validacoes locais continuam registradas como evidencia, mas a Fase 8 fica `BLOQUEADA` ate readiness, secrets, backup e restore drill reais do ambiente alvo deixarem de ter pendencias bloqueantes.
+
+## Fase 8 - Backend completo, readiness e qualidade
+
+Status final da fase: `BLOQUEADA`
+
+Status tecnico local: validacoes de codigo e ensaios operacionais sinteticos executados. Status formal: bloqueado para avancar pelo roteiro estrito da raiz ate resolver as pendencias ambientais abaixo.
+
+Premissas da rodada:
+
+- A validacao de codigo foi feita no reposititorio `portal-sama-api` ja contendo as mudancas da Fase 7.
+- Os checks exatos de readiness/schema/secrets foram executados em modo `--soft --json` sem carregar segredos reais no terminal.
+- Para diferenciar falha de ambiente do terminal de drift real, houve uma segunda rodada controlada contra o MySQL local do `compose.yaml`, com segredos sinteticos em memoria e storage sintetico em `.ai-tests`.
+- O ensaio de backup/restore usou storage sintetico e `--skip-database`; portanto comprova a cadeia de scripts/artefatos de storage, mas nao substitui backup com dump real em homologacao/producao.
+
+Imprevistos e ressalvas:
+
+- `ops:readiness -- --soft --json` sem ambiente carregado apontou env produtivo incompleto e banco inacessivel pelo hostname `portal-sama_portal-sama-database:3306`.
+- A segunda rodada com `DATABASE_URL` local confirmou banco, migrations, RBAC e storage, mas manteve falha operacional por ausencia de usuario ativo `DEV`/`ADMIN` no banco local.
+- ClamAV nao esta instalado neste host; antes de go-live, `SAMA_UPLOAD_SCAN_MODE=strict` e EICAR precisam passar no ambiente alvo.
+- `ops:schema:check` contra MySQL local passou sem drift critico, com aviso de collation default do database (`utf8mb4_0900_ai_ci`) diferente da esperada (`utf8mb4_unicode_ci`), enquanto as tabelas core estao em `utf8mb4_unicode_ci`.
+- `ops:secrets:check` passou com segredos sinteticos fortes e URL remota sintetica; a execucao sem env real continua pendente para o ambiente alvo.
+- Em continuidade, foi criado `npm.cmd run ops:phase8` como orquestrador dos gates reais de Fase 8. Ele exige readiness, schema, secrets com ZapSign/Acessorias/Web Push, backup com `database.sql.gz` e `storage.tar.gz`, verify e restore drill em modo apply; skips e dry-run mantem a fase bloqueada.
+- Em 2026-06-22, o smoke via `npm.cmd run ops:phase8` revelou falha Windows na chamada de sub-scripts (`spawnSync npm.cmd EINVAL`). O orquestrador foi corrigido para usar `npm_execpath` quando chamado por `npm run` e `cmd.exe /c npm.cmd` como fallback Windows. A repeticao do smoke passou a executar os subchecks reais e manteve o bloqueio esperado por ambiente/secrets/banco ausentes.
+- Na continuidade seguinte, o parse/sanitizacao do orquestrador foi endurecido: JSON de subchecks passa a ser parseado antes de sanitizacao/truncamento textual, e o objeto parseado e sanitizado recursivamente. Isso evita falso positivo quando uma saida real for grande, mantendo a regra de nao imprimir valores sensiveis.
+
+| Etapa | Status final | Evidencia |
+| --- | --- | --- |
+| 8.1 Executar lint da API | `CONCLUIDA` | `npm.cmd run lint` passou sem erros. |
+| 8.2 Executar build da API | `CONCLUIDA` | `npm.cmd run build` passou. |
+| 8.3 Executar testes unitarios | `CONCLUIDA` | `npm.cmd test -- --runInBand` passou, 56 suites e 347 testes. |
+| 8.4 Executar testes E2E | `CONCLUIDA` | `npm.cmd run test:e2e` passou, 1 suite e 148 testes. |
+| 8.5 Executar readiness | `BLOQUEADA` | Com env sintetico/local: banco, migrations, RBAC e storage passaram; bloqueiam o aceite formal a ausencia de usuario DEV/ADMIN ativo no banco alvo, HTTPS/CORS produtivo e ClamAV strict. |
+| 8.6 Executar verificacao de schema | `BLOQUEADA` | `ops:schema:check` local passou com `critical=0`; falta validar no ambiente alvo e decidir a collation default do database. |
+| 8.7 Executar secret check | `BLOQUEADA` | `ops:secrets:check` passou com segredos sinteticos fortes; falta validacao com secrets reais do ambiente alvo sem imprimir valores. |
+| 8.8 Criar backup local/homolog | `BLOQUEADA` | `ops:backup:create` com storage sintetico, `--include-storage-archive` e `--skip-database` passou; falta backup com dump real em homolog/alvo. |
+| 8.9 Executar restore drill | `BLOQUEADA` | `ops:backup:verify` e `ops:restore:drill` dry-run passaram para backup sintetico; falta drill com dump real e alvo isolado. |
+| 8.10 Congelar contrato da API | `CONCLUIDA` | Criado `docs/21-CONTRATO-API-FRONTEND.md` com endpoints, permissoes, CSRF, enums, payloads e respostas de contratos/ZapSign. |
+| 8.11 Criar orquestrador operacional da Fase 8 | `CONCLUIDA` | Criado `portal-sama-api/scripts/run-operational-phase8.js` e script `ops:phase8`; smoke diagnostico confirmou que skips/dry-run deixam a fase `BLOQUEADA`. |
+
+### Arquivos alterados na Fase 8
+
+- `portal-sama-api/package.json`
+- `portal-sama-api/scripts/run-operational-phase8.js`
+- `portal-sama-api/scripts/validate-secret-rotation.js`
+- `portal-sama-docs/docs/08-CHECKLIST-GO-LIVE.md`
+- `portal-sama-docs/docs/09-MATRIZ-PERMISSOES-RBAC.md`
+- `portal-sama-docs/docs/10-MATRIZ-ROTAS-PUBLICAS.md`
+- `portal-sama-docs/docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
+- `portal-sama-docs/docs/21-CONTRATO-API-FRONTEND.md`
+
+### Comandos da Fase 8
+
+```powershell
+npm.cmd run lint
+npm.cmd run build
+npm.cmd test -- --runInBand
+npm.cmd run test:e2e
+npm.cmd run ops:readiness -- --soft --json
+npm.cmd run ops:schema:check -- --soft --json
+npm.cmd run ops:secrets:check -- --soft --json
+npm.cmd run ops:backup:create -- --skip-database --include-storage-archive --storage-path <storage-sintetico> --output-dir <backup-sintetico> --json --soft
+npm.cmd run ops:backup:verify -- --backup-dir <backup-sintetico> --json --soft
+npm.cmd run ops:restore:drill -- --backup-dir <backup-sintetico> --skip-database --target-storage-path <restore-sintetico> --json --soft
+npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED
+```
+
+### Resultado da Fase 8
+
+- API `npm.cmd run lint`: passou.
+- API `npm.cmd run build`: passou.
+- API `npm.cmd test -- --runInBand`: passou, 56 suites e 347 testes.
+- API `npm.cmd run test:e2e`: passou, 1 suite e 148 testes.
+- Schema local: passou sem drift critico; `critical=0`, `warnings=1`.
+- Readiness local com env sintetico: migrations aplicadas `32/32`, RBAC com 99 permissoes e 9 papeis, storage OK; falhou apenas por ausencia de usuario ativo no banco local.
+- Secret check sintetico: passou sem falhas e sem warnings.
+- Backup/verify/restore drill sintetico: passou sem falhas; database dump foi pulado conscientemente.
+- Novo `ops:phase8`: `node --check` passou; `npm.cmd run ops:phase8 -- --help` passou; smoke diagnostico com skips retornou `ok=false`, `blocked=8`, como esperado.
+- Correcao Windows do `ops:phase8`: `node --check scripts/run-operational-phase8.js` passou; `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` executou readiness/schema/secrets e retornou `ok=false`, `failed=3`, `blocked=5`, sem valores de segredo.
+- Hardening de parse/sanitizacao do `ops:phase8`: `node --check scripts/run-operational-phase8.js` passou; `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` e `node scripts/run-operational-phase8.js --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` retornaram `ok=false`, `failed=3`, `blocked=5`, como esperado sem ambiente alvo.
+- `ops:secrets:check` agora aceita `--require-zapsign`; smoke com segredos sinteticos fortes, Acessorias, Web Push e ZapSign retornou `ok=true`, `failed=0`, `warnings=0`, sem imprimir valores.
+- API `npm.cmd run lint` e `git diff --check` passaram apos o orquestrador.
+- Nenhum segredo real foi aberto, impresso ou versionado.
+
+### Pendencias antes de go-live
+
+- Preferir executar `npm.cmd run ops:phase8` dentro do ambiente alvo com variaveis reais ja carregadas no processo; ele nao carrega `.env` por conta propria.
+- Rodar `ops:readiness` no ambiente alvo com HTTPS/CORS produtivo, ClamAV instalado e `SAMA_UPLOAD_SCAN_MODE=strict`.
+- Garantir usuario emergencial `DEV`/`ADMIN` ativo, controlado e rotacionado no banco alvo.
+- Rodar `ops:schema:check` contra homologacao/producao e decidir se a collation default do database precisa ajuste.
+- Rodar `ops:secrets:check -- --require-integrations --require-web-push --require-zapsign` com secrets reais no ambiente alvo sem imprimir valores.
+- Executar backup com dump real, verificar artefatos, e executar restore drill em banco/storage isolados.
+
+## Proxima fase autorizada
+
+Pela precedencia dos documentos da raiz, a Fase 9 nao esta formalmente autorizada enquanto a Fase 8 estiver `BLOQUEADA`. A continuidade imediata deve resolver ou registrar como bloqueio externo as pendencias de readiness, schema alvo, secrets reais, backup com dump real e restore drill isolado. Somente depois disso o roteiro pode avancar para a Fase 9.
+
+## Contexto para o proximo chat
+
+Ler primeiro os documentos da raiz do workspace, com maior precedencia:
+
+- `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`
+- `12-RUNBOOK-ACESSORIAS.md`
+- `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`
+- `16-BACKEND-API-BANCO-DETALHADO.md`
+- `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`
+- `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`
+- `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`
+- `CONTEXTO-CODEX-ATUAL.md`
+- `Testes-da-aplicação-DEPLOY.md`
+- `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`
+
+Estado atual para continuidade:
+
+- Fase 7 ZapSign foi implementada e validada localmente.
+- Fase 8 tem validacoes locais de codigo e ensaios sinteticos registrados, mas status formal `BLOQUEADA`.
+- Existe `npm.cmd run ops:phase8` para orquestrar os gates reais; ele deve ser executado no ambiente alvo e nao libera Fase 8 com skips/dry-run.
+- Fase 9 nao esta autorizada formalmente.
+- O proximo trabalho deve tentar desbloquear Fase 8 com ambiente alvo real ou manter bloqueio externo documentado.
+- Nao usar docs auxiliares para sobrepor a raiz.
+- Nao iniciar frontend final antes dos gates de readiness, secrets, backup e restore drill.
+
+Pendencias imediatas:
+
+1. Readiness real no ambiente alvo, com usuario DEV/ADMIN ativo, HTTPS/CORS produtivo, storage real privado e ClamAV strict.
+2. Schema check no ambiente alvo.
+3. Secret check com variaveis reais, sem imprimir valores.
+4. Backup real com dump de banco e storage.
+5. Verify dos artefatos reais.
+6. Restore drill em banco/storage isolados.
+7. Registro de evidencias sem segredo.
