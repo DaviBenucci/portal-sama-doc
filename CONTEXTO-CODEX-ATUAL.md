@@ -24,11 +24,11 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 
 ## Estado formal do roteiro
 
-- Fases 0 a 7: registradas como concluidas no acompanhamento.
-- Fase 8: `BLOQUEADA` formalmente apos conciliacao.
-- Fase 9: nao esta formalmente autorizada enquanto a Fase 8 seguir bloqueada.
+- Fases 0 a 8: registradas como concluidas no acompanhamento.
+- Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
+- Fase 9: formalmente autorizada como proxima fase do roteiro, respeitando a ordem e os escopos do guia raiz.
 
-Motivo do bloqueio: as validacoes locais da Fase 8 foram executadas, mas o criterio da raiz exige readiness, schema, secrets, backup e restore drill reais no ambiente alvo ou bloqueio externo explicitamente aceito.
+Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
 ## Implementado recentemente
 
@@ -54,7 +54,7 @@ Motivo do bloqueio: as validacoes locais da Fase 8 foram executadas, mas o crite
 - Criado `docs/21-CONTRATO-API-FRONTEND.md`.
 - Atualizados `docs/08-CHECKLIST-GO-LIVE.md`, `docs/09-MATRIZ-PERMISSOES-RBAC.md`, `docs/10-MATRIZ-ROTAS-PUBLICAS.md` e `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`.
 - `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md` recebeu a secao `Precedencia documental`.
-- `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` foi corrigido: Fase 8 reclassificada para `BLOQUEADA`, e Fase 9 marcada como nao autorizada formalmente.
+- `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` registrou historicamente o bloqueio formal da Fase 8; nesta atualizacao, a evidencia real de 2026-06-22 concluiu a fase e autorizou a Fase 9.
 
 ### API - Orquestracao operacional Fase 8
 
@@ -108,86 +108,50 @@ Motivo do bloqueio: as validacoes locais da Fase 8 foram executadas, mas o crite
 - Apos a correcao Windows, `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` executou os subchecks reais; resultado esperado neste terminal sem env alvo: `ok=false`, `failed=3`, `blocked=5`, com readiness/schema/secrets falhando por ambiente/banco/secrets ausentes.
 - Apos hardening do parse/sanitizacao, tanto `npm.cmd run ops:phase8 -- --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` quanto `node scripts/run-operational-phase8.js --json --soft --no-evidence --skip-backup --skip-backup-artifacts --skip-verify --skip-restore` mantiveram resultado esperado `ok=false`, `failed=3`, `blocked=5`.
 - `ops:secrets:check -- --require-integrations --require-web-push --require-zapsign` com secrets sinteticos fortes - OK, `failed=0`, `warnings=0`, sem valores sensiveis na saida.
+- Rodada real no EasyPanel em 2026-06-22: `ops:phase8` retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
+- Readiness real: `ok=true`; ambiente de producao configurado, banco respondeu, schema/migrations passaram, RBAC com 99 permissoes e 9 papeis, usuario privilegiado ativo, storage privado OK e ClamAV detectou EICAR.
+- Schema real: `ok=true`, `critical=0`, `warnings=0`, database `banco-sama` em `utf8mb4_unicode_ci`.
+- Secrets reais: `ok=true`, `failed=0`, `warnings=3`; nenhum valor foi registrado.
+- Backup real: `database.sql.gz`, `storage-manifest.json`, `storage.tar.gz` criados em `/tmp/portal-sama-phase8-backups/portal-sama-20260622T165857Z-23e713`.
+- Verify real: `ok=true`, `failed=0`; gzip do banco validado; hashes registrados pela saida do comando.
+- Restore drill real: `ok=true`, `failed=0`, `dryRun=false`; `database.sql.gz` importado no banco isolado `banco-sama_restore_drill` e `storage.tar.gz` extraido em `/tmp/portal-sama-restore-storage`.
+- Evidencia JSON no ambiente alvo: `/app/.ai-tests/phase8-operational/phase8-2026-06-22T16-58-37-116Z.json`.
 
-## Bloqueios formais da Fase 8
+## Avisos nao bloqueantes apos Fase 8
 
-1. Rodar `ops:readiness` no ambiente alvo com:
-   - `NODE_ENV=production`;
-   - HTTPS/CORS produtivo;
-   - usuario DEV/ADMIN ativo e controlado;
-   - ClamAV instalado;
-   - `SAMA_UPLOAD_SCAN_MODE=strict`;
-   - storage real privado.
-2. Rodar `ops:schema:check` no ambiente alvo e decidir sobre a collation default do database.
-3. Rodar `ops:secrets:check` com secrets reais do ambiente alvo sem imprimir valores.
-4. Criar backup real com dump de banco e storage alvo.
-5. Rodar `ops:backup:verify` nos artefatos reais.
-6. Rodar `ops:restore:drill` em banco/storage isolados reais.
-7. Registrar evidencias sem segredos.
-
-Comando consolidado preferencial para tentar desbloquear:
-
-```powershell
-npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED
-```
-
-O comando deve rodar no container/ambiente alvo com variaveis reais ja carregadas pelo provedor/secret manager. Nao usar `.env` impresso ou copiado para evidencia.
-
-Enquanto esses itens estiverem pendentes, nao iniciar Fase 9 como fase formal.
+1. Copiar a evidencia JSON e os artefatos de backup para armazenamento operacional seguro fora de `/tmp`.
+2. Registrar externamente a data/responsavel da rotacao de secrets (`SAMA_SECRET_ROTATION_CONFIRMED_AT` nao estava configurado).
+3. Planejar rotacao/hardening de `CERTIFICATE_ENCRYPTION_KEY` para 48+ caracteres e `ACESSORIAS_TOKEN` para 40+ caracteres.
+4. O banco de restore esta no mesmo host do banco da aplicacao; foi aceito por estar isolado por nome (`banco-sama_restore_drill`) e por confirmacao explicita `RESTORE_DRILL_TARGET_IS_ISOLATED`.
 
 ## Status dos worktrees
 
 ### `portal-sama-api`
 
-Alteracoes locais nao commitadas da Fase 7/Fase 8:
+Ultimo commit registrado:
 
-- `package.json`
-- `scripts/run-operational-phase8.js`
-- `scripts/validate-secret-rotation.js`
-- `src/common/security/rate-limit-metadata.spec.ts`
-- `src/modules/contracts/contracts.controller.ts`
-- `src/modules/contracts/contracts.module.ts`
-- `src/modules/contracts/contracts.service.spec.ts`
-- `src/modules/contracts/contracts.service.ts`
-- `src/modules/contracts/contracts.types.ts`
-- `src/modules/contracts/dto/create-contract.dto.ts`
-- `src/modules/contracts/dto/list-contracts.dto.ts`
-- `src/modules/contracts/dto/send-signature.dto.ts`
-- `src/modules/contracts/providers/`
+- `3523716 feat: add zapsign contracts and phase 8 ops gate`
 
 ### `portal-sama-web`
 
-Alteracoes locais nao commitadas da Fase 7:
+Ultimo commit registrado:
 
-- `src/pages/contracts/ContractPage.tsx`
-- `src/pages/contracts/PublicSignaturePage.tsx`
-- `src/schemas/contract.schema.ts`
-- `src/services/contracts.service.ts`
-- `src/types/contracts.ts`
+- `137b8fd feat: surface zapsign contract flow`
 
 ### `portal-sama-docs`
 
-Alteracoes locais nao commitadas:
+Ultimo commit registrado antes desta atualizacao de evidencia:
 
-- `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`
-- `CONTEXTO-CODEX-ATUAL.md`
-- `docs/08-CHECKLIST-GO-LIVE.md`
-- `docs/09-MATRIZ-PERMISSOES-RBAC.md`
-- `docs/10-MATRIZ-ROTAS-PUBLICAS.md`
-- `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md`
-- `docs/21-CONTRATO-API-FRONTEND.md`
+- `fece4cc docs: record phase 8 gate status`
 
 ## Proximo chat deve fazer
 
 1. Ler primeiro os documentos da raiz listados em `Precedencia obrigatoria`.
 2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
-3. Confirmar que a Fase 8 esta `BLOQUEADA`.
-4. Nao iniciar Fase 9 formalmente enquanto os bloqueios da Fase 8 nao forem resolvidos ou declarados como bloqueio externo pelo usuario.
-5. Se o usuario fornecer acesso/configuracao do ambiente alvo, executar os checks operacionais reais na ordem:
-   - preferencialmente `npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED`;
-   - ou, se precisar depurar, executar readiness, schema, secrets, backup real, verify e restore drill isolado separadamente.
-6. Se o usuario nao fornecer ambiente alvo, manter o bloqueio registrado e limitar alteracoes a documentacao, scripts de apoio ou correcoes que nao finjam liberar a Fase 8.
-7. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+3. Confirmar que a Fase 8 esta `CONCLUIDA`.
+4. Antes de iniciar Fase 9, garantir que este registro de evidencia tenha sido commitado no `portal-sama-docs`.
+5. Se a Fase 9 for iniciada, seguir o guia raiz, sem pular subetapas e sem ignorar os avisos nao bloqueantes listados acima.
+6. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
@@ -196,4 +160,4 @@ Alteracoes locais nao commitadas:
 - Nao usar `prisma db push` em ambiente compartilhado/producao.
 - Nao mascarar falha operacional com `--skip-*` para liberar fase.
 - Nao considerar backup valido sem restore drill.
-- Nao iniciar frontend completo antes dos gates formais.
+- Fase 8 ja comprovou backup/restore drill real; preservar a evidencia fora de `/tmp`.

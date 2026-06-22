@@ -28,10 +28,10 @@ Status base: atualizacao Codex de 2026-06-22.
 - [ ] Validar `prisma migrate deploy` no banco alvo.
 - [ ] Validar seed/RBAC no banco alvo.
 - [ ] Desativar, trocar ou restringir bootstrap admin.
-- [ ] Validar `ops:readiness` no ambiente alvo; rodada local de 2026-06-22 passou em banco/migrations/RBAC/storage, mas falta usuario DEV/ADMIN ativo, HTTPS/CORS produtivo e ClamAV strict.
-- [ ] Executar `ops:phase8` no ambiente alvo com backup real, verify e restore drill apply em banco/storage isolados; o comando existe desde 2026-06-22 e bloqueia skips/dry-run.
-- [ ] Colocar scanner de upload em modo `strict` e comprovar ClamAV/EICAR.
-- [ ] Executar backup, verify e restore drill com dump real; ensaio local sintetico de storage passou em 2026-06-22 com `--skip-database`.
+- [x] Validar `ops:readiness` no ambiente alvo; rodada real de 2026-06-22 retornou `ok=true`, com banco, migrations, RBAC, usuario privilegiado, storage e ClamAV/EICAR aprovados.
+- [x] Executar `ops:phase8` no ambiente alvo com backup real, verify e restore drill apply em banco/storage isolados; rodada real retornou `ok=true`, `failed=0`, `blocked=0`.
+- [x] Colocar scanner de upload em modo `strict` e comprovar ClamAV/EICAR.
+- [x] Executar backup, verify e restore drill com dump real; backup id `portal-sama-20260622T165857Z-23e713`, restore em `banco-sama_restore_drill` e `/tmp/portal-sama-restore-storage`.
 - [x] Corrigir links públicos gerados pelo backend para rotas React atuais.
 - [x] ZapSign implementado no MVP com provider externo, webhook, sync e bloqueio de assinatura interna para contratos `ZAPSIGN`.
 - [ ] Homologar Acessórias com token/payload real e volume representativo.
@@ -60,4 +60,11 @@ Status base: atualizacao Codex de 2026-06-22.
 - [x] Contrato de API para frontend congelado em `docs/21-CONTRATO-API-FRONTEND.md`.
 - [x] Orquestrador `npm.cmd run ops:phase8` criado para consolidar readiness/schema/secrets/backup/verify/restore sem liberar Fase 8 com skips.
 - [x] `ops:secrets:check` passou a validar ZapSign com `--require-zapsign`.
-- [ ] Homologar ZapSign com token e webhook reais no ambiente alvo.
+- [x] `ops:secrets:check` real validou ZapSign com token/webhook configurados, sem expor valores.
+- [ ] Homologar fluxo funcional ZapSign fim a fim com envio/sync/webhook real de contrato controlado.
+
+## Avisos da Fase 8 real
+
+- [ ] Copiar evidencia JSON e artefatos do backup real para armazenamento operacional seguro fora de `/tmp`.
+- [ ] Registrar data/responsavel de rotacao de secrets em controle externo.
+- [ ] Planejar hardening futuro de `CERTIFICATE_ENCRYPTION_KEY` e `ACESSORIAS_TOKEN` conforme warnings do secret check.

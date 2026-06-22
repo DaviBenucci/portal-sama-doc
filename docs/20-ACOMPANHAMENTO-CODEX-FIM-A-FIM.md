@@ -662,13 +662,13 @@ Precedencia formal adotada a partir desta revisao:
 2. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md` na raiz, como roteiro operacional de fases, status permitidos e criterios de evidencia.
 3. Arquivos em `docs/`, incluindo este acompanhamento, como evidencias e matrizes auxiliares subordinadas aos documentos acima.
 
-Consequencia: a anotacao anterior de "concluida com ressalvas" para a Fase 8 foi reclassificada. Pelo guia raiz, status intermediarios como `CONCLUIDA COM RESSALVA` nao liberam avanco formal. As validacoes locais continuam registradas como evidencia, mas a Fase 8 fica `BLOQUEADA` ate readiness, secrets, backup e restore drill reais do ambiente alvo deixarem de ter pendencias bloqueantes.
+Consequencia: a anotacao anterior de "concluida com ressalvas" para a Fase 8 foi reclassificada ate existir evidencia real. Em 2026-06-22, a rodada real do `ops:phase8` no ambiente alvo retornou `ok=true`, `failed=0`, `blocked=0`; por isso a Fase 8 passa a `CONCLUIDA`.
 
 ## Fase 8 - Backend completo, readiness e qualidade
 
-Status final da fase: `BLOQUEADA`
+Status final da fase: `CONCLUIDA`
 
-Status tecnico local: validacoes de codigo e ensaios operacionais sinteticos executados. Status formal: bloqueado para avancar pelo roteiro estrito da raiz ate resolver as pendencias ambientais abaixo.
+Status tecnico local: validacoes de codigo e ensaios operacionais sinteticos executados. Status formal: concluido apos readiness, schema, secrets, backup, verify e restore drill reais no ambiente alvo.
 
 Premissas da rodada:
 
@@ -676,6 +676,9 @@ Premissas da rodada:
 - Os checks exatos de readiness/schema/secrets foram executados em modo `--soft --json` sem carregar segredos reais no terminal.
 - Para diferenciar falha de ambiente do terminal de drift real, houve uma segunda rodada controlada contra o MySQL local do `compose.yaml`, com segredos sinteticos em memoria e storage sintetico em `.ai-tests`.
 - O ensaio de backup/restore usou storage sintetico e `--skip-database`; portanto comprova a cadeia de scripts/artefatos de storage, mas nao substitui backup com dump real em homologacao/producao.
+- A rodada real final foi executada no container da API do EasyPanel, com variaveis reais ja carregadas pelo ambiente e sem registrar valores de secrets.
+- Evidencia real final: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED`.
+- Resultado real final: `ok=true`, `failed=0`, `blocked=0`, `warnings=4`; evidencia JSON indicada pelo comando em `/app/.ai-tests/phase8-operational/phase8-2026-06-22T16-58-37-116Z.json`.
 
 Imprevistos e ressalvas:
 
@@ -687,6 +690,8 @@ Imprevistos e ressalvas:
 - Em continuidade, foi criado `npm.cmd run ops:phase8` como orquestrador dos gates reais de Fase 8. Ele exige readiness, schema, secrets com ZapSign/Acessorias/Web Push, backup com `database.sql.gz` e `storage.tar.gz`, verify e restore drill em modo apply; skips e dry-run mantem a fase bloqueada.
 - Em 2026-06-22, o smoke via `npm.cmd run ops:phase8` revelou falha Windows na chamada de sub-scripts (`spawnSync npm.cmd EINVAL`). O orquestrador foi corrigido para usar `npm_execpath` quando chamado por `npm run` e `cmd.exe /c npm.cmd` como fallback Windows. A repeticao do smoke passou a executar os subchecks reais e manteve o bloqueio esperado por ambiente/secrets/banco ausentes.
 - Na continuidade seguinte, o parse/sanitizacao do orquestrador foi endurecido: JSON de subchecks passa a ser parseado antes de sanitizacao/truncamento textual, e o objeto parseado e sanitizado recursivamente. Isso evita falso positivo quando uma saida real for grande, mantendo a regra de nao imprimir valores sensiveis.
+- Na execucao real, foram necessarios ajustes operacionais no container: atualizar base ClamAV com `freshclam`, instalar cliente/plugin MariaDB compatível com `caching_sha2_password`, usar wrapper temporario para `mariadb-dump`/`mariadb` com `--ssl-verify-server-cert=0`, e conceder permissao do usuario de restore ao banco isolado `banco-sama_restore_drill`.
+- Avisos remanescentes aceitos como nao bloqueantes: backup/rollback ainda precisa copia segura de artefatos fora do container, `SAMA_SECRET_ROTATION_CONFIRMED_AT` ausente, recomendacao de aumentar `CERTIFICATE_ENCRYPTION_KEY` para 48+ caracteres e `ACESSORIAS_TOKEN` para 40+ caracteres, e banco de restore no mesmo host mas isolado por nome.
 
 | Etapa | Status final | Evidencia |
 | --- | --- | --- |
@@ -694,11 +699,11 @@ Imprevistos e ressalvas:
 | 8.2 Executar build da API | `CONCLUIDA` | `npm.cmd run build` passou. |
 | 8.3 Executar testes unitarios | `CONCLUIDA` | `npm.cmd test -- --runInBand` passou, 56 suites e 347 testes. |
 | 8.4 Executar testes E2E | `CONCLUIDA` | `npm.cmd run test:e2e` passou, 1 suite e 148 testes. |
-| 8.5 Executar readiness | `BLOQUEADA` | Com env sintetico/local: banco, migrations, RBAC e storage passaram; bloqueiam o aceite formal a ausencia de usuario DEV/ADMIN ativo no banco alvo, HTTPS/CORS produtivo e ClamAV strict. |
-| 8.6 Executar verificacao de schema | `BLOQUEADA` | `ops:schema:check` local passou com `critical=0`; falta validar no ambiente alvo e decidir a collation default do database. |
-| 8.7 Executar secret check | `BLOQUEADA` | `ops:secrets:check` passou com segredos sinteticos fortes; falta validacao com secrets reais do ambiente alvo sem imprimir valores. |
-| 8.8 Criar backup local/homolog | `BLOQUEADA` | `ops:backup:create` com storage sintetico, `--include-storage-archive` e `--skip-database` passou; falta backup com dump real em homolog/alvo. |
-| 8.9 Executar restore drill | `BLOQUEADA` | `ops:backup:verify` e `ops:restore:drill` dry-run passaram para backup sintetico; falta drill com dump real e alvo isolado. |
+| 8.5 Executar readiness | `CONCLUIDA` | Ambiente alvo real retornou `ok=true`, banco respondeu, schema/migrations passaram, RBAC bateu com 99 permissoes e 9 papeis, usuario privilegiado ativo, storage OK e ClamAV detectou EICAR. |
+| 8.6 Executar verificacao de schema | `CONCLUIDA` | Ambiente alvo real retornou `ok=true`, `critical=0`, `warnings=0`; database `banco-sama` e tabelas core em `utf8mb4_unicode_ci`. |
+| 8.7 Executar secret check | `CONCLUIDA` | Ambiente alvo real retornou `ok=true`, `failed=0`, com warnings de hardening sem valores de segredo impressos. |
+| 8.8 Criar backup local/homolog | `CONCLUIDA` | Backup real criado no ambiente alvo com `database.sql.gz`, `storage-manifest.json` e `storage.tar.gz`; backup id `portal-sama-20260622T165857Z-23e713`. |
+| 8.9 Executar restore drill | `CONCLUIDA` | Restore drill real em modo apply retornou `ok=true`, `failed=0`, `dryRun=false`; banco restaurado em `banco-sama_restore_drill` e storage extraido em `/tmp/portal-sama-restore-storage`. |
 | 8.10 Congelar contrato da API | `CONCLUIDA` | Criado `docs/21-CONTRATO-API-FRONTEND.md` com endpoints, permissoes, CSRF, enums, payloads e respostas de contratos/ZapSign. |
 | 8.11 Criar orquestrador operacional da Fase 8 | `CONCLUIDA` | Criado `portal-sama-api/scripts/run-operational-phase8.js` e script `ops:phase8`; smoke diagnostico confirmou que skips/dry-run deixam a fase `BLOQUEADA`. |
 
@@ -727,6 +732,7 @@ npm.cmd run ops:backup:create -- --skip-database --include-storage-archive --sto
 npm.cmd run ops:backup:verify -- --backup-dir <backup-sintetico> --json --soft
 npm.cmd run ops:restore:drill -- --backup-dir <backup-sintetico> --skip-database --target-storage-path <restore-sintetico> --json --soft
 npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --target-database-url <mysql-isolado> --target-storage-path <storage-isolado> --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED
+npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED
 ```
 
 ### Resultado da Fase 8
@@ -745,19 +751,24 @@ npm.cmd run ops:phase8 -- --json --soft --backup-output-dir <backup-real> --targ
 - `ops:secrets:check` agora aceita `--require-zapsign`; smoke com segredos sinteticos fortes, Acessorias, Web Push e ZapSign retornou `ok=true`, `failed=0`, `warnings=0`, sem imprimir valores.
 - API `npm.cmd run lint` e `git diff --check` passaram apos o orquestrador.
 - Nenhum segredo real foi aberto, impresso ou versionado.
+- Rodada real final do `ops:phase8` no EasyPanel: retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
+- Readiness real: `ok=true`, `failed=0`, `warnings=1`; ClamAV detectou EICAR.
+- Schema real: `ok=true`, `critical=0`, `warnings=0`; database `banco-sama` em `utf8mb4_unicode_ci`.
+- Secret check real: `ok=true`, `failed=0`, `warnings=3`, sem valores de segredo.
+- Backup real: `database.sql.gz`, `storage-manifest.json` e `storage.tar.gz` criados no backup id `portal-sama-20260622T165857Z-23e713`.
+- Verify real: `ok=true`, `failed=0`; gzip do banco e hashes dos artefatos validados.
+- Restore drill real: `ok=true`, `failed=0`, `dryRun=false`; banco importado no alvo isolado `banco-sama_restore_drill` e storage restaurado em `/tmp/portal-sama-restore-storage`.
 
-### Pendencias antes de go-live
+### Pendencias nao bloqueantes antes de go-live
 
-- Preferir executar `npm.cmd run ops:phase8` dentro do ambiente alvo com variaveis reais ja carregadas no processo; ele nao carrega `.env` por conta propria.
-- Rodar `ops:readiness` no ambiente alvo com HTTPS/CORS produtivo, ClamAV instalado e `SAMA_UPLOAD_SCAN_MODE=strict`.
-- Garantir usuario emergencial `DEV`/`ADMIN` ativo, controlado e rotacionado no banco alvo.
-- Rodar `ops:schema:check` contra homologacao/producao e decidir se a collation default do database precisa ajuste.
-- Rodar `ops:secrets:check -- --require-integrations --require-web-push --require-zapsign` com secrets reais no ambiente alvo sem imprimir valores.
-- Executar backup com dump real, verificar artefatos, e executar restore drill em banco/storage isolados.
+- Copiar evidencia JSON e artefatos de backup para armazenamento operacional seguro fora de `/tmp` e fora de pacotes versionaveis.
+- Registrar externamente data/responsavel da rotacao de secrets (`SAMA_SECRET_ROTATION_CONFIRMED_AT`).
+- Planejar hardening de `CERTIFICATE_ENCRYPTION_KEY` para 48+ caracteres e `ACESSORIAS_TOKEN` para 40+ caracteres.
+- Manter documentado que o restore drill usou banco isolado por nome no mesmo host (`banco-sama_restore_drill`), com confirmacao explicita de isolamento.
 
 ## Proxima fase autorizada
 
-Pela precedencia dos documentos da raiz, a Fase 9 nao esta formalmente autorizada enquanto a Fase 8 estiver `BLOQUEADA`. A continuidade imediata deve resolver ou registrar como bloqueio externo as pendencias de readiness, schema alvo, secrets reais, backup com dump real e restore drill isolado. Somente depois disso o roteiro pode avancar para a Fase 9.
+Pela precedencia dos documentos da raiz, a Fase 9 passa a estar formalmente autorizada apos a conclusao real da Fase 8. A continuidade deve iniciar a Fase 9 seguindo o guia raiz, sem pular subetapas e preservando as evidencias operacionais.
 
 ## Contexto para o proximo chat
 
@@ -777,19 +788,16 @@ Ler primeiro os documentos da raiz do workspace, com maior precedencia:
 Estado atual para continuidade:
 
 - Fase 7 ZapSign foi implementada e validada localmente.
-- Fase 8 tem validacoes locais de codigo e ensaios sinteticos registrados, mas status formal `BLOQUEADA`.
-- Existe `npm.cmd run ops:phase8` para orquestrar os gates reais; ele deve ser executado no ambiente alvo e nao libera Fase 8 com skips/dry-run.
-- Fase 9 nao esta autorizada formalmente.
-- O proximo trabalho deve tentar desbloquear Fase 8 com ambiente alvo real ou manter bloqueio externo documentado.
+- Fase 8 foi concluida com evidencia real no EasyPanel: `ok=true`, `failed=0`, `blocked=0`.
+- Existe `npm.cmd run ops:phase8`/`npm run ops:phase8` para reexecutar os gates reais; ele nao libera Fase 8 com skips/dry-run.
+- Fase 9 esta autorizada formalmente como proxima fase.
+- O proximo trabalho deve iniciar Fase 9 conforme o guia raiz e preservar/copy-out da evidencia operacional da Fase 8.
 - Nao usar docs auxiliares para sobrepor a raiz.
-- Nao iniciar frontend final antes dos gates de readiness, secrets, backup e restore drill.
+- Nao iniciar nova fase sem registrar status, escopo, comandos e evidencias.
 
-Pendencias imediatas:
+Pendencias imediatas nao bloqueantes:
 
-1. Readiness real no ambiente alvo, com usuario DEV/ADMIN ativo, HTTPS/CORS produtivo, storage real privado e ClamAV strict.
-2. Schema check no ambiente alvo.
-3. Secret check com variaveis reais, sem imprimir valores.
-4. Backup real com dump de banco e storage.
-5. Verify dos artefatos reais.
-6. Restore drill em banco/storage isolados.
-7. Registro de evidencias sem segredo.
+1. Copiar evidencia JSON e artefatos de backup para armazenamento seguro fora do container.
+2. Registrar rotacao de secrets em controle externo.
+3. Avaliar hardening de tamanho de `CERTIFICATE_ENCRYPTION_KEY` e `ACESSORIAS_TOKEN`.
+4. Registrar que o restore drill usou banco isolado por nome no mesmo host.
