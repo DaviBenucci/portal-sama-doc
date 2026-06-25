@@ -774,7 +774,7 @@ Pela precedencia dos documentos da raiz, a Fase 9 passou a estar formalmente aut
 
 Status atual da fase: `EM_EXECUCAO`
 
-Status tecnico local: tela operacional, e2e real da rota e runner autenticado implementados e validados no `portal-sama-web`. Status formal: pendente de smoke real autenticado com usuario autorizado e acoes controladas, com evidencia de tela/logs sem segredos.
+Status tecnico local: tela operacional, e2e real da rota e runner autenticado implementados e validados no `portal-sama-web`. Status formal: `EM_EXECUCAO`; smoke autenticado read-only aprovado em 2026-06-25 e acoes controladas parcialmente aprovadas, restando bloqueio operacional de scanner no upload valido e ajuste/justificativa do endpoint sincrono longo de Acessorias.
 
 Arquivos alterados:
 
@@ -806,7 +806,7 @@ Commit web:
 | 9.5 Criar tela simples Acessorias | `CONCLUIDA` local | Smoke consulta `getAcessoriasHomeSummary` e oferece sync controlado com `runAcessoriasOperationalSync({ applyWorkspace: false })`, protegido por confirmacao. |
 | 9.6 Criar tela simples de upload | `CONCLUIDA` local | Smoke lista documentos e envia arquivo com `uploadClientDocument` para cliente selecionado. |
 | 9.7 Nao polir layout ainda | `CONCLUIDA` local | Implementacao usa componentes existentes (`panel`, `stat-grid`, `StatusBadge`) e nao cria design system final. |
-| 9.8 Registrar evidencias | `EM_EXECUCAO` | Evidencias locais e smoke publico pos-deploy registrados abaixo; falta evidencia real autenticada com usuario autorizado e acoes controladas. |
+| 9.8 Registrar evidencias | `EM_EXECUCAO` | Evidencias locais, smoke publico pos-deploy e smoke autenticado read-only/acoes de 2026-06-25 registrados abaixo; falta resolver bloqueio operacional de scanner e decidir tratamento final do sync longo de Acessorias. |
 
 Comandos executados:
 
@@ -839,7 +839,17 @@ Resultado dos comandos:
 - Rodadas autenticadas com `PORTAL_PHASE9_APPLY_ACTIONS=1` criaram `.ai-tests/phase9-smoke/phase9-smoke-20260622T205252516Z.json` e `.ai-tests/phase9-smoke/phase9-smoke-20260622T205313213Z.json`.
 - Nessas rodadas autenticadas passaram: rota `/dev/fase-9-smoke`, CSRF/login, `/auth/me`, health, clientes, contratos, resumo Acessorias, documentos, contrato `INTERNAL`, contrato `ZAPSIGN` sandbox, rejeicao do SVG invalido e logout.
 - Permaneceram falhas: `acessorias-controlled-sync` HTTP 409 e `upload-valid-document` HTTP 503. A Fase 9 segue `EM_EXECUCAO` ate diagnostico/correcao desses dois pontos.
-- O runner do commit `605453f` passou a anexar `code/message/details` publicos e sanitizados nas falhas para a proxima rodada identificar a causa sem imprimir corpo bruto.
+- O runner do commit `605453f` passou a anexar `code/message/details` publicos e sanitizados nas falhas para identificar a causa sem imprimir corpo bruto.
+- Continuidade de 2026-06-25: corrigido `scripts/portal-phase9-smoke.mjs` para ler tambem respostas de erro envelopadas pelo filtro global da API em `error.code`, `error.message` e `error.details`. As evidencias antigas nao tinham esses campos porque o runner lia apenas chaves no topo do JSON.
+- Continuidade de 2026-06-25: o runner passou a classificar credenciais ausentes e bloqueios operacionais conhecidos como `blocked`, mantendo `ok=false`, `failed=0` quando nao ha erro de produto/codigo comprovado.
+- Continuidade de 2026-06-25: `/health` passou a retornar `uploadQuarantine`, validando a area de quarentena de upload. A tela `/dev/fase-9-smoke` e o runner registram esse campo para diagnosticar o `503` de upload valido.
+- Continuidade de 2026-06-25: corrigido `AcessoriasRegistrationsService.syncCompaniesCatalog` para finalizar o `AcessoriasSyncRun` como `FAILED` quando o lock pesado nao puder ser adquirido, mantendo o `409` para o chamador e evitando run orfao em `RUNNING`.
+- Validacoes de 2026-06-25: web `node --check scripts/portal-phase9-smoke.mjs`, `npm.cmd test -- --runInBand`, `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` passaram; API `npm.cmd test -- health.service.spec.ts --runInBand`, `npm.cmd test -- acessorias-registrations.service.spec.ts --runInBand`, `npm.cmd test -- acessorias-sync-lock.service.spec.ts --runInBand`, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd test -- --runInBand`, `npm.cmd run test:e2e` e `git diff --check` passaram, com 56 suites/349 testes unitarios e 1 suite/148 testes e2e. Docs `git diff --check` tambem passou.
+- Rodada diagnostica de 2026-06-25: `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` confirmou `/dev/fase-9-smoke` em HTTP 200 servindo shell HTML; ficou `ok=false`, `failed=0`, `blocked=1` apenas por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`, com evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T191512609Z.json`.
+- Rodada autenticada read-only de 2026-06-25: as credenciais foram carregadas de `portal-sama-api/.env` pelas chaves `SAMA_BOOTSTRAP_ADMIN_USERNAME`/`SAMA_BOOTSTRAP_ADMIN_PASSWORD`, sem imprimir valores. O smoke retornou `ok=true`, `failed=0`, `blocked=0`, usuario DEV com 99 permissoes, health/banco/storage/clientes/contratos/Acessorias/documentos OK e evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193014387Z.json`.
+- Rodada autenticada com acoes de 2026-06-25: `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou contrato `INTERNAL`, criou contrato `ZAPSIGN` sandbox, confirmou rejeicao de SVG invalido e fez logout. A evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193028929Z.json` ficou `failed=1`, `blocked=1`: `acessorias-controlled-sync` excedeu timeout local de 120s e `upload-valid-document` retornou `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`.
+- Consultas autenticadas a `GET /integrations/acessorias/sync-runs` confirmaram que os jobs de Acessorias disparados pelo smoke terminaram com `SUCCESS`: catalogo com `fetched=494`, `updated=494`, `failed=0`, seguido de incremental de entregas `SUCCESS`. A repeticao com `--timeout 360000 --skip-zapsign` gerou `.ai-tests/phase9-smoke/phase9-smoke-20260625T193547773Z.json`; o endpoint sincrono retornou `504` apos cerca de 240s, mas o sync run correspondente tambem fechou `SUCCESS`.
+- Bloqueio operacional remanescente: upload PDF valido em producao/homologacao publica retorna `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`; instalar/configurar o scanner usado pelo upload (`clamscan`/`clamdscan` ou `SAMA_UPLOAD_SCAN_BIN`) no ambiente alvo antes de concluir formalmente a Fase 9. O novo campo `uploadQuarantine` em `/health` depende do deploy da API atual para aparecer na evidencia publica.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --skip-phase9 --evidence-dir .ai-tests/homologation-real-phase9` - OK para smoke publico sem credenciais.
 - `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` - `ok=false` somente por `smoke:phase9` bloqueado por credenciais ausentes; `smoke:public` passou.
 - Correcao de robustez do `homologation:real`: o arquivo de evidencia agora inclui milissegundos e tenta sufixo seguro para evitar colisao quando rodadas iniciam no mesmo segundo.
@@ -867,15 +877,16 @@ Evidencia de bloqueio autenticado:
 - `test:e2e:real` ficou `blocked` por ausencia de `PORTAL_REAL_E2E=1`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD`.
 - Evidencia JSON local ignorada pelo git: `.ai-tests/homologation-real-phase9/homologation-real-20260622T172645Z.json`.
 - Apos a inclusao de `smoke:phase9` no `homologation:real`, a rodada `npm.cmd run homologation:real -- --json --soft --skip-auth --skip-permissions --skip-e2e --evidence-dir .ai-tests/homologation-real-phase9` manteve `smoke:public` aprovado e marcou `smoke:phase9` como `blocked` exclusivamente por ausencia de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`; evidencia ignorada pelo git em `.ai-tests/homologation-real-phase9/homologation-real-20260622T195316Z.json`.
+- Em 2026-06-25, o smoke autenticado read-only foi executado com as chaves bootstrap encontradas em `.env`, sem expor valores, e aprovou todos os checks read-only.
+- A rodada com acoes de 2026-06-25 aprovou contratos `INTERNAL`/`ZAPSIGN` sandbox e rejeicao de upload SVG invalido; Acessorias continuou executando e concluiu `SUCCESS` pelo historico de `sync-runs`, mas o endpoint sincrono publico excedeu timeout; upload PDF valido ficou bloqueado por scanner indisponivel em modo estrito.
 
 Pendencias para concluir formalmente a Fase 9:
 
-- Se o smoke for executado dentro do container/servico web, fazer deploy do web contendo os commits `d3bd23e`, `6961179`, `f8ebcfa` e `605453f`; se for executado localmente, o runner ja consegue bater no dominio publico.
-- Executar smoke autenticado com usuario autorizado em `/dev/fase-9-smoke`.
-- Registrar evidencia visual/logica autenticada de: health, `/auth/me`, clientes, contratos, Acessorias e documentos.
-- Corrigir ou justificar os failures atuais: sync Acessorias controlado HTTP 409 e upload PDF valido HTTP 503.
-- Executar novamente as acoes controladas com o runner `605453f` para capturar detalhes sanitizados e confirmar contrato interno, contrato ZapSign sandbox, sync Acessorias sem aplicar workspace e upload valido/invalido.
-- Registrar screenshots ou logs sem segredos.
+- Fazer deploy das alteracoes atuais de API/web quando aprovado, para publicar `uploadQuarantine` no `/health`, a classificacao `failed`/`blocked` do runner e o fix de `AcessoriasSyncRun` orfao quando o lock pesado falha.
+- Instalar/configurar o scanner de upload no ambiente alvo (`clamscan`/`clamdscan` ou `SAMA_UPLOAD_SCAN_BIN`) para que `upload-valid-document` deixe de retornar `DOCUMENT_SCAN_UNAVAILABLE`.
+- Decidir o tratamento final de `acessorias-controlled-sync`: transformar a acao em fluxo assincrono/polling ou manter o endpoint sincrono com timeout operacional compatibilizado, pois os jobs concluem `SUCCESS` via `sync-runs` mesmo quando a resposta publica estoura timeout/504.
+- Reexecutar `smoke:phase9` com `PORTAL_PHASE9_APPLY_ACTIONS=1` apos scanner/deploy para capturar evidencia final sem segredos.
+- Executar `homologation:real` final com e2e real e matriz de permissoes quando as variaveis correspondentes estiverem configuradas.
 
 Comando recomendado para destravar primeiro a parte autenticada read-only sem expor valores no output:
 

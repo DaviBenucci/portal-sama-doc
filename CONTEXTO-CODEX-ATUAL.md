@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-06-22
-Sessao atual: continuidade da implementacao fim a fim do Portal Sama apos conciliacao de precedencia documental.
+Atualizado em: 2026-06-25
+Sessao atual: continuidade da implementacao fim a fim do Portal Sama na Fase 9.
 
 ## Precedencia obrigatoria
 
@@ -64,8 +64,18 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - O runner suporta modo read-only por padrao e acoes controladas somente com `--apply-actions` ou `PORTAL_PHASE9_APPLY_ACTIONS=1`: criar contrato `INTERNAL`, contrato `ZAPSIGN` sandbox, sync Acessorias sem aplicar workspace e upload valido/invalido.
 - `smoke:phase9` aceita `--evidence-dir` ou `PORTAL_PHASE9_EVIDENCE_DIR` para gravar JSON sanitizado proprio da Fase 9, sem sobrescrever evidencias antigas.
 - `smoke:phase9` passou a incluir detalhes publicos/sanitizados de resposta quando uma checagem falha, sem imprimir corpo bruto, tokens ou cookies.
+- Em 2026-06-25, o runner foi corrigido para extrair tambem erros envelopados pela API em `error.code`, `error.message` e `error.details`; a rodada autenticada passou a expor a causa sanitizada dos bloqueios de Acessorias e upload valido.
+- Em 2026-06-25, o runner passou a diferenciar `failed` de `blocked` para credenciais ausentes, lock operacional Acessorias (`ACESSORIAS_HEAVY_JOB_LOCKED`) e indisponibilidade operacional do upload (`DOCUMENT_SCAN_UNAVAILABLE`/`DOCUMENT_QUARANTINE_UNAVAILABLE`), sem marcar a fase como aprovada.
+- A tela e o runner Fase 9 passaram a exibir `uploadQuarantine` retornado por `/health`, para diagnosticar falhas de upload antes de executar uma mutacao de documento.
 - `homologation:real` passou a incluir `smoke:phase9`, com `--skip-phase9` para rodadas publicas sem credenciais.
 - `homologation:real` tambem foi ajustado para evitar colisao de nome de evidencia quando duas rodadas iniciam no mesmo segundo; o arquivo agora usa milissegundos e tenta sufixo seguro sem sobrescrever evidencia antiga.
+
+### API - Fase 9 diagnostico Acessorias
+
+- Em 2026-06-25, `AcessoriasRegistrationsService.syncCompaniesCatalog` foi corrigido para finalizar o `AcessoriasSyncRun` como `FAILED` quando o lock pesado do Acessorias nao puder ser adquirido.
+- O comportamento HTTP continua preservando o conflito `409` para o chamador; a correcao evita deixar sync runs orfaos em `RUNNING` quando ha job concorrente.
+- Teste unitario cobre o caso `ACESSORIAS_HEAVY_JOB_LOCKED`, garantindo `syncRuns.finish` com `lock_acquired=false` e sem notificar inicio de job que nao comecou.
+- `GET /health` passou a validar tambem a area de quarentena de upload (`SAMA_UPLOAD_QUARANTINE_DIR` ou `STORAGE_PRIVATE_PATH/uploads/_quarantine`) e retorna `uploadQuarantine`; health fica `ok=false` se ela nao estiver gravavel.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -92,17 +102,17 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 
 - `npm.cmd run lint` - OK.
 - `npm.cmd run build` - OK.
-- `npm.cmd test -- --runInBand` - OK, 56 suites e 347 testes.
-- `npm.cmd run test:e2e` - OK, 1 suite e 148 testes.
+- `npm.cmd test -- --runInBand` - OK, 56 suites e 349 testes na rodada de 2026-06-25.
+- `npm.cmd run test:e2e` - OK, 1 suite e 148 testes na rodada de 2026-06-25.
 - `npm.cmd run prisma:validate` - OK na rodada da Fase 7.
 - Specs focadas contratos/ZapSign - OK, 4 suites e 20 testes.
 - Spec de rate limit - OK, 1 suite e 6 testes.
-- `git diff --check` - OK.
+- `git diff --check` - OK na rodada de 2026-06-25.
 
 ### Web
 
-- `npm.cmd run lint` - OK apos Fase 9 smoke.
-- `npm.cmd run build` - OK apos Fase 9 smoke.
+- `npm.cmd run lint` - OK apos correcao do runner em 2026-06-25.
+- `npm.cmd run build` - OK apos correcao do runner em 2026-06-25.
 - `npm.cmd test -- --runInBand` - OK, 13 testes de contrato.
 - `npm.cmd run test:e2e:real` sem credenciais - OK como diagnostico, 2 testes pulados por env ausente.
 - `node --check scripts/portal-phase9-smoke.mjs` - OK.
@@ -110,7 +120,13 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `npm.cmd run smoke:phase9 -- --json --soft --skip-zapsign --skip-acessorias-sync` - `phase9-route-shell` passou contra `https://portal.samacontabil.com.br/dev/fase-9-smoke`; falhou apenas em `credentials` por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`.
 - Apos a correcao de evidencia, `npm.cmd test`, `npm.cmd run lint`, `npm.cmd run build`, `node --check scripts/portal-real-homologation.mjs` e `git diff --check` passaram no web.
 - Apos a adicao de evidencia direta/detalhes sanitizados ao `smoke:phase9`, `node --check scripts/portal-phase9-smoke.mjs`, `npm.cmd test`, `npm.cmd run lint`, `npm.cmd run build` e `git diff --check` passaram.
-- `git diff --check` - OK.
+- Em 2026-06-25, `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` confirmou novamente o shell HTML de `/dev/fase-9-smoke` em producao; a rodada diagnostica mais recente ficou `failed=0`, `blocked=1` somente por ausencia local de `PORTAL_AUTH_USERNAME` e `PORTAL_AUTH_PASSWORD`, criando `.ai-tests/phase9-smoke/phase9-smoke-20260625T191512609Z.json`.
+- Em 2026-06-25, as credenciais corretas foram carregadas de `portal-sama-api/.env` pelas chaves `SAMA_BOOTSTRAP_ADMIN_USERNAME`/`SAMA_BOOTSTRAP_ADMIN_PASSWORD`, sem imprimir valores. As chaves `PORTAL_AUTH_*` retornaram HTTP 401 e `PORTAL_E2E_*` continha referencia literal, entao nao foram usadas.
+- `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` autenticado read-only retornou `ok=true`, `failed=0`, `blocked=0`, usuario DEV com 99 permissoes, health/banco/storage/clientes/contratos/Acessorias/documentos OK e evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193014387Z.json`.
+- `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou contrato `INTERNAL`, contrato `ZAPSIGN` sandbox e confirmou upload SVG invalido rejeitado. A evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193028929Z.json` ficou `failed=1`, `blocked=1`: Acessorias excedeu timeout local de 120s e upload PDF valido retornou `DOCUMENT_SCAN_UNAVAILABLE` em modo estrito.
+- Consultas autenticadas a `GET /integrations/acessorias/sync-runs` confirmaram que os jobs disparados pelo smoke concluiram com `SUCCESS`: catalogo `fetched=494`, `updated=494`, `failed=0`, seguido de incremental de entregas `SUCCESS`. A repeticao com `--timeout 360000 --skip-zapsign` gerou `.ai-tests/phase9-smoke/phase9-smoke-20260625T193547773Z.json`; o endpoint sincrono ainda retornou `504` apos cerca de 240s, mas o respectivo sync run tambem fechou `SUCCESS`.
+- Bloqueio operacional remanescente da Fase 9: upload PDF valido em producao/homologacao publica retorna `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`; instalar/configurar o scanner usado pelo upload (`clamscan`/`clamdscan` ou `SAMA_UPLOAD_SCAN_BIN`) no ambiente alvo antes de concluir formalmente a fase. O novo campo `uploadQuarantine` em `/health` depende de deploy da API atual para aparecer na evidencia publica.
+- `git diff --check` - OK na rodada de 2026-06-25.
 - Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
 
 ### Deploy real Fase 9
@@ -194,10 +210,14 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
 4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a tela/runner web estao nos commits `73da23f`, `b17a167`, `d3bd23e`, `6961179`, `f8ebcfa` e `605453f`.
-5. Para concluir formalmente a Fase 9, repetir `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` com `PORTAL_PHASE9_APPLY_ACTIONS=1` usando o runner do commit `605453f`, para capturar detalhes sanitizados do 409 Acessorias e 503 upload valido.
-6. Depois, executar `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
-7. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
-8. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+5. Para concluir formalmente a Fase 9, primeiro resolver os bloqueios remanescentes da rodada autenticada de 2026-06-25:
+   - configurar/deployar o scanner de upload no ambiente alvo para eliminar `DOCUMENT_SCAN_UNAVAILABLE`;
+   - decidir se `acessorias-controlled-sync` deve virar fluxo assincrono/polling ou se o timeout operacional do endpoint sincrono sera ajustado, pois os `sync-runs` concluem `SUCCESS` mesmo quando a resposta publica retorna timeout/504;
+   - fazer deploy das alteracoes atuais de API/web para publicar `uploadQuarantine`, a classificacao `failed`/`blocked` do runner e o fix de `AcessoriasSyncRun` orfao quando o lock pesado falha.
+6. Depois dos fixes/deploy, repetir `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` com credenciais carregadas sem imprimir valores.
+7. Executar `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
+8. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
+9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
