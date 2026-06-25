@@ -67,6 +67,7 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - Em 2026-06-25, o runner foi corrigido para extrair tambem erros envelopados pela API em `error.code`, `error.message` e `error.details`; a rodada autenticada passou a expor a causa sanitizada dos bloqueios de Acessorias e upload valido.
 - Em 2026-06-25, o runner passou a diferenciar `failed` de `blocked` para credenciais ausentes, lock operacional Acessorias (`ACESSORIAS_HEAVY_JOB_LOCKED`) e indisponibilidade operacional do upload (`DOCUMENT_SCAN_UNAVAILABLE`/`DOCUMENT_QUARANTINE_UNAVAILABLE`), sem marcar a fase como aprovada.
 - A tela e o runner Fase 9 passaram a exibir `uploadQuarantine` retornado por `/health`, para diagnosticar falhas de upload antes de executar uma mutacao de documento.
+- Em 2026-06-25, a decisao tecnica para o timeout longo do `acessorias-controlled-sync` foi implementar polling por `GET /integrations/acessorias/sync-runs`: a tela mostra runs recentes e o runner passa a consultar os runs apos timeout local/HTTP 504, aceitando a acao somente quando catalogo e entregas fecharem `SUCCESS`.
 - `homologation:real` passou a incluir `smoke:phase9`, com `--skip-phase9` para rodadas publicas sem credenciais.
 - `homologation:real` tambem foi ajustado para evitar colisao de nome de evidencia quando duas rodadas iniciam no mesmo segundo; o arquivo agora usa milissegundos e tenta sufixo seguro sem sobrescrever evidencia antiga.
 
@@ -76,6 +77,7 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - O comportamento HTTP continua preservando o conflito `409` para o chamador; a correcao evita deixar sync runs orfaos em `RUNNING` quando ha job concorrente.
 - Teste unitario cobre o caso `ACESSORIAS_HEAVY_JOB_LOCKED`, garantindo `syncRuns.finish` com `lock_acquired=false` e sem notificar inicio de job que nao comecou.
 - `GET /health` passou a validar tambem a area de quarentena de upload (`SAMA_UPLOAD_QUARANTINE_DIR` ou `STORAGE_PRIVATE_PATH/uploads/_quarantine`) e retorna `uploadQuarantine`; health fica `ok=false` se ela nao estiver gravavel.
+- `AcessoriasOperationalSyncService` passou a marcar catalogo e entregas com o trigger `manual_operational_sync`, permitindo que o smoke Fase 9 diferencie os runs da acao operacional de outros jobs manuais.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -125,6 +127,7 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` autenticado read-only retornou `ok=true`, `failed=0`, `blocked=0`, usuario DEV com 99 permissoes, health/banco/storage/clientes/contratos/Acessorias/documentos OK e evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193014387Z.json`.
 - `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou contrato `INTERNAL`, contrato `ZAPSIGN` sandbox e confirmou upload SVG invalido rejeitado. A evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193028929Z.json` ficou `failed=1`, `blocked=1`: Acessorias excedeu timeout local de 120s e upload PDF valido retornou `DOCUMENT_SCAN_UNAVAILABLE` em modo estrito.
 - Consultas autenticadas a `GET /integrations/acessorias/sync-runs` confirmaram que os jobs disparados pelo smoke concluiram com `SUCCESS`: catalogo `fetched=494`, `updated=494`, `failed=0`, seguido de incremental de entregas `SUCCESS`. A repeticao com `--timeout 360000 --skip-zapsign` gerou `.ai-tests/phase9-smoke/phase9-smoke-20260625T193547773Z.json`; o endpoint sincrono ainda retornou `504` apos cerca de 240s, mas o respectivo sync run tambem fechou `SUCCESS`.
+- Continuidade em 2026-06-25: implementado polling do Acessorias no runner Fase 9 com `PORTAL_PHASE9_ACESSORIAS_POLL_TIMEOUT_MS`/`--acessorias-poll-timeout`, mantendo saida sanitizada; checks focados `node --check scripts/portal-phase9-smoke.mjs`, `npm.cmd test -- --runInBand` no web e spec nova `acessorias-operational-sync.service.spec.ts` passaram antes da bateria final.
 - Bloqueio operacional remanescente da Fase 9: upload PDF valido em producao/homologacao publica retorna `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`; instalar/configurar o scanner usado pelo upload (`clamscan`/`clamdscan` ou `SAMA_UPLOAD_SCAN_BIN`) no ambiente alvo antes de concluir formalmente a fase. O novo campo `uploadQuarantine` em `/health` depende de deploy da API atual para aparecer na evidencia publica.
 - `git diff --check` - OK na rodada de 2026-06-25.
 - Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
@@ -212,8 +215,8 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a tela/runner web estao nos commits `73da23f`, `b17a167`, `d3bd23e`, `6961179`, `f8ebcfa` e `605453f`.
 5. Para concluir formalmente a Fase 9, primeiro resolver os bloqueios remanescentes da rodada autenticada de 2026-06-25:
    - configurar/deployar o scanner de upload no ambiente alvo para eliminar `DOCUMENT_SCAN_UNAVAILABLE`;
-   - decidir se `acessorias-controlled-sync` deve virar fluxo assincrono/polling ou se o timeout operacional do endpoint sincrono sera ajustado, pois os `sync-runs` concluem `SUCCESS` mesmo quando a resposta publica retorna timeout/504;
-   - fazer deploy das alteracoes atuais de API/web para publicar `uploadQuarantine`, a classificacao `failed`/`blocked` do runner e o fix de `AcessoriasSyncRun` orfao quando o lock pesado falha.
+   - fazer deploy das alteracoes atuais de API/web para publicar `uploadQuarantine`, a classificacao `failed`/`blocked` do runner, o fix de `AcessoriasSyncRun` orfao quando o lock pesado falha e o polling de `sync-runs` do `acessorias-controlled-sync`;
+   - validar em ambiente alvo que o polling marca `acessorias-controlled-sync` como aprovado quando os runs de catalogo e entregas fecharem `SUCCESS`.
 6. Depois dos fixes/deploy, repetir `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` com credenciais carregadas sem imprimir valores.
 7. Executar `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
 8. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
