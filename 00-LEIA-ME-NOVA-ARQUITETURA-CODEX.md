@@ -17,6 +17,7 @@ Este pacote documental foi criado para orientar a conclusão da nova arquitetura
 4. [`18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`](./18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md)
 5. [`19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`](./19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md)
 6. [`20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`](./20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md)
+7. [`21-CONTINUIDADE-FASE-9-EASYPANEL.md`](./21-CONTINUIDADE-FASE-9-EASYPANEL.md), enquanto a Fase 9 estiver `EM_EXECUCAO`.
 
 ## Precedencia documental
 
@@ -24,7 +25,7 @@ Os documentos Markdown localizados na raiz deste workspace sao a fonte normativa
 
 Precedencia pratica:
 
-1. Documentos de decisao da raiz: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
+1. Documentos de decisao da raiz: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
 2. Guia operacional da raiz: `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, usado para ordenar fases, status permitidos e evidencias.
 3. Documentos em `docs/`, usados como acompanhamento, matriz, checklist e evidencias; eles nao podem liberar uma fase se conflitarem com os documentos de maior precedencia.
 
