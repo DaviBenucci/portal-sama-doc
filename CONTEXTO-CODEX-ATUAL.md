@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-06-26
-Sessao atual: continuidade da implementacao fim a fim do Portal Sama na Fase 9.
+Atualizado em: 2026-06-29
+Sessao atual: Fase 10 concluida; Fase 11 autorizada como proximo passo.
 
 ## Precedencia obrigatoria
 
@@ -16,10 +16,11 @@ Ordem pratica:
 5. `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`
 6. `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`
 7. `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`
-8. `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, enquanto a Fase 9 estiver `EM_EXECUCAO`
-9. `CONTEXTO-CODEX-ATUAL.md`
-10. `Testes-da-aplicação-DEPLOY.md`
-11. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
+8. `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, como evidencia formal da conclusao da Fase 9
+9. `22-CONTINUIDADE-FASE-10-FRONTEND.md`, como evidencia formal da conclusao da Fase 10
+10. `CONTEXTO-CODEX-ATUAL.md`
+11. `Testes-da-aplicação-DEPLOY.md`
+12. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
 
 Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase se conflitarem com a raiz.
 
@@ -27,10 +28,15 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 
 - Fases 0 a 8: registradas como concluidas no acompanhamento.
 - Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
-- Fase 9: `EM_EXECUCAO`; tela web de smoke backend, e2e real da rota e runner autenticado `smoke:phase9` implementados/validados em 2026-06-22, com nova continuidade documental em 2026-06-26.
-- Fase 10: ainda nao autorizada enquanto a Fase 9 nao tiver smoke real/evidencia final.
+- Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
+- Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
+- Fase 11: autorizada como proximo passo; ainda nao iniciada.
 
-Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
+Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
+
+Evidencia principal da conclusao da Fase 9: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`, com `ok=true`, `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=passed` e `test:e2e:real=passed`.
+
+Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.md`, com manifesto de rotas, navegacao por jornada, `QueryTabs`, `StateBlock`, primitivas `AppPanel`, `InfoCard`, `DataTable`, `Timeline`, `AppDrawer`, `AppModal` e `Form`, politica frontend de permissoes, normalizacao do API client, checklist de seguranca visual, lint OK, build OK, 21 testes de contrato web OK, `test:e2e` OK com 27 passed/2 skipped e `git diff --check` OK.
 
 ## Implementado recentemente
 
@@ -93,6 +99,59 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
   - Evidencia local: `portal-sama-web/.ai-tests/phase9-smoke/phase9-smoke-20260626T183520231Z.json`.
   - `homologation:real --skip-permissions` retornou `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=failed` por causa do bloqueio de upload e `test:e2e:real=failed` porque o navegador esperava o heading `Smoke backend`, mas o contexto mostrou a tela de login.
   - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260626T184910450Z.json`.
+- Continuidade de 2026-06-29 apos ajuste informado de `clamscan` no EasyPanel:
+  - `/api-v2/health` publico retornou `ok=true`, `database=up`, `storage=up`, `uploadQuarantine=up`, `timestamp=2026-06-29T11:14:28.271Z`.
+  - `smoke:phase9` autenticado com `applyActions=true` continuou `ok=false`, `failed=0`, `blocked=1`; Acessorias passou por polling, contratos passaram, upload SVG invalido foi rejeitado, mas `upload-valid-document` continuou HTTP 503 `DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`.
+  - Evidencia local: `portal-sama-web/.ai-tests/phase9-smoke/phase9-smoke-20260629T112420826Z.json`.
+  - `homologation:real --skip-permissions` continuou com `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=failed` por scanner e `test:e2e:real=failed` esperando `Smoke backend` enquanto o contexto mostrou tela de login.
+  - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T113002807Z.json`.
+  - Conclusao operacional: o `clamscan` ainda nao esta acessivel para o processo/container da API ou esta sem base de assinaturas. O Dockerfile atual ja instala `clamav` e define `SAMA_UPLOAD_SCAN_BIN=/usr/bin/clamscan`, entao confirmar se o EasyPanel fez rebuild/redeploy com essa imagem, se nenhuma env sobrescreveu o binario e se `freshclam`/assinaturas existem em `/var/lib/clamav`. Confirmar dentro do container da API `which clamscan`, `clamscan --version` e `ls -la /var/lib/clamav`, depois reiniciar/redeployar.
+  - Nova reexecucao do `smoke:phase9` em 2026-06-29T12:02:02.608Z manteve `ok=false`, `failed=0`, `blocked=1`; todos os checks passaram exceto `upload-valid-document`, que continuou HTTP 503 `DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`. Evidencia local: `portal-sama-web/.ai-tests/phase9-smoke/phase9-smoke-20260629T120202608Z.json`.
+  - Apos `freshclam` confirmar bases `daily.cvd`, `main.cvd` e `bytecode.cvd` atualizadas, nova execucao de `smoke:phase9` em 2026-06-29T12:20:12.310Z retornou `ok=true`, `failed=0`, `blocked=0`.
+  - Nessa rodada, `upload-valid-document` passou com HTTP 201, `documentId=366b48a6-8ce5-4e04-8e82-92309ab661c8`, `status=PENDING`, `mime=application/pdf`; upload SVG invalido continuou rejeitado; Acessorias fechou `SUCCESS` por polling.
+  - Evidencia local: `portal-sama-web/.ai-tests/phase9-smoke/phase9-smoke-20260629T122012310Z.json`.
+  - Em seguida, `homologation:real --skip-permissions` gerou `ok=false` porque somente `test:e2e:real` falhou; `smoke:public`, `smoke:auth` e `smoke:phase9` passaram, e `smoke:permissions` foi pulado conforme parametro.
+  - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T122850371Z.json`.
+  - Falhas E2E reais: logout apos clique em `Sair` permaneceu em `/home`, e a rota `/dev/fase-9-smoke` voltou para tela de login em vez de exibir `Smoke backend`.
+  - Ajustado `portal-sama-web/tests/e2e/real-auth.spec.ts`: `loginWithRealUser` agora espera a rota autenticada alvo e navega explicitamente como fallback; o teste de logout espera a resposta `POST /auth/logout` antes de exigir `/login`.
+  - Validacoes locais apos o ajuste: `npm.cmd run lint` OK, `npx.cmd playwright test tests/e2e/real-auth.spec.ts --reporter=line` OK com testes reais pulados por env ausente, e `npm.cmd test -- --runInBand` OK.
+  - Nova execucao de `homologation:real --skip-permissions` em 2026-06-29T12:48:34.080Z manteve `ok=false`, mas com avanco: `smoke:public`, `smoke:auth`, `smoke:phase9` passaram e o teste real de login/home/cookies/logout tambem passou.
+  - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T124834080Z.json`.
+  - Falha remanescente: apenas o teste real da rota `/dev/fase-9-smoke` falhou esperando `Smoke backend`; o contexto mostrou a tela de login renderizada enquanto a expectativa ja estava na rota operacional.
+  - Segundo ajuste em `portal-sama-web/tests/e2e/real-auth.spec.ts`: `loginWithRealUser` agora detecta a tela de login pelo heading `Entrar no portal`, aguarda ate 10s apos abrir a rota alvo, faz login se o formulario aparecer e exige que o login desapareca depois de navegar para a rota esperada.
+  - Validacoes locais apos o segundo ajuste: `npm.cmd run lint` OK, `npx.cmd playwright test tests/e2e/real-auth.spec.ts --reporter=line` OK com testes reais pulados por env ausente, `npm.cmd test -- --runInBand` OK e `git diff --check` OK no web.
+  - Nova execucao de `homologation:real --skip-permissions` em 2026-06-29T13:28:22.279Z retornou `ok=false`: `smoke:public` e `smoke:auth` passaram; `smoke:phase9` falhou apenas em `acessorias-controlled-sync` por HTTP 409 `ACESSORIAS_HEAVY_JOB_LOCKED`; upload PDF valido continuou HTTP 201 e upload SVG invalido continuou rejeitado.
+  - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T132822279Z.json`.
+  - Nessa mesma rodada, `test:e2e:real` falhou porque o helper ainda podia sair cedo demais: `locator.isVisible()` nao aguardou a tela de login renderizar antes de decidir se precisava logar.
+  - Terceiro ajuste em `portal-sama-web/tests/e2e/real-auth.spec.ts`: `loginWithRealUser` agora usa `waitFor({ state: 'visible' })`, aguarda resposta `POST /auth/login` OK e navega para a rota esperada somente depois do login HTTP OK.
+  - Ajustado `portal-sama-web/scripts/portal-phase9-smoke.mjs`: o Acessorias operational sync agora faz retry de `409 ACESSORIAS_HEAVY_JOB_LOCKED` dentro de `PORTAL_PHASE9_ACESSORIAS_POLL_TIMEOUT_MS`, registrando apenas status/duracao/codigo publico.
+  - Validacoes locais apos o terceiro ajuste: `node --check scripts/portal-phase9-smoke.mjs` OK, `node --check scripts/portal-real-homologation.mjs` OK, `npm.cmd run lint` OK, `npm.cmd run build` OK, `npm.cmd test -- --runInBand` OK, `npx.cmd playwright test tests/e2e/real-auth.spec.ts --reporter=line` OK com testes reais pulados por env ausente, `git diff --check` OK no web.
+  - O processo do Codex nao enxergava `PORTAL_REAL_E2E`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME`, `PORTAL_E2E_PASSWORD` nem `PORTAL_PHASE9_APPLY_ACTIONS` nos escopos `Process`, `User` ou `Machine`; por isso a homologacao real final foi executada pelo usuario no terminal onde as credenciais estavam carregadas.
+  - Homologacao real final executada pelo usuario em 2026-06-29T13:40:38.169Z retornou `ok=true`, concluindo a Fase 9.
+  - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
+  - Resultado final: `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=passed`, `smoke:permissions=skipped`, `test:e2e:real=passed`; os 2 testes reais do Playwright passaram em 9.3s.
+  - Acessorias fechou `SUCCESS` por polling, upload PDF valido passou com HTTP 201, upload SVG invalido foi rejeitado com HTTP 400, contratos `INTERNAL` e `ZAPSIGN` sandbox passaram.
+  - Historico superado: naquele momento o proximo passo era iniciar Fase 10; atualmente a Fase 10 ja esta `CONCLUIDA` e a Fase 11 esta autorizada.
+
+### Web - Fase 10 frontend/design system
+
+- Criado `portal-sama-web/src/app/route-manifest.ts` para documentar rotas publicas, privadas, redirects, DEV e fallback.
+- Reorganizado `portal-sama-web/src/components/layout/navigation.tsx` em grupos de jornada: `Operacao`, `Cliente`, `Legalizacao`, `Onboarding`, `T.I`, `Gestao`, `Administracao` e `DEV`.
+- Criado `portal-sama-web/src/components/ui/QueryTabs.tsx` para abas acessiveis controladas por query string.
+- Criado `portal-sama-web/src/components/ui/StateBlock.tsx` para estados padrao `loading`, `empty`, `error`, `permission` e `rate-limit`.
+- Atualizado `portal-sama-web/src/components/ui/AppPanel.tsx` para aceitar descricao e rodape.
+- Criados `portal-sama-web/src/components/ui/InfoCard.tsx`, `DataTable.tsx`, `Timeline.tsx`, `AppDrawer.tsx` e `AppModal.tsx` para padronizar cards, tabelas, historicos e overlays.
+- Criado `portal-sama-web/src/components/ui/Form.tsx` com `FormField`, `FormTextField`, `FormTextareaField`, `FormSelectField`, `FormCheckboxField`, `FormRadioGroup` e `FormActions`.
+- Atualizado `portal-sama-web/src/pages/auth/LoginPage.tsx` para usar as primitivas de formulario mantendo `react-hook-form`, `zodResolver` e schema Zod.
+- Criado `portal-sama-web/src/components/common/permission-policy.ts` e atualizado `PermissionGate`/navegacao para usar a mesma checagem frontend de permissoes.
+- `PermissionGate` ganhou `blockedFallback`; a politica documenta que o frontend controla somente visibilidade/bloqueio visual, sem substituir autorizacao backend.
+- Atualizado `portal-sama-web/src/services/api.ts` com `ApiErrorInfo`, `getApiErrorInfo`, `isApiStatus`, mensagens padrao para 401/403/409/422/429, leitura de `Retry-After` e limpeza de sessao quando 401 persiste apos refresh.
+- Criado `portal-sama-web/src/app/frontend-security.ts` com checklist de seguranca visual, mascaramento de textos sensiveis, log DEV sanitizado e helper de confirmacao sensivel.
+- Atualizados `portal-sama-web/src/features/intro/components/IntroGate.tsx` e `portal-sama-web/src/features/intro/intro-assets.ts` para nao logar erro bruto/payload bruto.
+- Atualizado `portal-sama-web/src/index.css` com estilos globais para tabs, estados, paineis, cards, tabelas, timeline, drawer, modal e forms mantendo raio de 8px.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 21 contratos e cobre os novos itens da Fase 10.
+- Validacoes executadas: `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, `npm.cmd run test:e2e` e `git diff --check` passaram no web.
+- O E2E mobile da sidebar foi atualizado para abrir o novo grupo `Cliente` antes de validar o link `Clientes`, refletindo a navegacao por jornada da Fase 10.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -143,7 +202,7 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou contrato `INTERNAL`, contrato `ZAPSIGN` sandbox e confirmou upload SVG invalido rejeitado. A evidencia `.ai-tests/phase9-smoke/phase9-smoke-20260625T193028929Z.json` ficou `failed=1`, `blocked=1`: Acessorias excedeu timeout local de 120s e upload PDF valido retornou `DOCUMENT_SCAN_UNAVAILABLE` em modo estrito.
 - Consultas autenticadas a `GET /integrations/acessorias/sync-runs` confirmaram que os jobs disparados pelo smoke concluiram com `SUCCESS`: catalogo `fetched=494`, `updated=494`, `failed=0`, seguido de incremental de entregas `SUCCESS`. A repeticao com `--timeout 360000 --skip-zapsign` gerou `.ai-tests/phase9-smoke/phase9-smoke-20260625T193547773Z.json`; o endpoint sincrono ainda retornou `504` apos cerca de 240s, mas o respectivo sync run tambem fechou `SUCCESS`.
 - Continuidade em 2026-06-25: implementado polling do Acessorias no runner Fase 9 com `PORTAL_PHASE9_ACESSORIAS_POLL_TIMEOUT_MS`/`--acessorias-poll-timeout`, mantendo saida sanitizada; checks focados `node --check scripts/portal-phase9-smoke.mjs`, `npm.cmd test -- --runInBand` no web e spec nova `acessorias-operational-sync.service.spec.ts` passaram antes da bateria final.
-- Bloqueio operacional remanescente da Fase 9: upload PDF valido em producao/homologacao publica retorna `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`; instalar/configurar o scanner usado pelo upload (`clamscan`/`clamdscan` ou `SAMA_UPLOAD_SCAN_BIN`) no ambiente alvo antes de concluir formalmente a fase. Em 2026-06-26, `uploadQuarantine=up` ja apareceu no `/health` publico, mas isso ainda nao prova o scanner.
+- Historico superado da Fase 9: o upload PDF valido chegou a retornar `503 DOCUMENT_SCAN_UNAVAILABLE`, `reason=scanner_required`; em 2026-06-29, apos `freshclam`, o upload PDF valido passou com HTTP 201 e a homologacao real final confirmou scanner operacional.
 - `git diff --check` - OK na rodada de 2026-06-25.
 - Servidor local Vite foi iniciado anteriormente em `http://127.0.0.1:5173`.
 
@@ -158,9 +217,9 @@ Evidencia principal da conclusao: `npm run ops:phase8 -- --json --soft --backup-
 - `npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` criou evidencia sanitizada em `.ai-tests/phase9-smoke/phase9-smoke-20260622T200528083Z.json`; rota publica passou e o unico bloqueio foi ausencia local de credenciais.
 - Rodadas autenticadas com `PORTAL_PHASE9_APPLY_ACTIONS=1` em 2026-06-22 criaram evidencias `.ai-tests/phase9-smoke/phase9-smoke-20260622T205252516Z.json` e `.ai-tests/phase9-smoke/phase9-smoke-20260622T205313213Z.json`.
 - Nessas rodadas autenticadas passaram: rota `/dev/fase-9-smoke`, CSRF/login, `/auth/me`, `GET /health`, listagem de clientes/contratos/documentos, resumo Acessorias, criacao de contrato `INTERNAL`, criacao de contrato `ZAPSIGN` sandbox, rejeicao de upload SVG invalido e logout.
-- Permaneceram falhas: `acessorias-controlled-sync` retornou HTTP 409 e `upload-valid-document` retornou HTTP 503. A Fase 9 segue `EM_EXECUCAO` ate diagnosticar/corrigir esses dois pontos.
+- Historico superado: `acessorias-controlled-sync` retornou HTTP 409 e `upload-valid-document` retornou HTTP 503 em rodadas anteriores; Acessorias depois fechou `SUCCESS` por polling e o upload PDF valido passou com scanner ativo.
 - Rodadas paralelas de `homologation:real` apos a correcao de evidencia passaram a criar arquivos distintos: publica `ok=true` em `homologation-real-20260622T195954391Z.json` e integrada `ok=false` apenas por `smoke:phase9` bloqueado em `homologation-real-20260622T195954392Z.json`.
-- Runner completo sem skips manteve Fase 9 `EM_EXECUCAO`: autenticacao, matriz de permissoes e e2e real ainda dependem de variaveis locais reais (`PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_REAL_E2E`, `PORTAL_E2E_USERNAME`, `PORTAL_E2E_PASSWORD`, matriz de permissoes).
+- Historico superado: runner completo sem skips dependia de variaveis locais reais; a rodada final com credenciais reais carregadas passou em `homologation:real --skip-permissions`. A matriz de permissoes segue pulada por opcao nesta conclusao, sem bloquear a Fase 9 porque o criterio final aceito usou `--skip-permissions`.
 - Evidencias locais ignoradas pelo git incluem `.ai-tests/homologation-real-phase9/homologation-real-20260622T172552Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T172645Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T195241Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T195316Z.json`, `.ai-tests/homologation-real-phase9/homologation-real-20260622T195954391Z.json` e `.ai-tests/homologation-real-phase9/homologation-real-20260622T195954392Z.json`.
 
 ### Operacional Fase 8
@@ -227,16 +286,11 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 1. Ler primeiro os documentos da raiz listados em `Precedencia obrigatoria`.
 2. Ler `docs/20-ACOMPANHAMENTO-CODEX-FIM-A-FIM.md` apenas como evidencia subordinada.
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
-4. Confirmar que a Fase 9 esta `EM_EXECUCAO` e que a tela/runner web estao nos commits `73da23f`, `b17a167`, `d3bd23e`, `6961179`, `f8ebcfa`, `605453f` e `49ddab2`; a API deve estar no commit `63eb6be` ou posterior para marcar runs Acessorias com `manual_operational_sync`.
-5. Para concluir formalmente a Fase 9, primeiro resolver/validar os bloqueios remanescentes da rodada autenticada de 2026-06-25 e da continuidade de 2026-06-26:
-   - configurar/deployar o scanner de upload no ambiente alvo para eliminar `DOCUMENT_SCAN_UNAVAILABLE`;
-   - considerar que `uploadQuarantine=up` ja foi observado no `/health` publico em 2026-06-26, mas ainda confirmar que a imagem/servico contem scanner ativo;
-   - considerar que Acessorias ja passou por polling de `sync-runs` nos logs informados em 2026-06-26, mas repetir no smoke final apos scanner;
-   - corrigir ou revalidar o `test:e2e:real` da rota `/dev/fase-9-smoke`, que falhou vendo a tela de login em vez do heading `Smoke backend`.
-6. Depois dos fixes/deploy, repetir `PORTAL_PHASE9_APPLY_ACTIONS=1 npm.cmd run smoke:phase9 -- --json --soft --evidence-dir .ai-tests/phase9-smoke` com credenciais carregadas sem imprimir valores.
-7. Executar `npm.cmd run homologation:real -- --json --soft --skip-permissions --evidence-dir .ai-tests/homologation-real-phase9` com `PORTAL_REAL_E2E=1`, `PORTAL_AUTH_USERNAME`, `PORTAL_AUTH_PASSWORD`, `PORTAL_E2E_USERNAME` e `PORTAL_E2E_PASSWORD` configurados no ambiente sem imprimir valores.
-8. Nao iniciar Fase 10 enquanto a Fase 9 nao tiver evidencia real final.
-9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+4. Confirmar que a Fase 9 esta `CONCLUIDA` pela evidencia `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
+5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
+6. Iniciar Fase 11 - painel do cliente final reaproveitando o legado.
+7. Comecar pela Etapa 11.1 - Criar `ClientDashboardHeader`.
+8. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
