@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
 Atualizado em: 2026-06-30
-Sessao atual: Fase 11 concluida; proximo passo Fase 12 Etapa 12.1 - Refinar tela de Clientes.
+Sessao atual: Fase 12 em execucao; Etapa 12.1 concluida; proximo passo Etapa 12.2 - Refinar tela de Documentos.
 
 ## Precedencia obrigatoria
 
@@ -19,9 +19,10 @@ Ordem pratica:
 8. `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, como evidencia formal da conclusao da Fase 9
 9. `22-CONTINUIDADE-FASE-10-FRONTEND.md`, como evidencia formal da conclusao da Fase 10
 10. `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, como evidencia formal da conclusao da Fase 11
-11. `CONTEXTO-CODEX-ATUAL.md`
-12. `Testes-da-aplicação-DEPLOY.md`
-13. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
+11. `24-CONTINUIDADE-FASE-12-MODULOS.md`, como acompanhamento formal da Fase 12 em execucao
+12. `CONTEXTO-CODEX-ATUAL.md`
+13. `Testes-da-aplicação-DEPLOY.md`
+14. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
 
 Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase se conflitarem com a raiz.
 
@@ -32,7 +33,7 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 - Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
 - Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
 - Fase 11: `CONCLUIDA` em 2026-06-30; etapas 11.1 a 11.10 concluidas e validadas.
-- Fase 12: proximo passo autorizado; iniciar pela Etapa 12.1 - Refinar tela de Clientes.
+- Fase 12: `EM_EXECUCAO`; Etapa 12.1 `CONCLUIDA` em 2026-06-30; proximo passo Etapa 12.2 - Refinar tela de Documentos.
 
 Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
@@ -41,6 +42,8 @@ Evidencia principal da conclusao da Fase 9: `portal-sama-web/.ai-tests/homologat
 Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.md`, com manifesto de rotas, navegacao por jornada, `QueryTabs`, `StateBlock`, primitivas `AppPanel`, `InfoCard`, `DataTable`, `Timeline`, `AppDrawer`, `AppModal` e `Form`, politica frontend de permissoes, normalizacao do API client, checklist de seguranca visual, lint OK, build OK, 21 testes de contrato web OK, `test:e2e` OK com 27 passed/2 skipped e `git diff --check` OK.
 
 Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, aba Geral com dados completos e edicao rapida por `clients.update`, aba Responsaveis com criar/editar/transferir/encerrar, aba Acessos com listagem/gestao segura sem segredo em claro, aba Documentos com badge de pendencia, checklist, upload, requisitos, revisao, download protegido e historico de status por documento, aba Certificados com validade, upload, download, rotacao e revelacao auditada de senha, aba Vida da empresa com timeline por departamento e criacao de entrada, quick actions por `?tab=...`, volta preservando filtros da lista de clientes, responsividade final sem overflow horizontal em notebook/mobile, E2E completo percorrendo todas as abas, lint OK, 22 contratos web OK, build OK, Playwright focado OK e `test:e2e` OK com 36 passed/2 skipped.
+
+Evidencia principal da Etapa 12.1: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/clientes` refinada para filtros persistidos na URL, botao textual `Painel`, retorno do painel preservando filtros, botao `Limpar`, contrato web da Fase 12.1, Playwright focado OK, lint OK, 23 contratos web OK, build OK e `test:e2e` OK com 37 passed/2 skipped.
 
 ## Implementado recentemente
 
@@ -135,7 +138,7 @@ Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLI
   - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
   - Resultado final: `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=passed`, `smoke:permissions=skipped`, `test:e2e:real=passed`; os 2 testes reais do Playwright passaram em 9.3s.
   - Acessorias fechou `SUCCESS` por polling, upload PDF valido passou com HTTP 201, upload SVG invalido foi rejeitado com HTTP 400, contratos `INTERNAL` e `ZAPSIGN` sandbox passaram.
-  - Historico superado: naquele momento o proximo passo era iniciar Fase 10; atualmente as Fases 10 e 11 ja estao `CONCLUIDAS` e a Fase 12 esta autorizada.
+  - Historico superado: naquele momento o proximo passo era iniciar Fase 10; atualmente as Fases 10 e 11 ja estao `CONCLUIDAS` e a Fase 12 esta `EM_EXECUCAO`.
 
 ### Web - Fase 10 frontend/design system
 
@@ -195,6 +198,17 @@ Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLI
 - E2E responsivo em `portal-sama-web/tests/e2e/smoke.spec.ts` valida `/clientes/client-1/painel` em 1180x760 e 390x844, navegando por `Geral`, `Documentos`, `Certificados` e `Vida da empresa` sem overflow horizontal.
 - E2E completo `client dashboard complete panel walks through every tab` abre o painel e percorre `Geral`, `Responsaveis`, `Acessos`, `Documentos`, `Certificados` e `Vida da empresa` em uma unica sessao autenticada.
 - Validacoes executadas nessas etapas: `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, Playwright focado, `npm.cmd run test:e2e` e `git diff --check` passaram.
+
+### Web - Fase 12 modulos apos painel
+
+- Criado `24-CONTINUIDADE-FASE-12-MODULOS.md` como acompanhamento formal da Fase 12.
+- Etapa 12.1 refinou `portal-sama-web/src/pages/clients/ClientsPage.tsx`.
+- Filtros de `/clientes` agora persistem na URL: busca, status, CNPJ, cidade, grupo, arquivados, escopo e paginacao.
+- Botao `Painel` ficou textual e leva ao painel do cliente em uma unica acao, preservando filtros no retorno.
+- Botao `Limpar` remove filtros operacionais sem remover o escopo selecionado.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 23 contratos e cobre a Etapa 12.1.
+- E2E `clients page keeps filters in the URL and opens the dashboard in one click` cobre filtros, API, URL, abertura do painel, retorno e limpeza.
+- Validacoes executadas na Etapa 12.1: `npx.cmd playwright test tests/e2e/smoke.spec.ts -g "clients page keeps filters" --reporter=line`, `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, `npm.cmd run test:e2e` e `git diff --check` passaram.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -332,8 +346,8 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 4. Confirmar que a Fase 9 esta `CONCLUIDA` pela evidencia `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
 5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
 6. Confirmar que a Fase 11 esta `CONCLUIDA` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
-7. Iniciar a Fase 12 conforme `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`.
-8. Comecar pela Etapa 12.1 - Refinar tela de Clientes.
+7. Confirmar que a Fase 12 esta `EM_EXECUCAO` e a Etapa 12.1 esta `CONCLUIDA` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
+8. Continuar pela Etapa 12.2 - Refinar tela de Documentos.
 9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
