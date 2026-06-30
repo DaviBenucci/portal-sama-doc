@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-06-29
-Sessao atual: Fase 10 concluida; Fase 11 autorizada como proximo passo.
+Atualizado em: 2026-06-30
+Sessao atual: Fase 11 em execucao; Etapas 11.1 e 11.2 concluidas; proximo passo Etapa 11.3.
 
 ## Precedencia obrigatoria
 
@@ -18,9 +18,10 @@ Ordem pratica:
 7. `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`
 8. `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, como evidencia formal da conclusao da Fase 9
 9. `22-CONTINUIDADE-FASE-10-FRONTEND.md`, como evidencia formal da conclusao da Fase 10
-10. `CONTEXTO-CODEX-ATUAL.md`
-11. `Testes-da-aplicação-DEPLOY.md`
-12. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
+10. `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, como acompanhamento formal da Fase 11 em execucao
+11. `CONTEXTO-CODEX-ATUAL.md`
+12. `Testes-da-aplicação-DEPLOY.md`
+13. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
 
 Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase se conflitarem com a raiz.
 
@@ -30,13 +31,15 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 - Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
 - Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
 - Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
-- Fase 11: autorizada como proximo passo; ainda nao iniciada.
+- Fase 11: `EM_EXECUCAO`; Etapas 11.1 e 11.2 `CONCLUIDAS` em 2026-06-30; proximo passo Etapa 11.3.
 
 Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
 Evidencia principal da conclusao da Fase 9: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`, com `ok=true`, `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=passed` e `test:e2e:real=passed`.
 
 Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.md`, com manifesto de rotas, navegacao por jornada, `QueryTabs`, `StateBlock`, primitivas `AppPanel`, `InfoCard`, `DataTable`, `Timeline`, `AppDrawer`, `AppModal` e `Form`, politica frontend de permissoes, normalizacao do API client, checklist de seguranca visual, lint OK, build OK, 21 testes de contrato web OK, `test:e2e` OK com 27 passed/2 skipped e `git diff --check` OK.
+
+Evidencia principal das Etapas 11.1 e 11.2: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, quick actions por `?tab=...`, status editavel por `clients.update`, volta preservando filtros da lista de clientes, CSS responsivo, lint OK, 22 contratos web OK, build OK, Playwright focado OK, `test:e2e` OK com 28 passed/2 skipped e `git diff --check` OK.
 
 ## Implementado recentemente
 
@@ -152,6 +155,20 @@ Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.m
 - Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 21 contratos e cobre os novos itens da Fase 10.
 - Validacoes executadas: `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, `npm.cmd run test:e2e` e `git diff --check` passaram no web.
 - O E2E mobile da sidebar foi atualizado para abrir o novo grupo `Cliente` antes de validar o link `Clientes`, refletindo a navegacao por jornada da Fase 10.
+
+### Web - Fase 11 painel do cliente
+
+- Criado `portal-sama-web/src/pages/clients/components/ClientDashboardHeader.tsx`.
+- `ClientDashboardPage` passou a usar o header extraido com voltar, nome, razao social, CNPJ, rank, status, contato, endereco e acoes rapidas.
+- `ClientsPage` agora preserva origem/filtros ao abrir o painel do cliente.
+- `ClientAssignmentsPanel` e `ClientDocumentsPanel` receberam ids de ancora para acoes rapidas.
+- Status do cliente pode ser alterado pelo header somente quando a sessao tem `clients.update`.
+- Criado `portal-sama-web/src/pages/clients/components/ClientDashboardTabs.tsx` usando `QueryTabs` com abas `Geral`, `Responsaveis`, `Acessos`, `Documentos`, `Certificados` e `Vida da empresa`.
+- `ClientDashboardPage` passou a renderizar indicadores/resumo, responsaveis e documentos pela aba ativa controlada por `?tab=...`.
+- Quick actions do header passaram a abrir `?tab=responsaveis#client-assignments` e `?tab=documentos#client-documents`.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 22 contratos e cobre as Etapas 11.1 e 11.2.
+- Criado E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` para validar header com dados mockados, abas, URL por query string e troca de status.
+- Validacoes executadas nessas etapas: `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, Playwright focado, `npm.cmd run test:e2e` e `git diff --check` passaram.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -288,9 +305,10 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
 4. Confirmar que a Fase 9 esta `CONCLUIDA` pela evidencia `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
 5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
-6. Iniciar Fase 11 - painel do cliente final reaproveitando o legado.
-7. Comecar pela Etapa 11.1 - Criar `ClientDashboardHeader`.
-8. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+6. Confirmar que a Fase 11 esta `EM_EXECUCAO` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
+7. Confirmar que as Etapas 11.1 e 11.2 estao `CONCLUIDAS`.
+8. Continuar pela Etapa 11.3 - Implementar aba Geral.
+9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 
