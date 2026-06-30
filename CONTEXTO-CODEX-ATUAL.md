@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
 Atualizado em: 2026-06-30
-Sessao atual: Fase 11 em execucao; Etapas 11.1 e 11.2 concluidas; proximo passo Etapa 11.3.
+Sessao atual: Fase 11 concluida; proximo passo Fase 12 Etapa 12.1 - Refinar tela de Clientes.
 
 ## Precedencia obrigatoria
 
@@ -18,7 +18,7 @@ Ordem pratica:
 7. `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`
 8. `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, como evidencia formal da conclusao da Fase 9
 9. `22-CONTINUIDADE-FASE-10-FRONTEND.md`, como evidencia formal da conclusao da Fase 10
-10. `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, como acompanhamento formal da Fase 11 em execucao
+10. `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, como evidencia formal da conclusao da Fase 11
 11. `CONTEXTO-CODEX-ATUAL.md`
 12. `Testes-da-aplicação-DEPLOY.md`
 13. `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, como roteiro operacional de fases, status e evidencias.
@@ -31,7 +31,8 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 - Fase 8: `CONCLUIDA` formalmente em 2026-06-22 apos execucao real do `ops:phase8` no ambiente alvo.
 - Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
 - Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
-- Fase 11: `EM_EXECUCAO`; Etapas 11.1 e 11.2 `CONCLUIDAS` em 2026-06-30; proximo passo Etapa 11.3.
+- Fase 11: `CONCLUIDA` em 2026-06-30; etapas 11.1 a 11.10 concluidas e validadas.
+- Fase 12: proximo passo autorizado; iniciar pela Etapa 12.1 - Refinar tela de Clientes.
 
 Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
@@ -39,7 +40,7 @@ Evidencia principal da conclusao da Fase 9: `portal-sama-web/.ai-tests/homologat
 
 Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.md`, com manifesto de rotas, navegacao por jornada, `QueryTabs`, `StateBlock`, primitivas `AppPanel`, `InfoCard`, `DataTable`, `Timeline`, `AppDrawer`, `AppModal` e `Form`, politica frontend de permissoes, normalizacao do API client, checklist de seguranca visual, lint OK, build OK, 21 testes de contrato web OK, `test:e2e` OK com 27 passed/2 skipped e `git diff --check` OK.
 
-Evidencia principal das Etapas 11.1 e 11.2: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, quick actions por `?tab=...`, status editavel por `clients.update`, volta preservando filtros da lista de clientes, CSS responsivo, lint OK, 22 contratos web OK, build OK, Playwright focado OK, `test:e2e` OK com 28 passed/2 skipped e `git diff --check` OK.
+Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, aba Geral com dados completos e edicao rapida por `clients.update`, aba Responsaveis com criar/editar/transferir/encerrar, aba Acessos com listagem/gestao segura sem segredo em claro, aba Documentos com badge de pendencia, checklist, upload, requisitos, revisao, download protegido e historico de status por documento, aba Certificados com validade, upload, download, rotacao e revelacao auditada de senha, aba Vida da empresa com timeline por departamento e criacao de entrada, quick actions por `?tab=...`, volta preservando filtros da lista de clientes, responsividade final sem overflow horizontal em notebook/mobile, E2E completo percorrendo todas as abas, lint OK, 22 contratos web OK, build OK, Playwright focado OK e `test:e2e` OK com 36 passed/2 skipped.
 
 ## Implementado recentemente
 
@@ -134,7 +135,7 @@ Evidencia principal das Etapas 11.1 e 11.2: `23-CONTINUIDADE-FASE-11-PAINEL-CLIE
   - Evidencia local: `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
   - Resultado final: `smoke:public=passed`, `smoke:auth=passed`, `smoke:phase9=passed`, `smoke:permissions=skipped`, `test:e2e:real=passed`; os 2 testes reais do Playwright passaram em 9.3s.
   - Acessorias fechou `SUCCESS` por polling, upload PDF valido passou com HTTP 201, upload SVG invalido foi rejeitado com HTTP 400, contratos `INTERNAL` e `ZAPSIGN` sandbox passaram.
-  - Historico superado: naquele momento o proximo passo era iniciar Fase 10; atualmente a Fase 10 ja esta `CONCLUIDA` e a Fase 11 esta autorizada.
+  - Historico superado: naquele momento o proximo passo era iniciar Fase 10; atualmente as Fases 10 e 11 ja estao `CONCLUIDAS` e a Fase 12 esta autorizada.
 
 ### Web - Fase 10 frontend/design system
 
@@ -166,8 +167,33 @@ Evidencia principal das Etapas 11.1 e 11.2: `23-CONTINUIDADE-FASE-11-PAINEL-CLIE
 - Criado `portal-sama-web/src/pages/clients/components/ClientDashboardTabs.tsx` usando `QueryTabs` com abas `Geral`, `Responsaveis`, `Acessos`, `Documentos`, `Certificados` e `Vida da empresa`.
 - `ClientDashboardPage` passou a renderizar indicadores/resumo, responsaveis e documentos pela aba ativa controlada por `?tab=...`.
 - Quick actions do header passaram a abrir `?tab=responsaveis#client-assignments` e `?tab=documentos#client-documents`.
-- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 22 contratos e cobre as Etapas 11.1 e 11.2.
-- Criado E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` para validar header com dados mockados, abas, URL por query string e troca de status.
+- Aba `Geral` passou a exibir dados completos da empresa e edicao rapida com `clientFormSchema`; usuario sem `clients.update` nao ve botao nem campos de edicao.
+- Aba `Responsaveis` valida listagem de responsabilidades e acoes de criar, editar, transferir e encerrar por permissoes `client_assignments.*`, com opcoes carregadas por `departments.read` e `collaborators.read`.
+- Mutacoes da aba `Responsaveis` invalidam `client-assignments` e `client-dashboard`, mantendo o painel sincronizado apos alteracoes.
+- Criada `portal-sama-web/src/pages/clients/ClientAccessesTab.tsx` para a aba `Acessos`, usando `GET/POST /clients/:id/access-credentials`, `PATCH/DELETE /client-access-credentials/:id`.
+- Aba `Acessos` lista e gerencia credenciais sem expor segredo, aceita apenas referencia segura/dica, nao oferece campo de senha em texto puro e evita enviar `secretRef` vazio em edicoes comuns.
+- Acoes da aba `Acessos` dependem de `client_accesses.read` e `client_accesses.manage`; indicador de revelacao considera `client_accesses.reveal_sensitive` e `sensitive.reveal`, mas nao ha botao de revelar porque a API atual ainda nao expoe endpoint auditado de revelacao.
+- `QueryTabs` passou a aceitar badge por aba e `ClientDashboardTabs` usa a contagem de pendencias na aba `Documentos`.
+- `ClientDashboardPage` passou a reutilizar `GET /clients/:id/documents` para calcular pendencias obrigatorias reais do checklist quando a sessao tem `documents.read`.
+- Aba `Documentos` exibe requisitos pendentes, resumo de obrigatorios/pendentes/enviados/aprovados, extensoes permitidas, upload, criacao de requisito, revisao, download protegido e historico de status por documento via `GET /documents/:id/status-history`.
+- Mutacoes documentais invalidam `client-documents`, `client-dashboard` e historico de status, mantendo badge e resumo sincronizados.
+- Criada `portal-sama-web/src/pages/clients/ClientCertificatesTab.tsx` para a aba `Certificados`, usando `GET/POST /certificates`, `PATCH/DELETE /certificates/:id`, `GET /certificates/:id/download`, `POST /certificates/:id/rotate-password` e `POST /certificates/:id/reveal-password`.
+- Aba `Certificados` exibe resumo de validos/vencendo/vencidos/com senha, linha de atencao, proximos vencimentos, lista com status de validade, upload contextual por cliente, edicao, download protegido, rotacao e remocao.
+- Senha de certificado nao aparece na listagem; revelacao exige clique explicito, `certificates.manage` e `sensitive.reveal`, e usa endpoint backend auditado/rate-limited.
+- Tipos, schema e service de certificados passaram a cobrir `validUntil`, status de validade, dias para vencer e resposta auditada de revelacao.
+- `ClientDashboardTabs` usa badge tambem na aba `Certificados` para certificados vencendo/vencidos retornados pelo dashboard.
+- Criada `portal-sama-web/src/pages/clients/ClientCompanyLifeTab.tsx` para a aba `Vida da empresa`, usando o contrato backend real `GET /managers/company-life/:companyId` e `PATCH /managers/company-life/:companyId`.
+- Aba `Vida da empresa` exibe resumo, filtro por departamento, busca textual, contribuidores, editor de topicos e timeline/historico por departamento.
+- Acoes da aba `Vida da empresa` dependem de `company_life.read` e `company_life.write`; o payload fica limitado a `company_id`, `dept` e `topics`, sem segredo/senha.
+- `portal-sama-web/src/services/manager-history.service.ts` passou a expor `getCompanyLifeTimeline` e `updateCompanyLifeEntry` para reutilizar o contrato do modulo Managers no painel do cliente.
+- Etapa 11.9 ajustou `client-dashboard-page`, `QueryTabs`, paineis, areas rolaveis e paddings mobile para evitar overflow horizontal no painel em notebook menor e mobile.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 22 contratos e cobre as Etapas 11.1 a 11.10.
+- Criado E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` para validar header com dados mockados, abas, URL por query string, troca de status, edicao cadastral, bloqueio de edicao sem permissao, fluxo completo de responsaveis e fluxo seguro de acessos.
+- E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` cobre tambem a aba Documentos com badge, checklist, upload, criacao de requisito, revisao e historico.
+- E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` cobre tambem a aba Certificados com badge, alerta de vencimento, upload, edicao, rotacao, download e revelacao auditada sem senha exposta antes do clique.
+- E2E focado em `portal-sama-web/tests/e2e/smoke.spec.ts` cobre tambem a aba Vida da empresa com consulta, busca, criacao de entrada, payload sem segredo e abertura de detalhe.
+- E2E responsivo em `portal-sama-web/tests/e2e/smoke.spec.ts` valida `/clientes/client-1/painel` em 1180x760 e 390x844, navegando por `Geral`, `Documentos`, `Certificados` e `Vida da empresa` sem overflow horizontal.
+- E2E completo `client dashboard complete panel walks through every tab` abre o painel e percorre `Geral`, `Responsaveis`, `Acessos`, `Documentos`, `Certificados` e `Vida da empresa` em uma unica sessao autenticada.
 - Validacoes executadas nessas etapas: `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, Playwright focado, `npm.cmd run test:e2e` e `git diff --check` passaram.
 
 ### Docs - Fase 8 e conciliacao
@@ -305,9 +331,9 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 3. Confirmar que a Fase 8 esta `CONCLUIDA`.
 4. Confirmar que a Fase 9 esta `CONCLUIDA` pela evidencia `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
 5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
-6. Confirmar que a Fase 11 esta `EM_EXECUCAO` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
-7. Confirmar que as Etapas 11.1 e 11.2 estao `CONCLUIDAS`.
-8. Continuar pela Etapa 11.3 - Implementar aba Geral.
+6. Confirmar que a Fase 11 esta `CONCLUIDA` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
+7. Iniciar a Fase 12 conforme `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`.
+8. Comecar pela Etapa 12.1 - Refinar tela de Clientes.
 9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
