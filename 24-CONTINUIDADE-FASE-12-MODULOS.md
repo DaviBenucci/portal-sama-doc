@@ -83,7 +83,7 @@ Motivo da urgencia:
 
 - a rota `/contabil/integra-ai` hoje representa o fluxo de Extrato bancario para TXT Dominio;
 - o escritorio tambem precisa iniciar o fluxo de Faturamento/PGDAS dentro do Portal;
-- ja existe backend Python funcional em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, com documentacao propria em `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`;
+- ja existia backend Python funcional em `C:\Users\Sama Contabilidade\Downloads\Faturamento`; apos correcao pos-producao, o pacote oficial fica migrado para `portal-sama-api/services/faturamento`, com documentacao propria em `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`;
 - o escopo imediato e criar o frontend e a experiencia de entrada, sem reescrever a automacao Python.
 
 Decisao de produto/UX:
@@ -125,7 +125,7 @@ Execucao em 2026-07-01:
 - `portal-sama-web/tests/e2e/smoke.spec.ts` cobre a escolha inicial, preserva o fluxo de Extrato e valida Faturamento com codigo Acessorias `366`, codigo Dominio `179`, modo `um_mes` e mes `12`;
 - `portal-sama-web/scripts/web-contract-tests.mjs` recebeu contrato da Etapa 12.1.1.
 - `portal-sama-api/src/modules/accounting/accounting-faturamento.controller.ts` adicionou endpoints autenticados `POST /api-v2/accounting/faturamento/jobs`, `GET /api-v2/accounting/faturamento/jobs/:id` e `GET /api-v2/accounting/faturamento/jobs/:id/download`;
-- `portal-sama-api/src/modules/accounting/accounting-faturamento.service.ts` encapsula a chamada ao backend Python `processar_faturamento.py` em processo servidor, usando `API_TOKEN` somente no ambiente do backend;
+- `portal-sama-api/src/modules/accounting/accounting-faturamento.service.ts` encapsula a chamada ao backend Python `processar_faturamento.py` em processo servidor, usando `ACESSORIAS_TOKEN` do `.env` principal da API e repassando `API_TOKEN` apenas por compatibilidade interna do script;
 - o adaptador aceita `codigo_empresa` obrigatorio do Acessorias, `codigo_dominio` opcional, `ano`, modo `um_mes`/`todos_os_meses` e `mes` condicional;
 - os artefatos CSV, planilha e log sao expostos apenas por download autenticado e com checagem de caminho dentro da raiz do Faturamento;
 - `portal-sama-api/src/config/env.schema.ts` recebeu `SAMA_FATURAMENTO_ROOT`, `SAMA_FATURAMENTO_SCRIPT_PATH`, `SAMA_FATURAMENTO_PYTHON_BIN` e `SAMA_FATURAMENTO_TIMEOUT_SEC`;
@@ -201,10 +201,44 @@ Ajuste adicional de validacao local:
 - `POST /api-v2/accounting/faturamento/jobs` e download CSV foram revalidados depois do restart da API;
 - `npm.cmd run prisma:bootstrap-admin` criou o usuario local `admin (DEV)` no MySQL Docker, usando a senha configurada no ambiente local e sem imprimir segredo.
 
+Correcao pos-producao da 12.1.1 em 2026-07-01:
+
+- causa identificada: a API tinha fallback local para `C:\Users\Sama Contabilidade\Downloads\Faturamento`, caminho inexistente no deploy;
+- migrado o pacote Python oficial para `portal-sama-api/services/faturamento`, incluindo `script/processar_faturamento.py`, `script/acessorias_client.py`, `script/livro_caixa.py`, `modelo/modelo.xlsx`, `modelo/modelo csv.csv`, `requirements.txt`, `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`;
+- removida a necessidade de `.env` separado no pacote de Faturamento; o fluxo usa `ACESSORIAS_TOKEN` do `.env` principal do `portal-sama-api`;
+- o adaptador da API injeta `ACESSORIAS_TOKEN` e tambem `API_TOKEN` no processo Python apenas por compatibilidade com o script original;
+- `SAMA_FATURAMENTO_ROOT` e `SAMA_FATURAMENTO_SCRIPT_PATH` viraram apenas overrides opcionais; sem eles, o padrao e `services/faturamento`;
+- `Dockerfile` da API instala tambem `services/faturamento/requirements.txt`, garantindo `requests`, `pdfplumber` e `openpyxl` no container;
+- `.dockerignore` e `.gitignore` passaram a ignorar `.venv`, `entrada`, `saida`, `saida_corrigida` e `__pycache__` do pacote.
+
+Validacoes da correcao pos-producao:
+
+```powershell
+python services\faturamento\script\processar_faturamento.py --help
+python services\faturamento\script\acessorias_client.py --help
+python -m py_compile services\faturamento\script\processar_faturamento.py services\faturamento\script\acessorias_client.py services\faturamento\script\livro_caixa.py
+npm.cmd run build
+npm.cmd run lint
+npm.cmd test -- accounting --runInBand
+git diff --check
+```
+
+Resultado:
+
+```txt
+Help dos scripts OK, exibindo ACESSORIAS_TOKEN/API_TOKEN
+py_compile OK
+build OK
+lint OK
+Accounting tests OK, 18 passed
+git diff --check OK na API
+```
+
 Pendencias operacionais para publicar/homologar fora da maquina local:
 
-- configurar `SAMA_FATURAMENTO_ROOT`, `SAMA_FATURAMENTO_SCRIPT_PATH`/`SAMA_FATURAMENTO_PYTHON_BIN` quando necessario e timeout no servico API;
-- garantir token do Acessorias somente no backend;
+- configurar `ACESSORIAS_TOKEN` somente no backend API;
+- configurar `SAMA_FATURAMENTO_ROOT`, `SAMA_FATURAMENTO_SCRIPT_PATH` ou `SAMA_FATURAMENTO_PYTHON_BIN` apenas se for necessario sobrescrever o pacote interno;
+- ajustar `SAMA_FATURAMENTO_TIMEOUT_SEC` se o processamento real precisar de mais tempo;
 - publicar/rebuildar Web e API juntos, pois a 12.1.1 altera contrato entre ambos.
 
 ## 5. Pendencias da Fase 12

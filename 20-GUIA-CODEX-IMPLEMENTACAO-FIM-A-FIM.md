@@ -1561,7 +1561,7 @@ Observações de segurança:
 **Status permitido ao finalizar:** `CONCLUÍDA`
 **Se houver imprevisto:** criar sub-etapa `Etapa 12.1.1.x - Correção de imprevisto`, resolver, validar e só então concluir a urgência.
 
-**Contexto:** O Integra-AI atual cobre o fluxo de extrato bancario para TXT Dominio. Existe tambem um backend Python de Faturamento em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, documentado por `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`, que processa faturamento/PGDAS do Acessorias, preenche Livro Caixa e gera CSV para importacao no Dominio.
+**Contexto:** O Integra-AI atual cobre o fluxo de extrato bancario para TXT Dominio. Existe tambem um backend Python de Faturamento originalmente em `C:\Users\Sama Contabilidade\Downloads\Faturamento`; para producao, ele deve ficar empacotado em `portal-sama-api/services/faturamento`, documentado por `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`, processando faturamento/PGDAS do Acessorias, preenchendo Livro Caixa e gerando CSV para importacao no Dominio.
 
 **O que fazer:** Ao acessar `/contabil/integra-ai`, mostrar uma entrada de escolha com dois botoes principais:
 

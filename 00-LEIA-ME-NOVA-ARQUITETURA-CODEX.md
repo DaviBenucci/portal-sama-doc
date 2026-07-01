@@ -61,7 +61,7 @@ Cada etapa deve seguir este ciclo:
 
 Se surgir imprevisto, o Codex deve criar uma **sub-etapa corretiva dentro da etapa atual**, resolver, validar e somente depois continuar. Não é permitido pular para outra fase para compensar uma etapa incompleta.
 
-Urgencia ativa em 2026-07-01: antes de continuar a Fase 12 pela Etapa 12.2, executar a sub-etapa 12.1.1 para adicionar a entrada do Integra-AI com os botoes `Extrato` e `Faturamento`. `Extrato` preserva o fluxo atual. `Faturamento` deve criar frontend para o backend Python existente em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, com escolha entre `Um mes` e `Todos os meses` e `codigo_dominio` opcional quando o codigo do Dominio for diferente do Acessorias.
+Urgencia concluida em 2026-07-01: a sub-etapa 12.1.1 adicionou a entrada do Integra-AI com os botoes `Extrato` e `Faturamento`. `Extrato` preserva o fluxo atual. `Faturamento` usa o pacote Python migrado para `portal-sama-api/services/faturamento`, com escolha entre `Um mes` e `Todos os meses`, `codigo_dominio` opcional quando o codigo do Dominio for diferente do Acessorias e token vindo de `ACESSORIAS_TOKEN` no `.env` principal da API.
 
 ## Regras específicas da integração Acessórias
 
