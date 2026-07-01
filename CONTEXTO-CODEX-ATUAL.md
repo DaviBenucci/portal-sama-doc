@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-06-30
-Sessao atual: Fase 12 em execucao; Etapa 12.1 concluida; proximo passo Etapa 12.2 - Refinar tela de Documentos.
+Atualizado em: 2026-07-01
+Sessao atual: Fase 12 em execucao; Etapa 12.1 concluida; sub-etapa urgente 12.1.1 concluida; proxima etapa e 12.2 - Refinar tela de Documentos.
 
 ## Precedencia obrigatoria
 
@@ -33,7 +33,7 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 - Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
 - Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
 - Fase 11: `CONCLUIDA` em 2026-06-30; etapas 11.1 a 11.10 concluidas e validadas.
-- Fase 12: `EM_EXECUCAO`; Etapa 12.1 `CONCLUIDA` em 2026-06-30; proximo passo Etapa 12.2 - Refinar tela de Documentos.
+- Fase 12: `EM_EXECUCAO`; Etapa 12.1 `CONCLUIDA` em 2026-06-30; sub-etapa urgente 12.1.1 `CONCLUIDA` em 2026-07-01 com Web/API implementados e homologacao real local; proxima etapa e 12.2 - Refinar tela de Documentos.
 
 Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
@@ -44,6 +44,8 @@ Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.m
 Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, aba Geral com dados completos e edicao rapida por `clients.update`, aba Responsaveis com criar/editar/transferir/encerrar, aba Acessos com listagem/gestao segura sem segredo em claro, aba Documentos com badge de pendencia, checklist, upload, requisitos, revisao, download protegido e historico de status por documento, aba Certificados com validade, upload, download, rotacao e revelacao auditada de senha, aba Vida da empresa com timeline por departamento e criacao de entrada, quick actions por `?tab=...`, volta preservando filtros da lista de clientes, responsividade final sem overflow horizontal em notebook/mobile, E2E completo percorrendo todas as abas, lint OK, 22 contratos web OK, build OK, Playwright focado OK e `test:e2e` OK com 36 passed/2 skipped.
 
 Evidencia principal da Etapa 12.1: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/clientes` refinada para filtros persistidos na URL, botao textual `Painel`, retorno do painel preservando filtros, botao `Limpar`, contrato web da Fase 12.1, Playwright focado OK, lint OK, 23 contratos web OK, build OK e `test:e2e` OK com 37 passed/2 skipped.
+
+Urgencia concluida em 2026-07-01: a sub-etapa 12.1.1 bifurcou a entrada do Integra-AI em `Extrato` e `Faturamento`. `Extrato` preserva o fluxo atual; `Faturamento` usa frontend novo e adaptador API para o backend Python existente em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, com modo `Um mes`/`Todos os meses` e `codigo_dominio` opcional quando o codigo do Dominio diferir do Acessorias.
 
 ## Implementado recentemente
 
@@ -209,6 +211,17 @@ Evidencia principal da Etapa 12.1: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tel
 - Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 23 contratos e cobre a Etapa 12.1.
 - E2E `clients page keeps filters in the URL and opens the dashboard in one click` cobre filtros, API, URL, abertura do painel, retorno e limpeza.
 - Validacoes executadas na Etapa 12.1: `npx.cmd playwright test tests/e2e/smoke.spec.ts -g "clients page keeps filters" --reporter=line`, `npm.cmd run lint`, `npm.cmd test -- --runInBand`, `npm.cmd run build`, `npm.cmd run test:e2e` e `git diff --check` passaram.
+- Sub-etapa urgente 12.1.1 registrada e iniciada no Web: `/contabil/integra-ai` apresenta botoes `Extrato` e `Faturamento`; `Extrato` abre o fluxo atual e `Faturamento` abre frontend novo para processar PGDAS/Livro Caixa/Dominio usando contrato `POST /api-v2/accounting/faturamento/jobs`.
+- Frontend de Faturamento implementado em `portal-sama-web/src/pages/accounting/IntegraAiPage.tsx`, com `codigo_empresa` obrigatorio para Acessorias, `ano`, modo `Todos os meses`/`Um mes`, `mes` condicional e `codigo_dominio` opcional.
+- `portal-sama-web/src/types/integra-ai.ts`, `portal-sama-web/src/services/integra-ai.service.ts`, `portal-sama-web/tests/e2e/smoke.spec.ts` e `portal-sama-web/scripts/web-contract-tests.mjs` foram atualizados para a 12.1.1.
+- Backend de Faturamento implementado no `portal-sama-api`: controller autenticado `/api-v2/accounting/faturamento`, service adaptador para `C:\Users\Sama Contabilidade\Downloads\Faturamento\script\processar_faturamento.py`, DTOs de entrada e envs `SAMA_FATURAMENTO_*`.
+- O adaptador executa o Python somente no backend, injeta `API_TOKEN` por ambiente, aceita `codigo_empresa` obrigatorio do Acessorias e `codigo_dominio` opcional do Dominio, retorna status/meses/artefatos e fornece downloads autenticados de CSV, planilha e log.
+- Validacoes locais da 12.1.1 passaram no Web: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd test -- --runInBand`, Playwright focado `Integra-AI` com 4 passed, `npm.cmd run build`, `npm.cmd run test:e2e` com 38 passed/2 skipped e `git diff --check`.
+- Validacoes locais da 12.1.1 passaram na API: `npm.cmd run build`, `npm.cmd run lint`, testes contabeis focados com 18 passed, `git diff --check`, `prisma:generate`, `prisma:migrate:deploy` e `prisma:seed` em MySQL local Docker.
+- Homologacao real local da 12.1.1 passou: `POST /api-v2/accounting/faturamento/jobs` retornou HTTP 201 para `codigo_empresa=366`, `codigo_dominio=179`, `ano=2026`, `modo=um_mes`, `mes=1`; job atual `fat-366-2026-f1268d0f` com status `success`; `GET job` HTTP 200; download autenticado CSV HTTP 200 com 756 bytes.
+- `portal-sama-api/src/modules/auth/auth.controller.ts` recebeu ajuste local de cookie: em `development` com origem `localhost`/`127.0.0.1`, `COOKIE_DOMAIN` e omitido mesmo que o `.env` tenha dominio de producao.
+- Backend local subido em `start:dev` com MySQL Docker local e overrides temporarios `NODE_ENV=development`, `DATABASE_URL`, `CORS_ORIGIN=http://127.0.0.1:5174`, `FRONTEND_URL=http://127.0.0.1:5174`, `COOKIE_SECURE=false`; healthcheck 200 em `http://127.0.0.1:3000/api-v2/health`.
+- `npm.cmd run prisma:bootstrap-admin` criou o usuario local `admin (DEV)` no MySQL Docker usando a senha configurada no ambiente local, sem imprimir segredo.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -347,8 +360,9 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
 6. Confirmar que a Fase 11 esta `CONCLUIDA` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
 7. Confirmar que a Fase 12 esta `EM_EXECUCAO` e a Etapa 12.1 esta `CONCLUIDA` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
-8. Continuar pela Etapa 12.2 - Refinar tela de Documentos.
-9. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
+8. Confirmar que a sub-etapa urgente 12.1.1 esta `CONCLUIDA` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
+9. Continuar pela Etapa 12.2 - Refinar tela de Documentos.
+10. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
 

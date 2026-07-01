@@ -66,7 +66,7 @@ O bootstrap aplica:
 | `TransfersModule` | Transferência de carteira/clientes | Boa fundação | Amarrar no painel do cliente e gestor |
 | `ManagersModule` | Overview, histórico, vida da empresa | Parcial | Trazer `Vida da empresa` para painel do cliente |
 | `DepartmentsModule` | Workspace de departamentos e vencimentos | Boa fundação | Validar aplicação Acessórias com janela atual |
-| `AccountingModule` | Integra-AI | Parcial/boa | Validar PDFs reais e storage |
+| `AccountingModule` | Integra-AI Extrato e entrada Faturamento | Parcial/boa | Validar PDFs reais, storage e adaptador seguro para backend Python de Faturamento |
 | `NotificationsModule` | Notificações, SSE, Web Push | Boa fundação | Validar VAPID e navegadores reais |
 | `AuditModule` | Logs e exportação | Boa fundação | Adicionar filtros por cliente/entity e retenção |
 | `HealthModule` | Healthcheck | Boa fundação | Exigir em readiness de deploy |
@@ -250,6 +250,40 @@ Ajuste obrigatório:
 - `ContractsModule` deve suportar `signatureProvider = internal | zapsign`.
 - `send-signature` deve chamar ZapSign quando provider for `zapsign`.
 - contrato ZapSign não deve ser assinado pela rota pública interna; a rota pública deve redirecionar ou retornar o `sign_url` oficial.
+
+### 7.5.1 Contábil / Integra-AI e Faturamento
+
+Fluxo atual de Extrato no Integra-AI:
+
+```txt
+GET  /api-v2/accounting/integra-ai/workspaces
+GET  /api-v2/accounting/integra-ai/jobs/:id
+POST /api-v2/accounting/integra-ai/import
+POST /api-v2/accounting/integra-ai/jobs/:id/bank
+POST /api-v2/accounting/integra-ai/jobs/:id/settings
+GET  /api-v2/accounting/integra-ai/jobs/:id/rules
+POST /api-v2/accounting/integra-ai/jobs/:id/rules
+POST /api-v2/accounting/integra-ai/jobs/:id/export
+GET  /api-v2/accounting/integra-ai/jobs/:id/download
+```
+
+Contrato a criar para Faturamento:
+
+```txt
+POST /api-v2/accounting/faturamento/jobs
+GET  /api-v2/accounting/faturamento/jobs/:id
+GET  /api-v2/accounting/faturamento/jobs/:id/download
+```
+
+O frontend de Faturamento deve consumir a API do Portal. A API pode chamar o backend Python existente em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, mas o navegador não deve executar Python, ler `.env`, receber `API_TOKEN` do Acessórias ou acessar paths locais. A API deve auditar usuário, parâmetros públicos, status, artefatos gerados e erros sanitizados.
+
+Parâmetros mínimos esperados para criar job de Faturamento:
+
+- `codigo_empresa`: código/ID usado no Acessórias;
+- `ano`: ano de competência;
+- `modo`: `um_mes` ou `todos_os_meses`;
+- `mes`: obrigatório quando `modo=um_mes`;
+- `codigo_dominio`: opcional; quando ausente, usar `codigo_empresa` no CSV Domínio.
 
 ### 7.6 Acessórias
 

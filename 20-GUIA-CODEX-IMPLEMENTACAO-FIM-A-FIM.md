@@ -1554,6 +1554,42 @@ Observações de segurança:
 
 **Evidência mínima:** registrar arquivos alterados, comando executado, resultado e pendências. Se algum comando falhar, criar sub-etapa corretiva antes de continuar.
 
+### Etapa 12.1.1 - URGENTE: Entrada Integra-AI com Extrato e Faturamento
+
+**Status inicial:** `PENDENTE`
+**Prioridade:** `URGENTE`; executar antes de continuar a Etapa 12.2, mesmo que a Fase 12 ja tenha avancado em outro documento.
+**Status permitido ao finalizar:** `CONCLUÍDA`
+**Se houver imprevisto:** criar sub-etapa `Etapa 12.1.1.x - Correção de imprevisto`, resolver, validar e só então concluir a urgência.
+
+**Contexto:** O Integra-AI atual cobre o fluxo de extrato bancario para TXT Dominio. Existe tambem um backend Python de Faturamento em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, documentado por `README.md` e `DOCUMENTACAO_FLUXO_INTEGRADO.md`, que processa faturamento/PGDAS do Acessorias, preenche Livro Caixa e gera CSV para importacao no Dominio.
+
+**O que fazer:** Ao acessar `/contabil/integra-ai`, mostrar uma entrada de escolha com dois botoes principais:
+
+- `Extrato`: abre o fluxo atual do Integra-AI, sem mudar sua regra de negocio nem seus testes ja existentes.
+- `Faturamento`: abre novo frontend operacional para o fluxo de faturamento.
+
+**Frontend esperado para Faturamento:**
+
+- informar obrigatoriamente o `codigo_empresa` usado no Acessorias;
+- informar ano de competencia;
+- escolher modo `Um mes` ou `Todos os meses`;
+- quando o modo for `Um mes`, exigir mes de competencia;
+- permitir informar `codigo_dominio` opcional quando o codigo da empresa no Dominio for diferente do codigo usado no Acessorias;
+- É obrigatório o usuário informar o código da empresa no acessórias.
+- explicar visualmente o codigo que sera usado no CSV do Dominio, sem expor token, path local, payload bruto de PDF ou segredo;
+- disparar processamento por API autenticada do Portal, nunca por script local direto no navegador;
+- exibir status do processamento, meses encontrados/ausentes, avisos e links seguros para baixar CSV, planilha e log quando disponiveis.
+
+**Regra obrigatoria de codigo:** Se `codigo_dominio` nao for informado, o CSV deve usar o mesmo valor de `codigo_empresa`; se informado, o CSV deve usar `codigo_dominio`, mantendo `codigo_empresa` apenas para localizar a empresa/entrega no Acessorias.
+
+**Regra obrigatoria de periodo:** O frontend deve suportar explicitamente gerar apenas um mes ou gerar todos os meses do ano. Para competencia `MM/AAAA`, lembrar que o PGDAS costuma aparecer na entrega do mes seguinte, conforme a documentacao do backend de Faturamento.
+
+**Contrato tecnico:** O frontend deve chamar endpoint HTTP seguro da API v2/NestJS ou adaptador equivalente que encapsule o backend Python. Nao executar Python pelo navegador, nao ler `.env` no cliente, nao enviar `API_TOKEN` pelo frontend e nao persistir artefatos em storage publico.
+
+**Como validar:** Playwright deve cobrir a escolha `Extrato` preservando o fluxo atual e a escolha `Faturamento` validando campos obrigatorios, alternancia `Um mes`/`Todos os meses`, uso opcional de `codigo_dominio`, chamada mockada de processamento e estados de sucesso/erro.
+
+**Evidencia minima:** registrar arquivos alterados, contrato de endpoint consumido, comandos executados, resultado dos testes, screenshots ou trace Playwright da escolha inicial e pendencias de homologacao real com PDF/PGDAS.
+
 ### Etapa 12.2 — Refinar tela de Documentos
 
 **Status inicial:** `PENDENTE`  

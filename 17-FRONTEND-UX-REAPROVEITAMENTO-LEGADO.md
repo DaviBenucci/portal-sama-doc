@@ -72,6 +72,26 @@ A navegação deve ser reorganizada com os seguintes grupos semânticos:
 
 Regra: a navegação deve continuar usando permissões do backend. O frontend não deve confiar apenas em role ou label textual.
 
+### 2.4. Integra-AI com escolha de fluxo
+
+A entrada do Integra-AI deve deixar de assumir que todo usuário quer processar extrato bancário. Ao abrir `/contabil/integra-ai`, a primeira decisão do usuário deve ser clara e curta:
+
+- `Extrato`: fluxo atual do Integra-AI para extrato bancário, regras contábeis e TXT Domínio.
+- `Faturamento`: novo fluxo para PGDAS/Livro Caixa/CSV Domínio, usando o backend Python existente em `C:\Users\Sama Contabilidade\Downloads\Faturamento` por meio de API/adaptador seguro.
+
+O seletor deve ser uma tela operacional, não uma landing page. Usar dois botões grandes o suficiente para toque, com ícone e descrição curta, mantendo permissão `accounting.integra_ai.read` ou permissão específica equivalente definida pelo backend.
+
+Para `Faturamento`, o frontend deve oferecer:
+
+- empresa/código usado no Acessórias;
+- ano;
+- controle de modo entre `Um mês` e `Todos os meses`;
+- seletor de mês obrigatório apenas em `Um mês`;
+- campo opcional `codigo_dominio` para quando o código do Domínio for diferente do código do Acessórias;
+- estado de processamento, avisos por mês e downloads seguros dos artefatos liberados pela API.
+
+O frontend não deve executar Python no navegador, nem receber `API_TOKEN` do Acessórias. Toda execução deve passar pelo backend do Portal ou por adaptador autenticado, com auditoria e sem expor paths locais, `.env`, PDF bruto ou logs sensíveis.
+
 ## 3. Diagnóstico do frontend novo
 
 Arquivos relevantes encontrados na nova arquitetura:

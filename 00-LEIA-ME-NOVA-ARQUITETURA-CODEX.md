@@ -19,7 +19,9 @@ Este pacote documental foi criado para orientar a conclusão da nova arquitetura
 6. [`20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`](./20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md)
 7. [`21-CONTINUIDADE-FASE-9-EASYPANEL.md`](./21-CONTINUIDADE-FASE-9-EASYPANEL.md), como evidencia formal da Fase 9 `CONCLUIDA`.
 8. [`22-CONTINUIDADE-FASE-10-FRONTEND.md`](./22-CONTINUIDADE-FASE-10-FRONTEND.md), como evidencia formal da Fase 10 `CONCLUIDA`.
-9. [`23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`](./23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md), como acompanhamento formal da Fase 11 `EM_EXECUCAO`.
+9. [`23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`](./23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md), como evidencia formal da Fase 11 `CONCLUIDA`.
+10. [`24-CONTINUIDADE-FASE-12-MODULOS.md`](./24-CONTINUIDADE-FASE-12-MODULOS.md), como acompanhamento formal da Fase 12 `EM_EXECUCAO`.
+11. [`CONTEXTO-CODEX-ATUAL.md`](./CONTEXTO-CODEX-ATUAL.md), como estado operacional mais recente.
 
 ## Precedencia documental
 
@@ -27,8 +29,8 @@ Os documentos Markdown localizados na raiz deste workspace sao a fonte normativa
 
 Precedencia pratica:
 
-1. Documentos de decisao da raiz: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, `22-CONTINUIDADE-FASE-10-FRONTEND.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
-   Durante a Fase 11, incluir tambem `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md` como acompanhamento formal da fase em execucao.
+1. Documentos de decisao da raiz: `00-LEIA-ME-NOVA-ARQUITETURA-CODEX.md`, `12-RUNBOOK-ACESSORIAS.md`, `15-ANALISE-SEMANTICA-LEGADO-VS-NOVA-ARQUITETURA.md`, `16-BACKEND-API-BANCO-DETALHADO.md`, `17-FRONTEND-UX-REAPROVEITAMENTO-LEGADO.md`, `18-ZAPSIGN-MIGRACAO-LEGADO-PARA-NESTJS.md`, `19-SEGURANCA-GOVERNANCA-DOCUMENTOS.md`, `21-CONTINUIDADE-FASE-9-EASYPANEL.md`, `22-CONTINUIDADE-FASE-10-FRONTEND.md`, `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, `24-CONTINUIDADE-FASE-12-MODULOS.md`, `CONTEXTO-CODEX-ATUAL.md` e `Testes-da-aplicação-DEPLOY.md`.
+   Durante a Fase 12, `24-CONTINUIDADE-FASE-12-MODULOS.md` e `CONTEXTO-CODEX-ATUAL.md` definem a proxima etapa operacional.
 2. Guia operacional da raiz: `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`, usado para ordenar fases, status permitidos e evidencias.
 3. Documentos em `docs/`, usados como acompanhamento, matriz, checklist e evidencias; eles nao podem liberar uma fase se conflitarem com os documentos de maior precedencia.
 
@@ -58,6 +60,8 @@ Cada etapa deve seguir este ciclo:
 ```
 
 Se surgir imprevisto, o Codex deve criar uma **sub-etapa corretiva dentro da etapa atual**, resolver, validar e somente depois continuar. Não é permitido pular para outra fase para compensar uma etapa incompleta.
+
+Urgencia ativa em 2026-07-01: antes de continuar a Fase 12 pela Etapa 12.2, executar a sub-etapa 12.1.1 para adicionar a entrada do Integra-AI com os botoes `Extrato` e `Faturamento`. `Extrato` preserva o fluxo atual. `Faturamento` deve criar frontend para o backend Python existente em `C:\Users\Sama Contabilidade\Downloads\Faturamento`, com escolha entre `Um mes` e `Todos os meses` e `codigo_dominio` opcional quando o codigo do Dominio for diferente do Acessorias.
 
 ## Regras específicas da integração Acessórias
 
