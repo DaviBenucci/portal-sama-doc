@@ -208,6 +208,12 @@ Correcao pos-producao da 12.1.1 em 2026-07-01:
 - removida a necessidade de `.env` separado no pacote de Faturamento; o fluxo usa `ACESSORIAS_TOKEN` do `.env` principal do `portal-sama-api`;
 - o adaptador da API injeta `ACESSORIAS_TOKEN` e tambem `API_TOKEN` no processo Python apenas por compatibilidade com o script original;
 - `SAMA_FATURAMENTO_ROOT` e `SAMA_FATURAMENTO_SCRIPT_PATH` viraram apenas overrides opcionais; sem eles, o padrao e `services/faturamento`;
+- adaptado o runtime do Portal: `services/faturamento` guarda apenas script/modelo/documentacao, enquanto PDFs, CSVs, planilhas e logs sao gerados em `STORAGE_PRIVATE_PATH/faturamento/jobs/<jobId>` ou em `SAMA_FATURAMENTO_WORK_DIR` quando configurado;
+- cada job passou a receber subpastas privadas `entrada` e `saida`, evitando sobrescrita quando empresa/ano se repetem;
+- apos o processamento bem-sucedido, os PDFs temporarios baixados do Acessorias sao removidos da pasta `entrada`, mantendo disponiveis apenas CSV Dominio e Livro Caixa XLSX para download autenticado;
+- o frontend de Faturamento passou a exibir botoes `Baixar CSV Dominio` e `Baixar Livro Caixa`, consumindo os `download_url` autenticados retornados pela API;
+- quando nenhum PDF e baixado, o erro agora inclui os ultimos retornos do Acessorias por competencia, em vez de mostrar somente a pasta vazia;
+- analisados os scripts legados abertos no IDE (`ler_pdf.py`, `livro_caixa_final.py`, `livro_caixa_completo.py`): eles mantem caminhos fixos, CNPJ/periodo fixos ou erros de sintaxe/variaveis, por isso o Portal usa somente o fluxo oficial parametrizado;
 - `Dockerfile` da API instala tambem `services/faturamento/requirements.txt`, garantindo `requests`, `pdfplumber` e `openpyxl` no container;
 - `.dockerignore` e `.gitignore` passaram a ignorar `.venv`, `entrada`, `saida`, `saida_corrigida` e `__pycache__` do pacote.
 
@@ -217,10 +223,16 @@ Validacoes da correcao pos-producao:
 python services\faturamento\script\processar_faturamento.py --help
 python services\faturamento\script\acessorias_client.py --help
 python -m py_compile services\faturamento\script\processar_faturamento.py services\faturamento\script\acessorias_client.py services\faturamento\script\livro_caixa.py
-npm.cmd run build
-npm.cmd run lint
-npm.cmd test -- accounting --runInBand
-git diff --check
+python services\faturamento\script\processar_faturamento.py --ano 2025 --codigo-empresa 366 --codigo-dominio 179 --mes 12 --sem-download --modelo services\faturamento\modelo\modelo.xlsx --entrada .ai-tests\faturamento-portal-adapter\entrada --saida .ai-tests\faturamento-portal-adapter\saida --apagar-pdfs-baixados
+npm.cmd run build # API
+npm.cmd run lint # API
+npm.cmd test -- accounting --runInBand # API
+npx.cmd tsc --noEmit --pretty false # Web
+npm.cmd run lint # Web
+npm.cmd test -- --runInBand # Web
+npx.cmd playwright test tests/e2e/smoke.spec.ts -g "starts faturamento" --reporter=line # Web
+npm.cmd run build # Web
+git diff --check # API, Web e Docs
 ```
 
 Resultado:
@@ -228,16 +240,22 @@ Resultado:
 ```txt
 Help dos scripts OK, exibindo ACESSORIAS_TOKEN/API_TOKEN
 py_compile OK
-build OK
-lint OK
+Processamento local sem API OK, gerando CSV, planilha e log em .ai-tests
+API build OK
+API lint OK
 Accounting tests OK, 18 passed
-git diff --check OK na API
+TypeScript web OK
+Web lint OK
+Web contract tests OK, 24 passed
+Playwright Faturamento OK, 1 passed
+Web build OK
+git diff --check OK na API, Web e Docs
 ```
 
 Pendencias operacionais para publicar/homologar fora da maquina local:
 
 - configurar `ACESSORIAS_TOKEN` somente no backend API;
-- configurar `SAMA_FATURAMENTO_ROOT`, `SAMA_FATURAMENTO_SCRIPT_PATH` ou `SAMA_FATURAMENTO_PYTHON_BIN` apenas se for necessario sobrescrever o pacote interno;
+- configurar `SAMA_FATURAMENTO_ROOT`, `SAMA_FATURAMENTO_SCRIPT_PATH`, `SAMA_FATURAMENTO_WORK_DIR` ou `SAMA_FATURAMENTO_PYTHON_BIN` apenas se for necessario sobrescrever o pacote interno/runtime padrao;
 - ajustar `SAMA_FATURAMENTO_TIMEOUT_SEC` se o processamento real precisar de mais tempo;
 - publicar/rebuildar Web e API juntos, pois a 12.1.1 altera contrato entre ambos.
 
