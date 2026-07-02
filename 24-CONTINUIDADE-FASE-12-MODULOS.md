@@ -1,9 +1,9 @@
 # Continuidade Fase 12 - Telas de modulos apos painel do cliente
 
-Atualizado em: 2026-07-01
+Atualizado em: 2026-07-02
 Ambiente alvo: `https://portal.samacontabil.com.br`
 Status formal: Fase 12 `EM_EXECUCAO`
-Etapa atual: 12.2 - Refinar tela de Documentos
+Etapa atual: 12.5 - Refinar tela de contratos ZapSign
 
 ## 1. Entrada da fase
 
@@ -259,18 +259,163 @@ Pendencias operacionais para publicar/homologar fora da maquina local:
 - ajustar `SAMA_FATURAMENTO_TIMEOUT_SEC` se o processamento real precisar de mais tempo;
 - publicar/rebuildar Web e API juntos, pois a 12.1.1 altera contrato entre ambos.
 
-## 5. Pendencias da Fase 12
+## 5. Etapa 12.2 - Refinar tela de Documentos
+
+Status: `CONCLUIDA` em 2026-07-02.
+
+Arquivos alterados:
+
+```txt
+portal-sama-web/src/pages/documents/DocumentsPage.tsx
+portal-sama-web/scripts/web-contract-tests.mjs
+portal-sama-web/tests/e2e/smoke.spec.ts
+```
+
+Resultado:
+
+- filtros da tela `/documentos` passaram a ser refletidos na URL: `clientId`, `type`, `department`, `status` e `skip`;
+- a tela preserva `clientId` recebido pela URL e preenche o cliente inicial do envio documental;
+- o bloco `Documentos privados` exibe filtros ativos e desabilita `Limpar` quando nao ha filtro aplicado;
+- a tabela ganhou atalho textual `Painel`, levando direto ao painel do cliente na aba `Documentos` por `/clientes/{id}/painel?tab=documentos#client-documents`;
+- os cards de pendencias obrigatorias tambem ganharam atalho para o painel documental do respectivo cliente;
+- a navegacao para o painel preserva `state.from` com `/documentos` e a query atual;
+- o contrato web da Etapa 12.2 foi adicionado ao runner de contratos;
+- o E2E cobre filtros persistidos em URL, parametros enviados para a API, paginacao por `skip`, limpeza de filtros e abertura do painel documental.
+
+Validacoes executadas em `portal-sama-web`:
+
+```powershell
+npx.cmd tsc --noEmit --pretty false
+npm.cmd test -- --runInBand
+npx.cmd playwright test tests/e2e/smoke.spec.ts -g "documents page" --reporter=line
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:e2e
+git diff --check
+```
+
+Resultado:
+
+```txt
+TypeScript OK
+25 web contract tests passed
+Playwright Documentos OK, 4 passed
+lint OK
+build OK
+test:e2e OK, 39 passed, 2 skipped
+git diff --check OK no web
+```
+
+## 6. Etapa 12.3 - Refinar tela de Certificados
+
+Status: `CONCLUIDA` em 2026-07-02.
+
+Arquivos alterados:
+
+```txt
+portal-sama-web/src/pages/certificates/CertificatesPage.tsx
+portal-sama-web/scripts/web-contract-tests.mjs
+portal-sama-web/tests/e2e/smoke.spec.ts
+```
+
+Resultado:
+
+- filtros da tela `/certificados-digitais` passaram a ser refletidos na URL: `search`, `clientId`, `department`, `deleted` e `skip`;
+- a lista usa estado local com `filtersRef` para preservar alteracoes rapidas nos filtros sem perder parametros da URL;
+- o cadastro global preenche o `ID do cliente` quando a URL recebe `clientId`;
+- a tela ganhou visao global de vencimentos e riscos, com cards de `Vencendo`, `Vencidos` e `Sem validade`;
+- os alertas `Atencao em certificados` e `Proximos vencimentos` foram alinhados com a aba de Certificados do painel do cliente;
+- os formularios globais de cadastro e edicao passaram a expor `Departamento` e `Validade`, usando os campos ja suportados pelo schema e pelo service;
+- a tabela global passou a exibir status de validade, texto operacional de prazo, senha `Protegida`/`Pendente` e arquivo;
+- cada certificado com cliente vinculado ganhou atalho textual `Painel`, levando direto a `/clientes/{id}/painel?tab=certificados#client-certificates`;
+- a navegacao para o painel preserva `state.from` com `/certificados-digitais` e a query atual;
+- o contrato web da Etapa 12.3 foi adicionado ao runner de contratos;
+- o E2E cobre filtros persistidos em URL, parametros enviados para a API, riscos de vencimento, paginacao por `skip`, limpeza de filtros e abertura do painel de certificados do cliente.
+
+Validacoes executadas em `portal-sama-web`:
+
+```powershell
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run lint
+npm.cmd test -- --runInBand
+npx.cmd playwright test tests/e2e/smoke.spec.ts -g "certificates page" --reporter=line
+npm.cmd run build
+npm.cmd run test:e2e
+git diff --check
+```
+
+Resultado:
+
+```txt
+TypeScript OK
+lint OK
+26 web contract tests passed
+Playwright Certificados OK, 1 passed
+build OK
+test:e2e OK, 40 passed, 2 skipped
+git diff --check OK no web
+```
+
+## 7. Etapa 12.4 - Refinar Legalizacao
+
+Status: `CONCLUIDA` em 2026-07-02.
+
+Arquivos alterados:
+
+```txt
+portal-sama-web/src/pages/legalization/LegalizationPage.tsx
+portal-sama-web/scripts/web-contract-tests.mjs
+portal-sama-web/tests/e2e/smoke.spec.ts
+```
+
+Resultado:
+
+- filtros da tela `/legalizacao` passaram a ser refletidos na URL: `search`, `status`, `stage`, `cnpj`, `type`, `protocol`, `department`, `archived` e `skip`;
+- a lista usa estado local com `filtersRef` para preservar alteracoes rapidas nos filtros sem perder parametros da URL;
+- a tela ganhou chips de filtros ativos, botao `Limpar`, checkbox `Arquivados` com `id` explicito e filtro de tipo de processo;
+- o departamento vindo pela URL e preservado como opcao selecionada antes do catalogo de departamentos terminar de carregar;
+- o detalhe do processo ganhou o painel `Status do fluxo`, exibindo Processo, Proposta e Contrato;
+- quando ha proposta/contrato vinculados, a tela consulta `getProposal` e `getContract` para mostrar os status reais;
+- links para propostas e contratos preservam `state.from` com `/legalizacao` e a query atual;
+- o helper E2E de sessao passou a mockar `/api-v2/auth/me`, evitando logout falso em navegacoes com query string;
+- o E2E cobre filtros persistidos em URL, parametros enviados para a API, paginacao por `skip`, limpeza, detalhe, painel de fluxo, atualizacao de status e navegacao para contrato;
+- o contrato web da Etapa 12.4 foi adicionado ao runner de contratos.
+
+Validacoes executadas em `portal-sama-web`:
+
+```powershell
+npx.cmd tsc --noEmit --pretty false
+npm.cmd run lint
+npm.cmd test -- --runInBand
+npx.cmd playwright test tests/e2e/smoke.spec.ts -g "legalization page" --reporter=line
+npm.cmd run build
+npm.cmd run test:e2e
+git diff --check
+```
+
+Resultado:
+
+```txt
+TypeScript OK
+lint OK
+27 web contract tests passed
+Playwright Legalizacao OK, 1 passed
+build OK
+test:e2e OK, 41 passed, 2 skipped
+git diff --check OK no web
+```
+
+## 8. Pendencias da Fase 12
 
 Ainda pendentes conforme `20-GUIA-CODEX-IMPLEMENTACAO-FIM-A-FIM.md`:
 
-1. Etapa 12.2 - Refinar tela de Documentos.
-2. Etapa 12.3 - Refinar tela de Certificados.
-3. Etapa 12.4 - Refinar Legalizacao.
-4. Etapa 12.5 - Refinar tela de contratos ZapSign.
-5. Etapa 12.6 - Refinar Onboarding.
-6. Etapa 12.7 - Refinar T.I./Acessos.
+1. Etapa 12.5 - Refinar tela de contratos ZapSign.
+2. Etapa 12.6 - Refinar Onboarding.
+3. Etapa 12.7 - Refinar T.I./Acessos.
+4. Etapa 12.8 - Refinar Gestao.
+5. Etapa 12.9 - Refinar Administracao.
 
-## 6. Acao em producao
+## 9. Acao em producao
 
 Nenhuma acao manual em producao e obrigatoria para concluir a Etapa 12.1 no repositorio local.
 
@@ -286,6 +431,41 @@ Quando a build desta etapa for publicada no EasyPanel, executar:
 
 Para a sub-etapa 12.1.1, a acao em producao exige publicar Web e API juntos e configurar o token do Acessorias apenas no backend. A publicacao do frontend nao deve depender de token do Acessorias no navegador.
 
-## 7. Proximo passo recomendado
+Para a Etapa 12.2, quando a build for publicada no EasyPanel:
 
-Retomar a Etapa 12.2 - refinar tela de Documentos.
+1. Conferir que o deploy do `portal-sama-web` usa o commit/build que contem esta etapa.
+2. Rebuildar/redeployar apenas o servico web; nao ha migration, env nova ou alteracao obrigatoria na API para a Etapa 12.2.
+3. Entrar com usuario que tenha `documents.read`, `documents.upload`, `documents.review`, `documents.download`, `documents.public_tokens` e `documents.requirements`, conforme o fluxo a validar.
+4. Abrir `/documentos`, filtrar por cliente, tipo, departamento e status, confirmando que a URL reflete os filtros.
+5. Usar `Proxima` e confirmar `skip=50` na URL quando houver mais de uma pagina.
+6. Usar `Limpar` e confirmar que `clientId`, `type`, `department`, `status` e `skip` saem da URL.
+7. Abrir um documento pelo botao `Painel` e confirmar `/clientes/{id}/painel?tab=documentos#client-documents`.
+8. Validar que links publicos, revisao, download e pendencias obrigatorias seguem operacionais.
+
+Para a Etapa 12.3, quando a build for publicada no EasyPanel:
+
+1. Conferir que o deploy do `portal-sama-web` usa o commit/build que contem esta etapa.
+2. Rebuildar/redeployar apenas o servico web; nao ha migration, env nova ou alteracao obrigatoria na API para a Etapa 12.3.
+3. Entrar com usuario que tenha `certificates.read`, `certificates.manage` e `certificates.download`, conforme o fluxo a validar.
+4. Abrir `/certificados-digitais`, filtrar por busca, cliente, departamento e `Removidos`, confirmando que a URL reflete os filtros.
+5. Usar `Proxima` e confirmar `skip=50` na URL quando houver mais de uma pagina.
+6. Confirmar que `Atencao em certificados` e `Proximos vencimentos` aparecem coerentes com certificados vencendo, vencidos ou sem validade.
+7. Usar `Limpar` e confirmar que `search`, `clientId`, `department`, `deleted` e `skip` saem da URL.
+8. Abrir um certificado pelo botao `Painel` e confirmar `/clientes/{id}/painel?tab=certificados#client-certificates`.
+9. Validar que cadastro, edicao de validade/departamento, download, rotacao de senha e remocao seguem operacionais.
+
+Para a Etapa 12.4, quando a build for publicada no EasyPanel:
+
+1. Conferir que o deploy do `portal-sama-web` usa o commit/build que contem esta etapa.
+2. Rebuildar/redeployar apenas o servico web; nao ha migration, env nova ou alteracao obrigatoria na API para a Etapa 12.4.
+3. Entrar com usuario que tenha `legalization.read`, alem de `legalization.create`, `legalization.update`, `legalization.status`, `legalization.templates`, `proposals.*` e `contracts.*` conforme o fluxo a validar.
+4. Abrir `/legalizacao`, filtrar por busca, status, etapa, tipo, CNPJ, protocolo, departamento e `Arquivados`, confirmando que a URL reflete os filtros.
+5. Usar `Proxima` e confirmar `skip=50` na URL quando houver mais de uma pagina.
+6. Abrir o detalhe de um processo e confirmar o painel `Status do fluxo` com Processo, Proposta e Contrato.
+7. Confirmar que proposta e contrato vinculados exibem os status reais e abrem os respectivos detalhes.
+8. Atualizar o status do processo e confirmar a atualizacao do status/timeline.
+9. Usar `Limpar` e confirmar que filtros e `skip` saem da URL.
+
+## 10. Proximo passo recomendado
+
+Retomar a Etapa 12.5 - refinar tela de contratos ZapSign.

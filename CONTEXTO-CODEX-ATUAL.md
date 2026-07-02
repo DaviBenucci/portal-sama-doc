@@ -1,7 +1,7 @@
 # CONTEXTO CODEX ATUAL
 
-Atualizado em: 2026-07-01
-Sessao atual: Fase 12 em execucao; Etapa 12.1 concluida; sub-etapa urgente 12.1.1 concluida; proxima etapa e 12.2 - Refinar tela de Documentos.
+Atualizado em: 2026-07-02
+Sessao atual: Fase 12 em execucao; Etapa 12.1 concluida; sub-etapa urgente 12.1.1 concluida; Etapa 12.2 concluida; Etapa 12.3 concluida; Etapa 12.4 concluida; proxima etapa e 12.5 - Refinar tela de contratos ZapSign.
 
 ## Precedencia obrigatoria
 
@@ -33,7 +33,7 @@ Os arquivos em `docs/` sao acompanhamento/evidencia e nao podem liberar uma fase
 - Fase 9: `CONCLUIDA` em 2026-06-29 apos `homologation:real --skip-permissions` retornar `ok=true`, com `smoke:public`, `smoke:auth`, `smoke:phase9` e `test:e2e:real` aprovados.
 - Fase 10: `CONCLUIDA` em 2026-06-29; etapas 10.1 a 10.9 concluidas e validadas.
 - Fase 11: `CONCLUIDA` em 2026-06-30; etapas 11.1 a 11.10 concluidas e validadas.
-- Fase 12: `EM_EXECUCAO`; Etapa 12.1 `CONCLUIDA` em 2026-06-30; sub-etapa urgente 12.1.1 `CONCLUIDA` em 2026-07-01 com Web/API implementados e homologacao real local; proxima etapa e 12.2 - Refinar tela de Documentos.
+- Fase 12: `EM_EXECUCAO`; Etapa 12.1 `CONCLUIDA` em 2026-06-30; sub-etapa urgente 12.1.1 `CONCLUIDA` em 2026-07-01 com Web/API implementados e homologacao real local; Etapa 12.2 `CONCLUIDA` em 2026-07-02; Etapa 12.3 `CONCLUIDA` em 2026-07-02; Etapa 12.4 `CONCLUIDA` em 2026-07-02; proxima etapa e 12.5 - Refinar tela de contratos ZapSign.
 
 Evidencia principal da conclusao da Fase 8: `npm run ops:phase8 -- --json --soft --backup-output-dir /tmp/portal-sama-phase8-backups --target-storage-path /tmp/portal-sama-restore-storage --apply-database --apply-storage --confirm RESTORE_DRILL_TARGET_IS_ISOLATED` executado no container da API do EasyPanel retornou `ok=true`, `failed=0`, `blocked=0`, `warnings=4`.
 
@@ -44,6 +44,12 @@ Evidencia principal da conclusao da Fase 10: `22-CONTINUIDADE-FASE-10-FRONTEND.m
 Evidencia principal da conclusao da Fase 11: `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`, com `ClientDashboardHeader`, `ClientDashboardTabs`, aba Geral com dados completos e edicao rapida por `clients.update`, aba Responsaveis com criar/editar/transferir/encerrar, aba Acessos com listagem/gestao segura sem segredo em claro, aba Documentos com badge de pendencia, checklist, upload, requisitos, revisao, download protegido e historico de status por documento, aba Certificados com validade, upload, download, rotacao e revelacao auditada de senha, aba Vida da empresa com timeline por departamento e criacao de entrada, quick actions por `?tab=...`, volta preservando filtros da lista de clientes, responsividade final sem overflow horizontal em notebook/mobile, E2E completo percorrendo todas as abas, lint OK, 22 contratos web OK, build OK, Playwright focado OK e `test:e2e` OK com 36 passed/2 skipped.
 
 Evidencia principal da Etapa 12.1: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/clientes` refinada para filtros persistidos na URL, botao textual `Painel`, retorno do painel preservando filtros, botao `Limpar`, contrato web da Fase 12.1, Playwright focado OK, lint OK, 23 contratos web OK, build OK e `test:e2e` OK com 37 passed/2 skipped.
+
+Evidencia principal da Etapa 12.2: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/documentos` refinada para filtros `clientId`, `type`, `department`, `status` e `skip` persistidos na URL, prefill de cliente no envio, chips de filtros ativos, atalho `Painel` para `/clientes/{id}/painel?tab=documentos#client-documents`, contrato web da Fase 12.2, TypeScript OK, lint OK, 25 contratos web OK, build OK, Playwright focado Documentos OK e `test:e2e` OK com 39 passed/2 skipped.
+
+Evidencia principal da Etapa 12.3: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/certificados-digitais` refinada para filtros `search`, `clientId`, `department`, `deleted` e `skip` persistidos na URL, visao global de vencimentos e riscos, alertas `Atencao em certificados` e `Proximos vencimentos`, campos globais de `Departamento` e `Validade`, atalho `Painel` para `/clientes/{id}/painel?tab=certificados#client-certificates`, contrato web da Fase 12.3, TypeScript OK, lint OK, 26 contratos web OK, build OK, Playwright focado Certificados OK e `test:e2e` OK com 40 passed/2 skipped.
+
+Evidencia principal da Etapa 12.4: `24-CONTINUIDADE-FASE-12-MODULOS.md`, com tela `/legalizacao` refinada para filtros `search`, `status`, `stage`, `cnpj`, `type`, `protocol`, `department`, `archived` e `skip` persistidos na URL, chips de filtros ativos, `Status do fluxo` para Processo/Proposta/Contrato, consulta dos status vinculados por `getProposal`/`getContract`, links preservando `state.from`, contrato web da Fase 12.4, TypeScript OK, lint OK, 27 contratos web OK, build OK, Playwright focado Legalizacao OK e `test:e2e` OK com 41 passed/2 skipped.
 
 Urgencia concluida em 2026-07-01: a sub-etapa 12.1.1 bifurcou a entrada do Integra-AI em `Extrato` e `Faturamento`. `Extrato` preserva o fluxo atual; `Faturamento` usa frontend novo e adaptador API para o backend Python migrado para `portal-sama-api/services/faturamento`, com modo `Um mes`/`Todos os meses` e `codigo_dominio` opcional quando o codigo do Dominio diferir do Acessorias.
 
@@ -225,6 +231,31 @@ Urgencia concluida em 2026-07-01: a sub-etapa 12.1.1 bifurcou a entrada do Integ
 - `portal-sama-api/src/modules/auth/auth.controller.ts` recebeu ajuste local de cookie: em `development` com origem `localhost`/`127.0.0.1`, `COOKIE_DOMAIN` e omitido mesmo que o `.env` tenha dominio de producao.
 - Backend local subido em `start:dev` com MySQL Docker local e overrides temporarios `NODE_ENV=development`, `DATABASE_URL`, `CORS_ORIGIN=http://127.0.0.1:5174`, `FRONTEND_URL=http://127.0.0.1:5174`, `COOKIE_SECURE=false`; healthcheck 200 em `http://127.0.0.1:3000/api-v2/health`.
 - `npm.cmd run prisma:bootstrap-admin` criou o usuario local `admin (DEV)` no MySQL Docker usando a senha configurada no ambiente local, sem imprimir segredo.
+- Etapa 12.2 refinou `portal-sama-web/src/pages/documents/DocumentsPage.tsx`.
+- Filtros de `/documentos` agora persistem na URL: `clientId`, `type`, `department`, `status` e `skip`.
+- O envio documental preenche o cliente inicial quando `/documentos` recebe `clientId` na URL.
+- O bloco `Documentos privados` mostra filtros ativos, estado de filtros e `Limpar` desabilitado quando nao ha filtro.
+- A tabela de documentos e os cards de pendencias obrigatorias ganharam atalho `Painel`, abrindo `/clientes/{id}/painel?tab=documentos#client-documents` e preservando `state.from` com `/documentos`.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 25 contratos e cobre a Etapa 12.2.
+- E2E `documents page keeps filters in the URL and opens the client document panel` cobre filtros, API, URL, paginacao, limpeza e abertura do painel documental.
+- Validacoes executadas na Etapa 12.2: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd test -- --runInBand`, Playwright focado `documents page` com 4 passed, `npm.cmd run lint`, `npm.cmd run build`, `npm.cmd run test:e2e` com 39 passed/2 skipped e `git diff --check` passaram.
+- Etapa 12.3 refinou `portal-sama-web/src/pages/certificates/CertificatesPage.tsx`.
+- Filtros de `/certificados-digitais` agora persistem na URL: `search`, `clientId`, `department`, `deleted` e `skip`.
+- A tela global de certificados mostra vencimentos e riscos com cards de resumo, `Atencao em certificados` e `Proximos vencimentos`, coerentes com a aba Certificados do painel do cliente.
+- Cadastro e edicao globais de certificados agora expõem `Departamento` e `Validade`, reutilizando schema/service existentes.
+- A tabela global mostra status de validade, prazo operacional, senha protegida/pendente, arquivo e atalho `Painel` para `/clientes/{id}/painel?tab=certificados#client-certificates`.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 26 contratos e cobre a Etapa 12.3.
+- E2E `certificates page keeps filters in the URL and highlights expiration risks` cobre filtros, API, URL, riscos de vencimento, paginacao, limpeza e abertura do painel de certificados.
+- Validacoes executadas na Etapa 12.3: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd test -- --runInBand`, Playwright focado `certificates page` com 1 passed, `npm.cmd run build`, `npm.cmd run test:e2e` com 40 passed/2 skipped e `git diff --check` passaram.
+- Etapa 12.4 refinou `portal-sama-web/src/pages/legalization/LegalizationPage.tsx`.
+- Filtros de `/legalizacao` agora persistem na URL: `search`, `status`, `stage`, `cnpj`, `type`, `protocol`, `department`, `archived` e `skip`.
+- A tela de Legalizacao mostra chips de filtros ativos, botao `Limpar`, checkbox `Arquivados` com `id` explicito, filtro de tipo de processo e preserva o departamento vindo da URL antes do catalogo carregar.
+- O detalhe do processo mostra `Status do fluxo` para Processo, Proposta e Contrato, buscando status reais por `getProposal` e `getContract` quando houver vinculos.
+- Links para propostas e contratos preservam `state.from` com `/legalizacao` e a query atual.
+- O helper E2E de sessao passou a mockar `/api-v2/auth/me`, evitando logout falso ao navegar com query string.
+- Atualizado `portal-sama-web/scripts/web-contract-tests.mjs`; a suite agora tem 27 contratos e cobre a Etapa 12.4.
+- E2E `legalization page keeps filters in the URL and navigates the proposal contract flow` cobre filtros, API, URL, paginacao, limpeza, detalhe, `Status do fluxo`, atualizacao de status e navegacao para contrato.
+- Validacoes executadas na Etapa 12.4: `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd test -- --runInBand`, Playwright focado `legalization page` com 1 passed, `npm.cmd run build`, `npm.cmd run test:e2e` com 41 passed/2 skipped e `git diff --check` passaram.
 
 ### Docs - Fase 8 e conciliacao
 
@@ -362,9 +393,9 @@ Ultimo commit registrado antes desta atualizacao de Fase 9:
 4. Confirmar que a Fase 9 esta `CONCLUIDA` pela evidencia `portal-sama-web/.ai-tests/homologation-real-phase9/homologation-real-20260629T134038169Z.json`.
 5. Confirmar que a Fase 10 esta `CONCLUIDA` conforme `22-CONTINUIDADE-FASE-10-FRONTEND.md`.
 6. Confirmar que a Fase 11 esta `CONCLUIDA` conforme `23-CONTINUIDADE-FASE-11-PAINEL-CLIENTE.md`.
-7. Confirmar que a Fase 12 esta `EM_EXECUCAO` e a Etapa 12.1 esta `CONCLUIDA` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
+7. Confirmar que a Fase 12 esta `EM_EXECUCAO` e as Etapas 12.1, 12.2, 12.3 e 12.4 estao `CONCLUIDAS` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
 8. Confirmar que a sub-etapa urgente 12.1.1 esta `CONCLUIDA` conforme `24-CONTINUIDADE-FASE-12-MODULOS.md`.
-9. Continuar pela Etapa 12.2 - Refinar tela de Documentos.
+9. Continuar pela Etapa 12.5 - Refinar tela de contratos ZapSign.
 10. Ao alterar codigo, reexecutar lint/build/test correspondentes e `git diff --check`.
 
 ## Cuidados
